@@ -286,9 +286,9 @@ namespace Spacebox.Game.Generation.Tools
             root.Add(new ByteTag(NBTKey.CHUNK.index_y, PackingTools.SByteToByte(index.Y)));
             root.Add(new ByteTag(NBTKey.CHUNK.index_z, PackingTools.SByteToByte(index.Z)));
 
-            var listBlocks = new byte[SIZE * SIZE * SIZE];
+            var listBlocks = new int[SIZE * SIZE * SIZE];
 
-            Dictionary<short, byte> sessionLocalIdToPaletteIndex = new Dictionary<short, byte>();
+            Dictionary<short, int> sessionLocalIdToPaletteIndex = new Dictionary<short, int>();
             List<string> paletteStrings = new List<string>();
 
             Dictionary<string, short> paletteItems = new Dictionary<string, short>();
@@ -313,9 +313,9 @@ namespace Spacebox.Game.Generation.Tools
                         var block = blocks[x, y, z];
                         short currentSessionId = block.Id;
 
-                        if (!sessionLocalIdToPaletteIndex.TryGetValue(currentSessionId, out byte paletteIndex))
+                        if (!sessionLocalIdToPaletteIndex.TryGetValue(currentSessionId, out int paletteIndex))
                         {
-                            paletteIndex = (byte)paletteStrings.Count;
+                            paletteIndex = paletteStrings.Count;
                             sessionLocalIdToPaletteIndex[currentSessionId] = paletteIndex;
 
                             var blockFullId = GameAssets.GetBlockFullId(block);
@@ -361,7 +361,7 @@ namespace Spacebox.Game.Generation.Tools
                 }
             }
 
-            root.Add(new ByteArrayTag(NBTKey.CHUNK.blocks, listBlocks));
+            ChunkBlockIndices.Write(root, listBlocks, paletteStrings.Count);
 
             var listPaletteBlocks = new ListTag(NBTKey.CHUNK.palette_blocks, TagType.String);
             for (int i = 0; i < paletteStrings.Count; i++)
@@ -423,7 +423,7 @@ namespace Spacebox.Game.Generation.Tools
             sbyte iz = PackingTools.ByteToSByte(tag.Get<ByteTag>(NBTKey.CHUNK.index_z).Value);
             chunkIndex = new Vector3SByte(ix, iy, iz);
 
-            var listBlocks = tag.Get<ByteArrayTag>(NBTKey.CHUNK.blocks).ToArray();
+            var listBlocks = ChunkBlockIndices.Read(tag);
             var listPaletteBlocks = tag.Get<ListTag>(NBTKey.CHUNK.palette_blocks);
 
             short[] mappedSessionIds = new short[listPaletteBlocks.Count];
@@ -437,7 +437,8 @@ namespace Spacebox.Game.Generation.Tools
             short[] ids = new short[SIZE * SIZE * SIZE];
             for (int i = 0; i < listBlocks.Length; i++)
             {
-                ids[i] = mappedSessionIds[listBlocks[i]];
+                int paletteIndex = listBlocks[i];
+                ids[i] = paletteIndex >= 0 && paletteIndex < mappedSessionIds.Length ? mappedSessionIds[paletteIndex] : (short)0;
             }
 
             Block[,,] blocks = ReconstructBlocksFrom1D(ids);

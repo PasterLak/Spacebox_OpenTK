@@ -22,7 +22,9 @@
     "Explosions": true,
     "ExplosionBlockDamage": true,
     "ExplosionPlayerDamage": true,
-    "ExplosionsRespectClaims": true
+    "ExplosionsRespectClaims": true,
+    "KeepInventory": true,
+    "DeathDropMinutes": 10
   },
   "Claims": {
     "Enabled": true,

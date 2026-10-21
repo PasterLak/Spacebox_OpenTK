@@ -44,6 +44,7 @@ namespace Spacebox.Game.Generation.Tools
             public const string palette_blocks = "palette_blocks";
             public const string palette_items = "palette_items";
             public const string blocks = "blocks";
+            public const string blocks_wide = "blocks_wide";
             public const string directions = "directions";
             public const string rotations = "rotations";
             public const string needs_generation = "needs_generation";

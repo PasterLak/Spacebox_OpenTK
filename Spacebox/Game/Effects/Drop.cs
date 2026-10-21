@@ -60,7 +60,7 @@ public class Drop : IDisposable
     public void AddQuantity(int amount, float lifetime)
     {
         Info = new DropInfo { item = Info.item, quantity = Info.quantity + amount };
-        TimeRemaining = lifetime;
+        TimeRemaining = Math.Max(TimeRemaining, lifetime);
     }
 
     public void Update()

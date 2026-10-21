@@ -104,7 +104,7 @@ namespace Spacebox.Game.Effects
             DropItem(position, direction, speed, itemSlot.Item, itemSlot.Count, pickupDelay, deceleration, sourceEntity);
         }
 
-        public void DropItem(Vector3 position, Vector3 direction, float speed, Item item, int quantity, float pickupDelay = 0.5f, float deceleration = 5f, SpaceEntity sourceEntity = null)
+        public void DropItem(Vector3 position, Vector3 direction, float speed, Item item, int quantity, float pickupDelay = 0.5f, float deceleration = 5f, SpaceEntity sourceEntity = null, float lifetime = DropLifeTime)
         {
             if (item == null || quantity <= 0) return;
 
@@ -117,6 +117,7 @@ namespace Spacebox.Game.Effects
             }
 
             var drop = SpawnItemDrop(position, velocity, item, quantity, pickupDelay, deceleration, sourceEntity);
+            drop.TimeRemaining = lifetime;
             RegisterSpawn(drop, velocity, false, default);
         }
 
@@ -203,6 +204,27 @@ namespace Spacebox.Game.Effects
         {
             drop.NetId = _nextNetId++;
             _networkDrops[drop.NetId] = drop;
+        }
+
+        public void DropDeathItems(Vector3 position, IReadOnlyList<ItemStack> stacks)
+        {
+            if (stacks == null || stacks.Count == 0) return;
+
+            if (IsRemote)
+            {
+                _replicator.RequestDeathDrop(position, stacks);
+                return;
+            }
+
+            float lifetime = Spacebox.Game.Rules.ServerRules.Current.DeathDropSeconds;
+            for (int i = 0; i < stacks.Count; i++)
+            {
+                var direction = new Vector3(
+                    (float)(random.NextDouble() * 2.0 - 1.0),
+                    (float)(random.NextDouble() * 2.0 - 1.0),
+                    (float)(random.NextDouble() * 2.0 - 1.0));
+                DropItem(position, direction, 1.5f, stacks[i].Item, stacks[i].Count, 2f, 4f, null, lifetime);
+            }
         }
 
         public void DropStorage(Storage storage, Vector3 position, float speed = 2f, float spreadRadius = 0.1f, float pickupDelay = 2f, float deceleration = 4f, SpaceEntity sourceEntity = null)
@@ -439,7 +461,7 @@ namespace Spacebox.Game.Effects
                 }
 
 
-                if (!drop.CanBePickedUp || _player.IsFrozen) continue;
+                if (!drop.CanBePickedUp || _player.IsFrozen || !_player.IsAlive) continue;
 
                 var distanceSquared = (drop.Position - targetPosition).LengthSquared;
 
@@ -811,7 +833,7 @@ namespace Spacebox.Game.Effects
             }
         }
 
-        private void CreateLoadedDrop(string itemIdString, int quantity, Vector3 position)
+        private void CreateLoadedDrop(string itemIdString, int quantity, Vector3 position, float timeLeft)
         {
             var item = GameAssets.GetItemByFullID(itemIdString);
             if (item == null)
@@ -821,7 +843,7 @@ namespace Spacebox.Game.Effects
             }
 
             var drop = _dropPool.Take();
-            drop.Initialize(position, item, quantity, DropLifeTime);
+            drop.Initialize(position, item, quantity, timeLeft > 0f ? timeLeft : DropLifeTime);
 
             _activeDrops.Add(drop);
             _octree.Add(drop, position);
@@ -846,7 +868,7 @@ namespace Spacebox.Game.Effects
             var dropData = DropSaveManager.LoadFromFile(filePath);
             foreach (var data in dropData)
             {
-                CreateLoadedDrop(data.ItemId, data.Quantity, data.Position);
+                CreateLoadedDrop(data.ItemId, data.Quantity, data.Position, data.TimeLeft);
             }
         }
 

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Engine;
 using Engine.Web;
 
@@ -16,12 +17,29 @@ public sealed class GameplayModule : IDashboardModule
 
         router.Map("POST", DashboardContext.Api("/gameplay"), guard.Admin(async (request, user) =>
         {
-            var values = DashboardGuard.Read<Dictionary<string, bool>>(request);
+            var values = DashboardGuard.Read<Dictionary<string, JsonElement>>(request);
             if (values == null) return HttpResponse.Error("Bad request", 400);
 
-            await MainThread.Run(() => ServerRulesService.Apply(values));
+            var texts = new Dictionary<string, string>();
+            foreach (var (name, value) in values) texts[name] = ToText(value);
+
+            int result = await MainThread.Run(() => ServerRulesService.Apply(texts));
+            if (result < 0) return HttpResponse.Error("Invalid value", 400);
+
             DashboardContext.Audit(user, "changed the gameplay rules");
             return HttpResponse.Json(new { ok = true });
         }));
+    }
+
+    private static string ToText(JsonElement value)
+    {
+        return value.ValueKind switch
+        {
+            JsonValueKind.True => "on",
+            JsonValueKind.False => "off",
+            JsonValueKind.Number => value.GetRawText(),
+            JsonValueKind.String => value.GetString(),
+            _ => ""
+        };
     }
 }

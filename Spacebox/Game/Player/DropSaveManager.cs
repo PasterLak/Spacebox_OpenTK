@@ -13,6 +13,7 @@ public class DropSaveData
     public float X { get; set; }
     public float Y { get; set; }
     public float Z { get; set; }
+    public float TimeLeft { get; set; }
 
     [JsonIgnore]
     public Vector3 Position
@@ -42,7 +43,8 @@ public static class DropSaveManager
                 {
                     ItemId = drop.Info.item.Id_string,
                     Quantity = drop.Info.quantity,
-                    Position = drop.Position
+                    Position = drop.Position,
+                    TimeLeft = drop.TimeRemaining
                 });
             }
         }

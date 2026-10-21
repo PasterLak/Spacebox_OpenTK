@@ -253,6 +253,8 @@
           <label class="switch"><input type="checkbox" name="explosion_players"><span>Explosions hurt players</span></label>
           <label class="switch"><input type="checkbox" name="explosion_claims"><span>Explosions respect claims (no block damage inside active claims)</span></label>
           <label class="switch"><input type="checkbox" name="friendly_mobs"><span>Friendly mobs (they only fight back when attacked)</span></label>
+          <label class="switch"><input type="checkbox" name="keep_inventory"><span>Keep inventory (off: survival players drop all their items where they die)</span></label>
+          <label>Death drops last (minutes, 1-1440)<input type="number" name="death_drop_minutes" min="1" max="1440" step="1"></label>
           <button class="btn gold" type="submit">Save gameplay rules</button>
         </form>
         <form class="panel" id="claims-form">

@@ -7,7 +7,7 @@ public sealed class AppModule : IAgentModule
 {
     public void Map(AgentRouter router)
     {
-        router.Post("/quit", "Close the game (saves like a normal exit)", _ =>
+        router.Post("/quit", "Close the game without saving (save with the pause menu first)", _ =>
         {
             MainThread.Run(Application.Quit);
             return AgentJson.Response(new { ok = true });

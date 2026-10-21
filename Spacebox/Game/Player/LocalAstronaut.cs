@@ -409,6 +409,7 @@ namespace Spacebox.Game.Player
             else
                 DeathScreen.Show(new DeathCase(""));
 
+            DeathDrops.Drop(this);
             OnDeath?.Invoke();
         }
 

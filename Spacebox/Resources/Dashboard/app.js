@@ -566,7 +566,10 @@ async function loadGameplay() {
   if (!data) return;
   const form = $("#gameplay-form");
   for (const [name, value] of Object.entries(data.rules)) {
-    if (form[name]) form[name].checked = value;
+    const input = form[name];
+    if (!input) continue;
+    if (input.type === "checkbox") input.checked = value;
+    else input.value = value;
   }
 }
 
@@ -575,6 +578,7 @@ $("#gameplay-form").addEventListener("submit", async event => {
   const form = event.target;
   const body = {};
   for (const input of form.querySelectorAll("input[type=checkbox]")) body[input.name] = input.checked;
+  for (const input of form.querySelectorAll("input[type=number]")) body[input.name] = Number(input.value);
   await run(() => api("/gameplay", body), "Gameplay rules saved");
   loadGameplay();
 });

@@ -8,7 +8,7 @@ namespace Spacebox.Game.Commands;
 public sealed class GameRuleCommand : CommandBase
 {
     public override string Name => "gamerule";
-    public override string Description => "Server rules. Usage: gamerule [name] [on|off] (pvp, explosions, explosion_blocks, explosion_players, explosion_claims, friendly_mobs)";
+    public override string Description => "Server rules. Usage: gamerule [name] [value] (pvp, explosions, explosion_blocks, explosion_players, explosion_claims, friendly_mobs, keep_inventory, death_drop_minutes)";
 
     public override void Execute(string[] args)
     {
@@ -17,7 +17,7 @@ public sealed class GameRuleCommand : CommandBase
         if (args.Length == 0)
         {
             foreach (var rule in ServerRulesService.Rules)
-                Debug.Log($"{rule.Name}: {OnOff(rule.Get())} ({rule.Label})");
+                Debug.Log($"{rule.Name}: {rule.Text} ({rule.Label})");
             return;
         }
 
@@ -29,38 +29,16 @@ public sealed class GameRuleCommand : CommandBase
 
         if (args.Length == 1)
         {
-            Debug.Log($"{found.Name}: {OnOff(found.Get())}");
+            Debug.Log($"{found.Name}: {found.Text}");
             return;
         }
 
-        if (!TryParseSwitch(args[1], out bool value))
+        if (!ServerRulesService.Set(found, args[1]))
         {
-            Debug.Error("Use on or off");
+            Debug.Error($"Use {found.Usage}");
             return;
         }
 
-        ServerRulesService.Set(found, value);
-        Debug.Success($"{found.Label}: {OnOff(value)}");
-    }
-
-    private static string OnOff(bool value) => value ? "on" : "off";
-
-    public static bool TryParseSwitch(string text, out bool value)
-    {
-        value = false;
-        switch (text?.Trim().ToLowerInvariant())
-        {
-            case "on":
-            case "true":
-            case "1":
-                value = true;
-                return true;
-            case "off":
-            case "false":
-            case "0":
-                return true;
-            default:
-                return false;
-        }
+        Debug.Success($"{found.Label}: {found.Text}");
     }
 }

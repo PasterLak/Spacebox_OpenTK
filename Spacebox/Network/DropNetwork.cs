@@ -15,7 +15,10 @@ public sealed class DropNetwork : IDropReplicator
     private const float MaxSpawnDistance = 24f;
     private const float MaxSpawnSpeed = 60f;
 
+    private const int MaxDeathDropStacks = 128;
+
     private static readonly PeerRateLimiter _spawnRequests = new PeerRateLimiter(60, 30);
+    private static readonly PeerRateLimiter _deathDropRequests = new PeerRateLimiter(1, 1.0 / 30);
 
     public bool IsAuthority => NetworkManager.Instance.IsServer;
 
@@ -27,6 +30,7 @@ public sealed class DropNetwork : IDropReplicator
         network.Messages.Register<DropPickupGrantedMessage>(OnPickupGranted);
         network.Messages.Register<DropRemovedMessage>(OnRemovedMessage);
         network.Messages.Register<DropUpdateMessage>(OnUpdateMessage);
+        network.Messages.Register<DeathDropRequestMessage>(OnDeathDropRequest);
     }
 
     public static void SendAllTo(int peer)
@@ -65,6 +69,39 @@ public sealed class DropNetwork : IDropReplicator
             Deceleration = deceleration,
             SourceEntityId = sourceEntity?.EntityID ?? long.MinValue
         });
+    }
+
+    public void RequestDeathDrop(Vector3 position, IReadOnlyList<ItemStack> stacks)
+    {
+        var amounts = new List<ItemAmount>(stacks.Count);
+        foreach (var stack in stacks) amounts.Add(new ItemAmount { ItemId = stack.Item.Id, Amount = stack.Count });
+        NetworkManager.Instance.SendToServer(new DeathDropRequestMessage { Position = position, Items = amounts });
+    }
+
+    private static void OnDeathDropRequest(int sender, DeathDropRequestMessage message)
+    {
+        var network = NetworkManager.Instance;
+        var drops = World.DropEffectManager;
+        if (!network.IsServer || drops == null || sender == network.LocalPeerId) return;
+        if (Spacebox.Game.Rules.ServerRules.Current.KeepInventory) return;
+        if (Players.PlayerGameModeService.Of(PlayerRegistry.GetName(sender)) != Spacebox.Game.Player.GameModes.GameMode.Survival) return;
+        if (message.Items == null || message.Items.Count == 0 || message.Items.Count > MaxDeathDropStacks) return;
+        if (!NetValidation.IsFinite(message.Position)) return;
+
+        var player = Combat.PlayerHitboxes.FindPlayer(sender);
+        if (player == null || Vector3.DistanceSquared(player.Position, message.Position) > MaxSpawnDistance * MaxSpawnDistance) return;
+        if (!_deathDropRequests.TryConsume(sender, Time.Total)) return;
+
+        var stacks = new List<ItemStack>(message.Items.Count);
+        foreach (var amount in message.Items)
+        {
+            if (!GameAssets.TryGetItemById(amount.ItemId, out var item)) continue;
+            int limit = Math.Max(1, (int)item.StackSize) * MaxDeathDropStacks;
+            if (amount.Amount <= 0 || amount.Amount > limit) continue;
+            stacks.Add(new ItemStack(item, amount.Amount));
+        }
+
+        drops.DropDeathItems(message.Position, stacks);
     }
 
     public void RequestPickup(Drop drop)

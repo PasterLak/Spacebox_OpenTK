@@ -66,6 +66,7 @@ public sealed class ServerConfig
                     loaded.Claims ??= new Spacebox.Game.Protection.ClaimSettings();
                     loaded.Gameplay ??= new Spacebox.Game.Rules.ServerRules();
                     loaded.Claims.Validate();
+                    loaded.Gameplay.Validate();
                     Save(loaded, path, options);
                     return loaded;
                 }

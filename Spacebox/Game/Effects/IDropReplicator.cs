@@ -12,4 +12,5 @@ public interface IDropReplicator
     void OnRemoved(Drop drop);
     void RequestSpawn(Item item, int quantity, Vector3 position, Vector3 velocity, float pickupDelay, float deceleration, SpaceEntity sourceEntity);
     void RequestPickup(Drop drop);
+    void RequestDeathDrop(Vector3 position, IReadOnlyList<ItemStack> stacks);
 }

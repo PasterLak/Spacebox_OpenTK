@@ -141,3 +141,21 @@ public struct DropUpdateMessage : INetMessage
         Position = reader.ReadVector3();
     }
 }
+
+public struct DeathDropRequestMessage : INetMessage
+{
+    public Vector3 Position;
+    public List<ItemAmount> Items;
+
+    public void Serialize(NetWriter writer)
+    {
+        writer.Write(Position);
+        ItemAmount.WriteList(writer, Items ?? new List<ItemAmount>());
+    }
+
+    public void Deserialize(NetReader reader)
+    {
+        Position = reader.ReadVector3();
+        Items = ItemAmount.ReadList(reader);
+    }
+}

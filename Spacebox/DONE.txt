@@ -52,6 +52,8 @@ New
 - Graphics options: brightness, contrast, saturation, vignette strength, film grain (animated or static), Show FPS counter, reset buttons for image and SSAO
 - viewing through a ship camera block shows a security camera feed: scanlines, grain, lens distortion, REC overlay with timer (Camera Block Effect option)
 - server gameplay rules: PvP (weapons, drills, ship cannons and bombs of other players), explosions on/off, explosions break blocks, explosions hurt players, explosions respect claims, friendly mobs; set in serverconfig.json "Gameplay", on the dashboard Settings page or with the gamerule command (also /gamerule in chat), applied at once and announced in chat
+- keep inventory rule (on by default): with gamerule keep_inventory off (or keepinventory) survival players drop their hotbar, inventory and equipment where they die; death drops last death_drop_minutes (default 10, 1-1440), also on the dashboard and in serverconfig.json; dead players do not pick items up; drops keep their remaining time when saved
+- single player and hosted worlds save their gamerules in the world folder (rules.json); clients get the server's rules
 - cable blocks connect automatically: they turn along the line, the middle block of an L becomes an angle and a block with 3 or more connections a hub (only the cable block is crafted); new angle and hub textures
 Small
 - block icons show the real shape: signs, picture frames, torches, slabs and multi-cell blocks are rendered from their model (same isometric style as cube icons)
@@ -84,6 +86,8 @@ Fixes
 - world preload builds entities on the main thread (pipes, analyzers and claim beacons could be lost or crash the load); preload no longer waits forever when the sector is closed meanwhile
 - GameSet blocks with an invalid mass, durability, efficiency or drop quantity are corrected and loaded instead of being skipped
 - a furnace/crusher with a broken item palette no longer stops its whole entity from loading
+- chunks with more than 256 different block types (big mods) save and load correctly instead of turning extra types into wrong blocks (new blocks_wide array, only used when needed; old saves unchanged)
+- GameSet editor: the GameSet icon on the Overview page is no longer upside down
 - mods with a Generation folder but no Asteroids folder use the default asteroids instead of none; removed a wrong "Asteroid directory not found" log
 - the distance to use blocks is the same for every held item (drills no longer use their mining range)
 - chat: a message arriving while typing (e.g. a game mode change by the server) no longer closes the input and leaves the hotbar keys and mouse wheel blocked; Escape closes the chat input

@@ -95,6 +95,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Protection.ClaimRegistry.Load(World.WorldData.WorldFolderPath);
         if (GameSession.IsRemoteClient) Spacebox.Network.Players.PlayerGameModes.Current.Reset();
         else Spacebox.Network.Players.PlayerGameModes.Current.Load(World.WorldData.WorldFolderPath);
+        if (!GameSession.IsRemoteClient && !GameSession.IsDedicated) Spacebox.Game.Rules.WorldRulesStore.Load(World.WorldData.WorldFolderPath);
         blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks);
         var world = new World(localPlayer, blockMaterial);
         AttachComponent(world);
@@ -406,6 +407,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if (!GameSession.IsDedicated)
         {
             Spacebox.Game.Rules.ServerRules.ResetSession();
+            Spacebox.Game.Rules.WorldRulesStore.Reset();
             Spacebox.Game.Mobs.MobRules.FriendlyMobs = false;
         }
         Spacebox.Game.Pictures.PictureTextures.Clear();

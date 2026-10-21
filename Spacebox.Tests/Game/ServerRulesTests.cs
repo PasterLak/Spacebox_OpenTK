@@ -104,7 +104,7 @@ public class ServerRulesTests
     [InlineData("maybe", false, false)]
     public void Command_ParsesSwitches(string text, bool parsed, bool value)
     {
-        Assert.Equal(parsed, GameRuleCommand.TryParseSwitch(text, out bool result));
+        Assert.Equal(parsed, SwitchRuleDefinition.TryParse(text, out bool result));
         Assert.Equal(value, result);
     }
 
@@ -115,5 +115,42 @@ public class ServerRulesTests
         Assert.Equal(names.Count, names.Distinct(StringComparer.OrdinalIgnoreCase).Count());
         Assert.True(ServerRulesService.TryFind("PVP", out var pvp));
         Assert.Equal("pvp", pvp.Name);
+        Assert.True(ServerRulesService.TryFind("keepinventory", out var keep));
+        Assert.Equal("keep_inventory", keep.Name);
+    }
+
+    [Fact]
+    public void KeepInventory_IsOnByDefaultWithTenMinuteDrops()
+    {
+        var rules = new ServerRules();
+
+        Assert.True(rules.KeepInventory);
+        Assert.Equal(600f, rules.DeathDropSeconds);
+    }
+
+    [Fact]
+    public void NumberRule_AcceptsOnlyValuesInRange()
+    {
+        int minutes = 10;
+        var rule = new NumberRuleDefinition("death_drop_minutes", "Death drops last", () => minutes, v => minutes = v, 1, 1440, "min");
+
+        Assert.True(rule.TrySet("25"));
+        Assert.Equal(25, minutes);
+        Assert.False(rule.TrySet("0"));
+        Assert.False(rule.TrySet("abc"));
+        Assert.Equal("25 min", rule.Text);
+    }
+
+    [Fact]
+    public void Rules_RoundTripThroughJsonAndClampMinutes()
+    {
+        var rules = new ServerRules { KeepInventory = false, DeathDropMinutes = 99999, Pvp = false };
+
+        var copy = ServerRules.FromJson(rules.ToJson());
+
+        Assert.False(copy.KeepInventory);
+        Assert.False(copy.Pvp);
+        Assert.Equal(ServerRules.MaxDeathDropMinutes, copy.DeathDropMinutes);
+        Assert.True(ServerRules.FromJson("{}").KeepInventory);
     }
 }

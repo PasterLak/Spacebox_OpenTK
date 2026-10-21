@@ -382,6 +382,7 @@ public sealed class NetworkSession : IDisposable
         TimeNetwork.SendTo(sender);
         ProtectionNetwork.SendTo(sender);
         ClaimNetwork.SendSettingsTo(sender);
+        ServerRulesNetwork.SendTo(sender);
         player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, player.SkinColor, Vector3.Zero, Quaternion.Identity);
         PlayerListNetwork.MarkDirty();
         ChatService.Broadcast($"{player.Name} joined the game", Color4.Yellow);

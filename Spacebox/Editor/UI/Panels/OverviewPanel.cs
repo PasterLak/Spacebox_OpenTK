@@ -60,7 +60,7 @@ public sealed class OverviewPanel : IEditorPanel, IDisposable
         {
             _iconLoaded = true;
             var path = Path.Combine(project.RootPath, "icon.png");
-            if (File.Exists(path)) _icon = new Texture2D(path, true);
+            if (File.Exists(path)) _icon = new Texture2D(path, true, false);
         }
 
         if (_icon != null) ImGui.Image(_icon.Handle, new Vector2(size, size));
