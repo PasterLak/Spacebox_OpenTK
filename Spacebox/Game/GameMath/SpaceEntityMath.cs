@@ -77,6 +77,7 @@ public class SpaceEntityMath
 
         HashSet<Chunk> modified = new HashSet<Chunk>();
         var special = new List<(Chunk Chunk, byte X, byte Y, byte Z)>();
+        var cleared = new List<Vector3i>();
         ClampChunkRange(ref chunkMinX, ref chunkMaxX);
         ClampChunkRange(ref chunkMinY, ref chunkMaxY);
         ClampChunkRange(ref chunkMinZ, ref chunkMaxZ);
@@ -113,7 +114,7 @@ public class SpaceEntityMath
                                 if (b != null && !b.IsAir)
                                 {
                                     if (BlockRemovalRules.NeedsFullRemoval(b)) special.Add((chunk, (byte)x, (byte)y, (byte)z));
-                                    else chunk.ClearCellForBulkEdit((byte)x, (byte)y, (byte)z);
+                                    else if (chunk.ClearCellForBulkEdit((byte)x, (byte)y, (byte)z)) cleared.Add(chunk.CellInEntity((byte)x, (byte)y, (byte)z));
                                     chunkModified = true;
 
                                     CheckAndAddNeighbor(entity, idx, x, y, z, modified);
@@ -137,6 +138,9 @@ public class SpaceEntityMath
             if (block == null || block.IsAir) continue;
             chunk.RemoveBlock(x, y, z, 0, 0, 0, false);
         }
+
+        foreach (var cell in cleared)
+            Spacebox.Game.Generation.Shapes.SupportedBlocks.BreakAround(entity, cell);
 
         if (modified.Count > 0) entity.Oxygen.OnChunksChanged();
 

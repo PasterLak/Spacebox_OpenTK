@@ -27,7 +27,7 @@ public class InteractiveBlock : ElectricalBlock
     public virtual void Use(LocalAstronaut player, ref HitInfo hit)
     {
 
-        SetText();
+        if (ShowsUseHint) SetText();
         OnUse?.Invoke(player);
         Spacebox.Game.Player.PlayerActivity.RaiseBlock(Spacebox.Game.Player.PlayerActivityKind.BlockUsed, Id);
     }
@@ -67,8 +67,11 @@ public class InteractiveBlock : ElectricalBlock
         CenteredText.SetText(IsActive ?   HoverText + HoverTextBlockName : HoverTextDeactivated);
 
     }
+    protected virtual bool ShowsUseHint => true;
+
     private void OnHovered()
     {
+        if (!ShowsUseHint) return;
         SetText();
         CenteredText.Show();
     }

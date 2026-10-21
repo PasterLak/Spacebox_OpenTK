@@ -15,14 +15,22 @@ public sealed class ExplosionBlockBreaker
 
     private readonly HashSet<Chunk> _touchedChunks = new HashSet<Chunk>();
     private readonly List<Vector3i> _specialCells = new List<Vector3i>();
+    private readonly List<Vector3i> _clearedCells = new List<Vector3i>();
     private readonly Dictionary<(short ItemId, Chunk Chunk), DropGroup> _drops = new Dictionary<(short, Chunk), DropGroup>();
     private readonly Random _random = new Random();
+
+    private void Cleared(Chunk chunk, Vector3i cell)
+    {
+        _touchedChunks.Add(chunk);
+        _clearedCells.Add(cell);
+    }
 
     public void Break(SpaceEntity entity, IEnumerable<Vector3i> cells, Vector3i origin, Vector3 worldCenter, ExplosiveBlockData data, Action<Chunk, Vector3Byte, ExplosiveBlockData> chainExplosive, bool isReplica, List<Vector3i> removedCells, bool respectClaims)
     {
         removedCells?.Clear();
         _touchedChunks.Clear();
         _specialCells.Clear();
+        _clearedCells.Clear();
         _drops.Clear();
 
         int effects = 0;
@@ -38,7 +46,7 @@ public sealed class ExplosionBlockBreaker
             if (cell == origin)
             {
                 if (NeedsFullRemoval(block)) _specialCells.Add(cell);
-                else if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) _touchedChunks.Add(chunk);
+                else if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) Cleared(chunk, cell);
                 removedCells?.Add(cell);
                 continue;
             }
@@ -66,13 +74,16 @@ public sealed class ExplosionBlockBreaker
                 effects++;
             }
 
-            if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) _touchedChunks.Add(chunk);
+            if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) Cleared(chunk, cell);
         }
 
         RemoveSpecialBlocks(entity, data, isReplica);
 
         foreach (var chunk in _touchedChunks)
             chunk.FinishBulkEdit();
+
+        foreach (var cell in _clearedCells)
+            Spacebox.Game.Generation.Shapes.SupportedBlocks.BreakAround(entity, cell);
 
         if (_touchedChunks.Count > 0) entity.Oxygen.OnChunksChanged();
 

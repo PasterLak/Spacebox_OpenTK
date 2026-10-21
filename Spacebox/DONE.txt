@@ -87,6 +87,8 @@ Fixes
 - GameSet blocks with an invalid mass, durability, efficiency or drop quantity are corrected and loaded instead of being skipped
 - a furnace/crusher with a broken item palette no longer stops its whole entity from loading
 - chunks with more than 256 different block types (big mods) save and load correctly instead of turning extra types into wrong blocks (new blocks_wide array, only used when needed; old saves unchanged)
+- picture frames no longer show the "Press RMB to use" hint
+- picture frames and signs break when the block holding them is removed (also by explosions and area erase): the frame and its picture drop instead of floating in the air
 - GameSet editor: the GameSet icon on the Overview page is no longer upside down
 - mods with a Generation folder but no Asteroids folder use the default asteroids instead of none; removed a wrong "Asteroid directory not found" log
 - the distance to use blocks is the same for every held item (drills no longer use their mining range)

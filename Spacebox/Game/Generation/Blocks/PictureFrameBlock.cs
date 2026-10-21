@@ -26,6 +26,8 @@ public class PictureFrameBlock : InteractiveBlock, IEntityBlockListener, INetwor
         OnDestroy += DropPicture;
     }
 
+    protected override bool ShowsUseHint => false;
+
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);

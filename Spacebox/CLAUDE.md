@@ -98,6 +98,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 ## Custom block geometry
 
 - `Game/Generation/Shapes/`: JSON `Model` → `BlockShapeResolver` (code geometry from `BlockGeometryLibrary`, else GameSet `Models/Blocks/<name>.obj`) → `BlockData.Shape`; blocks get `HasCustomShape`. New code shapes: build with `BlockGeometryBuilder` and `BlockGeometryLibrary.Register`. Prefer OBJ files for content so shapes change without code.
+- Blocks whose geometry `RequiresSupport` (signs, frames) break with drops when their support cell is removed: `SupportedBlocks.BreakAround` runs from `Chunk.RemoveBlockCell` and after bulk clears (explosions, area erase) on every machine; drops only spawn on the server.
 - Placement: `BlockPlacementHelper` gives shaped blocks the clicked face's normal as `Direction` (bottom on the clicked block); `BlockSelector` previews the model via `BlockShapePreviewMesh`.
 - Mesh: `MeshGenerator.AddShape`. Collisions/raycasts: `BlockCollision.TryGetSolidBounds` / `GetChunkCellBounds` (box depends on the support neighbour); new solidity checks should use it instead of treating every non-air cell as a full cube.
 

@@ -506,6 +506,12 @@ namespace Spacebox.Game.Generation
             }
 
             ClearBlockSilently(x, y, z);
+            Spacebox.Game.Generation.Shapes.SupportedBlocks.BreakAround(SpaceEntity, CellInEntity(x, y, z));
+        }
+
+        public Vector3i CellInEntity(byte x, byte y, byte z)
+        {
+            return new Vector3i(PositionIndex.X * Size + x, PositionIndex.Y * Size + y, PositionIndex.Z * Size + z);
         }
 
         internal bool ClearCellForBulkEdit(byte x, byte y, byte z)
