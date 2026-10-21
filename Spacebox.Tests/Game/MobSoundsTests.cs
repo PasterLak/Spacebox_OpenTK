@@ -23,6 +23,16 @@ public class MobSoundsTests
     }
 
     [Fact]
+    public void HearingRange_EndsAtSixteenBlocks()
+    {
+        var mob = new OpenTK.Mathematics.Vector3(100, 0, 0);
+
+        Assert.True(MobSounds.IsInHearingRange(mob, new OpenTK.Mathematics.Vector3(85, 0, 0)));
+        Assert.False(MobSounds.IsInHearingRange(mob, new OpenTK.Mathematics.Vector3(83, 0, 0)));
+        Assert.False(MobSounds.IsInHearingRange(mob, null));
+    }
+
+    [Fact]
     public void MobJsonWithoutSounds_GetsEmptyDefaults()
     {
         var json = JsonSerializer.Deserialize<MobJSON>("{\"Id\":\"x\"}");
