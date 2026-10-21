@@ -66,6 +66,13 @@ public class MobSpawnerItemJSON : ItemJSON
     public float UseCooldown { get; set; } = 0.5f;
 }
 
+public class PictureItemJSON : ItemJSON
+{
+    public string Picture { get; set; } = "";
+    public int Width { get; set; } = 1;
+    public int Height { get; set; } = 1;
+}
+
 public class WeaponItemJSON : ItemJSON
 {
     public byte Damage { get; set; } = 0;

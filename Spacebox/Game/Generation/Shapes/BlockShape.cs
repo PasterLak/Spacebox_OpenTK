@@ -16,6 +16,7 @@ public sealed class BlockShape
     private readonly Matrix4[] _transforms = new Matrix4[DirectionCount * RotationCount];
     private readonly Vector3 _supportedOffset;
     private readonly Vector3 _freeOffset;
+    private readonly BlockShape[]? _edgeVariants;
 
     public BlockGeometry Geometry { get; }
     public Face[] VertexFaces { get; }
@@ -48,6 +49,20 @@ public sealed class BlockShape
                 _poses[index * 2 + 1] = CreatePose(transform, supportedOffset);
             }
         }
+    }
+
+    public BlockShape(BlockGeometry geometry, Func<int, BlockGeometry> edgeVariant) : this(geometry)
+    {
+        ArgumentNullException.ThrowIfNull(edgeVariant);
+
+        _edgeVariants = new BlockShape[PlateEdges.VariantCount];
+        for (int mask = 0; mask < _edgeVariants.Length; mask++)
+            _edgeVariants[mask] = new BlockShape(edgeVariant(mask));
+    }
+
+    public BlockShape ForCell(Vector3Byte size, Vector3Byte cell)
+    {
+        return _edgeVariants == null ? this : _edgeVariants[PlateEdges.Mask(size, cell)];
     }
 
     public BlockShapePose GetPose(Direction direction, Rotation rotation, bool supported)

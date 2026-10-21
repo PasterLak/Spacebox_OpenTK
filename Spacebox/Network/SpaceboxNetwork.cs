@@ -25,6 +25,7 @@ public static class SpaceboxNetwork
         AnalyzerNetwork.Register(network);
         GravityConfigNetwork.Register(network);
         SignNetwork.Register(network);
+        PictureFrameNetwork.Register(network);
         DoorNetwork.Register(network);
         ShipNetwork.Register(network);
         ExplosionNetwork.Register(network);

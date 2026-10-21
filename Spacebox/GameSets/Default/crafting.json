@@ -71,6 +71,12 @@
       "Name": "Consumables",
       "Icon": "med_kit",
       "Row": 2
+    },
+    {
+      "Id": "decor",
+      "Name": "Decor",
+      "Icon": "picture_retro_cactus",
+      "Row": 1
     }
   ],
   "Blueprints": [
@@ -2125,6 +2131,630 @@
         {
           "Item": "obscurium_ingot",
           "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_frame_iron_1x1",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_frame_iron_2x1",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_frame_iron_2x2",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "iron_panels",
+          "Quantity": 3
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_frame_plastic_1x1",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "plastic",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_frame_plastic_2x1",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "plastic",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_frame_plastic_2x2",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "plastic",
+          "Quantity": 3
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_retro_cactus",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_ringed_planet",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_synth_sun",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_mystic_eye",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_retro_rocket",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_astronaut_portrait",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_ore_asteroid",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_bauhaus",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_floppy_disk",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_black_hole",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_asteroid_belt",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_synth_highway",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_space_station",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_retro_terminal",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_parasite_hunt",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_ship_flyby",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_twin_moons",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_cosmic_wave",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_spiral_galaxy",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_composition",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_lone_beacon",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_hypnosis",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_cassette_tape",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_star_whale",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_moon_phases",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_moon_ladder",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 1
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_paper_boat",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_snail_city",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 2
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_lone_door",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_dust",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Product": {
+        "Item": "picture_book_tree",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "polymer_fiber",
+          "Quantity": 3
+        },
+        {
+          "Item": "cobalt_dust",
+          "Quantity": 2
+        },
+        {
+          "Item": "titanium_dust",
+          "Quantity": 1
         }
       ]
     }

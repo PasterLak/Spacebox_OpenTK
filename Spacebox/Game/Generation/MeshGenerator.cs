@@ -298,6 +298,9 @@ namespace Spacebox.Game.Generation
 
         private void AddShape(Block block, BlockShape shape, sbyte x, sbyte y, sbyte z)
         {
+            var multiblockData = GameAssets.Blocks.TryGetValue(block.Id, out var shapeData) && shapeData.IsMultiblock ? shapeData : null;
+            if (multiblockData != null) shape = shape.ForCell(multiblockData.Size, block.MultiblockOffset);
+
             var support = shape.GetSupportOffset(block.Direction, block.Rotation);
             bool supported = BlockShapes.CanSupport(GetBlockSafe((sbyte)(x + support.X), (sbyte)(y + support.Y), (sbyte)(z + support.Z)));
             var pose = shape.GetPose(block.Direction, block.Rotation, supported);
@@ -310,7 +313,6 @@ namespace Spacebox.Game.Generation
             float emission = block.EnableEmission ? 1f : 0f;
             int vStart = vertexCount / BuffersData.FloatsPerVertexBlock;
 
-            var multiblockData = GameAssets.Blocks.TryGetValue(block.Id, out var shapeData) && shapeData.IsMultiblock ? shapeData : null;
             for (int f = 0; f < faces.Length; f++)
             {
                 var faceUVs = GameAssets.GetBlockUVs(block, faces[f]) ?? BlockShapeTexturing.DefaultFaceUVs;

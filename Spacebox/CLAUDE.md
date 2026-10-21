@@ -82,7 +82,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 ## Items and interactions
 
-- Item type is chosen by a switch on JSON `Type` in `Game/Resource/Loaders/GameSetLoader.cs` (weapon / drill / consumable / item).
+- Item type is chosen by a switch on JSON `Type` in `Game/Resource/Loaders/GameSetLoader.cs` (weapon / drill / consumable / repair_tool / mob_spawner / picture / equipment / item).
 - Interactions use a state pattern: `InteractionMode` (`OnEnable`, `OnDisable`, `Update(LocalAstronaut)`, `Render`, `AllowReload`) held by `InteractionHandler`. Each game mode passes a whitelist of allowed interaction types (e.g. `SurvivalMode.CreateInteractionHandler`); non-whitelisted types are rejected with an error log.
 - The active interaction is picked from the held item in `Game/GUI/Hud/PanelUI.cs` → `UpdatePlayerInteraction`.
 - Item-independent behaviour: `IPassiveInteraction`, passed to `InteractionHandler` by the game mode and updated after the active interaction (e.g. `CreativeBlockDestroying` in `CreativeMode`).
@@ -106,6 +106,12 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 - The plate is the code shape `sign_plate` (`SignPlateGeometry`, 1/32 thick, `RequiresSupport`, `FacingUp` so placement picks the `Rotation` that keeps the text upright via `BlockShape.BestRotation`). Wide signs are normal multi-cell blocks (`BaseFrontDirection` Up, cells along the text's right); every cell needs support, all cells can be used and broken, and only the origin cell registers with the renderer.
 - Text markup (`Game/Signs/SignMarkup`): `<b>`, `<color=name|#rgb|#rrggbb>`, `<left> <center> <right>`, sign-wide `<size=x>` / `<fill>` (`SignTextSize`, resolved against `SignTextBaker.FitScale` so text never leaves the area); unknown tags stay text; `Sanitize` limits lines and visible characters. Text is baked per sign with SkiaSharp (`SignTextBaker`) into a small texture only when it changes and drawn as one quad by the entity's `SignRenderer` (`SpaceEntity.Signs`, rendered after doors, distance and facing culled, max 4 bakes per frame).
 - Editing: `SignUI` (window, toolbar) + `SignTextEditor` (custom ImGui rich-text field: caret, selection, clipboard, keys) over `SignDocument` (per-character bold/colour, per-line alignment, converts from/to markup) → `SignNetwork` (`SignTextMessage`, server checks protection and reach, sanitizes) → `BlockStateNetwork`; saved by `SignSerializer` (`sign_data` with `text`).
+
+## Picture frames
+
+- Type `frame` (`PictureFrameBlock`, settings `PictureFrameBlockData` from the JSON `Frame` section: `Width`, `Height`, `Pictures` = accepted item ids, `ViewDistance`). Pictures are items of type `picture` (`PictureItem`: `Picture` = GameSet-relative PNG in `Pictures/`, `Width`, `Height`; the 32 px `Sprite` is only the icon). A new frame or picture is JSON + PNG; list a new picture in every frame that should accept it.
+- Shape `PictureFrameGeometry.Shape`: plate + raised rim, one geometry per edge mask (`PlateEdges`); `BlockShape.ForCell` picks the variant in `MeshGenerator.AddShape` and `BlockShapePreviewMesh`, so the rim follows the outer edges of multi-cell frames.
+- No window: using a frame (`PictureFrameInteraction`) with a fitting picture in hand inserts or swaps it (old one back to the player; survival takes the held one), with anything else takes it out. The picture lives in the origin cell (`PictureFrameBlock.TrySwap`); clients ask the server through `PictureFrameNetwork` (request/result, protection + reach). The shown picture is synced with `BlockStateNetwork`, drawn by `SpaceEntity.Pictures` (`PictureFrameRenderer`), saved by `PictureFrameSerializer`. Signs and frames share `Game/Rendering/PlateQuad` (quad placement on a shaped block, culling, light, draw).
 
 ## Gravity
 
@@ -134,7 +140,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 - A new trigger block: implement `IShipPart`, register in `OnAddedToEntity`, react in `ShipControlSystem.ApplyCommand`, allow it in `CanBind`.
 - Local pilot state is static (`ShipPilot`, `ShipRider`, `ShipBindingTool`, `ShipConsoleUI`) and reset in `BaseSpaceScene.UnloadContent`. Remote clients never simulate ships; they apply `ShipStateMessage` snapshots. Everything that changes ships goes through `ShipNetwork`.
 - While piloting, `PanelUI.BlockHands`/`UnblockHands` hide the held item, block selector and hotbar input.
-- Block tooltips: block data implementing `IBlockTooltip` appends its parameters in `InventoryUIHelper.ShowTooltip`; keep numbers out of JSON `Description`.
+- Block tooltips: block data implementing `IBlockTooltip` appends its parameters in `InventoryUIHelper.ShowTooltip`; keep numbers out of JSON `Description`. Items add text with `IItemTooltip` and an image under the text with `IItemTooltipImage` (pictures show their artwork).
 - Any entity becomes a ship when a ship block registers (`SpaceEntity.EnsureShipBody`), asteroids included. Mass (`ShipMassCache`) and hull (`ShipCollider`) are cached per chunk by `Chunk.DataVersion`.
 - Entities are not bound to a sector: `World` transfers them when `PositionWorld` leaves the sector (`EntitySectorTracker`) and registers them as visitors of neighbour sectors they overlap, so `Sector.IsColliding`/`Raycast`/`TryGetNearestEntity` also see them. Do not cache an entity's sector; use `entity.Sector`. Fresh asteroid generation only happens for ids generated in that sector and not suppressed.
 - Collisions: `ShipCollider` samples hull faces (`ShipHull`) against blocks of nearby entities; the math is in `ShipContactSolver` (tested in `Spacebox.Tests/Ships`).
@@ -227,6 +233,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 |---|---|
 | Data-only block / item | GameSet JSON + texture (`add-block` / `add-item` skills) |
 | Sign | `blocks.json` entry with `"Type": "sign"` and a `Sign` section (see Signs) |
+| Picture / picture frame | `items.json` entry with `"Type": "picture"` + PNG in `Pictures/`; frame: `blocks.json` entry with `"Type": "frame"` and a `Frame` section (see Picture frames) |
 | Block behaviour | `Block` subclass in `Game/Generation/Blocks/` + `BlockFactory` entry (+ serializer if stateful) |
 | Tutorial / tutorial step | `GameSets/<set>/Tutorials/*.json` (see `tutorial-design.md`); a new task type is a `TutorialTask` subclass + `TutorialTaskFactory` entry (+ `ITutorialContext` member or `PlayerActivity` event) |
 | Equipment item | `items.json` entry with `"Type": "equipment"`, `Slot`, `Health`/`Power`, `ExplosionProtection` (%); bonuses applied by `EquipmentStatsBinder`, UI in `EquipmentUI` (layout `ArmorLayout`/`DeviceSlots`, 3D figure `PlayerPreview`) |

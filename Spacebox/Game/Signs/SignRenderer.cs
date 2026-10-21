@@ -1,9 +1,9 @@
 using Engine;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Shapes;
+using Spacebox.Game.Rendering;
 
 namespace Spacebox.Game.Signs;
 
@@ -20,14 +20,10 @@ public sealed class SignRenderer : IDisposable
         public int BakedVersion = -1;
         public Texture2D Texture;
         public TextureMaterial Material;
-        public Matrix4 Local;
-        public Vector3 Center;
-        public Vector3 Normal;
+        public PlatePlacement Placement;
         public float RefreshTimer;
         public bool HasText;
     }
-
-    private static MeshBuffer _quad;
 
     private readonly SpaceEntity _entity;
     private readonly List<Entry> _entries = new List<Entry>();
@@ -76,9 +72,7 @@ public sealed class SignRenderer : IDisposable
                 UpdatePlacement(entry);
             }
 
-            var toCamera = cameraLocal - entry.Center;
-            if (toCamera.LengthSquared > data.ViewDistance * data.ViewDistance) continue;
-            if (Vector3.Dot(toCamera, entry.Normal) <= 0f) continue;
+            if (!PlateQuad.IsVisible(entry.Placement, cameraLocal, data.ViewDistance)) continue;
 
             if (entry.BakedVersion != sign.Version)
             {
@@ -89,9 +83,9 @@ public sealed class SignRenderer : IDisposable
 
             if (!entry.HasText) continue;
 
-            entry.Material.ExtraLight = data.Glow ? Vector3.One : SampleLight(entry);
-            entry.Material.Apply(entry.Local * entityMatrix);
-            DrawQuad();
+            entry.Material.ExtraLight = data.Glow ? Vector3.One : PlateQuad.SampleLight(_entity, entry.Placement);
+            entry.Material.Apply(entry.Placement.Local * entityMatrix);
+            PlateQuad.Draw();
         }
     }
 
@@ -104,30 +98,11 @@ public sealed class SignRenderer : IDisposable
     private void UpdatePlacement(Entry entry)
     {
         var sign = entry.Sign;
-        var data = sign.Data;
-        var shape = data.Shape;
+        var shape = sign.Data.Shape;
         if (shape == null) return;
 
-        bool supported = BlockShapes.IsSupported(_entity, sign.LocalCell, shape, sign.Direction, sign.Rotation);
-        float width = data.Width;
-        float y = SignPlateGeometry.Thickness + TextLift;
-        var cell = new Vector3(sign.LocalCell.X, sign.LocalCell.Y, sign.LocalCell.Z);
-
-        var topLeft = cell + shape.ToCellSpace(new Vector3(-0.5f, y, -0.5f), sign.Direction, sign.Rotation, supported);
-        var topRight = cell + shape.ToCellSpace(new Vector3(width - 0.5f, y, -0.5f), sign.Direction, sign.Rotation, supported);
-        var bottomLeft = cell + shape.ToCellSpace(new Vector3(-0.5f, y, 0.5f), sign.Direction, sign.Rotation, supported);
-
-        var right = topRight - topLeft;
-        var down = bottomLeft - topLeft;
-        var normal = Vector3.Cross(down, right).Normalized();
-
-        entry.Normal = normal;
-        entry.Center = topLeft + (right + down) * 0.5f;
-        entry.Local = new Matrix4(
-            new Vector4(right, 0f),
-            new Vector4(normal, 0f),
-            new Vector4(down, 0f),
-            new Vector4(topLeft, 1f));
+        var area = new Box2(-0.5f, -0.5f, sign.Data.Width - 0.5f, 0.5f);
+        entry.Placement = PlateQuad.Place(_entity, sign.LocalCell, shape, sign.Direction, sign.Rotation, area, SignPlateGeometry.Thickness + TextLift);
     }
 
     private void Bake(Entry entry)
@@ -150,36 +125,6 @@ public sealed class SignRenderer : IDisposable
             entry.Material = new TextureMaterial(texture, Resources.Load<Shader>(ShaderPath, true)) { WritesGBuffer = true, RenderFace = RenderFace.Both };
         else
             entry.Material.MainTexture = texture;
-    }
-
-    private Vector3 SampleLight(Entry entry)
-    {
-        return BlockLightSampler.Sample(_entity.EntityLocalToWorld(entry.Center + entry.Normal * 0.5f), _entity);
-    }
-
-    private static void DrawQuad()
-    {
-        _quad ??= CreateQuad();
-        GL.BindVertexArray(_quad.VAO);
-        GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
-        GL.BindVertexArray(0);
-    }
-
-    private static MeshBuffer CreateQuad()
-    {
-        var buffer = TextureMaterial.GetMeshBuffer();
-        Resources.RemoveResourceFromControll(buffer);
-        float[] vertices =
-        {
-            0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
-            1f, 0f, 0f, 0f, 1f, 0f, 1f, 0f,
-            1f, 0f, 1f, 0f, 1f, 0f, 1f, 1f,
-            0f, 0f, 1f, 0f, 1f, 0f, 0f, 1f
-        };
-        uint[] indices = { 0, 1, 2, 2, 3, 0 };
-        buffer.BindBuffer(ref vertices, ref indices);
-        buffer.SetAttributes();
-        return buffer;
     }
 
     private int IndexOf(SignBlock sign)

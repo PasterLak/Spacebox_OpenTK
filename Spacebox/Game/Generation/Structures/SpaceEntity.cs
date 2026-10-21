@@ -90,6 +90,8 @@ namespace Spacebox.Game.Generation
         public DoorSystem Doors { get; private set; }
         private Spacebox.Game.Signs.SignRenderer _signs;
         public Spacebox.Game.Signs.SignRenderer Signs => _signs ??= new Spacebox.Game.Signs.SignRenderer(this);
+        private Spacebox.Game.Pictures.PictureFrameRenderer _pictures;
+        public Spacebox.Game.Pictures.PictureFrameRenderer Pictures => _pictures ??= new Spacebox.Game.Pictures.PictureFrameRenderer(this);
         public CellReservations Reservations { get; } = new CellReservations();
         public Particle StarParticle;
 
@@ -556,15 +558,24 @@ namespace Spacebox.Game.Generation
 
         public Block GetStructureOrigin(Chunk chunk, Vector3Byte index)
         {
+            return TryGetStructureOrigin(chunk, index, out var originChunk, out var originIndex)
+                ? originChunk.Blocks[originIndex.X, originIndex.Y, originIndex.Z]
+                : chunk.Blocks[index.X, index.Y, index.Z];
+        }
+
+        public bool TryGetStructureOrigin(Chunk chunk, Vector3Byte index, out Chunk originChunk, out Vector3Byte originIndex)
+        {
+            originChunk = null;
+            originIndex = default;
             var block = chunk.Blocks[index.X, index.Y, index.Z];
             if (block == null || !block.HasMultiblockOffset || !GameAssets.Blocks.TryGetValue(block.Id, out var blockData))
-                return block;
+                return false;
 
             var originLocal = GetCellLocal(chunk, index) - MultiblockLayout.GetOriginOffset(blockData, block);
-            if (!TryGetBlockLocal(originLocal, out var originChunk, out var originIndex)) return block;
+            if (!TryGetBlockLocal(originLocal, out originChunk, out originIndex)) return false;
 
             var origin = originChunk.Blocks[originIndex.X, originIndex.Y, originIndex.Z];
-            return origin != null && origin.Id == block.Id && !origin.HasMultiblockOffset ? origin : block;
+            return origin != null && origin.Id == block.Id && !origin.HasMultiblockOffset;
         }
 
         public void RemoveStructure(Chunk chunk, byte x, byte y, byte z, Vector3SByte normal, bool spawnDrop)
@@ -1045,6 +1056,7 @@ namespace Spacebox.Game.Generation
 
             Doors.Render();
             _signs?.Render();
+            _pictures?.Render();
             _shipControl?.Render();
 
             if (VisualDebug.Enabled)
@@ -1264,6 +1276,7 @@ namespace Spacebox.Game.Generation
             IsDisposed = true;
             Doors.Dispose();
             _signs?.Dispose();
+            _pictures?.Dispose();
             _shipControl?.Dispose();
             GravityField.UnregisterEntity(this);
             Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.UnregisterEntity(this);

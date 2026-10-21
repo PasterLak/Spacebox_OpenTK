@@ -400,6 +400,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         GravityGeneratorUI.Reset();
         SignUI.Reset();
         DnaReconstructorUI.Reset();
+        Spacebox.Game.Pictures.PictureFrameInteraction.Reset();
+        Spacebox.Game.Pictures.PictureTextures.Clear();
         DnaReconstructionScreen.Reset();
         HitMarkerUI.Reset();
         RepairTargetUI.Reset();

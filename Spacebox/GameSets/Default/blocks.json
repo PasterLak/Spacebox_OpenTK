@@ -1991,5 +1991,209 @@
     "Sounds": {
       "Place": "placeMetal2"
     }
+  },
+  {
+    "ID": "picture_frame_iron_1x1",
+    "Name": "Iron Picture Frame",
+    "Description": "Hang a picture in it, open it to change the picture",
+    "Type": "frame",
+    "Category": "decor",
+    "CellPixels": 32,
+    "Textures": {
+      "Active": {
+        "All": "frameIronEdge",
+        "Up": "frameIron1x1",
+        "Down": "frameIronEdge"
+      }
+    },
+    "Frame": {
+      "Width": 1,
+      "Height": 1,
+      "Pictures": [
+        "picture_retro_cactus",
+        "picture_ringed_planet",
+        "picture_synth_sun",
+        "picture_mystic_eye",
+        "picture_retro_rocket",
+        "picture_astronaut_portrait",
+        "picture_ore_asteroid",
+        "picture_bauhaus",
+        "picture_floppy_disk",
+        "picture_black_hole",
+        "picture_cassette_tape",
+        "picture_moon_ladder"
+      ]
+    },
+    "Sounds": {
+      "Place": "placeMetal2"
+    }
+  },
+  {
+    "ID": "picture_frame_iron_2x1",
+    "Name": "Wide Iron Picture Frame",
+    "Description": "Hang a picture in it, open it to change the picture",
+    "Type": "frame",
+    "Category": "decor",
+    "CellPixels": 32,
+    "Textures": {
+      "Active": {
+        "All": "frameIronEdge",
+        "Up": "frameIron2x1",
+        "Down": "frameIronEdge"
+      }
+    },
+    "Frame": {
+      "Width": 2,
+      "Height": 1,
+      "Pictures": [
+        "picture_asteroid_belt",
+        "picture_synth_highway",
+        "picture_space_station",
+        "picture_retro_terminal",
+        "picture_parasite_hunt",
+        "picture_ship_flyby",
+        "picture_twin_moons",
+        "picture_cosmic_wave",
+        "picture_paper_boat",
+        "picture_snail_city"
+      ]
+    },
+    "Sounds": {
+      "Place": "placeMetal2"
+    }
+  },
+  {
+    "ID": "picture_frame_iron_2x2",
+    "Name": "Large Iron Picture Frame",
+    "Description": "Hang a picture in it, open it to change the picture",
+    "Type": "frame",
+    "Category": "decor",
+    "CellPixels": 32,
+    "Textures": {
+      "Active": {
+        "All": "frameIronEdge",
+        "Up": "frameIron2x2",
+        "Down": "frameIronEdge"
+      }
+    },
+    "Frame": {
+      "Width": 2,
+      "Height": 2,
+      "Pictures": [
+        "picture_spiral_galaxy",
+        "picture_composition",
+        "picture_lone_beacon",
+        "picture_hypnosis",
+        "picture_star_whale",
+        "picture_moon_phases",
+        "picture_lone_door",
+        "picture_book_tree"
+      ]
+    },
+    "Sounds": {
+      "Place": "placeMetal2"
+    }
+  },
+  {
+    "ID": "picture_frame_plastic_1x1",
+    "Name": "Plastic Picture Frame",
+    "Description": "Hang a picture in it, open it to change the picture",
+    "Type": "frame",
+    "Category": "decor",
+    "CellPixels": 32,
+    "Textures": {
+      "Active": {
+        "All": "framePlasticEdge",
+        "Up": "framePlastic1x1",
+        "Down": "framePlasticEdge"
+      }
+    },
+    "Frame": {
+      "Width": 1,
+      "Height": 1,
+      "Pictures": [
+        "picture_retro_cactus",
+        "picture_ringed_planet",
+        "picture_synth_sun",
+        "picture_mystic_eye",
+        "picture_retro_rocket",
+        "picture_astronaut_portrait",
+        "picture_ore_asteroid",
+        "picture_bauhaus",
+        "picture_floppy_disk",
+        "picture_black_hole",
+        "picture_cassette_tape",
+        "picture_moon_ladder"
+      ]
+    },
+    "Sounds": {
+      "Place": "blockPlaceLight"
+    }
+  },
+  {
+    "ID": "picture_frame_plastic_2x1",
+    "Name": "Wide Plastic Picture Frame",
+    "Description": "Hang a picture in it, open it to change the picture",
+    "Type": "frame",
+    "Category": "decor",
+    "CellPixels": 32,
+    "Textures": {
+      "Active": {
+        "All": "framePlasticEdge",
+        "Up": "framePlastic2x1",
+        "Down": "framePlasticEdge"
+      }
+    },
+    "Frame": {
+      "Width": 2,
+      "Height": 1,
+      "Pictures": [
+        "picture_asteroid_belt",
+        "picture_synth_highway",
+        "picture_space_station",
+        "picture_retro_terminal",
+        "picture_parasite_hunt",
+        "picture_ship_flyby",
+        "picture_twin_moons",
+        "picture_cosmic_wave",
+        "picture_paper_boat",
+        "picture_snail_city"
+      ]
+    },
+    "Sounds": {
+      "Place": "blockPlaceLight"
+    }
+  },
+  {
+    "ID": "picture_frame_plastic_2x2",
+    "Name": "Large Plastic Picture Frame",
+    "Description": "Hang a picture in it, open it to change the picture",
+    "Type": "frame",
+    "Category": "decor",
+    "CellPixels": 32,
+    "Textures": {
+      "Active": {
+        "All": "framePlasticEdge",
+        "Up": "framePlastic2x2",
+        "Down": "framePlasticEdge"
+      }
+    },
+    "Frame": {
+      "Width": 2,
+      "Height": 2,
+      "Pictures": [
+        "picture_spiral_galaxy",
+        "picture_composition",
+        "picture_lone_beacon",
+        "picture_hypnosis",
+        "picture_star_whale",
+        "picture_moon_phases",
+        "picture_lone_door",
+        "picture_book_tree"
+      ]
+    },
+    "Sounds": {
+      "Place": "blockPlaceLight"
+    }
   }
 ]

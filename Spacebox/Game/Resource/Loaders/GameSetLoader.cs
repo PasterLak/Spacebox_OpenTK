@@ -471,6 +471,10 @@ public static class GameSetLoader
                             var spawnerData = itemElement.Deserialize<MobSpawnerItemJSON>();
                             if (spawnerData != null) registeredItem = RegisterMobSpawnerItem(spawnerData, idString);
                             break;
+                        case "picture":
+                            var pictureData = itemElement.Deserialize<PictureItemJSON>();
+                            if (pictureData != null) registeredItem = RegisterPictureItem(pictureData, idString);
+                            break;
                         case "equipment":
                             var equipmentData = itemElement.Deserialize<EquipmentJSON>();
                             if (equipmentData != null) registeredItem = RegisterEquipmentItem(equipmentData, idString);
@@ -983,6 +987,24 @@ public static class GameSetLoader
         GameAssetsRegister.RegisterItem(spawnerItem, data.Sprite);
 
         return spawnerItem;
+    }
+
+    private static Item RegisterPictureItem(PictureItemJSON data, string id)
+    {
+        string picturePath = ResolveGameSetFile(data.Picture);
+        if (picturePath.Length == 0)
+            Debug.Error($"[GameSetLoader] Picture file <{data.Picture}> for item <{data.Name}> was not found");
+
+        var picture = new PictureItem(data.Name, data.ModelDepth)
+        {
+            Id_string = id,
+            Category = data.Category,
+            PicturePath = picturePath,
+            Width = PictureFrameBlockData.ClampSize(data.Width),
+            Height = PictureFrameBlockData.ClampSize(data.Height)
+        };
+        GameAssetsRegister.RegisterItem(picture, data.Sprite);
+        return picture;
     }
 
     private static Item RegisterEquipmentItem(EquipmentJSON data, string id)

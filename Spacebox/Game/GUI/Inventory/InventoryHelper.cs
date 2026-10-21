@@ -398,9 +398,20 @@ namespace Spacebox.Game.GUI
 
                 ImGui.BeginTooltip();
                 ImGui.Text($"{slot.Item.Name}\n{text}");
+                if (slot.Item is IItemTooltipImage tooltipImage) DrawTooltipImage(tooltipImage);
                 if (slot.Hint != "") ImGui.TextDisabled(slot.Hint);
                 ImGui.EndTooltip();
             }
+        }
+
+        private static void DrawTooltipImage(IItemTooltipImage source)
+        {
+            var image = source.TooltipImage;
+            if (image == null) return;
+
+            float height = SlotSize * 2.5f;
+            float width = height * Math.Clamp(source.TooltipImageAspect, 0.25f, 4f);
+            ImGui.Image(image.Handle, new Vector2(width, height));
         }
 
         public static void SortStorageButtons(float windowWidth, float padding, Storage storage)

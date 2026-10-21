@@ -160,6 +160,13 @@ namespace Spacebox.Game.Resource
                     blockData.BaseFrontDirection = Direction.Up;
                     blockData = new SignBlockData(blockData, blockJson.Sign);
                 }
+                else if (blockData.Type == "frame")
+                {
+                    blockData.Shape ??= PictureFrameGeometry.Shape;
+                    blockData.Size = new Vector3Byte(PictureFrameBlockData.ClampSize(blockJson.Frame?.Width ?? 1), 1, PictureFrameBlockData.ClampSize(blockJson.Frame?.Height ?? 1));
+                    blockData.BaseFrontDirection = Direction.Up;
+                    blockData = new PictureFrameBlockData(blockData, blockJson.Frame, GameSetLoader.ModInfo.ModId);
+                }
                 else if (blockData.Type == "oxygengenerator")
                 {
                     blockData = new OxygenGeneratorBlockData(blockData, blockJson.OxygenGenerator, GameSetLoader.ModInfo.ModId);

@@ -27,6 +27,7 @@ namespace Spacebox.Game.Resource
                 { "oxygengenerator", data => new OxygenGeneratorBlock(data) },
                 { "door", data => new DoorBlock(data) },
                 { "sign", data => new SignBlock(data) },
+                { "frame", data => new PictureFrameBlock(data) },
                 { "gravity", data => new GravityGeneratorBlock(data) },
                 { "claim", data => new ClaimBeaconBlock(data) },
                 { "dnareconstructor", data => new DnaReconstructorBlock(data) },
