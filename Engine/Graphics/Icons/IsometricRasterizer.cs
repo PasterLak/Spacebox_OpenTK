@@ -13,7 +13,9 @@ public static class IsometricRasterizer
 
     public static Vector3 Project(Vector3 p) => new Vector3(p.X + p.Z, (p.Z - p.X) * 0.5f - p.Y, -p.X + p.Y + p.Z);
 
-    public static Color4[,] Render(float[] vertices, uint[] indices, int size, IconSampler sample)
+    public const float FitMargin = 0.92f;
+
+    public static Color4[,] Render(float[] vertices, uint[] indices, int size, IconSampler sample, bool fitToSize = false)
     {
         var pixels = new Color4[size, size];
         if (vertices == null || indices == null || indices.Length < 3) return pixels;
@@ -32,7 +34,8 @@ public static class IsometricRasterizer
 
         var extent = max - min;
         float unitScale = size / 2f;
-        float scale = MathF.Min(unitScale, size / MathF.Max(extent.X, extent.Y * 1f));
+        float fitScale = size / MathF.Max(1e-5f, MathF.Max(extent.X, extent.Y));
+        float scale = fitToSize ? fitScale * FitMargin : MathF.Min(unitScale, fitScale);
         var offset = new Vector2(size, size) * 0.5f - (min + extent * 0.5f) * scale;
 
         var depth = new float[size, size];

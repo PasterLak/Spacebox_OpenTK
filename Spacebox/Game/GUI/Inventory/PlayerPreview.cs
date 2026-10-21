@@ -28,6 +28,7 @@ public sealed class PlayerPreview : IDisposable
 
     private RenderTexture _target;
     private OrbitViewCamera _camera;
+    private Node3D _tilt;
     private Node3D _figure;
     private TextureMaterial _skin;
     private ArmorRenderer _armor;
@@ -36,7 +37,7 @@ public sealed class PlayerPreview : IDisposable
     private string _skinColor;
     private Item _heldItem;
     private float _yaw = StartYaw;
-    private float _pitch = CameraPitch;
+    private float _pitch;
     private bool _visible;
 
     public static float NormalizeYaw(float yaw)
@@ -69,7 +70,7 @@ public sealed class PlayerPreview : IDisposable
         if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
         {
             _yaw = StartYaw;
-            _pitch = CameraPitch;
+            _pitch = 0f;
         }
 
         _visible = true;
@@ -82,7 +83,7 @@ public sealed class PlayerPreview : IDisposable
         _visible = false;
 
         _figure.Rotation = new Vector3(0f, _yaw, 0f);
-        _camera.SetAngles(0f, _pitch);
+        _tilt.Rotation = new Vector3(_pitch, 0f, 0f);
 
         int fog = Lighting.FogDensity;
         Lighting.FogDensity = 0;
@@ -104,6 +105,7 @@ public sealed class PlayerPreview : IDisposable
         _skybox?.Destroy();
         _skybox = null;
         _figure = null;
+        _tilt = null;
         _held = null;
         _armor = null;
         _skin = null;
@@ -130,7 +132,9 @@ public sealed class PlayerPreview : IDisposable
         _camera.DepthFar = 500f;
 
         _skin = new TextureMaterial(Astronaut.GetAstronautTexture(GameSessionSkin()));
-        _figure = new Node3D { Name = "PlayerPreview", Position = Origin };
+        _tilt = new Node3D { Name = "PlayerPreviewTilt", Position = Origin + FigureCenter };
+        _figure = new Node3D { Name = "PlayerPreview", Position = -FigureCenter };
+        _tilt.AddChild(_figure);
         _figure.AttachComponent(new ModelRendererComponent(new Model(Resources.Load<Mesh>(BodyModel), _skin)));
         _figure.AttachComponent(new ModelRendererComponent(new Model(Resources.Load<Mesh>(HelmetModel), _skin)));
         _figure.AttachComponent(new ModelRendererComponent(new Model(Resources.Load<Mesh>(TankModel), _skin)));
