@@ -1,6 +1,7 @@
 ﻿using Engine.Audio;
 using Engine;
 using Engine.Graphics;
+using Engine.Graphics.Transparency;
 using Engine.GUI;
 using Engine.InputPro;
 using Engine.Light;
@@ -37,6 +38,7 @@ namespace Engine
 
         static readonly Prof.Token T_VisualDebug = Prof.RegisterTimer("Visual Debug");
         static readonly Prof.Token T_SceneRender = Prof.RegisterTimer("Scene Render");
+        static readonly Prof.Token T_Transparent = Prof.RegisterTimer("Render.Transparent");
         static readonly Prof.Token T_LightSystemUpdate = Prof.RegisterTimer("Render.LightSystem");
         static readonly Prof.Token T_Render = Prof.RegisterTimer("Render.All");
         static readonly Prof.Token T_OnGUI = Prof.RegisterTimer("Render.OnGUI");
@@ -241,7 +243,18 @@ namespace Engine
             if (SceneManager.Current != null)
             {
                 using (Prof.Time(T_SceneRender))
-                    SceneManager.Render();
+                {
+                    TransparentQueue.BeginScope();
+                    try
+                    {
+                        SceneManager.Render();
+                    }
+                    finally
+                    {
+                        using (Prof.Time(T_Transparent))
+                            TransparentQueue.EndScope();
+                    }
+                }
 
                 WorldLines.Render();
 

@@ -1,10 +1,11 @@
 ﻿
 
+using Engine.Graphics.Transparency;
 using OpenTK.Mathematics;
 
 namespace Engine.Components
 {
-    public class ModelRendererComponent : Component, Engine.Light.IExtraLightTarget
+    public class ModelRendererComponent : Component, Engine.Light.IExtraLightTarget, ITransparentRenderable
     {
         public Vector3 Offset { get; set; } = new Vector3(0);
         public Model Model { get; set; }
@@ -24,6 +25,21 @@ namespace Engine.Components
         {
             if (Model == null || Model.Material == null || Camera.Main == null) return;
 
+            if (Model.Material.IsTransparent &&
+                TransparentQueue.TrySubmit(this, Owner.GetRenderModelMatrix().ExtractTranslation(), Model.Material.RenderQueue))
+                return;
+
+            Draw();
+        }
+
+        public void RenderTransparent()
+        {
+            if (Model == null || Model.Material == null || Camera.Main == null) return;
+            Draw();
+        }
+
+        private void Draw()
+        {
             var matrix = Owner.GetRenderModelMatrix();
             if (Offset != Vector3.Zero)
             {

@@ -98,22 +98,25 @@ namespace Engine
 
             _count = 0;
 
-            GLState.DepthTest(false);
-            GLState.DepthMask(false);
-
             Material.Apply(Matrix4.Identity);
             Material.Shader.SetMatrix4("view", cam.GetViewMatrix(), false);
             Material.Shader.SetMatrix4("projection", cam.GetProjectionMatrix(), false);
+            GLState.DepthMask(false);
 
+        }
+
+        public static Vector3 ToRenderPosition(Particle p, Matrix4 systemModel, SimulationSpace space)
+        {
+            return space == SimulationSpace.Local
+                ? Vector3.TransformPosition(p.Position, systemModel)
+                : RenderSpace.ToRender(p.Position);
         }
 
         public void Draw(Particle p, Matrix4 systemModel, SimulationSpace space)
         {
             if (_count >= _maxParticles) return;
 
-            Vector3 worldPos = space == SimulationSpace.Local
-                ? Vector3.TransformPosition(p.Position, systemModel)
-                : RenderSpace.ToRender(p.Position);
+            Vector3 worldPos = ToRenderPosition(p, systemModel, space);
 
             var m = Matrix4.CreateScale(p.Size) * Matrix4.CreateTranslation(worldPos);
             var c = p.Color;

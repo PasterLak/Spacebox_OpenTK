@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using Engine.Graphics.Transparency;
+using OpenTK.Mathematics;
 
 namespace Engine
 {
@@ -8,7 +9,7 @@ namespace Engine
         World
     }
 
-    public class ParticleSystem : Node3D
+    public class ParticleSystem : Node3D, ITransparentRenderable
     {
         public static bool GloballyEnabled { get; set; } = true;
 
@@ -56,6 +57,8 @@ namespace Engine
         private float _time;
         public SimulationSpace Space = SimulationSpace.World;
         public bool UseManually = false;
+        public bool SortByDistance = true;
+        private readonly ParticleDepthSorter _sorter = new();
         public int ParticlesCount => _active.Count;
         private readonly ParticleRenderer _renderer;
 
@@ -176,10 +179,49 @@ namespace Engine
         {
             if (!Enabled || !GloballyEnabled) return;
             base.Render();
+            if (_active.Count == 0 || _renderer.Material == null) return;
+
             var model = Space == SimulationSpace.Local ? GetRenderModelMatrix() : Matrix4.Identity;
+            if (_renderer.Material.IsTransparent &&
+                TransparentQueue.TrySubmit(this, GetRenderCenter(model), _renderer.Material.RenderQueue))
+                return;
+
+            DrawParticles(model);
+        }
+
+        public void RenderTransparent()
+        {
+            if (!Enabled || !GloballyEnabled || _active.Count == 0) return;
+            DrawParticles(Space == SimulationSpace.Local ? GetRenderModelMatrix() : Matrix4.Identity);
+        }
+
+        private Vector3 GetRenderCenter(Matrix4 model)
+        {
+            Vector3 sum = Vector3.Zero;
+            for (int i = 0; i < _active.Count; i++)
+                sum += ParticleRenderer.ToRenderPosition(_active[i], model, Space);
+            return sum / _active.Count;
+        }
+
+        private void DrawParticles(Matrix4 model)
+        {
+            var cam = Camera.Main;
             _renderer.Begin();
-            foreach (var p in _active)
-                _renderer.Draw(p, model, Space);
+            if (SortByDistance && cam != null && _active.Count > 1)
+            {
+                Vector3 view = RenderSpace.ToRender(cam.PositionWorld);
+                _sorter.Begin(_active.Count);
+                for (int i = 0; i < _active.Count; i++)
+                    _sorter.Set(i, Vector3.DistanceSquared(ParticleRenderer.ToRenderPosition(_active[i], model, Space), view));
+                _sorter.Sort();
+                for (int i = 0; i < _sorter.Count; i++)
+                    _renderer.Draw(_active[_sorter[i]], model, Space);
+            }
+            else
+            {
+                foreach (var p in _active)
+                    _renderer.Draw(p, model, Space);
+            }
             _renderer.End();
         }
 

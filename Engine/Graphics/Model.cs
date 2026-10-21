@@ -1,10 +1,11 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Engine.Physics;
+using Engine.Graphics.Transparency;
 
 namespace Engine
 {
-    public class Model : Collision
+    public class Model : Collision, ITransparentRenderable
     {
         public Mesh Mesh { get; private set; }
         public MaterialBase Material { get; private set; }
@@ -67,10 +68,24 @@ namespace Engine
         public void Render()
         {
             base.Render();
+            if (Camera.Main == null) return;
+
+            if (Material.IsTransparent &&
+                TransparentQueue.TrySubmit(this, GetRenderModelMatrix().ExtractTranslation(), Material.RenderQueue))
+                return;
+
+            Draw();
+        }
+
+        public void RenderTransparent()
+        {
+            if (Camera.Main == null) return;
+            Draw();
+        }
+
+        private void Draw()
+        {
             var cam = Camera.Main;
-
-            if (cam == null) return;
-
             Material.Apply(this);
 
             //Material.Shader.SetMatrix4("model", GetModelMatrix());

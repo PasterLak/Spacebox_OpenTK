@@ -114,6 +114,8 @@ Engine
 - audio: AudioClip.GetSpatialBuffer downmixes stereo clips to mono for 3D sources; ListenerVelocity guards the listener velocity (zero frame time, NaN, teleports, capped below the speed of sound); SoundLoader no longer frees the pinned buffer twice on errors
 - SsaoEffect (Engine.PostProcessing.Ssao): half or full resolution AO, bilateral blur, depth-aware upsample; G-buffer normals are view space with an AO mask (MaterialBase.WritesGBuffer, ViewModelProjection)
 - post processing presents with the passthrough shader (the vignette was applied twice); Shader.SetVector3Array
+- transparent pass (Graphics/Transparency/TransparentQueue): Fade/Transparent models and particle systems are drawn after the opaque scene, sorted back to front
+- particles: depth tested (no longer drawn through walls), sorted back to front inside each system (ParticleSystem.SortByDistance)
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.2

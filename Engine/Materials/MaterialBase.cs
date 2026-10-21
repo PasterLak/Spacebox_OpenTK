@@ -17,6 +17,7 @@ namespace Engine
         public RenderFace RenderFace { get; set; } = RenderFace.Both;
         public int RenderQueue { get; set; } = 1000;
         public bool WritesGBuffer { get; set; }
+        public bool IsTransparent => RenderMode == RenderMode.Fade || RenderMode == RenderMode.Transparent;
 
         public bool TransposeMatrices = true;
 

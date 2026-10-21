@@ -1,5 +1,6 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Engine.Graphics.Transparency;
 
 namespace Engine.Graphics;
 
@@ -51,7 +52,15 @@ public sealed class RenderTexture : IDisposable
             GLState.DepthTest(true);
             GL.ClearColor(ClearColor.R, ClearColor.G, ClearColor.B, ClearColor.A);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            draw();
+            TransparentQueue.BeginScope();
+            try
+            {
+                draw();
+            }
+            finally
+            {
+                TransparentQueue.EndScope();
+            }
         }
         finally
         {
