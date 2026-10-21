@@ -5,4 +5,5 @@ public class DnaReconstructorJSON
     public string DnaItem { get; set; } = "dna_ui";
     public int Power { get; set; } = 50;
     public float ReconstructionTime { get; set; } = 5f;
+    public DnaReconstructorSoundsJSON Sounds { get; set; } = new DnaReconstructorSoundsJSON();
 }

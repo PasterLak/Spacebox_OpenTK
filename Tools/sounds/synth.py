@@ -126,13 +126,14 @@ def soft_clip(x, drive):
     return np.tanh(x * drive) / np.tanh(drive)
 
 
-def save(name, x, peak):
+def save(name, x, peak, fade_edges=True):
     x = x - np.mean(x)
     m = np.max(np.abs(x))
     if m > 0: x = x / m * peak
-    fade = samples(0.006)
-    x[:fade] *= np.linspace(0, 1, fade)
-    x[-fade:] *= np.linspace(1, 0, fade)
+    if fade_edges:
+        fade = samples(0.006)
+        x[:fade] *= np.linspace(0, 1, fade)
+        x[-fade:] *= np.linspace(1, 0, fade)
     data = (np.clip(x, -1, 1) * 32767).astype(np.int16)
     with wave.open(os.path.join(_out_dir, name + ".wav"), "wb") as w:
         w.setnchannels(1)

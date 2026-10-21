@@ -125,7 +125,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 ## Respawn
 
-- `PlayerRespawner` (`Game/Player/Respawn/`): spawn point respawn (preload + `WorldLoadingScreen`, then `SafeSpawnFinder`) or DNA reconstruction (`DnaReconstructorRegistry.TryFindNearestReady`, `DnaReconstructionScreen`). `DeathScreen` asks it via `ReconstructionBlocker` / `OnReconstruct`.
+- `PlayerRespawner` (`Game/Player/Respawn/`): spawn point respawn (preload + `WorldLoadingScreen`, then `SafeSpawnFinder`) or DNA reconstruction (`DnaReconstructorRegistry.TryFindNearestReady`, `DnaReconstructionScreen`). `DeathScreen` asks it via `ReconstructionBlocker` / `OnReconstruct`. Reconstruction sounds: `DnaReconstructionAudio` (local loop + stage cues, an `IReconstructionEffects` driven by `DnaReconstructionScreen`) and `DnaReconstructorSounds` (spawn sound at the block; other players get it from `AstronautNetwork` owner → server → `ClientsExceptOwner`); Default sounds from `Tools/sounds/dna_reconstructor_sounds.py`.
 
 ## Explosions
 

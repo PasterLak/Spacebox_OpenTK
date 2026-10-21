@@ -4,6 +4,8 @@ using OpenTK.Mathematics;
 using Spacebox.Game;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
+using Spacebox.Game.Player.Respawn;
+using Spacebox.Game.Generation.Blocks;
 
 namespace Spacebox.Network.Players;
 
@@ -118,6 +120,7 @@ public sealed class AstronautNetwork : NetworkTransform
                 localAstronaut.OnDeath += OnLocalDeath;
                 localAstronaut.OnRevived += OnLocalRevived;
                 localAstronaut.FallDamage.Impact += OnLocalFallImpact;
+                localAstronaut.Respawner.Reconstructed += OnLocalReconstructed;
                 localAstronaut.ItemUsed += OnLocalItemUsed;
             }
             SetHeldItem(Spacebox.Game.GUI.PanelUI.CurrentSlot());
@@ -164,6 +167,7 @@ public sealed class AstronautNetwork : NetworkTransform
                 localAstronaut.OnDeath -= OnLocalDeath;
                 localAstronaut.OnRevived -= OnLocalRevived;
                 localAstronaut.FallDamage.Impact -= OnLocalFallImpact;
+                localAstronaut.Respawner.Reconstructed -= OnLocalReconstructed;
                 localAstronaut.ItemUsed -= OnLocalItemUsed;
             }
         }
@@ -283,6 +287,25 @@ public sealed class AstronautNetwork : NetworkTransform
 
         _fallSound ??= new FallImpactSound(true);
         _fallSound.Play(damage, astronaut.Position);
+    }
+
+    private void OnLocalReconstructed(DnaReconstructorBlock reconstructor)
+    {
+        if (reconstructor.Entity == null) return;
+        SendRpc(nameof(ReportReconstructed), reconstructor.Entity.EntityID, reconstructor.LocalCell);
+    }
+
+    [Rpc(RpcTarget.Server)]
+    private void ReportReconstructed(long entityId, Vector3i cell)
+    {
+        if (!DnaReconstructorRegistry.TryFind(entityId, cell, out _)) return;
+        SendRpc(nameof(Reconstructed), entityId, cell);
+    }
+
+    [Rpc(RpcTarget.ClientsExceptOwner, Delivery = DeliveryMode.ReliableUnordered)]
+    private void Reconstructed(long entityId, Vector3i cell)
+    {
+        if (DnaReconstructorRegistry.TryFind(entityId, cell, out var reconstructor)) DnaReconstructorSounds.PlaySpawn(reconstructor);
     }
 
     public static AstronautNetwork Find(Astronaut astronaut)

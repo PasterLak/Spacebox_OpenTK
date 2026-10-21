@@ -5,6 +5,7 @@ public class DnaReconstructorBlockData : BlockData, IBlockTooltip
     public string DnaItemId { get; }
     public ushort Power { get; }
     public float ReconstructionTime { get; }
+    public DnaReconstructorSoundsJSON Sounds { get; }
 
     private Item _dnaItem;
 
@@ -16,6 +17,7 @@ public class DnaReconstructorBlockData : BlockData, IBlockTooltip
         DnaItemId = dnaItem.Contains(':') ? dnaItem : GameSetLoader.CombineId(modId, dnaItem);
         Power = (ushort)Math.Clamp(settings.Power, 0, 8000);
         ReconstructionTime = Math.Clamp(settings.ReconstructionTime, 1f, 30f);
+        Sounds = settings.Sounds ?? new DnaReconstructorSoundsJSON();
     }
 
     public void AppendTooltip(System.Text.StringBuilder text)

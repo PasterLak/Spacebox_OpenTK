@@ -49,6 +49,24 @@ public static class DnaReconstructorRegistry
         return false;
     }
 
+    public static bool TryFind(long entityId, Vector3i localCell, out DnaReconstructorBlock found)
+    {
+        lock (_lock)
+        {
+            for (int i = 0; i < _blocks.Count; i++)
+            {
+                var block = _blocks[i];
+                if (block.Entity == null || block.Entity.EntityID != entityId || block.LocalCell != localCell) continue;
+
+                found = block;
+                return true;
+            }
+        }
+
+        found = null;
+        return false;
+    }
+
     public static bool TryFindNearestReady(Vector3 worldPosition, out DnaReconstructorBlock nearest)
     {
         nearest = null;

@@ -9,6 +9,8 @@ public sealed class PlayerRespawner
 {
     private readonly LocalAstronaut _player;
 
+    public event Action<DnaReconstructorBlock> Reconstructed;
+
     public PlayerRespawner(LocalAstronaut player)
     {
         _player = player;
@@ -58,7 +60,9 @@ public sealed class PlayerRespawner
         {
             _player.Revive(position);
             _player.SetRotation(rotation);
-        });
+            DnaReconstructorSounds.PlaySpawn(reconstructor);
+            Reconstructed?.Invoke(reconstructor);
+        }, new DnaReconstructionAudio(reconstructor.Data.Sounds));
     }
 
     private void MoveToFreeSpace()

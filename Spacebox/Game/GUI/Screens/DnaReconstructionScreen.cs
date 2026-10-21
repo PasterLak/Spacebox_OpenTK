@@ -1,6 +1,7 @@
 using System.Numerics;
 using Engine;
 using ImGuiNET;
+using Spacebox.Game.Player.Respawn;
 
 namespace Spacebox.Game.GUI;
 
@@ -74,15 +75,19 @@ public static class DnaReconstructionScreen
     private static float _duration = 5f;
     private static float _elapsed;
     private static Action _onComplete;
+    private static IReconstructionEffects _effects;
 
     public static bool IsActive { get; private set; }
 
-    public static void Play(float duration, Action onComplete)
+    public static void Play(float duration, Action onComplete, IReconstructionEffects effects = null)
     {
+        _effects?.End();
         _duration = MathF.Max(0.1f, duration);
         _elapsed = 0f;
         _onComplete = onComplete;
+        _effects = effects;
         IsActive = true;
+        _effects?.Begin();
         Input.HideCursor();
     }
 
@@ -91,6 +96,8 @@ public static class DnaReconstructionScreen
         if (!IsActive) return;
 
         _elapsed += Time.Delta;
+        float t = Math.Clamp(_elapsed / _duration, 0f, 1f);
+        _effects?.Update(t, StepIndex(t));
         if (_elapsed < _duration) return;
 
         var onComplete = _onComplete;
@@ -123,6 +130,8 @@ public static class DnaReconstructionScreen
 
     public static void Reset()
     {
+        _effects?.End();
+        _effects = null;
         IsActive = false;
         _onComplete = null;
         _elapsed = 0f;
@@ -271,13 +280,19 @@ public static class DnaReconstructionScreen
         }
     }
 
-    private static void DrawTexts(ImDrawListPtr drawList, Vector2 size, float t, float alpha)
+    private static int StepIndex(float t)
     {
-        string step = Steps[0].Text;
+        int index = 0;
         for (int i = 0; i < Steps.Length; i++)
         {
-            if (t >= Steps[i].Start) step = Steps[i].Text;
+            if (t >= Steps[i].Start) index = i;
         }
+        return index;
+    }
+
+    private static void DrawTexts(ImDrawListPtr drawList, Vector2 size, float t, float alpha)
+    {
+        string step = Steps[StepIndex(t)].Text;
 
         uint textColor = Color(TextColor, alpha);
         float lineHeight = ImGui.GetTextLineHeight();
