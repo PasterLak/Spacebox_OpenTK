@@ -29,6 +29,23 @@ namespace Engine
             }
         }
 
+        private Vector3 _upReference = Vector3.UnitY;
+        public Vector3 UpReference
+        {
+            get => _upReference;
+            set
+            {
+                _upReference = value.LengthSquared > 1e-6f ? value.Normalized() : Vector3.UnitY;
+                _geometryNeedsUpdate = true;
+            }
+        }
+
+        public static Vector3 ChooseUp(Vector3 direction, Vector3 upReference)
+        {
+            if (Math.Abs(Vector3.Dot(direction, upReference)) <= 0.99f) return upReference;
+            return Math.Abs(Vector3.Dot(direction, Vector3.UnitY)) > 0.99f ? Vector3.UnitZ : Vector3.UnitY;
+        }
+
         private float[] _vertices;
         private uint[] _indices;
         private bool _geometryNeedsUpdate = true;
@@ -100,7 +117,7 @@ namespace Engine
                 if (length < 1e-6f) continue;
 
                 Vector3 dir = segment.Normalized();
-                Vector3 upCandidate = Math.Abs(Vector3.Dot(dir, Vector3.UnitY)) > 0.99f ? Vector3.UnitZ : Vector3.UnitY;
+                Vector3 upCandidate = ChooseUp(dir, _upReference);
                 Vector3 side1 = Vector3.Cross(dir, upCandidate).Normalized();
                 Vector3 side2 = Vector3.Cross(dir, side1).Normalized();
                 float r = _thickness * 0.5f;

@@ -27,6 +27,7 @@ namespace Spacebox.Game.Player
 
         private GUI.Tag _nameTag;
         private bool _isAliveVisual = true;
+        public bool IsAliveVisual => _isAliveVisual;
 
         public string PlayerName { get; }
 

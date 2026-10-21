@@ -91,7 +91,7 @@ namespace Spacebox.Game
         {
             Model model = ItemModelGenerator.GenerateWorldModel(
                 CreateItemTexture(spriteName),
-               1 / 32f * item.ModelDepth
+               ItemMuzzle.WorldDepth(item)
                 );
             GameAssets.ItemWorldModels.Add(item.Id, model);
         }
@@ -106,11 +106,12 @@ namespace Spacebox.Game
             ItemModel model = ItemModelGenerator.GenerateItemModel(
                 texture,
                 emission,
-                0.004f,
-                item.ModelDepth / 500f * 2f,
+                ItemMuzzle.FirstPersonPixelSize,
+                ItemMuzzle.FirstPersonDepth(item),
                 isAnimated,
                 true);
             GameAssets.ItemModels.Add(item.Id, model);
+            if (item is WeaponItem && ItemMuzzle.TryFromPixels(texture.GetPixels(), out var muzzle)) GameAssets.ItemMuzzles[item.Id] = muzzle;
         }
 
         private static Texture2D CreateItemTexture(string spriteName)

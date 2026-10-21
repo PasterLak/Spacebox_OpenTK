@@ -24,6 +24,7 @@ public sealed class AstronautNetwork : NetworkTransform
     private readonly NetworkVariable<short> _flashlightItem;
     private readonly NetworkVariable<bool> _hasOxygen;
     private readonly NetworkVariable<bool> _isUsingItem;
+    private readonly NetworkVariable<bool> _isBoosting;
     private readonly NetworkVariable<short>[] _equipment;
     private static readonly EquipmentSlotType[] EquipmentSlots = Enum.GetValues<EquipmentSlotType>();
 
@@ -44,6 +45,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _flashlightItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
         _hasOxygen = CreateVariable(true, NetworkWritePermission.Owner);
         _isUsingItem = CreateVariable(false, NetworkWritePermission.Owner);
+        _isBoosting = CreateVariable(false, NetworkWritePermission.Owner);
         _equipment = new NetworkVariable<short>[EquipmentSlots.Length];
         for (int i = 0; i < _equipment.Length; i++) _equipment[i] = CreateVariable(NoItem, NetworkWritePermission.Owner);
     }
@@ -58,6 +60,7 @@ public sealed class AstronautNetwork : NetworkTransform
             _flashlightItem.Value = local.ActiveFlashlightItem?.Id ?? NoItem;
             _hasOxygen.Value = local.HasOxygen;
             _isUsingItem.Value = local.IsUsingItem;
+            _isBoosting.Value = local.IsBoosting && local.IsAlive;
             WriteEquipment(local);
         }
     }
@@ -92,6 +95,8 @@ public sealed class AstronautNetwork : NetworkTransform
         if (astronaut is RemoteAstronaut remote) remote.DrillDamaged += OnDrilledLocally;
         _hasOxygen.Changed += (_, value) => astronaut.HasOxygen = value;
         _isUsingItem.Changed += (_, value) => SetUsing(astronaut, value);
+        _isBoosting.Changed += (_, value) => astronaut.IsBoosting = value;
+        astronaut.IsBoosting = _isBoosting.Value;
         SetUsing(astronaut, _isUsingItem.Value);
         astronaut.HasOxygen = _hasOxygen.Value;
         for (int i = 0; i < _equipment.Length; i++)

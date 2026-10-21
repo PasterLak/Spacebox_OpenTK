@@ -66,6 +66,7 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- crash when toggling the flashlight after leaving and re-entering a world (old flashlight key handler was never removed)
 - chat: older messages no longer pile up on the top line when the chat is full, long messages wrap
 - tpa: lands next to the surface of the nearest asteroid (or the next one if you are already at one), also unloaded asteroids, free spot, teleport effect and a message; ships are no longer targets
 - F4 visual debug: lines drawn camera-relative (no jitter far from the origin), translucent colours work and no longer break SSAO, boxes of rotated entities and their chunks follow the rotation, world origin axes drawn, view axes gizmo at the crosshair instead of the clipped 3D one
@@ -119,6 +120,8 @@ Engine
 |------------------------------------------------------------------------------------------------------------------------------
 
 Game
+- jetpack flames behind players who boost with Shift in zero gravity, visible to other players
+- bullets start at the weapon muzzle (local and remote players, hit detection unchanged) and their shape follows the shooter instead of the world axes
 - flashlight glare: another player shining a flashlight in your face brightens the screen and puts a lens flare on the helmet glass (distance, cone and view angle, blocked by walls; Flashlight Glare option)
 - flashlight beams: other players' flashlights show a 3D light cone with drifting dust (Flashlight Beams option)
 - server option FriendlyMobs (serverconfig.json, default false): mobs never attack first, a hurt mob fights back for 30 s

@@ -191,6 +191,25 @@ namespace Spacebox.Game
             Mesh.Render();
         }
 
+        public bool TryGetMuzzleWorld(Vector3 lowLocal, Vector3 highLocal, out Vector3 world)
+        {
+            world = Vector3.Zero;
+            var camera = Camera.Main;
+            if (camera == null || !EnableRender) return false;
+
+            var low = Vector3.TransformPosition(lowLocal, model);
+            var high = Vector3.TransformPosition(highLocal, model);
+
+            if (UseMainCamera)
+            {
+                world = RenderSpace.ToWorld(ItemMuzzle.PickForward(low, high, RenderSpace.ToRender(camera.Position), camera.Front));
+                return true;
+            }
+
+            var view = low.Z <= high.Z ? low : high;
+            return ViewModelPoint.TryToWorld(view, itemCamera.GetProjectionMatrix(), camera.Position, camera.Front, camera.Right, camera.Up, camera.FOV, camera.AspectRatio, out world);
+        }
+
         private static Matrix4? GetViewToRender()
         {
             var camera = Camera.Main;

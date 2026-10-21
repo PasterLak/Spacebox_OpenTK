@@ -34,6 +34,7 @@ namespace Spacebox.Game
         public static Dictionary<short, Item> Items = new Dictionary<short, Item>();
         public static Dictionary<short, ItemModel> ItemModels = new Dictionary<short, ItemModel>();
         public static Dictionary<short, Model> ItemWorldModels = new Dictionary<short, Model>();
+        public static Dictionary<short, ItemMuzzle> ItemMuzzles = new Dictionary<short, ItemMuzzle>();
 
         public static Dictionary<short, Texture2D> ItemIcons = new Dictionary<short, Texture2D>();
         public static Dictionary<short, Texture2D> BlockDusts = new Dictionary<short, Texture2D>();
@@ -330,6 +331,7 @@ namespace Spacebox.Game
             ItemsStr.Clear();
             ItemModels.Clear();
             ItemWorldModels.Clear();
+            ItemMuzzles.Clear();
             ItemIcons.Clear();
             BlockDusts.Clear();
             ItemSounds.Clear();

@@ -326,12 +326,9 @@ namespace Spacebox.Game.GUI
 
         public static void SetFlashlight(LocalAstronaut ast)
         {
-            if (ast != null)
+            if (ast?.Flashlight != null && ItemModel?.Material != null)
             {
-                if (ItemModel != null)
-                {
-                    ItemModel.Material.SetFlashlight(ast.Flashlight);
-                }
+                ItemModel.Material.SetFlashlight(ast.Flashlight);
             }
         }
 

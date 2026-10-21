@@ -166,12 +166,21 @@ public class InteractionShoot : InteractionMode
             var shotDir = WeaponItem.CalculateSpreadCone(weapon, player.Front);
             var shotRay = new Ray(projectileSpawnPos, shotDir, 1f);
 
-            Spacebox.Network.Combat.CombatNetwork.FireLocal(player, weapon, projectileParameters, shotRay);
+            var projectile = Spacebox.Network.Combat.CombatNetwork.FireLocal(player, weapon, projectileParameters, shotRay);
+            projectile.SetRollReference(player.Up);
+            if (TryGetMuzzle(weapon, out var muzzle)) projectile.SetVisualOrigin(muzzle);
 
             ApplyRecoil(player, weapon, shotRay.Direction, projectileParameters);
 
             _time = 0;
         }
+    }
+
+    private bool TryGetMuzzle(WeaponItem weapon, out Vector3 world)
+    {
+        world = Vector3.Zero;
+        if (model == null || !GameAssets.ItemMuzzles.TryGetValue(weapon.Id, out var muzzle)) return false;
+        return model.TryGetMuzzleWorld(muzzle.FirstPersonPoint(muzzle.LowEnd, weapon), muzzle.FirstPersonPoint(muzzle.HighEnd, weapon), out world);
     }
 
     public static void ApplyRecoil(LocalAstronaut player, WeaponItem weapon, Vector3 shootDirection, ProjectileParameters projectileParams)

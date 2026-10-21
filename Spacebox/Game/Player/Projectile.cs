@@ -61,6 +61,34 @@ public class Projectile : Node3D
         return astronaut != null;
     }
 
+    public const float VisualBlendTime = 0.15f;
+    public const float MaxVisualOffset = 3f;
+
+    private Vector3 _visualOffset;
+    private float _visualBlend;
+
+    public static float VisualOffsetFactor(float blendLeft) => Math.Clamp(blendLeft / VisualBlendTime, 0f, 1f);
+
+    public void SetVisualOrigin(Vector3 muzzleWorld)
+    {
+        var offset = muzzleWorld - SpawnPosition;
+        if (offset.LengthSquared > MaxVisualOffset * MaxVisualOffset) return;
+
+        _visualOffset = offset;
+        _visualBlend = VisualBlendTime;
+        ApplyVisualOffset();
+    }
+
+    public void SetRollReference(Vector3 up)
+    {
+        lineRenderer.UpReference = up;
+    }
+
+    private void ApplyVisualOffset()
+    {
+        lineRenderer.Position = _visualOffset * VisualOffsetFactor(_visualBlend);
+    }
+
     public Projectile()
     {
         lineRenderer = new LineRenderer();
@@ -102,6 +130,10 @@ public class Projectile : Node3D
         Rotation = Vector3.Zero;
         Scale = Vector3.One;
         astronaut = owner;
+        _visualOffset = Vector3.Zero;
+        _visualBlend = 0f;
+        lineRenderer.Position = Vector3.Zero;
+        lineRenderer.UpReference = Vector3.UnitY;
 
         SetLineRenderer();
         SetSounds();
@@ -177,6 +209,10 @@ public class Projectile : Node3D
 
         base.Update();
         Step(Time.Delta);
+
+        if (_visualBlend <= 0f) return;
+        _visualBlend -= Time.Delta;
+        ApplyVisualOffset();
     }
 
     public void FastForward(float seconds)

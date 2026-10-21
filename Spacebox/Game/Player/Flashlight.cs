@@ -11,6 +11,7 @@ namespace Spacebox.Game.Player
     {
         private AudioSource audio;
         private Engine.InputPro.InputAction action;
+        private Action _toggle;
 
         public Flashlight()
         {
@@ -27,8 +28,9 @@ namespace Spacebox.Game.Player
 
         public void AddToggleToManager(LocalAstronaut localAstronaut)
         {
+            RemoveToggleFromManager();
             action = Input.GetAction("flashlight");
-            action.Subscribe(InputEventType.Pressed, () =>
+            _toggle = () =>
             {
                 if (localAstronaut.IsAlive == false) return;
                 if (!Enabled && !localAstronaut.CanUseFlashlight) return;
@@ -39,7 +41,14 @@ namespace Spacebox.Game.Player
                 localAstronaut.PlayerStatistics.FlashlightToggles++;
                 audio.Play();
                 Enabled = !Enabled;
-            });
+            };
+            action?.Subscribe(InputEventType.Pressed, _toggle);
+        }
+
+        public void RemoveToggleFromManager()
+        {
+            if (action != null && _toggle != null) action.Unsubscribe(InputEventType.Pressed, _toggle);
+            _toggle = null;
         }
 
         public void Apply(FlashlightSettings settings)
@@ -58,6 +67,7 @@ namespace Spacebox.Game.Player
 
         public override void Destroy()
         {
+            RemoveToggleFromManager();
             base.Destroy();
         }
     }

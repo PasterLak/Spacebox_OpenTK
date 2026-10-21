@@ -123,6 +123,7 @@ public class MovementMode : GameModeBase
     private void StopSpeedUp(LocalAstronaut player)
     {
         player.InertiaController.SetMode(false);
+        player.IsBoosting = false;
         if (speedUpPower <= 0f && !flySpeedUpAudio.IsPlaying) return;
 
         speedUpPower = 0f;
@@ -235,6 +236,7 @@ public class MovementMode : GameModeBase
         }
 
         player.InertiaController.SetMode(isRunning);
+        player.IsBoosting = isRunning;
 
         if (isRunning && GetGameMode() == GameMode.Survival) player.PowerBar.Use();
 

@@ -106,6 +106,7 @@ public static class CombatNetwork
 
         var projectile = World.Instance.ProjectilesPool.Take();
         projectile.Initialize(new Ray(message.Origin, direction, 1f), ref parameters, null, sender, true, rewind);
+        ApplyShooterVisuals(projectile, sender);
         projectile.FastForward(latency);
         ProjectileImpactEffects.Attach(projectile);
 
@@ -144,11 +145,20 @@ public static class CombatNetwork
 
         var projectile = World.Instance.ProjectilesPool.Take();
         projectile.Initialize(new Ray(message.Origin, message.Direction, 1f), ref parameters, null, message.ShooterPeer, false, 0f);
+        ApplyShooterVisuals(projectile, message.ShooterPeer);
         projectile.FastForward(message.Age + network.LatencyToServer);
         ProjectileImpactEffects.Attach(projectile);
 
         _sounds.PlayShot(weapon, message.Origin);
         PlayShotKick(message.ShooterPeer);
+    }
+
+    private static void ApplyShooterVisuals(Projectile projectile, int shooterPeer)
+    {
+        if (PlayerHitboxes.FindPlayer(shooterPeer) is not RemoteAstronaut shooter) return;
+
+        projectile.SetRollReference(shooter.Up);
+        if (shooter.HeldItemVisual != null && shooter.HeldItemVisual.TryGetMuzzleWorld(out var muzzle)) projectile.SetVisualOrigin(muzzle);
     }
 
     private static void PlayShotKick(int shooterPeer)

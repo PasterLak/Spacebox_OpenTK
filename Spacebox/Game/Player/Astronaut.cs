@@ -15,6 +15,7 @@ namespace Spacebox.Game.Player
         protected ModelRendererComponent AstTank;
 
         public bool HasOxygen { get; set; } = true;
+        public bool IsBoosting { get; set; }
         public Armor.ArmorRenderer ArmorVisual { get; private set; }
         public Flashlight Flashlight { get; private set; }
         public override bool DrawsDebugGizmo => false;
