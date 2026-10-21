@@ -24,12 +24,14 @@ public sealed class WorldUpgrader
     private readonly string _backupDirectory;
     private readonly Func<DateTime> _clock;
     private readonly List<IWorldUpgradeStep> _path = new List<IWorldUpgradeStep>();
+    private readonly WorldFolderRestorer _restorer;
 
-    public WorldUpgrader(WorldUpgradeRegistry registry, string backupDirectory, Func<DateTime> clock = null)
+    public WorldUpgrader(WorldUpgradeRegistry registry, string backupDirectory, Func<DateTime> clock = null, WorldFolderRestorer restorer = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _backupDirectory = backupDirectory;
         _clock = clock ?? (() => DateTime.Now);
+        _restorer = restorer ?? new WorldFolderRestorer();
     }
 
     public WorldUpgradeStatus Check(string fromVersion, string toVersion, out string error)
@@ -95,7 +97,7 @@ public sealed class WorldUpgrader
             catch (Exception ex)
             {
                 info.GameVersion = from;
-                string restoreError = Restore(backup, worldFolder);
+                string restoreError = _restorer.Restore(backup, worldFolder);
                 string message = $"Upgrade {step.Description} failed: {ex.Message}" + (restoreError == null ? "" : $". Restoring the backup failed: {restoreError}");
                 return Fail(WorldUpgradeStatus.Failed, from, targetVersion, message, backup, context.Log);
             }
@@ -135,29 +137,8 @@ public sealed class WorldUpgrader
 
         string name = $"{Path.GetFileName(Path.GetFullPath(worldFolder).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))}_{version}_{_clock():yyyyMMdd_HHmmss}.zip";
         string path = Path.Combine(directory, name);
-        File.WriteAllBytes(path, DirectoryArchive.Pack(new[] { new ArchiveFolder(worldFolder, "world") }));
+        File.WriteAllBytes(path, DirectoryArchive.Pack(new[] { new ArchiveFolder(worldFolder, WorldFolderRestorer.ArchiveRoot) }));
         return path;
-    }
-
-    private static string Restore(string backup, string worldFolder)
-    {
-        if (backup == null || !File.Exists(backup)) return backup == null ? null : "the backup file is missing";
-
-        try
-        {
-            string temp = worldFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + "_restore";
-            if (Directory.Exists(temp)) Directory.Delete(temp, true);
-            DirectoryArchive.Extract(File.ReadAllBytes(backup), temp);
-
-            Directory.Delete(worldFolder, true);
-            Directory.Move(Path.Combine(temp, "world"), worldFolder);
-            Directory.Delete(temp, true);
-            return null;
-        }
-        catch (Exception ex)
-        {
-            return ex.Message;
-        }
     }
 
     private static WorldUpgradeResult Fail(WorldUpgradeStatus status, string from, string to, string error, string backup, IReadOnlyList<string> log)

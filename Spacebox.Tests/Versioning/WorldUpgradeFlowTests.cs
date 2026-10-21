@@ -107,6 +107,52 @@ public class WorldUpgradeFlowTests : IDisposable
         Assert.Contains("broken step", result.Error);
         Assert.Equal("0.1.5", info.GameVersion);
         Assert.Equal(before, WorldInspector.Snapshot(folder));
+        Assert.Equal(new[] { "World", WorldUpgrader.BackupFolderName }, WorldsFolderEntries());
+    }
+
+    [Fact]
+    public void FailingRestoreMove_KeepsTheCurrentWorldFolder()
+    {
+        string folder = Build(w => w.Version("0.1.5")
+            .Chunk(new[] { "default:old_rock" }, new[] { "default:old_power" })
+            .Player("default:old_power"));
+        string target = Path.GetFullPath(folder).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var restorer = new WorldFolderRestorer((source, destination) =>
+        {
+            if (Path.GetFullPath(destination) == target && Path.GetFileName(source) == WorldFolderRestorer.ArchiveRoot) throw new IOException("move failed");
+            Directory.Move(source, destination);
+        });
+        var registry = new WorldUpgradeRegistry("0.1.5");
+        registry.Register(new ExampleStep());
+        registry.Register(new BrokenNbtStep());
+        var upgrader = new WorldUpgrader(registry, Path.Combine(_root, "Worlds", WorldUpgrader.BackupFolderName), null, restorer);
+
+        var result = upgrader.Upgrade(new WorldInfo { Name = "W", GameVersion = "0.1.5" }, folder, "0.1.7");
+
+        Assert.Equal(WorldUpgradeStatus.Failed, result.Status);
+        Assert.Contains("Restoring the backup failed: move failed", result.Error);
+        Assert.Equal(new[] { "default:medium_rock" }, WorldInspector.BlockPalettes(folder));
+        Assert.True(File.Exists(result.BackupPath));
+        Assert.Equal(new[] { "World", WorldUpgrader.BackupFolderName }, WorldsFolderEntries());
+    }
+
+    [Fact]
+    public void Restore_WithMissingBackup_LeavesTheWorldUntouched()
+    {
+        string folder = Build(w => w.Version("0.1.5").Chunk(new[] { "default:light_rock" }));
+        var before = WorldInspector.Snapshot(folder);
+
+        string error = new WorldFolderRestorer().Restore(Path.Combine(_root, "missing.zip"), folder);
+
+        Assert.Equal("the backup file is missing", error);
+        Assert.Equal(before, WorldInspector.Snapshot(folder));
+    }
+
+    private string[] WorldsFolderEntries()
+    {
+        var entries = Directory.GetFileSystemEntries(Path.Combine(_root, "Worlds")).Select(Path.GetFileName).ToArray();
+        Array.Sort(entries, StringComparer.Ordinal);
+        return entries;
     }
 
     [Fact]
