@@ -69,6 +69,14 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- block damage and repairs are saved (also for asteroid chunks); damaged and repaired chunks are marked as changed
+- multi-cell blocks that cannot be restored on load drop their items and the block instead of losing them
+- restoring a world backup after a failed upgrade no longer deletes the world folder if the move fails
+- reopening a furnace/crusher window no longer plays the crafted sound twice
+- multiplayer: drop requests are limited (stack size, 24 m from the player, rate, no NaN); container use needs the player within 12-16 m and deposits are rate limited; block placement, repairs and ship consoles need the player within 16 m
+- multiplayer: gifts are tracked by the server (only the receiver can confirm, no refund on a silent timeout); one transfer at a time per player, entity requests are queued per player, sector requests and spawner mobs are capped
+- multiplayer: logins are locked for 5 minutes after 5 wrong passwords per name or IP; a pending login no longer blocks the name for the real player
+- multiplayer: the server rejects impossible player movement (over 60 m/s outside creative/spectator, with grace after spawn, respawn and server teleports) and puts the player back; a variables message with a rejected value is only forwarded up to the accepted part
 - multiplayer: area erase/fill only for players in creative mode (checked by the server); tp x y z from a client goes through the server's admin check, tplocal is not available on servers
 - SSAO no longer darkens particles and dropped items: particles clear the AO mask where they cover the scene
 - the game starts without sound instead of crashing when OpenAL is missing (Linux without libopenal1)
@@ -117,6 +125,7 @@ Fixes
 - multiplayer: partial block damage (drilling, projectiles) is synced, players drilling one block add up
 - a block item is refunded when its placement fails locally or the server rejects it
 Engine
+- blend function changes go through the GLState cache (GLState.InvalidateBlendFunc after ImGui); LOD jobs use a pooled block snapshot; NetworkVariable.OwnerWriteValidator, NetworkTransform.ValidateOwnerState, PeerRateLimiter
 - CanvasUI: Godot-like retained UI (Node2D, Control, anchors, containers, themes, style boxes, TTF atlas fonts, batched renderer, virtual resolution, mouse input and tooltips); UiShowcaseScene (--ui-showcase) with three game interface variants
 - Node3D.Destroy detaches every component (every second one was skipped)
 - Engine.Web: dependency-free HTTP server and router; MainThread.Run; Debug.MessageLogged
