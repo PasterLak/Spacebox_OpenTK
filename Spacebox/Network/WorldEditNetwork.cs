@@ -52,6 +52,8 @@ public static class WorldEditNetwork
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
         if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
 
+        if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell)) return;
+
         var block = chunk.Blocks[index.X, index.Y, index.Z];
         if (block == null || block.IsAir || block.Id != message.BlockId) return;
 
@@ -216,6 +218,12 @@ public static class WorldEditNetwork
         }
 
         short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
+        if (!message.IsRemoval && previousId != 0)
+        {
+            SendCorrection(sender, entity, message.Cell);
+            network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            return;
+        }
 
         Apply(message);
         if (known && isBeacon) Spacebox.Game.Protection.ClaimPlacement.AssignOwner(entity, message.Cell, senderName);

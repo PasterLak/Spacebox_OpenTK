@@ -117,6 +117,14 @@ public sealed class NetReader
     public Vector3i ReadVector3i() => new Vector3i(ReadInt(), ReadInt(), ReadInt());
     public Quaternion ReadQuaternion() => new Quaternion(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
 
+    public int ReadCount(int minBytesPerElement = 1)
+    {
+        int count = ReadInt();
+        if (count < 0 || count > Remaining / Math.Max(1, minBytesPerElement))
+            throw new InvalidOperationException($"[NetReader] Invalid element count {count} with {Remaining} bytes remaining");
+        return count;
+    }
+
     public byte[] ReadBytes()
     {
         int length = ReadInt();
@@ -136,7 +144,7 @@ public sealed class NetReader
 
     private void Require(int count)
     {
-        if (count < 0 || _position + count > _end)
+        if (count < 0 || count > _end - _position)
             throw new InvalidOperationException($"[NetReader] Tried to read {count} bytes with {_end - _position} remaining");
     }
 }

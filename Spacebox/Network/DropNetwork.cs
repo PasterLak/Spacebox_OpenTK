@@ -115,6 +115,7 @@ public sealed class DropNetwork : IDropReplicator
         Vector3? claimer = PlayerRegistry.TryGet(sender, out var player) && player.PlayerObject?.Owner != null
             ? player.PlayerObject.Owner.Position
             : null;
+        if (claimer == null && sender != network.LocalPeerId) return;
 
         if (!drops.TryClaim(message.NetId, claimer, MaxPickupDistance, out var item, out int quantity, out var position)) return;
 

@@ -10,6 +10,7 @@ public sealed class NetMessageRegistry
     }
 
     private readonly Dictionary<uint, Handler> _handlers = new Dictionary<uint, Handler>();
+    private readonly HashSet<uint> _openMessages = new HashSet<uint>();
 
     public static uint GetId<T>() where T : INetMessage => StableHash.Compute(typeof(T).FullName);
 
@@ -27,6 +28,13 @@ public sealed class NetMessageRegistry
         };
     }
 
+    public void AllowBeforeAdmission<T>() where T : INetMessage
+    {
+        _openMessages.Add(GetId<T>());
+    }
+
+    public bool IsAllowedBeforeAdmission(uint id) => _openMessages.Contains(id);
+
     public void Unregister<T>() where T : INetMessage
     {
         _handlers.Remove(GetId<T>());
@@ -35,6 +43,7 @@ public sealed class NetMessageRegistry
     public void Clear()
     {
         _handlers.Clear();
+        _openMessages.Clear();
     }
 
     public void Write<T>(NetWriter writer, T message) where T : INetMessage
@@ -43,9 +52,10 @@ public sealed class NetMessageRegistry
         message.Serialize(writer);
     }
 
-    public bool Dispatch(int peer, NetReader reader)
+    public bool Dispatch(int peer, NetReader reader, bool admitted = true)
     {
         uint id = reader.ReadUInt();
+        if (!admitted && !_openMessages.Contains(id)) return false;
         if (!_handlers.TryGetValue(id, out var handler))
         {
             Debug.Warning($"[Network] Received unknown message id {id} from peer {peer}");

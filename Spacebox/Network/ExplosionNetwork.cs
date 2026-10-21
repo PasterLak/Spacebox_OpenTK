@@ -33,7 +33,7 @@ public struct ExplosionMessage : INetMessage
         EntityId = reader.ReadLong();
         Cell = reader.ReadVector3i();
         BombBlockId = reader.ReadShort();
-        int count = reader.ReadInt();
+        int count = reader.ReadCount(12);
         Cells = new List<Vector3i>(count);
         for (int i = 0; i < count; i++)
             Cells.Add(Cell + new Vector3i(reader.ReadSByte(), reader.ReadSByte(), reader.ReadSByte()));

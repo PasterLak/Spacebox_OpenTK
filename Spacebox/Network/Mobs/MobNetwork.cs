@@ -12,6 +12,8 @@ public sealed class MobNetwork : NetworkTransform, IMobLink
     private const int MaxDrillDamage = 20;
     private const float MaxPushSpeed = 10f;
 
+    private readonly Combat.DrillDamageBudget _drillBudget = new Combat.DrillDamageBudget();
+
     private readonly NetworkVariable<byte> _action;
 
     public bool IsReplica => !IsServer;
@@ -84,13 +86,15 @@ public sealed class MobNetwork : NetworkTransform, IMobLink
     [Rpc(RpcTarget.Server, RequireOwnership = false)]
     private void DrillDamage(int damage)
     {
-        if (Owner is Mob mob) mob.ApplyDamage(Math.Clamp(damage, 0, MaxDrillDamage));
+        if (Owner is not Mob mob) return;
+        int allowed = _drillBudget.Consume(RpcContext.SenderPeer, mob.Position, Math.Clamp(damage, 0, MaxDrillDamage));
+        if (allowed > 0) mob.ApplyDamage(allowed);
     }
 
     [Rpc(RpcTarget.Server, RequireOwnership = false, Delivery = DeliveryMode.Unreliable)]
     private void PushRequest(Vector3 normal, float targetSpeed)
     {
-        if (Owner is not Mob mob || normal.LengthSquared < 0.0001f) return;
+        if (Owner is not Mob mob || !Combat.DrillDamageBudget.IsFinite(normal) || !float.IsFinite(targetSpeed) || normal.LengthSquared < 0.0001f) return;
         mob.Push(normal.Normalized(), Math.Clamp(targetSpeed, 0f, MaxPushSpeed));
     }
 

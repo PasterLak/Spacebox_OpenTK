@@ -10,6 +10,8 @@ public sealed class SpacerNetwork : NetworkTransform, ISpacerLink
     private const int MaxDrillDamage = 20;
     private const float MaxPushSpeed = 10f;
 
+    private readonly Combat.DrillDamageBudget _drillBudget = new Combat.DrillDamageBudget();
+
     public bool IsReplica => !IsServer;
 
     public override void OnNetworkSpawn()
@@ -55,13 +57,15 @@ public sealed class SpacerNetwork : NetworkTransform, ISpacerLink
     [Rpc(RpcTarget.Server, RequireOwnership = false)]
     private void DrillDamage(int damage)
     {
-        if (Owner is Spacer spacer) spacer.ApplyDamage(Math.Clamp(damage, 0, MaxDrillDamage));
+        if (Owner is not Spacer spacer) return;
+        int allowed = _drillBudget.Consume(RpcContext.SenderPeer, spacer.Position, Math.Clamp(damage, 0, MaxDrillDamage));
+        if (allowed > 0) spacer.ApplyDamage(allowed);
     }
 
     [Rpc(RpcTarget.Server, RequireOwnership = false, Delivery = DeliveryMode.Unreliable)]
     private void PushRequest(Vector3 normal, float targetSpeed)
     {
-        if (Owner is not Spacer spacer || normal.LengthSquared < 0.0001f) return;
+        if (Owner is not Spacer spacer || !Combat.DrillDamageBudget.IsFinite(normal) || !float.IsFinite(targetSpeed) || normal.LengthSquared < 0.0001f) return;
         spacer.Push(normal.Normalized(), Math.Clamp(targetSpeed, 0f, MaxPushSpeed));
     }
 

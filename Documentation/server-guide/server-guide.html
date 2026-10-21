@@ -246,6 +246,7 @@
 <table>
   <tr><th>Problem</th><th>What to check</th></tr>
   <tr><td>Friends cannot join</td><td>UDP 7777 forwarded to the right LAN IP; firewall rule; same game version; not behind CGNAT (chapter 4)</td></tr>
+  <tr><td>A player cannot join: "The name …"</td><td>Names may have at most 32 characters and no <code>\ / : * ? " &lt; &gt; |</code>, and cannot end with a dot</td></tr>
   <tr><td>Dashboard does not open</td><td>TCP 7777 forwarded and allowed; you added <code>:7777</code> to the address; at home use the LAN IP</td></tr>
   <tr><td>"Your connection is not private"</td><td>HTTPS is not ready yet or you opened <code>https://</code> with an IP: use the DuckDNS name; check the log for certificate errors</td></tr>
   <tr><td>Certificate fails</td><td>The log line says why and what to check: DuckDNS/Cloudflare token, the name pointing to your public IP, TCP 80 forwarded (or <code>HttpsChallengePort</code>). <code>PublicAddress</code> must be public, not 192.168.x.x. It retries every hour; Let's Encrypt allows only a few failed attempts per hour, so test with <code>LetsEncryptStaging</code></td></tr>

@@ -334,8 +334,16 @@ public static class ShipNetwork
         ReleasePilot(sender);
         if (!message.Mount || !TryGetConsole(message.EntityId, message.ConsoleCell, out var mountEntity, out var console) || !console.IsPowered) return;
         if (ProtectionNetwork.BlocksPeerUse(sender, mountEntity)) return;
+        if (IsPiloted(message.EntityId, message.ConsoleCell)) return;
 
         _pilots[sender] = (message.EntityId, message.ConsoleCell);
+    }
+
+    private static bool IsPiloted(long entityId, Vector3i cell)
+    {
+        foreach (var pilot in _pilots.Values)
+            if (pilot.EntityId == entityId && pilot.Cell == cell) return true;
+        return false;
     }
 
     private static void OnPeerDisconnected(int peer, string reason)

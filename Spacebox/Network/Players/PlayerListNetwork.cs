@@ -35,7 +35,7 @@ public struct PlayerListMessage : INetMessage
 
     public void Deserialize(NetReader reader)
     {
-        int count = reader.ReadInt();
+        int count = reader.ReadCount(14);
         Players = new List<PlayerListEntry>(count);
         for (int i = 0; i < count; i++)
         {

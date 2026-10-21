@@ -38,11 +38,11 @@ public struct SectorManifestMessage : INetMessage
     {
         Sector = reader.ReadVector3i();
 
-        int suppressedCount = reader.ReadInt();
+        int suppressedCount = reader.ReadCount(8);
         Suppressed = new List<long>(suppressedCount);
         for (int i = 0; i < suppressedCount; i++) Suppressed.Add(reader.ReadLong());
 
-        int entityCount = reader.ReadInt();
+        int entityCount = reader.ReadCount(24);
         CustomEntities = new List<NotGeneratedEntity>(entityCount);
         for (int i = 0; i < entityCount; i++)
         {

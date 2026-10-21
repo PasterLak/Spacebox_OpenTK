@@ -30,6 +30,9 @@ public sealed class NetworkManager
     public NetTransferService Transfers { get; }
     public ServerQueryResponder Query { get; } = new ServerQueryResponder();
 
+    private readonly HashSet<int> _admitted = new HashSet<int>();
+
+    public bool RequireAdmission { get; set; }
     public bool IsActive => Mode != NetworkMode.None;
     public bool IsServer => Mode == NetworkMode.Offline || Mode == NetworkMode.Host || Mode == NetworkMode.DedicatedServer;
     public bool IsClient => Mode == NetworkMode.Offline || Mode == NetworkMode.Host || Mode == NetworkMode.Client;
@@ -134,6 +137,7 @@ public sealed class NetworkManager
         DestroyTransport();
         Spawner.Clear();
         _peers.Clear();
+        _admitted.Clear();
         Mode = NetworkMode.None;
         LocalPeerId = ServerPeerId;
         Stopped?.Invoke();
@@ -215,9 +219,16 @@ public sealed class NetworkManager
 
         foreach (var peer in _peers)
         {
-            if (peer != exceptPeer) _transport.Send(peer, _writer.Buffer, 0, _writer.Length, mode);
+            if (peer != exceptPeer && IsAdmitted(peer)) _transport.Send(peer, _writer.Buffer, 0, _writer.Length, mode);
         }
     }
+
+    public void AdmitPeer(int peer)
+    {
+        if (_peers.Contains(peer)) _admitted.Add(peer);
+    }
+
+    public bool IsAdmitted(int peer) => !RequireAdmission || !IsServer || peer == LocalPeerId || _admitted.Contains(peer);
 
     private void SetMode(NetworkMode mode)
     {
@@ -272,6 +283,7 @@ public sealed class NetworkManager
     private void OnPeerDisconnected(int peer, string reason)
     {
         _peers.Remove(peer);
+        _admitted.Remove(peer);
 
         if (IsServer)
         {
@@ -302,7 +314,7 @@ public sealed class NetworkManager
 
         try
         {
-            Messages.Dispatch(peer, _reader);
+            Messages.Dispatch(peer, _reader, IsAdmitted(peer));
         }
         catch (Exception ex)
         {

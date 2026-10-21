@@ -130,6 +130,7 @@ public static class CombatNetwork
         if (_lastShotTime.TryGetValue(sender, out float last) && now - last < interval) return false;
 
         var shooter = PlayerHitboxes.FindPlayer(sender);
+        if (shooter == null && sender != NetworkManager.Instance.LocalPeerId) return false;
         if (shooter != null && Vector3.DistanceSquared(shooter.Position, origin) > MaxOriginOffset * MaxOriginOffset) return false;
 
         _lastShotTime[sender] = now;

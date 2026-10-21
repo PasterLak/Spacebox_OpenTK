@@ -9,6 +9,10 @@ public sealed class ServerQueryResponder
     private readonly NetReader _reader = new NetReader();
     private byte[] _blob;
     private ulong _blobHash;
+    private readonly QueryRateLimiter _limiter = new QueryRateLimiter(MaxBlobSize + 16 * 1024, 32 * 1024);
+    private readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
+    private Action<IPEndPoint, byte[], int, int> _send;
+    private Action<IPEndPoint, byte[], int, int> _limitedSend;
 
     public Func<byte[]> InfoProvider { get; set; }
     public Func<byte[]> BlobProvider { get; set; }
@@ -27,6 +31,7 @@ public sealed class ServerQueryResponder
     {
         if (InfoProvider == null || send == null) return false;
         if (isBroadcast && !AnswerBroadcasts) return false;
+        send = Limited(send);
 
         try
         {
@@ -50,6 +55,19 @@ public sealed class ServerQueryResponder
             Debug.Warning($"[ServerQuery] Ignored malformed query from {sender}: {ex.Message}");
             return false;
         }
+    }
+
+    private Action<IPEndPoint, byte[], int, int> Limited(Action<IPEndPoint, byte[], int, int> send)
+    {
+        if (!ReferenceEquals(send, _send))
+        {
+            _send = send;
+            _limitedSend = (target, buffer, offset, count) =>
+            {
+                if (_limiter.TryConsume(target.Address, count, _clock.Elapsed.TotalSeconds)) _send(target, buffer, offset, count);
+            };
+        }
+        return _limitedSend;
     }
 
     private void SendInfo(IPEndPoint sender, int requestId, Action<IPEndPoint, byte[], int, int> send)

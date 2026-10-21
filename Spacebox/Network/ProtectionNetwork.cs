@@ -20,7 +20,7 @@ public struct ProtectionStateMessage : INetMessage
 
     public void Deserialize(NetReader reader)
     {
-        int count = reader.ReadInt();
+        int count = reader.ReadCount(8);
         EntityIds = new long[count];
         for (int i = 0; i < count; i++) EntityIds[i] = reader.ReadLong();
         CanEdit = reader.ReadBool();

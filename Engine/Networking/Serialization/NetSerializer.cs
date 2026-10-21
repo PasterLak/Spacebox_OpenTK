@@ -139,6 +139,7 @@ public static class NetSerializer
                 {
                     int length = r.ReadInt();
                     if (length < 0) return null;
+                    if (length > r.Remaining) throw new InvalidOperationException($"[NetSerializer] Invalid array length {length}");
 
                     var array = Array.CreateInstance(elementType, length);
                     for (int i = 0; i < length; i++) array.SetValue(element.Read(r), i);

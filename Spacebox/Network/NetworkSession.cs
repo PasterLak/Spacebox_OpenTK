@@ -45,6 +45,9 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Register<ClientReadyMessage>(OnClientReady);
         network.Messages.Register<PlayerDataMessage>(OnPlayerData);
         network.Messages.Register<AuthResponseMessage>(OnAuthResponse);
+        network.Messages.AllowBeforeAdmission<JoinRequestMessage>();
+        network.Messages.AllowBeforeAdmission<AuthResponseMessage>();
+        network.RequireAdmission = true;
         network.PeerDisconnected += OnPeerDisconnected;
         network.DisconnectedFromServer += OnDisconnectedFromServer;
 
@@ -252,6 +255,7 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Unregister<ClientReadyMessage>();
         network.Messages.Unregister<PlayerDataMessage>();
         network.Messages.Unregister<AuthResponseMessage>();
+        network.RequireAdmission = false;
 
         network.Shutdown("Server stopped");
         Discovery.ServerAdvertiser.Stop();
@@ -292,6 +296,7 @@ public sealed class NetworkSession : IDisposable
     {
         var network = NetworkManager.Instance;
         if (!network.IsServer || sender == network.LocalPeerId) return;
+        if (PlayerRegistry.TryGet(sender, out _)) return;
 
         string reason = ValidateJoin(sender, message);
         if (reason != null)
@@ -328,6 +333,7 @@ public sealed class NetworkSession : IDisposable
         var network = NetworkManager.Instance;
         string name = message.Name.Trim();
         PlayerRegistry.Add(new ConnectedPlayer { Peer = sender, Name = name, SkinColor = message.SkinColor });
+        network.AdmitPeer(sender);
 
         var info = World.WorldData.Info;
         network.Send(sender, new JoinAcceptedMessage
@@ -352,7 +358,8 @@ public sealed class NetworkSession : IDisposable
     private string ValidateJoin(int sender, JoinRequestMessage message)
     {
         if (message.GameVersion != Application.Version) return $"Version mismatch: server {Application.Version}, client {message.GameVersion}";
-        if (string.IsNullOrWhiteSpace(message.Name)) return "Invalid name";
+        string nameError = PlayerNameRules.Validate(message.Name);
+        if (nameError != null) return nameError;
         if (Moderation.ServerModeration.IsBanned(message.Name.Trim(), NetworkManager.Instance.GetPeerAddress(sender))) return Moderation.ServerModeration.BannedReason;
         if (string.Equals(message.Name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase) && GameSession.HasLocalPlayer) return "Name is already taken";
         if (PlayerRegistry.TryGetByName(message.Name.Trim(), out _)) return "Name is already taken";
