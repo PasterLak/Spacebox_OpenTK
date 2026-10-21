@@ -93,7 +93,11 @@ public sealed class NetTransferService
         byte[] data = null;
         string error = null;
 
-        if (string.IsNullOrEmpty(message.Name) || !_providers.TryGetValue(message.Name, out var provider))
+        if (HasActiveTransfer(sender))
+        {
+            error = "Another transfer is still running";
+        }
+        else if (string.IsNullOrEmpty(message.Name) || !_providers.TryGetValue(message.Name, out var provider))
         {
             error = $"Unknown transfer '{message.Name}'";
         }
@@ -119,6 +123,13 @@ public sealed class NetTransferService
         var transfer = new OutgoingTransfer { Peer = sender, RequestId = message.RequestId, Data = data };
         if (data.Length == 0) SendChunk(transfer);
         else _outgoing.Add(transfer);
+    }
+
+    private bool HasActiveTransfer(int peer)
+    {
+        for (int i = 0; i < _outgoing.Count; i++)
+            if (_outgoing[i].Peer == peer) return true;
+        return false;
     }
 
     private void OnChunk(int sender, TransferChunkMessage message)

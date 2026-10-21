@@ -28,10 +28,52 @@ public static class EntitySync
         });
     }
 
+    private const int MaxQueuedPerPeer = 256;
+    private const int MaxRequestsPerFrame = 16;
+
+    private static readonly Queue<(int Peer, EntityDataRequestMessage Message)> _queue = new Queue<(int, EntityDataRequestMessage)>();
+    private static readonly Dictionary<int, int> _queuedPerPeer = new Dictionary<int, int>();
+
+    public static void Update()
+    {
+        if (_queue.Count == 0) return;
+        if (!NetworkManager.Instance.IsServer)
+        {
+            Clear();
+            return;
+        }
+
+        for (int i = 0; i < MaxRequestsPerFrame && _queue.Count > 0; i++)
+        {
+            var (peer, message) = _queue.Dequeue();
+            if (_queuedPerPeer.TryGetValue(peer, out int count))
+            {
+                if (count <= 1) _queuedPerPeer.Remove(peer);
+                else _queuedPerPeer[peer] = count - 1;
+            }
+            if (NetworkManager.Instance.Peers.Contains(peer) || peer == NetworkManager.Instance.LocalPeerId) Answer(peer, message);
+        }
+    }
+
+    public static void Clear()
+    {
+        _queue.Clear();
+        _queuedPerPeer.Clear();
+    }
+
     private static void OnRequest(int sender, EntityDataRequestMessage message)
     {
+        if (!NetworkManager.Instance.IsServer) return;
+
+        _queuedPerPeer.TryGetValue(sender, out int queued);
+        if (queued >= MaxQueuedPerPeer) return;
+        _queuedPerPeer[sender] = queued + 1;
+        _queue.Enqueue((sender, message));
+    }
+
+    private static void Answer(int sender, EntityDataRequestMessage message)
+    {
         var network = NetworkManager.Instance;
-        if (!network.IsServer) return;
 
         byte[] payload = Array.Empty<byte>();
         try

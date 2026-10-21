@@ -85,7 +85,8 @@ public sealed class NetworkSession : IDisposable
         if (!access.RegistrationEnabled || World.WorldData == null) return null;
 
         var accounts = new Auth.AccountStore(Path.Combine(World.WorldData.WorldFolderPath, Auth.AccountStore.FileName));
-        return new Auth.ServerAuthService(accounts, (peer, challenge) => NetworkManager.Instance.Send(peer, challenge), RejectJoin, AcceptJoin);
+        return new Auth.ServerAuthService(accounts, (peer, challenge) => NetworkManager.Instance.Send(peer, challenge), RejectJoin, AcceptJoin,
+            peer => NetworkManager.Instance.GetPeerAddress(peer));
     }
 
     private static Discovery.ServerAdvertisement CreateAdvertisement()
@@ -163,8 +164,10 @@ public sealed class NetworkSession : IDisposable
         BlockStateNetwork.Update();
         TimeNetwork.Update();
         SectorNetwork.Update();
+        EntitySync.Update();
         PlayerListNetwork.Update();
         Players.ItemGiftNetwork.Update();
+        Players.AstronautNetwork.UpdateGifts();
         UpdateAutoSave();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
 
@@ -262,6 +265,8 @@ public sealed class NetworkSession : IDisposable
         Combat.CombatNetwork.Reset();
         WorldEditNetwork.Reset();
         Players.ItemGiftNetwork.Reset();
+        Players.AstronautNetwork.ClearGifts();
+        EntitySync.Clear();
         Spacebox.Network.Mobs.MobSpawnNetwork.Reset();
         Containers.ContainerNetwork.Reset();
         BlockStateNetwork.Clear();
@@ -363,7 +368,6 @@ public sealed class NetworkSession : IDisposable
         if (Moderation.ServerModeration.IsBanned(message.Name.Trim(), NetworkManager.Instance.GetPeerAddress(sender))) return Moderation.ServerModeration.BannedReason;
         if (string.Equals(message.Name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase) && GameSession.HasLocalPlayer) return "Name is already taken";
         if (PlayerRegistry.TryGetByName(message.Name.Trim(), out _)) return "Name is already taken";
-        if (_auth != null && _auth.IsPending(message.Name)) return "Name is already taken";
         if (!_access.IsAllowed(message.Name)) return "You are not on the whitelist of this server";
         return null;
     }
@@ -397,6 +401,7 @@ public sealed class NetworkSession : IDisposable
         var network = NetworkManager.Instance;
         network.Spawner.DespawnOwnedBy(peer);
         _auth?.Remove(peer);
+        Players.AstronautNetwork.ForgetGiftsOf(peer);
 
         if (!PlayerRegistry.Remove(peer, out var player)) return;
 

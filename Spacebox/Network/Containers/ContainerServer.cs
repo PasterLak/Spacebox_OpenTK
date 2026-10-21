@@ -9,6 +9,11 @@ namespace Spacebox.Network.Containers;
 public sealed class ContainerServer
 {
     private const float StateInterval = 0.25f;
+    private const float MaxOpenDistance = 12f;
+    private const float MaxChangeDistance = 16f;
+    private const int MaxDeltaAmount = 100000;
+
+    private readonly PeerRateLimiter _deposits = new PeerRateLimiter(4096, 1024);
 
     private sealed class Entry
     {
@@ -30,6 +35,7 @@ public sealed class ContainerServer
 
     public void Open(int peer, ContainerKey key)
     {
+        if (!IsInReach(peer, key, MaxOpenDistance)) return;
         if (!ContainerResolver.TryResolve(key, out var block)) return;
 
         if (!_entries.TryGetValue(key, out var entry) || entry.Block != block)
@@ -51,8 +57,29 @@ public sealed class ContainerServer
         if (entry.Viewers.Count == 0) Remove(key, entry);
     }
 
+    public static bool IsInReach(int peer, ContainerKey key, float distance)
+    {
+        if (peer == NetworkManager.Instance.LocalPeerId) return true;
+        var player = Combat.PlayerHitboxes.FindPlayer(peer);
+        if (player == null || !ContainerResolver.TryGetWorldPosition(key, out var position)) return false;
+        return OpenTK.Mathematics.Vector3.DistanceSquared(player.Position, position) <= distance * distance;
+    }
+
+    private static double AddedAmount(List<ItemAmount> deltas)
+    {
+        long added = 0;
+        if (deltas == null) return 0;
+        for (int i = 0; i < deltas.Count; i++)
+        {
+            if (deltas[i].Amount > MaxDeltaAmount || deltas[i].Amount < -MaxDeltaAmount) return double.PositiveInfinity;
+            if (deltas[i].Amount > 0) added += deltas[i].Amount;
+        }
+        return added;
+    }
+
     public void RemovePeer(int peer)
     {
+        _deposits.Forget(peer);
         _removeBuffer.Clear();
         foreach (var pair in _entries)
         {
@@ -68,7 +95,8 @@ public sealed class ContainerServer
         var denied = new List<ItemAmount>();
         var rejected = new List<ItemAmount>();
 
-        if (!_entries.TryGetValue(message.Key, out var entry) || !entry.Viewers.Contains(peer) || !IsStillValid(entry))
+        if (!_entries.TryGetValue(message.Key, out var entry) || !entry.Viewers.Contains(peer) || !IsStillValid(entry) ||
+            !IsInReach(peer, message.Key, MaxChangeDistance) || !_deposits.TryConsume(peer, Time.Total, AddedAmount(message.Deltas)))
         {
             RejectAll(message.Deltas, denied, rejected);
             NetworkManager.Instance.Send(peer, new ContainerChangeResultMessage { Key = message.Key, NewVersion = entry?.Version ?? 0, DeniedRemovals = denied, RejectedAdditions = rejected });

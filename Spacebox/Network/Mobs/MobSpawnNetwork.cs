@@ -44,9 +44,12 @@ public static class MobSpawnNetwork
         if (!network.IsServer || sender == network.LocalPeerId) return;
         if (!GameAssets.TryGetItemById(message.ItemId, out var item) || item is not MobSpawnerItem spawner) return;
         if (!IsRequestAllowed(sender, message.Position)) return;
+        if ((Spacebox.Game.Mobs.MobSystem.Instance?.Mobs.Count ?? 0) >= MaxMobsFromSpawners) return;
 
         Spawn(spawner, message.Position);
     }
+
+    private const int MaxMobsFromSpawners = 96;
 
     private static bool IsRequestAllowed(int sender, Vector3 position)
     {

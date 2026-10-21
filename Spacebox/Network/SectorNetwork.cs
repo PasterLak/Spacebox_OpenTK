@@ -78,7 +78,17 @@ public static class SectorNetwork
 
         var world = World.Instance;
         if (world != null && world.TryGetSector(message.Sector, out var sector)) SendManifest(sender, sector);
-        else _pending.Add(new PendingRequest(sender, message.Sector, Time.Total));
+        else if (CountPending(sender) < MaxPendingPerPeer) _pending.Add(new PendingRequest(sender, message.Sector, Time.Total));
+    }
+
+    private const int MaxPendingPerPeer = 64;
+
+    private static int CountPending(int peer)
+    {
+        int count = 0;
+        for (int i = 0; i < _pending.Count; i++)
+            if (_pending[i].Peer == peer) count++;
+        return count;
     }
 
     private static void SendManifest(int peer, Sector sector)

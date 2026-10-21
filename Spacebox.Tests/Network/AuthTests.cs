@@ -295,4 +295,40 @@ public class AuthTests : IDisposable
         Assert.Empty(config.Whitelist);
         Assert.False(config.RegistrationEnabled);
     }
+
+    [Fact]
+    public void Login_IsLockedAfterRepeatedFailuresAcrossConnections()
+    {
+        var server = new FakeServer(AccountsPath);
+        server.Service.Begin(1, Join("Alice"));
+        server.Service.OnResponse(1, Login(server.Last, "hunter22", true));
+        Assert.Single(server.Accepted);
+
+        for (int peer = 2; peer <= 3; peer++)
+        {
+            server.Service.Begin(peer, Join("Alice"));
+            for (int i = 0; i < ServerAuthService.MaxAttempts && server.Service.PendingCount > 0; i++)
+                server.Service.OnResponse(peer, Login(server.Last, "wrong", false));
+        }
+
+        server.Service.Begin(9, Join("alice"));
+        Assert.Equal(ServerAuthService.LockedOut, server.Rejections[^1]);
+        Assert.Equal(0, server.Service.PendingCount);
+    }
+
+    [Fact]
+    public void Login_PendingNameDoesNotBlockTheRealPlayer()
+    {
+        var server = new FakeServer(AccountsPath);
+        server.Service.Begin(1, Join("Alice"));
+        server.Service.OnResponse(1, Login(server.Last, "hunter22", true));
+
+        server.Service.Begin(2, Join("Alice"));
+        server.Service.Begin(3, Join("Alice"));
+        server.Service.OnResponse(3, Login(server.Last, "hunter22", false));
+
+        Assert.Equal(new[] { "Alice", "Alice" }, server.Accepted);
+        Assert.Contains(ServerAuthService.NameTaken, server.Rejections);
+        Assert.Equal(0, server.Service.PendingCount);
+    }
 }

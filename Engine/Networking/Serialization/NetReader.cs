@@ -19,6 +19,7 @@ public sealed class NetReader
     }
 
     public int Remaining => _end - _position;
+    public int Position => _position;
     public bool EndOfData => _position >= _end;
 
     public void Set(byte[] data, int offset, int length)

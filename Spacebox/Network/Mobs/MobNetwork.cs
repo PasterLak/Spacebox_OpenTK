@@ -94,7 +94,7 @@ public sealed class MobNetwork : NetworkTransform, IMobLink
     [Rpc(RpcTarget.Server, RequireOwnership = false, Delivery = DeliveryMode.Unreliable)]
     private void PushRequest(Vector3 normal, float targetSpeed)
     {
-        if (Owner is not Mob mob || !Combat.DrillDamageBudget.IsFinite(normal) || !float.IsFinite(targetSpeed) || normal.LengthSquared < 0.0001f) return;
+        if (Owner is not Mob mob || !NetValidation.IsFinite(normal) || !float.IsFinite(targetSpeed) || normal.LengthSquared < 0.0001f) return;
         mob.Push(normal.Normalized(), Math.Clamp(targetSpeed, 0f, MaxPushSpeed));
     }
 

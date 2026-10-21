@@ -13,6 +13,7 @@ public interface INetworkVariable
     DeliveryMode Delivery { get; }
     void Write(NetWriter writer);
     void Read(NetReader reader);
+    bool ReadFromOwner(NetReader reader);
     void ClearDirty();
 }
 
@@ -22,6 +23,8 @@ public sealed class NetworkVariable<T> : INetworkVariable
     private T _value;
 
     public event Action<T, T> Changed;
+    public event Action<T, T> OwnerWriteRejected;
+    public Func<T, T, bool> OwnerWriteValidator { get; set; }
 
     public bool IsDirty { get; private set; }
     public NetworkWritePermission Permission { get; }
@@ -65,6 +68,21 @@ public sealed class NetworkVariable<T> : INetworkVariable
         var old = _value;
         _value = NetSerializer.Read<T>(reader);
         if (!EqualityComparer<T>.Default.Equals(old, _value)) Changed?.Invoke(old, _value);
+    }
+
+    public bool ReadFromOwner(NetReader reader)
+    {
+        var incoming = NetSerializer.Read<T>(reader);
+        if (OwnerWriteValidator != null && !OwnerWriteValidator(_value, incoming))
+        {
+            OwnerWriteRejected?.Invoke(_value, incoming);
+            return false;
+        }
+
+        var old = _value;
+        _value = incoming;
+        if (!EqualityComparer<T>.Default.Equals(old, _value)) Changed?.Invoke(old, _value);
+        return true;
     }
 
     public void ClearDirty()

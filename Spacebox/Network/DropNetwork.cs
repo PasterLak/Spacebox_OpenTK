@@ -12,6 +12,10 @@ public sealed class DropNetwork : IDropReplicator
 {
     private const float MaxPickupDistance = 6f;
     private const int MaxRequestedQuantity = 10000;
+    private const float MaxSpawnDistance = 24f;
+    private const float MaxSpawnSpeed = 60f;
+
+    private static readonly PeerRateLimiter _spawnRequests = new PeerRateLimiter(60, 30);
 
     public bool IsAuthority => NetworkManager.Instance.IsServer;
 
@@ -99,11 +103,23 @@ public sealed class DropNetwork : IDropReplicator
     private static void OnSpawnRequest(int sender, DropSpawnRequestMessage message)
     {
         if (!NetworkManager.Instance.IsServer || !GameAssets.TryGetItemById(message.ItemId, out var item)) return;
-        if (message.Quantity <= 0 || message.Quantity > MaxRequestedQuantity) return;
+        if (!IsSpawnRequestAllowed(sender, item, message)) return;
 
-        float speed = message.Velocity.Length;
+        float speed = Math.Min(message.Velocity.Length, MaxSpawnSpeed);
         World.DropEffectManager?.DropItem(message.Position, message.Velocity, speed, item, message.Quantity,
-            message.PickupDelay, message.Deceleration, FindEntity(message.SourceEntityId));
+            Math.Clamp(message.PickupDelay, 0f, 10f), Math.Clamp(message.Deceleration, 0f, 100f), FindEntity(message.SourceEntityId));
+    }
+
+    private static bool IsSpawnRequestAllowed(int sender, Item item, DropSpawnRequestMessage message)
+    {
+        if (message.Quantity <= 0 || message.Quantity > Math.Min(MaxRequestedQuantity, Math.Max(1, (int)item.StackSize))) return false;
+        if (!NetValidation.IsFinite(message.Position) || !NetValidation.IsFinite(message.Velocity)) return false;
+        if (!float.IsFinite(message.PickupDelay) || !float.IsFinite(message.Deceleration)) return false;
+        if (sender == NetworkManager.Instance.LocalPeerId) return true;
+
+        var player = Combat.PlayerHitboxes.FindPlayer(sender);
+        if (player == null || Vector3.DistanceSquared(player.Position, message.Position) > MaxSpawnDistance * MaxSpawnDistance) return false;
+        return _spawnRequests.TryConsume(sender, Time.Total);
     }
 
     private static void OnPickupRequest(int sender, DropPickupRequestMessage message)

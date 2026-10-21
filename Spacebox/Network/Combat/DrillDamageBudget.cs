@@ -33,6 +33,4 @@ public sealed class DrillDamageBudget
         _budgets[attacker] = (budget.Start, budget.Damage + allowed);
         return allowed;
     }
-
-    public static bool IsFinite(Vector3 v) => float.IsFinite(v.X) && float.IsFinite(v.Y) && float.IsFinite(v.Z);
 }

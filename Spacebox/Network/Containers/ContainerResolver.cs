@@ -40,6 +40,23 @@ public static class ContainerResolver
         return block != null;
     }
 
+    public static bool TryGetWorldPosition(ContainerKey key, out Vector3 position)
+    {
+        position = Vector3.Zero;
+        if (key.IsObject)
+        {
+            if (key.EntityId < 0 || key.EntityId > uint.MaxValue) return false;
+            if (!NetworkManager.Instance.Spawner.TryGet((uint)key.EntityId, out var networkObject) || networkObject.Owner == null) return false;
+            position = networkObject.Owner.PositionWorld;
+            return true;
+        }
+
+        var world = World.Instance;
+        if (world == null || !world.TryFindEntity(key.EntityId, out var entity)) return false;
+        position = entity.EntityLocalToWorld(new Vector3(key.Cell.X + 0.5f, key.Cell.Y + 0.5f, key.Cell.Z + 0.5f));
+        return true;
+    }
+
     private static bool TryResolveObject(ContainerKey key, out IContainer container)
     {
         container = null;

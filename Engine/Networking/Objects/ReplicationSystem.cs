@@ -79,6 +79,7 @@ public sealed class ReplicationSystem
 
         _reader.Set(message.Payload, 0, message.Payload.Length);
         bool hasReliable = false;
+        int acceptedEnd = 0;
 
         try
         {
@@ -86,22 +87,30 @@ public sealed class ReplicationSystem
             {
                 var behaviour = networkObject.GetBehaviour(_reader.ReadByte());
                 byte index = _reader.ReadByte();
-                if (behaviour == null || index >= behaviour.Variables.Count) return;
+                if (behaviour == null || index >= behaviour.Variables.Count) break;
 
                 var variable = behaviour.Variables[index];
-                if (fromOwner && variable.Permission != NetworkWritePermission.Owner) return;
+                if (fromOwner && variable.Permission != NetworkWritePermission.Owner) break;
 
+                if (!fromOwner)
+                {
+                    variable.Read(_reader);
+                    continue;
+                }
+
+                if (!variable.ReadFromOwner(_reader)) break;
                 hasReliable |= IsReliable(variable.Delivery);
-                variable.Read(_reader);
+                acceptedEnd = _reader.Position;
             }
         }
         catch (Exception ex)
         {
             Debug.Error($"[Replication] Bad variables message for object {message.NetId} from peer {sender}: {ex.Message}");
-            return;
         }
 
-        if (fromOwner) _network.SendToClients(message, hasReliable ? DeliveryMode.Reliable : DeliveryMode.Sequenced, sender);
+        if (!fromOwner || acceptedEnd == 0) return;
+        if (acceptedEnd < message.Payload.Length) message.Payload = message.Payload.AsSpan(0, acceptedEnd).ToArray();
+        _network.SendToClients(message, hasReliable ? DeliveryMode.Reliable : DeliveryMode.Sequenced, sender);
     }
 
     private static bool IsReliable(DeliveryMode delivery)

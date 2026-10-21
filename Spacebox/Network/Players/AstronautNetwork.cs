@@ -48,6 +48,42 @@ public sealed class AstronautNetwork : NetworkTransform
         _isBoosting = CreateVariable(false, NetworkWritePermission.Owner);
         _equipment = new NetworkVariable<short>[EquipmentSlots.Length];
         for (int i = 0; i < _equipment.Length; i++) _equipment[i] = CreateVariable(NoItem, NetworkWritePermission.Owner);
+        _isAlive.Changed += (previous, alive) =>
+        {
+            if (alive && !previous) _movement.AllowJump(Time.Total, RespawnGraceSeconds);
+        };
+    }
+
+    private const double SpawnGraceSeconds = 10.0;
+    private const double RespawnGraceSeconds = 10.0;
+    private const double TeleportGraceSeconds = 3.0;
+    private const float CorrectionInterval = 1f;
+
+    private readonly MovementGuard _movement = new MovementGuard();
+    private float _lastCorrection = float.MinValue;
+
+    protected override bool ValidateOwnerState(TransformState previous, TransformState next)
+    {
+        if (!IsServer || IsOwner) return true;
+        if (PlayerGameModeService.Of(PlayerName) != GameMode.Survival)
+        {
+            _movement.AllowJump(Time.Total, TeleportGraceSeconds);
+        }
+        return _movement.Accept(next.Position, next.Time, Time.Total);
+    }
+
+    protected override void OnOwnerStateRejected(TransformState previous, TransformState next)
+    {
+        float now = Time.Total;
+        if (now - _lastCorrection < CorrectionInterval) return;
+        _lastCorrection = now;
+        SendRpc(nameof(CorrectPosition), _movement.LastPosition);
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void CorrectPosition(Vector3 position)
+    {
+        if (Owner is LocalAstronaut local) local.Teleport(position);
     }
 
     public override void OnUpdate()
@@ -68,6 +104,7 @@ public sealed class AstronautNetwork : NetworkTransform
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        _movement.AllowJump(Time.Total, SpawnGraceSeconds);
 
         if (Owner is not Astronaut astronaut) return;
 
@@ -278,6 +315,7 @@ public sealed class AstronautNetwork : NetworkTransform
 
     public void TeleportByServer(Vector3 position)
     {
+        _movement.AllowJump(Time.Total, TeleportGraceSeconds);
         SendRpc(nameof(ApplyServerTeleport), position);
     }
 
@@ -328,6 +366,31 @@ public sealed class AstronautNetwork : NetworkTransform
         Spacebox.Game.GUI.Chat.Write("The server teleported you", Color4.Orange);
     }
 
+    private static readonly GiftLedger _gifts = new GiftLedger();
+    private static readonly List<GiftLedger.Gift> _finishedGifts = new List<GiftLedger.Gift>();
+
+    public static void UpdateGifts()
+    {
+        if (!NetworkManager.Instance.IsServer || _gifts.Count == 0) return;
+
+        _finishedGifts.Clear();
+        _gifts.TakeExpired(Time.Total, _finishedGifts);
+        foreach (var gift in _finishedGifts)
+            Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, true, "");
+    }
+
+    public static void ForgetGiftsOf(int peer)
+    {
+        _finishedGifts.Clear();
+        _gifts.TakeForPeer(peer, _finishedGifts);
+        foreach (var gift in _finishedGifts)
+        {
+            if (gift.GiverPeer != peer) Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, false, "The player left");
+        }
+    }
+
+    public static void ClearGifts() => _gifts.Clear();
+
     public void RequestGift(short itemId, int requestId)
     {
         SendRpc(nameof(GiftRequested), itemId, requestId);
@@ -347,7 +410,8 @@ public sealed class AstronautNetwork : NetworkTransform
             return;
         }
 
-        SendRpc(nameof(ReceiveGift), itemId, requestId, giverPeer);
+        int giftId = _gifts.Begin(giverPeer, OwnerPeer, requestId, Time.Total + ItemGiftNetwork.Timeout);
+        SendRpc(nameof(ReceiveGift), itemId, giftId, giverPeer);
     }
 
     private string ValidateGift(int giverPeer, short itemId)
@@ -365,20 +429,21 @@ public sealed class AstronautNetwork : NetworkTransform
     }
 
     [Rpc(RpcTarget.Owner)]
-    private void ReceiveGift(short itemId, int requestId, int giverPeer)
+    private void ReceiveGift(short itemId, int giftId, int giverPeer)
     {
         var item = GetItem(itemId);
         string failure = null;
         bool success = Owner is LocalAstronaut local && ItemReceiver.TryReceive(local, item, out failure);
         if (success) Spacebox.Game.GUI.Chat.Write($"{Combat.CombatNetwork.GetPlayerName(giverPeer)} gave you {item.Name}", new Color4(0.6f, 1f, 0.6f, 1f));
 
-        SendRpc(nameof(ReportGiftResult), requestId, giverPeer, success, ItemGiftNetwork.Clamp(failure));
+        SendRpc(nameof(ReportGiftResult), giftId, success, ItemGiftNetwork.Clamp(failure));
     }
 
     [Rpc(RpcTarget.Server)]
-    private void ReportGiftResult(int requestId, int giverPeer, bool success, string failure)
+    private void ReportGiftResult(int giftId, bool success, string failure)
     {
-        Find(giverPeer)?.SendRpc(nameof(GiftResult), requestId, success, ItemGiftNetwork.Clamp(failure));
+        if (!_gifts.TryComplete(giftId, RpcContext.SenderPeer, out var gift)) return;
+        Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, success, ItemGiftNetwork.Clamp(failure));
     }
 
     [Rpc(RpcTarget.Owner)]

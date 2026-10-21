@@ -53,6 +53,7 @@ public static class WorldEditNetwork
         if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
 
         if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell)) return;
+        if (network.IsServer && !IsInReach(sender, entity, message.Cell)) return;
 
         var block = chunk.Blocks[index.X, index.Y, index.Z];
         if (block == null || block.IsAir || block.Id != message.BlockId) return;
@@ -218,7 +219,7 @@ public static class WorldEditNetwork
         }
 
         short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
-        if (!message.IsRemoval && previousId != 0)
+        if (!message.IsRemoval && known && (previousId != 0 || !IsInReach(sender, entity, message.Cell)))
         {
             SendCorrection(sender, entity, message.Cell);
             network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
@@ -232,6 +233,17 @@ public static class WorldEditNetwork
         if (known && NeedsCorrection(entity, message, previousId)) SendCorrection(sender, entity, message.Cell);
         if (!message.IsRemoval && (!known || GetBlockId(entity, message.Cell) != message.BlockId))
             network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+    }
+
+    public const float MaxEditDistance = 16f;
+
+    public static bool IsInReach(int peer, SpaceEntity entity, Vector3i cell)
+    {
+        if (peer == NetworkManager.Instance.LocalPeerId) return true;
+        var player = Combat.PlayerHitboxes.FindPlayer(peer);
+        if (player == null) return false;
+        var world = entity.EntityLocalToWorld(new OpenTK.Mathematics.Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f));
+        return OpenTK.Mathematics.Vector3.DistanceSquared(player.Position, world) <= MaxEditDistance * MaxEditDistance;
     }
 
     private static bool NeedsCorrection(SpaceEntity entity, BlockEditMessage message, short previousId)

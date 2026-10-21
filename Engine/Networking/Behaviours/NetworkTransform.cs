@@ -19,6 +19,14 @@ public class NetworkTransform : NetworkBehaviour
     {
         _state = CreateVariable(new TransformState(0f, Vector3.Zero, Quaternion.Identity), NetworkWritePermission.Owner, DeliveryMode.Sequenced);
         _state.Changed += OnStateChanged;
+        _state.OwnerWriteValidator = ValidateOwnerState;
+        _state.OwnerWriteRejected += OnOwnerStateRejected;
+    }
+
+    protected virtual bool ValidateOwnerState(TransformState previous, TransformState next) => true;
+
+    protected virtual void OnOwnerStateRejected(TransformState previous, TransformState next)
+    {
     }
 
     public Vector3 TargetPosition => _state.Value.Position;
