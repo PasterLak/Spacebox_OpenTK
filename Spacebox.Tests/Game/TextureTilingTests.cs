@@ -122,6 +122,7 @@ public class TextureTilingTests
             if (!block.TryGetProperty("Size", out var sizeJson)) continue;
             var size = new Vector3Byte(Axis(sizeJson, "x"), Axis(sizeJson, "y"), Axis(sizeJson, "z"));
             if (size.X == 1 && size.Y == 1 && size.Z == 1) continue;
+            if (block.TryGetProperty("TextureFit", out var fit) && fit.ValueKind == JsonValueKind.True) continue;
 
             var faceTextures = ReadFaceTextures(block, textureSizes);
             var faces = new List<FaceTexture>();
@@ -190,6 +191,15 @@ public class TextureTilingTests
             sizes.TryAdd(Path.GetFileNameWithoutExtension(file).ToLowerInvariant(), new Vector2i(width, height));
         }
         return sizes;
+    }
+
+    [Fact]
+    public void FitStretchesTheTextureOverTheWholeFace()
+    {
+        var face = new FaceTexture(32, 32, 2, 3);
+
+        Assert.Equal(new Vector2i(1, 1), TextureTiling.GetFaceTiles(face, 32, false));
+        Assert.Equal(new Vector2i(2, 3), TextureTiling.GetFaceTiles(face, 32, true));
     }
 
     private static string GameSetFolder()

@@ -59,6 +59,7 @@ New
 Small
 - options: leaving a category with Back after changing something asks Save / Don't Save / Cancel
 - equipment preview: dragging up and down tilts the view (up to 75 degrees), double click resets
+- blocks.json "TextureFit": true stretches each face texture over the whole face of a multi-cell block (no repeats); used by Big Window
 - ship consoles remember the keys you set last (per console type, saved on this computer) and use them for newly placed consoles
 - creative window: search field at the top, filters while typing by name, id, category or type (ignores case, separators and word order, finds parts of words; best matches first)
 - claim beacon: online players are suggested while typing a member name (click fills it in)
@@ -165,6 +166,7 @@ Fixes
 - GameSet editor: asteroid MinRadius/MaxRadius are limited to 2-256 (also clamped when loading)
 - ship console: the ship no longer turns by itself after sitting down or leaving binding mode (view faces the console forward); in multiplayer binding works while walking away from the console
 - creative search text is white
+- Big Window: the forward face used the plain window texture (blocks.json had "Front" instead of "Forward")
 - multiplayer: players riding or piloting a fast ship were pulled back by the server's speed check (camera jiggle); the check now adds the speed of the ship under the player
 - the block selector stayed visible while piloting a ship (using the console with a block in hand)
 - changed asteroids (after mining or explosions) froze loading and joining: their base generation and chunk decoding now run on worker threads; the server sends entity data to joining players in 3 ms slices per frame and compresses it in the background, so the host no longer lags while someone joins

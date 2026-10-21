@@ -69,6 +69,7 @@ namespace Spacebox.Game.Resource
 
         public Vector3Byte Size { get; set; } = new Vector3Byte(1);
         public int CellPixels { get; set; }
+        public bool TextureFit { get; set; }
         public BlockShape Shape { get; set; }
         public bool IsMultiblock => Size.X > 1 || Size.Y > 1 || Size.Z > 1;
         public int CellCount => Size.X * Size.Y * Size.Z;
@@ -108,6 +109,7 @@ namespace Spacebox.Game.Resource
             BaseFrontDirection = baseBlock.BaseFrontDirection;
             Size = baseBlock.Size;
             CellPixels = baseBlock.CellPixels;
+            TextureFit = baseBlock.TextureFit;
             Shape = baseBlock.Shape;
             AsItem = baseBlock.AsItem;
             Drop = baseBlock.Drop;
@@ -201,7 +203,8 @@ namespace Spacebox.Game.Resource
                 for (int i = 0; i < 6; i++)
                 {
                     var region = GameAssets.AtlasBlocks.GetRegion(state.ResolvedTextureNames[i]);
-                    state.Tiles[i] = region == null ? Vector2i.One : TextureTiling.GetTiles(region.Width, region.Height, cellPixels);
+                    MultiblockLayout.GetFaceCells(b.Size, (Direction)i, out int columns, out int rows);
+                    state.Tiles[i] = region == null ? Vector2i.One : TextureTiling.GetFaceTiles(new FaceTexture(region.Width, region.Height, columns, rows), cellPixels, b.TextureFit);
                 }
             }
         }

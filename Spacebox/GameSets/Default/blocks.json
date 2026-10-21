@@ -375,9 +375,12 @@
       "y": 0,
       "z": 1
     },
+    "TextureFit": true,
     "Textures": {
       "Active": {
-        "All": "window"
+        "All": "big_window",
+        "Forward": "big_window",
+        "Back": "big_window"
       }
     },
     "Sounds": {

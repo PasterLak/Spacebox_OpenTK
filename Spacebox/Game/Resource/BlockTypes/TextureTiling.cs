@@ -25,6 +25,11 @@ public static class TextureTiling
         return Math.Max(1, best);
     }
 
+    public static Vector2i GetFaceTiles(FaceTexture face, int cellPixels, bool fit)
+    {
+        return fit ? new Vector2i(Math.Max(1, face.Columns), Math.Max(1, face.Rows)) : GetTiles(face.Width, face.Height, cellPixels);
+    }
+
     public static Vector2i GetTiles(int width, int height, int cellPixels)
     {
         int pixels = Math.Max(1, cellPixels);
