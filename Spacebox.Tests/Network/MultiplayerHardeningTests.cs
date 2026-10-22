@@ -9,6 +9,8 @@ public class MultiplayerHardeningTests
     [InlineData("Vlad")]
     [InlineData("Влад_2")]
     [InlineData("space cadet")]
+    [InlineData("Connor")]
+    [InlineData("COM10")]
     public void PlayerName_AcceptsNormalNames(string name)
     {
         Assert.Null(PlayerNameRules.Validate(name));
@@ -23,6 +25,10 @@ public class MultiplayerHardeningTests
     [InlineData("name.")]
     [InlineData("tab\tname")]
     [InlineData("abcdefghijklmnopqrstuvwxyz0123456789")]
+    [InlineData("CON")]
+    [InlineData("nul")]
+    [InlineData("com1.x")]
+    [InlineData("Lpt9")]
     public void PlayerName_RejectsUnsafeNames(string name)
     {
         Assert.NotNull(PlayerNameRules.Validate(name));
