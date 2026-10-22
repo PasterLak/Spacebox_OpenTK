@@ -32,8 +32,10 @@ public sealed class FilesPanel : IEditorPanel
         {
             ImGui.SetNextItemWidth(-1f);
             ImGui.InputTextWithHint("##filter", "Search...", ref _filter, 128);
+            EditorWidgets.Tooltip("Show only files whose path contains this text.");
             ImGui.SetNextItemWidth(-ImGui.GetFrameHeight() * 2.5f);
             ImGui.InputTextWithHint("##new", "folder/new_file.json", ref _newFile, 128);
+            EditorWidgets.Tooltip("Path of a new JSON file inside the GameSet folder.");
             ImGui.SameLine();
             if (ImGui.Button("New") && IsValidName(_newFile) && !project.Exists(_newFile))
             {
@@ -77,6 +79,7 @@ public sealed class FilesPanel : IEditorPanel
         var file = context.Project.GetFile(_selected);
         EditorWidgets.Header(_selected + (file.IsDirty ? "  *" : ""));
         if (ImGui.Checkbox("Raw JSON", ref _rawMode) && _rawMode) _rawText = EditorJsonFile.Serialize(file.Root);
+        EditorWidgets.Tooltip("Edit the file as JSON text instead of the property list.");
 
         if (file.Error != null) ImGui.TextColored(new Vector4(1f, 0.4f, 0.3f, 1f), "Parse error: " + file.Error);
 

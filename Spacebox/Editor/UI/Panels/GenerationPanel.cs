@@ -76,20 +76,27 @@ public sealed class GenerationPanel : IEditorPanel, IDisposable
             ImGui.Text("World seed");
             ImGui.SetNextItemWidth(-1f);
             ImGui.InputText("##seed", ref _seed, 64);
+            EditorWidgets.Tooltip("World seed (text or number), the same as in Create World. The same seed always gives the same map.");
             ImGui.Text("Sector index");
             ImGui.SetNextItemWidth(-1f);
             ImGui.InputInt3("##sector", ref _sector[0]);
+            EditorWidgets.Tooltip("Which sector to show (x, y, z). One sector is 8192 blocks per side; sector 0,0,0 starts at the world center.");
 
             if (_map.IsBuilding) ImGui.BeginDisabled();
             ImGui.Checkbox("Old worlds (generator 1)", ref _legacyGenerator);
-            if (ImGui.Button("Build", new Vector2(-1f, 0f)))
+            EditorWidgets.Tooltip("Show the map as worlds made before 0.1.5 generate it (no distance rules, biome density or shapes).");
+            bool build = ImGui.Button("Build", new Vector2(-1f, 0f));
+            EditorWidgets.Tooltip("Generates the biome map and asteroid positions of the sector with the saved GameSet files.");
+            if (build)
                 _map.Build(_seed, new OpenTK.Mathematics.Vector3i(_sector[0], _sector[1], _sector[2]), _legacyGenerator ? Game.Generation.GeneratorVersions.Legacy : Game.Generation.GeneratorVersions.Current);
             if (_map.IsBuilding) ImGui.EndDisabled();
 
             ImGui.Text("Height slice");
             ImGui.SetNextItemWidth(-1f);
             ImGui.SliderInt("##slice", ref _slice, 0, Game.Generation.Structures.BiomesMap.Resolution - 1);
+            EditorWidgets.Tooltip("Height of the horizontal cut through the sector that the map shows (0 = bottom, 127 = top, 64 blocks per step).");
             ImGui.Checkbox("Distance rings", ref _showRings);
+            EditorWidgets.Tooltip("Rings show where biomes may start and end: each ring is a biome MinDistanceFromCenter or MaxDistanceFromCenter, measured from the world center (0,0,0) and cut by this height slice. The ring color is the biome color. Biomes without distance limits have no rings.");
             if (_map.HasMap) ImGui.TextDisabled($"{_map.AsteroidCount} asteroids in sector");
 
             ImGui.Separator();
@@ -114,8 +121,15 @@ public sealed class GenerationPanel : IEditorPanel, IDisposable
             var c = biome.DebugColor;
             ImGui.ColorButton("##" + biome.IdString, new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, 1f), ImGuiColorEditFlags.NoTooltip);
             ImGui.SameLine();
-            ImGui.Text($"{biome.Name}  ({biome.AsteroidChances.Count} asteroid types)");
+            ImGui.Text($"{biome.Name}  ({biome.AsteroidChances.Count} asteroid types, {DistanceText(biome.Distance)})");
+            EditorWidgets.Tooltip($"{biome.Description}\nAppears {DistanceText(biome.Distance)} from the world center, spawn chance {biome.SpawnChance}, density {biome.Density}%.");
         }
+    }
+
+    private static string DistanceText(Game.Generation.Structures.DistanceRange range)
+    {
+        if (range.IsUnlimited) return "everywhere";
+        return range.Max == 0 ? $"from {range.Min} blocks" : $"{range.Min}-{range.Max} blocks";
     }
 
     private void DrawGeneratorSettings(EditorContext context)

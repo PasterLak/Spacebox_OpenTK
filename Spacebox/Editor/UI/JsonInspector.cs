@@ -13,6 +13,7 @@ public sealed class JsonInspector
     private readonly Dictionary<string, string> _newKeys = new Dictionary<string, string>();
     private EditorContext _editor;
     private string _scope;
+    private string _help;
     private bool _changed;
     private Action _deferred;
     private JsonNode _root;
@@ -62,8 +63,10 @@ public sealed class JsonInspector
         for (int i = 0; i < keys.Length; i++)
         {
             var key = keys[i];
-            var propertyType = dictionaryValueType ?? JsonSchema.Find(schema, key)?.ClrType;
+            var property = dictionaryValueType == null ? JsonSchema.Find(schema, key) : null;
+            var propertyType = dictionaryValueType ?? property?.ClrType;
             ImGui.PushID(key);
+            _help = dictionaryValueType == null ? HelpText(schema, property, key) : null;
             DrawRow(key, obj[key], propertyType, Combine(path, key), node => obj[key] = node, () => obj.Remove(key), obj);
             ImGui.PopID();
         }
@@ -78,6 +81,7 @@ public sealed class JsonInspector
         {
             int index = i;
             ImGui.PushID(i);
+            _help = null;
             DrawRow($"[{i}]", array[i], elementType, path, node => array[index] = node, () => array.RemoveAt(index), null, array, index);
             ImGui.PopID();
         }
@@ -105,7 +109,7 @@ public sealed class JsonInspector
             ImGui.AlignTextToFramePadding();
             ImGui.TextUnformatted(label);
             DrawRowMenu(label, value, schemaType, set, remove, ownerArray, index);
-            EditorWidgets.Tooltip(schemaType?.Name);
+            EditorWidgets.Tooltip(_help ?? schemaType?.Name);
 
             ImGui.TableSetColumnIndex(1);
             if (_editors.Draw(_context, out var newValue))
@@ -119,6 +123,7 @@ public sealed class JsonInspector
         var treeFlags = ImGuiTreeNodeFlags.SpanFullWidth;
         if (IsSmall(value)) treeFlags |= ImGuiTreeNodeFlags.DefaultOpen;
         bool open = ImGui.TreeNodeEx(label + "##node", treeFlags);
+        EditorWidgets.Tooltip(_help);
         DrawRowMenu(label, value, schemaType, set, remove, ownerArray, index);
         ImGui.TableSetColumnIndex(1);
         ImGui.TextDisabled(Summary(value));
@@ -190,7 +195,9 @@ public sealed class JsonInspector
                 {
                     var property = properties[i];
                     if (EditorJson.FindKey(obj, property.Name) != null) continue;
-                    if (ImGui.Selectable($"{property.Name}  ({FriendlyType(property.ClrType)})"))
+                    bool picked = ImGui.Selectable($"{property.Name}  ({FriendlyType(property.ClrType)})");
+                    EditorWidgets.Tooltip(HelpText(schema, property, property.Name));
+                    if (picked)
                     {
                         var created = property.CreateValue() ?? JsonValue.Create("");
                         Defer(() => obj[property.Name] = created);
@@ -291,6 +298,22 @@ public sealed class JsonInspector
             JsonArray array => $"[ {array.Count} ]",
             _ => node?.ToJsonString() ?? "null"
         };
+    }
+
+    private static string HelpText(Type owner, SchemaProperty property, string key)
+    {
+        string text = FieldHelp.Default.For(owner, property?.Name ?? key);
+        if (property == null) return text;
+
+        string details = $"{FriendlyType(property.ClrType)}, default {DefaultText(property.Default)}";
+        return string.IsNullOrEmpty(text) ? details : text + "\n\n" + details;
+    }
+
+    private static string DefaultText(JsonNode value)
+    {
+        if (value == null) return "empty";
+        string json = value.ToJsonString();
+        return json.Length > 60 ? json.Substring(0, 57) + "..." : json;
     }
 
     private static string FriendlyType(Type type)

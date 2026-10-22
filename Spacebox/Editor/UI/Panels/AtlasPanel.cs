@@ -41,11 +41,14 @@ public sealed class AtlasPanel : IEditorPanel
         {
             ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * 0.3f);
             ImGui.Combo("##view", ref _view, Views, Views.Length);
+            EditorWidgets.Tooltip("Which texture atlas to show: block or item textures, or their glow (emission) layers.");
             ImGui.SameLine();
             ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * 0.5f);
             ImGui.SliderFloat("Zoom", ref _zoom, 0.25f, 8f, "%.2fx");
+            EditorWidgets.Tooltip("Zoom of the atlas image.");
             ImGui.SameLine();
             if (ImGui.Button("Reload GameSet")) context.RequestReload();
+            EditorWidgets.Tooltip("Rebuilds the atlases from the files on disk.");
 
             if (texture == null || atlas == null)
             {
@@ -66,6 +69,7 @@ public sealed class AtlasPanel : IEditorPanel
     {
         ImGui.SetNextItemWidth(-1f);
         ImGui.InputTextWithHint("##filter", "Search...", ref _filter, 128);
+        EditorWidgets.Tooltip("Show only textures whose name contains this text.");
         if (atlas == null) return;
 
         float iconSize = ImGui.GetTextLineHeight() * 1.3f;

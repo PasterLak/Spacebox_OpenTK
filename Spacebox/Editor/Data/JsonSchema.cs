@@ -52,6 +52,36 @@ public static class JsonSchema
         return result;
     }
 
+    public static IReadOnlyList<Type> Reachable(IEnumerable<Type> roots)
+    {
+        var result = new List<Type>();
+        var seen = new HashSet<Type>();
+        var queue = new Queue<Type>(roots);
+        while (queue.Count > 0)
+        {
+            var type = Unwrap(queue.Dequeue());
+            if (type == null || IsSimple(type) || type.Namespace == null || !type.Namespace.StartsWith("Spacebox") || !seen.Add(type)) continue;
+
+            result.Add(type);
+            foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (!property.CanRead || !property.CanWrite || property.GetIndexParameters().Length > 0) continue;
+                if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
+                queue.Enqueue(property.PropertyType);
+            }
+        }
+        return result;
+    }
+
+    private static Type Unwrap(Type type)
+    {
+        if (type == null) return null;
+        type = Nullable.GetUnderlyingType(type) ?? type;
+        if (IsDictionary(type)) return DictionaryValueType(type);
+        if (type != typeof(string)) return ElementType(type) ?? type;
+        return type;
+    }
+
     public static SchemaProperty Find(Type type, string name)
     {
         var properties = For(type);

@@ -64,6 +64,7 @@ public sealed class CollectionPanel : IEditorPanel
     {
         ImGui.SetNextItemWidth(-1f);
         ImGui.InputTextWithHint("##filter", "Search...", ref _filter, 128);
+        EditorWidgets.Tooltip("Show only entries whose id or name contains this text.");
 
         var groups = _source.Groups;
         if (groups.Count > 0)
@@ -80,7 +81,9 @@ public sealed class CollectionPanel : IEditorPanel
             }
         }
 
-        if (ImGui.Button("+ New"))
+        bool create = ImGui.Button("+ New");
+        EditorWidgets.Tooltip("Creates a new entry with default values.");
+        if (create)
         {
             if (groups.Count > 0) ImGui.OpenPopup("##newInGroup");
             else Select(_source.Add(null), context);
@@ -150,10 +153,13 @@ public sealed class CollectionPanel : IEditorPanel
         ImGui.TextDisabled(entry.File.RelativePath);
 
         if (ImGui.Button("Duplicate")) Select(_source.Duplicate(entry), context);
+        EditorWidgets.Tooltip("Copies this entry under a new id.");
         ImGui.SameLine();
         if (ImGui.Button("Delete")) _pendingDelete = entry;
+        EditorWidgets.Tooltip("Deletes this entry (asks first). Removed ids turn placed blocks and items in worlds into nothing.");
         ImGui.SameLine();
         if (ImGui.Checkbox("Raw JSON", ref _rawMode) && _rawMode) _rawText = EditorJsonFile.Serialize(entry.Node);
+        EditorWidgets.Tooltip("Edit the entry as JSON text instead of the property list.");
 
         if (entry.File.Error != null)
         {
@@ -199,8 +205,10 @@ public sealed class CollectionPanel : IEditorPanel
             var size = ImGui.GetContentRegionAvail() - new Vector2(0f, ImGui.GetFrameHeightWithSpacing());
             ImGui.InputTextMultiline("##raw", ref _rawText, 1 << 20, size);
             if (ImGui.Button("Apply JSON")) ApplyRaw(context, entry);
+            EditorWidgets.Tooltip("Checks the JSON text and replaces the entry with it.");
             ImGui.SameLine();
             if (ImGui.Button("Revert")) _rawText = EditorJsonFile.Serialize(entry.Node);
+            EditorWidgets.Tooltip("Throws away the text changes.");
             return;
         }
 

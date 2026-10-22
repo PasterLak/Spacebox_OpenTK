@@ -137,8 +137,8 @@ public class AsteroidShapeTests
         };
 
         const int radius = 24;
-        var shape = AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, asteroid, seed);
-        var context = new AsteroidGenerationContext(GeneratorVersions.Shapes, null, 0f, radius, shape);
+        var shape = AsteroidGenerationContext.CreateShape(GeneratorVersions.Current, asteroid, seed);
+        var context = new AsteroidGenerationContext(GeneratorVersions.Current, null, 0f, radius, shape);
         var generator = new AsteroidVoxelDataGenerator(new Vector3(radius * 2), 1f, asteroid, seed, context);
         var mask = AsteroidSolidMaskBuilder.TryBuild(generator, asteroid, seed, context, radius * 2);
         Assert.NotNull(mask);
@@ -166,10 +166,10 @@ public class AsteroidShapeTests
     {
         var asteroid = new AsteroidData("shaped", "Shaped") { Shape = new AsteroidShapeJSON() };
 
-        Assert.Null(AsteroidGenerationContext.CreateShape(GeneratorVersions.Rules, asteroid, 1));
-        Assert.Null(new AsteroidGenerationContext(GeneratorVersions.Rules, null, 0f, 20, new AsteroidShape(asteroid.Shape, 1)).Shape);
-        Assert.NotNull(AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, asteroid, 1));
-        Assert.Null(AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, new AsteroidData("plain", "Plain"), 1));
+        Assert.Null(AsteroidGenerationContext.CreateShape(GeneratorVersions.Legacy, asteroid, 1));
+        Assert.Null(new AsteroidGenerationContext(GeneratorVersions.Legacy, null, 0f, 20, new AsteroidShape(asteroid.Shape, 1)).Shape);
+        Assert.NotNull(AsteroidGenerationContext.CreateShape(GeneratorVersions.Current, asteroid, 1));
+        Assert.Null(AsteroidGenerationContext.CreateShape(GeneratorVersions.Current, new AsteroidData("plain", "Plain"), 1));
     }
 
     private static int ConnectedCount(HashSet<Vector3i> cells)
@@ -207,13 +207,13 @@ public class AsteroidShapeTests
         int shaped = 0;
         for (int seed = 0; seed < 1000; seed++)
         {
-            var first = AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, asteroid, seed);
-            Assert.Equal(first != null, AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, asteroid, seed) != null);
+            var first = AsteroidGenerationContext.CreateShape(GeneratorVersions.Current, asteroid, seed);
+            Assert.Equal(first != null, AsteroidGenerationContext.CreateShape(GeneratorVersions.Current, asteroid, seed) != null);
             if (first != null) shaped++;
         }
 
         Assert.InRange(shaped, 640, 760);
-        Assert.Null(AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, new AsteroidData("never", "Never") { Shape = new AsteroidShapeJSON { Chance = 0 } }, 1));
+        Assert.Null(AsteroidGenerationContext.CreateShape(GeneratorVersions.Current, new AsteroidData("never", "Never") { Shape = new AsteroidShapeJSON { Chance = 0 } }, 1));
     }
 
     [Fact]
@@ -223,9 +223,9 @@ public class AsteroidShapeTests
         biome.AsteroidChances[new AsteroidData("rock", "Rock") { MinRadius = 10, MaxRadius = 20 }] = 1;
         var generator = new WorldGenerator { MinAsteroidsInSector = 20, MaxAsteroidsInSector = 30, RejectionSamples = 5, MinDistanceBetweenAsteroids = 128, Biomes = new[] { biome } };
 
-        var planned = SectorAsteroidPlanner.Plan(generator, 5, Vector3.Zero, _ => biome, p => (long)p.LengthSquared, GeneratorVersions.Shapes);
+        var planned = SectorAsteroidPlanner.Plan(generator, 5, Vector3.Zero, _ => biome, p => (long)p.LengthSquared, GeneratorVersions.Current);
 
         Assert.NotEmpty(planned);
-        Assert.All(planned, a => Assert.Equal(GeneratorVersions.Shapes, a.generatorVersion));
+        Assert.All(planned, a => Assert.Equal(GeneratorVersions.Current, a.generatorVersion));
     }
 }

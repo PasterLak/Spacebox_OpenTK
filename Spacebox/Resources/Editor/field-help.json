@@ -1,0 +1,573 @@
+{
+  "AsteroidBiteJSON": {
+    "Chance": "Percent chance of a big missing piece: half of them are a Pac-Man mouth (wedge to the center), half a round bite at the side.",
+    "MinSize": "Smallest bite (mouth angle or bite radius as a share of the asteroid radius).",
+    "MaxSize": "Largest bite."
+  },
+  "AsteroidCavitiesJSON": {
+    "MinCount": "Fewest round caves inside each asteroid.",
+    "MaxCount": "Most round caves inside each asteroid.",
+    "MinRadius": "Smallest cave radius in blocks.",
+    "MaxRadius": "Largest cave radius in blocks."
+  },
+  "AsteroidCratersJSON": {
+    "MinCount": "Fewest craters on the surface.",
+    "MaxCount": "Most craters on the surface.",
+    "MinSize": "Smallest crater radius as a share of the asteroid radius.",
+    "MaxSize": "Largest crater radius as a share of the asteroid radius."
+  },
+  "AsteroidDoubleJSON": {
+    "Chance": "Percent chance that a shaped asteroid is a double asteroid (two bodies with a neck). Checked after Torus.",
+    "MinSize": "Smallest body size, as a share of the space each body can use (0..1).",
+    "MaxSize": "Largest body size, as a share of the space each body can use (0..1).",
+    "Neck": "Neck thickness as a share of the smaller body (0.2-1). Thin necks can be cut by bites or tunnels; then only the bigger body stays."
+  },
+  "AsteroidJSON": {
+    "Id": "Unique asteroid type id, used by biomes and player spawn rules and saved in worlds. Don't rename it in released mods.",
+    "Name": "Name shown in the editor.",
+    "MinRadius": "Smallest radius in blocks. Each asteroid gets a random radius between MinRadius and MaxRadius.",
+    "MaxRadius": "Largest radius in blocks (up to 256).",
+    "DensityThreshold": "How full the asteroid is (0-255). Higher values carve more away and make it smaller and more broken; lower values make it fuller. Default 33-45.",
+    "NoiseOctaves": "Detail layers of the surface noise. More octaves add smaller bumps on top of big ones. 2-4 is typical.",
+    "NoiseScale": "Size of the surface bumps. Larger values make smaller, more frequent bumps; smaller values make broad lumps.",
+    "HasCavities": "Adds 1-3 small round caves inside (new worlds) when there is no Cavities section.",
+    "HasOreDeposits": "Turns ore veins on. Off = the layers only contain their fill block.",
+    "UsePerlinWorms": "Carves winding tunnels through the asteroid, using WormSettings.",
+    "WormSettings": "Tunnel settings: how many tunnels, how wide, how long and how curvy.",
+    "MinDistanceFromCenter": "Biomes only pick this asteroid type at least this far from the world center, in blocks. New worlds only.",
+    "MaxDistanceFromCenter": "Biomes only pick this asteroid type up to this distance from the world center, in blocks. 0 = no limit.",
+    "HollowCorePercent": "Makes the inside empty: 40 = the inner 40% of the depth is hollow. 0 = solid, max 90. New worlds only.",
+    "Cavities": "Round caves inside the asteroid: how many and how big (radius in blocks). New worlds only.",
+    "Shape": "Random forms for new worlds: stretched blobs with lobes, double asteroids, rings, bites and craters. Without it the asteroid is a noisy ball.",
+    "Layers": "Rock layers from the surface (first) to the core (last), each with its fill block, thickness share and ore veins.",
+    "Mobs": "Mobs that live in this asteroid type. A mob listed by any asteroid only spawns in asteroids that list it; unlisted mobs spawn everywhere."
+  },
+  "AsteroidLayerJSON": {
+    "Name": "Layer name for the editor.",
+    "FillBlockID": "Block that fills this layer, for example light_rock. Ore veins replace it.",
+    "Ratio": "Thickness share of this layer compared to the other layers (weights). 100/70/50 = the outer layer is the thickest.",
+    "Veins": "Ore veins that can grow inside this layer."
+  },
+  "AsteroidLobesJSON": {
+    "Chance": "Percent chance that a shaped asteroid gets lobes.",
+    "MinCount": "Fewest lobes.",
+    "MaxCount": "Most lobes.",
+    "MinSize": "Smallest lobe as a share of the asteroid radius (0.3 = 30%).",
+    "MaxSize": "Largest lobe as a share of the asteroid radius."
+  },
+  "AsteroidMobJSON": {
+    "Mob": "Id of the mob that lives in this asteroid type.",
+    "Chance": "Percent chance per spawn attempt on this asteroid. Lower = fewer mobs here.",
+    "MaxPerChunk": "Most mobs of this kind in one 32x32x32 block area. Empty = the value from the mob's Spawn section.",
+    "MaxPerEntity": "Most mobs of this kind on one asteroid. 0 = no limit (only MaxTotal of the mob counts).",
+    "Layers": "Layer numbers the mob may spawn in (0 = outer layer). Empty = all layers.",
+    "MinDepth": "Mob only spawns at least this deep: 0 = surface, 1 = core.",
+    "MaxDepth": "Mob only spawns up to this depth (0 = surface, 1 = core).",
+    "MaxLightLevel": "Brightest light the mob may spawn in (0 = complete darkness). Empty = the value from the mob's Spawn section.",
+    "Biomes": "Biome ids where this rule applies. Empty = all biomes.",
+    "MinDistanceFromCenter": "Rule only applies to asteroids at least this far from the world center, in blocks.",
+    "MaxDistanceFromCenter": "Rule only applies to asteroids up to this distance from the world center, in blocks. 0 = no limit."
+  },
+  "AsteroidShapeJSON": {
+    "Chance": "Percent of asteroids of this type that get a random form. The rest stay classic noisy balls. 70 = 7 of 10 asteroids are shaped.",
+    "Stretch": "How much the body may be squashed or stretched per axis (0 = round, 0.5 = up to 50% longer or shorter).",
+    "Warp": "Bends the whole outline with slow noise so it looks irregular instead of geometric (0-0.6).",
+    "Roughness": "Strength of the surface bumps (0-1). Low = smooth rocks, high = rugged and broken surfaces.",
+    "Lobes": "Extra bumps grown onto the main body.",
+    "Double": "Chance and size of double asteroids: two bodies joined by a neck.",
+    "Torus": "Chance and thickness of ring (donut) asteroids.",
+    "Bite": "Chance and size of a big missing piece: a Pac-Man mouth or a round bite.",
+    "Craters": "Round craters cut into the surface.",
+    "RemoveFloatingBlocks": "Keeps only the largest connected piece, so no loose blocks float around (asteroids up to 256 blocks across)."
+  },
+  "AsteroidTorusJSON": {
+    "Chance": "Percent chance that a shaped asteroid is a ring (donut). Checked first, before Double.",
+    "MinTube": "Thinnest ring tube, as a share of the asteroid radius.",
+    "MaxTube": "Thickest ring tube, as a share of the asteroid radius (max about 0.35)."
+  },
+  "AsteroidVeinJSON": {
+    "BlockId": "Ore block of this vein, for example iron_ore.",
+    "SpawnChance": "Chance per block of the layer to start a vein, out of 1 000 000. 10000 = 1% of the blocks start a vein.",
+    "MinVeinSize": "Fewest blocks in one vein.",
+    "MaxVeinSize": "Most blocks in one vein.",
+    "CanSpawnNearVoid": "Off = veins never start next to air, so the ore is hidden inside the rock.",
+    "MinDepth": "Vein only starts at least this deep: 0 = surface, 1 = core. 0.3 = not in the outer 30%. New worlds only.",
+    "MaxDepth": "Vein only starts up to this depth (0 = surface, 1 = core). New worlds only.",
+    "MinDistanceFromCenter": "Vein only appears in asteroids at least this far from the world center, in blocks (rare ores farther out). New worlds only.",
+    "MaxDistanceFromCenter": "Vein only appears in asteroids up to this distance from the world center, in blocks. 0 = no limit.",
+    "NearCavesOnly": "Vein only starts within 2 blocks of a cave or tunnel, so players find it while exploring. New worlds only.",
+    "BiomeMultipliers": "Changes the vein chance per biome in percent (biome id: percent). 200 = twice as common there, 0 = never."
+  },
+  "BiomeJSON": {
+    "Id": "Unique biome id, used in generator.json, asteroid mob rules and vein BiomeMultipliers.",
+    "Name": "Name shown in the debug overlay (F3) and the editor.",
+    "Description": "Short description for the editor.",
+    "SpawnChance": "Share of the biome noise this biome gets compared to the other allowed biomes (weights, not percent). 0 = never chosen.",
+    "DebugColor": "Color of this biome in the editor biome map and the debug overlay (RGB 0-255).",
+    "MinDistanceFromCenter": "The biome only appears at least this far from the world center (0,0,0), in blocks. New worlds only.",
+    "MaxDistanceFromCenter": "The biome only appears up to this distance from the world center, in blocks. 0 = no limit. New worlds only.",
+    "Density": "Percent of asteroid candidates kept in this biome. 100 = normal, 50 = half as many, 150 = denser. New worlds only.",
+    "MinDistanceBetweenAsteroids": "Extra spacing in blocks between asteroids in this biome. Only used when larger than the generator value. 0 = generator value.",
+    "RadiusMultiplier": "Scales the size of every asteroid in this biome. 1 = unchanged, 1.5 = half again as big.",
+    "OreMultiplier": "Scales the chance of every ore vein in asteroids of this biome. 1 = unchanged, 2 = twice as many veins.",
+    "WormSettings": "Replaces the tunnel settings of every asteroid in this biome. Leave empty to use each asteroid's own WormSettings.",
+    "Asteroids": "Asteroid types that appear in this biome with their weights (asteroid id: weight). Higher weight = more common."
+  },
+  "BlockJSON": {
+    "ID": "Unique block id inside this GameSet (lowercase, no spaces). Recipes, drops and saves refer to it; renaming it breaks existing worlds.",
+    "Name": "Name shown to players in tooltips, the inventory and crafting. Must not be empty or the block is skipped.",
+    "Description": "Short description shown in the tooltip. Keep it short and without numbers; stats are added to the tooltip automatically.",
+    "Type": "Behaviour of the block, e.g. block, storage, furnace, generator, cable, door, sign, frame, pipe, thruster, cannon. Default block = plain solid block. Unknown types skip the block.",
+    "Category": "Crafting category the block appears in. Must match a category name from the crafting categories; empty = not listed in the crafting window.",
+    "PowerToDrill": "Drill tier needed to mine this block in survival. A drill mines it only if its tier is at least this value. Default 1, range 0-255.",
+    "Mass": "Mass of one block (1-255, default 1). Adds to the mass of the asteroid or ship, so heavy blocks make ships slower to accelerate and turn.",
+    "Durability": "How much damage the block takes before it breaks, from bullets, cannons and explosions (1-255, default 1). Damaged blocks show cracks and can be repaired.",
+    "Efficiency": "Work speed multiplier for machines (furnace, crusher, disassembler and similar). 1 = normal, 2 = twice as fast, 0.5 = half. Shown as Speed % in the tooltip.",
+    "Textures": "Block textures for each face, with an optional second set used when the block is inactive (machine idle or without power).",
+    "Sounds": "Sounds played when the block is placed, destroyed, and walked on in gravity. Unknown sound names fall back to the defaults.",
+    "Drop": "Item or block id dropped when the block is mined. Default $self drops the block itself.",
+    "DropQuantity": "How many items drop when the block is mined (1-255, default 1).",
+    "FrontDirection": "Which side of the model counts as the front, as a direction vector (default up: 0,1,0). Used to orient the block, its textures and multi-cell size when placed.",
+    "IsTransparent": "If true, light and the faces of neighbouring blocks show through it (glass, windows, thin models). Default false = solid opaque block.",
+    "LightColor": "Light emitted by the block as RGB 0-255. Default black (0,0,0) = gives no light.",
+    "StorageSize": "Inventory size of a storage block as columns x rows of slots (default 3x3, minimum 1). Only used by Type storage.",
+    "Size": "Size in cells for multi-cell blocks: X width, Y height, Z depth (1-16 each, default 1x1x1). Signs and frames set this from their own sections.",
+    "CellPixels": "Texture pixels per block cell on multi-cell blocks. 0 (default) = picked automatically so most textures fit; smaller textures repeat per cell.",
+    "TextureFit": "If true, each face texture is stretched once over the whole face of a multi-cell block instead of repeating. Default false.",
+    "Unbreakable": "If true, drills, weapons, explosions, collisions and mobs cannot break it; only creative players and commands remove it. Default false.",
+    "Model": "Shape of the block: a built-in shape name (e.g. slab) or an .obj file name from Models/Blocks without extension. Empty = normal cube.",
+    "OxygenGenerator": "Settings for an oxygen generator: which item fills its water tank and how fast water is used. Only used by Type oxygengenerator.",
+    "Door": "Settings for a sliding door: direction, speed, auto-close and sounds. Only used by Type door.",
+    "Sign": "Settings for a writable sign: width, text limits, colour, font and glow. Only used by Type sign.",
+    "Frame": "Settings for a picture frame: picture size and which picture items fit. Only used by Type frame.",
+    "Cable": "Optional textures that make a cable change its look by its connections (port, straight, angle, hub). Only used by Type cable.",
+    "Generator": "Power output of a power generator. Only used by Type generator.",
+    "Gravity": "Settings for a gravity generator: radius, strength, power use, fall damage and presets. Only used by Type gravity.",
+    "DnaReconstructor": "Settings for the respawn machine: DNA item used, power, revival time and sounds. Only used by Type dnareconstructor.",
+    "Explosive": "Explosion settings. Used by Type explosive (bombs). A Type generator with this section explodes when destroyed. Not set by default.",
+    "Pipe": "Settings for an item pipe: transfer speed, power and which sides take and give items. Only used by Type pipe.",
+    "Disassembler": "Power use of the disassembler. Only used by Type disassembler.",
+    "Thruster": "Settings for a ship thruster: force, power and free space in front of the nozzle. Only used by Type thruster.",
+    "Console": "Settings for a ship console: number of key groups, power and what it controls. Only used by Type shipconsole.",
+    "Cannon": "Settings for a ship cannon: projectile, reload, aiming limits and power. Only used by Type cannon.",
+    "ShipCamera": "Power use of a ship camera block. Only used by Type shipcamera."
+  },
+  "BlueprintJSON": {
+    "Ingredients": "Items needed to craft the product. $health or $power can be used to pay with the player's health or power.",
+    "Product": "Item made and how many. In a blueprint.json in a block or item folder, Item defaults to that entry."
+  },
+  "CableJSON": {
+    "Port": "Texture name for a face where the cable connects to another electrical block. Texture name = file name without extension, global for the GameSet.",
+    "PortOff": "Texture for Port when there is no power. Empty = same as Port.",
+    "Straight": "Texture for a straight cable segment. If empty, the cable keeps its normal block textures and the other cable textures are ignored.",
+    "StraightOff": "Texture for Straight when there is no power. Empty = same as Straight.",
+    "Angle": "Texture for a cable bend (two connections at a right angle).",
+    "AngleOff": "Texture for Angle when there is no power. Empty = same as Angle.",
+    "Hub": "Texture used where three or more cables meet.",
+    "HubOff": "Texture for Hub when there is no power. Empty = same as Hub."
+  },
+  "CannonJSON": {
+    "Projectile": "Name of the projectile it fires, from the GameSet projectiles. Sets damage, speed and range.",
+    "ReloadTime": "Time between shots in milliseconds (minimum 50, default 1000).",
+    "ShotSound": "Sound name played for each shot. Default ar.",
+    "BarrelLength": "Distance in blocks from the block centre to the muzzle where projectiles appear (minimum 0.5, default 1).",
+    "AimCone": "How far the barrel can turn away from its forward direction, in degrees (0-180, default 60). 0 = fixed forward.",
+    "TurnSpeed": "How fast the barrel turns towards the target, in degrees per second (1-3600, default 180).",
+    "Power": "Power used by the cannon, in EU (0-8000, default 15)."
+  },
+  "ConsumableItemJSON": {
+    "HealAmount": "Health restored when used, 0-255. Default: 0.",
+    "PowerAmount": "Power restored when used, 0-255. Default: 0.",
+    "OxygenAmount": "Oxygen restored when used, 0-255. Default: 0.",
+    "UseCooldown": "Seconds before the item can be used again. 0 = no wait. Default: 0.",
+    "Sound": "Sound played when used. Sound name = audio file name without extension, global for the GameSet. Default: default."
+  },
+  "CraftingCategory": {
+    "Id": "Unique id of the crafting tab. Items with this Category are listed in it.",
+    "Name": "Tab name shown in the crafting window.",
+    "Icon": "Id of the item or block whose icon is shown on the tab.",
+    "Row": "Row of the tab bar the tab is placed in, starting at 1. 0 or a missing row = put in the shortest row. Default: 0.",
+    "IconSprite": "Filled in by the game from Icon; a value written here is ignored."
+  },
+  "CraftingJSON": {
+    "Categories": "Tabs of the crafting window. Items join a tab through their Category.",
+    "Blueprints": "Crafting recipes: the ingredients needed and the product made at a crafting table."
+  },
+  "DefaultItem": {
+    "ID": "Item or block id to give at the start.",
+    "Count": "How many to give, 1-255. 0 = skipped."
+  },
+  "DisassemblerJSON": {
+    "Power": "Power used while working, in EU (0-8000, default 40). Speed is set by Efficiency."
+  },
+  "DisassemblyItemJSON": {
+    "Item": "Id of the item or block this exception is for.",
+    "Disabled": "If true, the item can't be disassembled at all. Default: false.",
+    "ReturnPercent": "Percent of the ingredients given back for this item, 0-100. Empty = DefaultReturnPercent. Ignored when Products are listed.",
+    "DurationSec": "Seconds one disassembly of this item takes. Empty = the source recipe's time or DefaultDurationSec.",
+    "InputQuantity": "How many of the item one run takes. Empty = the amount its recipe makes (1 when Products are listed).",
+    "Products": "Exact items given back, instead of calculating them from the crafting or machine recipe. Empty = calculated."
+  },
+  "DisassemblyJSON": {
+    "DefaultReturnPercent": "Percent of the crafting or recipe ingredients the disassembler gives back, 0-100. Default: 50.",
+    "DefaultDurationSec": "Seconds one disassembly takes when the source recipe has no duration and the item sets none. Default: 10.",
+    "Items": "Per-item exceptions: turn disassembly off, change return percent, time or input amount, or list exact products."
+  },
+  "DisassemblyProductJSON": {
+    "Item": "Item or block id given back. It can't be the disassembled item itself.",
+    "Quantity": "How many are given back per run, 1-255. 0 or less skips it. Default: 1."
+  },
+  "DnaReconstructorJSON": {
+    "DnaItem": "Id of the item used up for each revival. Default dna_ui.",
+    "Power": "Power used while working, in EU (0-8000, default 50).",
+    "ReconstructionTime": "Seconds a revival takes (1-30, default 5).",
+    "Sounds": "Sounds played during a revival: loop while working, a sound per stage, and one when the player appears."
+  },
+  "DnaReconstructorSoundsJSON": {
+    "Loop": "Sound name looped while a revival is in progress. Default dnaReconstructionLoop.",
+    "Stage": "Sound name played at each stage of the revival. Default dnaReconstructionStage.",
+    "Spawn": "Sound name played at the block when the player appears. Default dnaReconstructionSpawn.",
+    "Volume": "Volume of all three sounds (default 1 = normal)."
+  },
+  "DoorJSON": {
+    "MoveDirection": "Side the door slides to when it opens: Up, Down, Left, Right, Forward or Back, relative to the block. Default Right. Needs free space there.",
+    "Speed": "Opening and closing speed in blocks per second (minimum 0.1, default 2).",
+    "OpenTime": "Seconds the door stays open before it closes by itself (default 3). Only used when AutoClose is on.",
+    "AutoClose": "If true (default), the door closes by itself after OpenTime seconds.",
+    "OpenSound": "Sound name played when the door opens. Empty (default) = no sound.",
+    "CloseSound": "Sound name played when the door closes. Empty (default) = no sound."
+  },
+  "DrillItemJSON": {
+    "Tier": "Drill strength. It can only mine blocks whose drill power (hardness) is at most this tier; higher tiers also mine faster. Default: 0.",
+    "PowerUsage": "Player power used per mined block (and every second while drilling a creature). The drill stops when power is lower than this. Default: 0.",
+    "Range": "How far the drill reaches, in blocks. Default: 6.",
+    "Damage": "Damage per second dealt to creatures and other targets hit with the drill. Does not affect mining speed. Default: 1.",
+    "DrillColor": "Color of the drill's light while mining, RGB 0-255. Default: blue (100, 116, 255)."
+  },
+  "EquipmentJSON": {
+    "Tier": "Not used by the game yet.",
+    "Slot": "Equipment slot: Helmet, Shoulders, Chest, Arms, Legs, Boots, PowerGenerator, Flashlight or Scanner. An unknown slot skips the item.",
+    "Health": "Extra maximum health while worn. Bonuses of all worn items add up. Default: 0.",
+    "Power": "Extra maximum power while worn. Bonuses of all worn items add up. Default: 0.",
+    "ExplosionProtection": "Percent of explosion damage blocked, 0-100. Worn items add up, capped at 75% in total. Default: 0.",
+    "Flashlight": "Makes the item a flashlight when worn or held, with these light settings. Without it the player has no flashlight from this item.",
+    "Radar": "Makes the item a scanner when worn: sets how far object markers are shown and whether mass is shown.",
+    "ArmorModel": "Path of the .obj model drawn on the player's body, relative to the item folder or GameSet. Needs ArmorTexture too. Empty = not visible.",
+    "ArmorTexture": "Path of the PNG texture for ArmorModel, relative to the item folder or GameSet. Empty = armor not visible."
+  },
+  "ExplosiveJSON": {
+    "Radius": "Blast radius in blocks (1-32, default 4). Players and objects take damage inside it.",
+    "Penetration": "How much block durability the blast can break through along each ray (0-10000, default 100). Higher = deeper holes in strong blocks.",
+    "Damage": "Damage dealt to players and creatures in the radius (0-10000, default 50). Armor explosion protection reduces it.",
+    "DamageFalloff": "If true (default), damage drops to 0 towards the edge of the radius. If false, full damage everywhere in the radius.",
+    "PushStrength": "How hard the blast pushes players, drops and loose objects away (0-200, default 15). 0 = no push.",
+    "PushRadiusMultiplier": "Push reach as a multiple of Radius (1-8, default 2).",
+    "ChainDelay": "Seconds before another bomb caught in this blast explodes (0-5, default 0.15).",
+    "DropBlocks": "If true, destroyed blocks drop as items. Default false = they drop nothing.",
+    "DestroyStorageItems": "If true, items inside destroyed storages and machines are lost. Default false = their contents drop."
+  },
+  "FaceTextures": {
+    "All": "Texture for every face that has no texture of its own. Texture name = file name without extension, global for the GameSet.",
+    "Up": "Texture for the top face. Empty = uses All.",
+    "Down": "Texture for the bottom face. Empty = uses All.",
+    "Left": "Texture for the left face. Empty = uses All.",
+    "Right": "Texture for the right face. Empty = uses All.",
+    "Forward": "Texture for the front face. Empty = uses All.",
+    "Back": "Texture for the back face. Empty = uses All."
+  },
+  "FallDamageJSON": {
+    "SafeHeight": "Fall height in blocks that causes no damage (default 5).",
+    "DamagePerBlock": "Damage per block fallen beyond SafeHeight (default 4)."
+  },
+  "FlashlightSettings": {
+    "Intensity": "Brightness of the flashlight beam. 1 = normal. Default: 1.",
+    "Range": "How far the beam reaches, in blocks. Default: 50.",
+    "InnerAngle": "Angle in degrees of the fully bright center of the beam. Default: 15.",
+    "OuterAngle": "Angle in degrees where the beam fades out completely; keep it larger than InnerAngle. Default: 25."
+  },
+  "GeneratorJSON": {
+    "Version": "Version label of this generator file. Only informational; the game does not read it.",
+    "NoiseModifier": "Not used by the game yet.",
+    "MinAsteroidsInSector": "Fewest asteroid candidates placed in one sector (8192 blocks per side). Biome Density can keep fewer of them.",
+    "MaxAsteroidsInSector": "Most asteroid candidates placed in one sector. The real count is random between Min and Max, then filtered by biome Density.",
+    "RejectionSamples": "How many random tries the placer makes for each asteroid before it gives up. Higher fills crowded sectors better but takes longer.",
+    "MinDistanceBetweenAsteroids": "Minimum distance in blocks between asteroid centers in the whole sector. Biomes can ask for more with their own value.",
+    "BiomesMapNoiseFrequency": "Size of the biome regions. Smaller values make bigger regions (0.001 = regions of roughly a thousand blocks), larger values make many small patches.",
+    "Biomes": "Biome ids used in new worlds, in order. The order matters: each biome takes its SpawnChance share of the noise in this order.",
+    "FallbackBiome": "Biome used where none of the listed biomes is allowed at that distance from the world center. Empty = such places stay empty space.",
+    "PlayerSpawn": "Rules for the asteroid a new player starts next to."
+  },
+  "GravityGeneratorJSON": {
+    "Radius": "Reference radius in blocks: the default setting of a new generator and the radius at which it uses exactly Power. Default 32.",
+    "MinRadius": "Smallest radius in blocks players can set (1-1024, default 4).",
+    "MaxRadius": "Largest radius in blocks players can set (up to 1024, default 512).",
+    "Strength": "Reference gravity in m/s2: the default setting and the strength at which it uses exactly Power. Default 9.81.",
+    "MinStrength": "Weakest gravity players can set, in m/s2 (0.1-100, default 0.5).",
+    "MaxStrength": "Strongest gravity players can set, in m/s2 (up to 100, default 30).",
+    "Power": "Power used at the reference Radius and Strength, in EU (default 200). Use grows with the chosen radius; 0 while switched off.",
+    "StrengthPowerFactor": "How much the chosen strength changes power use (0..1, default 0.25). 0 = strength does not matter, 1 = use grows in direct proportion.",
+    "MaxRoomCells": "For the inside-closed-rooms mode: the largest room in cells that still counts as closed (default 200000). Bigger rooms count as open.",
+    "FallDamage": "Fall damage inside this field, used when no preset with its own fall damage is closest to the chosen strength.",
+    "EnabledOnPlace": "If true, a newly placed generator starts switched on. Default false = it starts off until a player turns it on.",
+    "EnableSound": "Sound name played at the block when it is switched on. Default gravityGeneratorOn; empty = no sound.",
+    "DisableSound": "Sound name played at the block when it is switched off. Default gravityGeneratorOff; empty = no sound.",
+    "Presets": "Quick strength buttons in the generator window (default Moon, Mars, Earth, Jupiter). The preset nearest the chosen strength also picks fall damage."
+  },
+  "GravityPresetJSON": {
+    "Name": "Label of the preset button in the generator window.",
+    "Strength": "Gravity set by this preset, in m/s2. Kept inside the generator's min and max strength.",
+    "FallDamage": "Fall damage used while the chosen strength is nearest this preset. Empty = the generator's own FallDamage."
+  },
+  "ItemJSON": {
+    "Info": "Free note for modders, for example to explain the entry. Not used by the game.",
+    "Description": "Text shown in the item tooltip under its name. Leave empty for no description.",
+    "ID": "Unique item id: lower-case letters, digits and _, 2-64 characters, not starting with a digit. Renaming it later removes the item from existing worlds.",
+    "Name": "Name shown to players in tooltips, the inventory and the crafting window.",
+    "Type": "What the item does: item (plain material), weapon, drill, consumable, repair_tool, mob_spawner, picture or equipment. Each type adds its own settings. Default: item.",
+    "Category": "Id of the crafting category (tab) the item is listed in, from Crafting/categories.json. Empty or unknown = not shown in the crafting window.",
+    "Sprite": "Item icon. Sprite name = PNG file name without extension under Items/, global for the GameSet. The 3D hand model is also built from it.",
+    "MaxStack": "How many fit in one inventory slot, 1-255. Weapons, drills, equipment and pictures always stack to 1. Default: 1.",
+    "ModelDepth": "Thickness of the 3D model built from the sprite when held or dropped. 1 = normal, higher = thicker. Default: 1."
+  },
+  "LootEntry": {
+    "ID": "Item id that can drop. The table name is the file name in Generation/Loot (used by chests and mob Loot).",
+    "Probability": "Chance in percent (0-100) that this entry drops, rolled separately for each entry. Default: 100.",
+    "MinCount": "Smallest amount dropped. Default: 1.",
+    "MaxCount": "Largest amount dropped, capped at the item's stack size. Default: 1."
+  },
+  "MobDeathParticlesJSON": {
+    "Color": "Particle color, RGB 0-255. Default: white.",
+    "Count": "Number of particles, 0-200. 0 = no death particles. Default: 0.",
+    "Speed": "Particle speed in blocks per second, 0-20. Default: 2.5.",
+    "Size": "Particle size in blocks, 0.01-2. Default: 0.12.",
+    "Life": "Seconds a particle lives, 0.1-5. Default: 0.9.",
+    "Radius": "Radius in blocks of the area the particles start in, 0-4. Default: 0.3."
+  },
+  "MobJSON": {
+    "Id": "Unique creature id, used by spawner items, asteroid Mobs lists and commands.",
+    "Name": "Name shown to players. Empty = the Id is used.",
+    "Behaviour": "AI behaviour of the creature. Currently only parasite exists. An unknown value skips the creature.",
+    "Model": "Path of the .obj model, relative to the GameSet folder, falling back to the game folder.",
+    "Texture": "Path of the PNG texture for the model, relative to the GameSet folder, falling back to the game folder.",
+    "Scale": "Size of the model and its hit area. 1 = original size. Minimum 0.05. Default: 1.",
+    "Radius": "Radius of the collision sphere in blocks, 0.1-0.49. Default: 0.4.",
+    "Health": "Hit points. Minimum 1. Default: 20.",
+    "MinDamage": "Smallest damage of one bite on a player. Default: 5.",
+    "MaxDamage": "Largest damage of one bite; each bite rolls between MinDamage and MaxDamage. Default: 10.",
+    "AttackRange": "Distance in blocks from which it can bite. Minimum 0.5. Default: 1.6.",
+    "AttackCooldown": "Seconds between bites. Minimum 0.1. Default: 1.2.",
+    "Speed": "Normal movement speed in blocks per second (wandering, going to food). Default: 2.5.",
+    "ChaseSpeed": "Speed in blocks per second while chasing a player. Default: 4.",
+    "FleeSpeed": "Speed in blocks per second while running away from a player. Default: 5.",
+    "TurnSpeed": "How quickly it turns to face its direction. Higher = faster turns. Default: 6.",
+    "SightRange": "Distance in blocks at which it notices players inside its field of view. Default: 14.",
+    "FieldOfView": "Viewing angle in degrees, 0-360. Players outside it are noticed only within HearingRange. Default: 140.",
+    "HearingRange": "Players closer than this (in blocks) are noticed from any direction. Default: 4.",
+    "ForgetTime": "Seconds after losing sight of a player before it gives up. Default: 4.",
+    "FleeChance": "Percent of spawned creatures (0-100) that are timid and run away from players instead of attacking. Default: 0.",
+    "EatTime": "Seconds it takes to eat one block. Minimum 0.1. Default: 3.",
+    "FoodSearchRadius": "Distance in blocks it searches for edible blocks when hungry, 1-32. Default: 8.",
+    "MealIntervalMin": "Seconds between meals when a player is within MealNearDistance. Default: 60.",
+    "MealIntervalMax": "Seconds between meals when the nearest player is near MealFarDistance. Default: 600.",
+    "MealNearDistance": "Player distance in blocks below which it gets hungry fastest (MealIntervalMin). Default: 24.",
+    "MealFarDistance": "Player distance in blocks beyond which it never gets hungry, so far-away creatures don't eat the world. Default: 96.",
+    "EdibleBlocks": "Block ids it eats. Empty = natural asteroid blocks. Also used by RequiresNaturalBlocks for spawning.",
+    "Loot": "Loot table dropped on death: a file name from Generation/Loot without .json. Empty = no drop.",
+    "Spawn": "Global natural spawn rules for this creature. Asteroid Mobs lists can limit it to certain asteroids and override some limits.",
+    "Sounds": "Sounds the creature plays (idle, alert, bite, hurt, death, eat) and their volume.",
+    "DeathParticles": "Particle burst shown when the creature dies. Count 0 = none."
+  },
+  "MobSoundsJSON": {
+    "Idle": "Sound played now and then while idle. Sound name = audio file name without extension, global for the GameSet. Empty = silent.",
+    "Alert": "Sound played when it starts hunting a player. Empty = none.",
+    "Bite": "Sound played when it bites. Empty = none.",
+    "Hurt": "Sound played when it takes damage. Empty = none.",
+    "Death": "Sound played when it dies. Empty = none.",
+    "Eat": "Sound played while eating a block. Empty = none.",
+    "IdleIntervalMin": "Shortest wait between idle sounds in seconds (at least 0.5). Default: 6.",
+    "IdleIntervalMax": "Longest wait between idle sounds in seconds. Default: 16.",
+    "Volume": "Volume of all its sounds. 1 = normal. Default: 1."
+  },
+  "MobSpawnJSON": {
+    "Enabled": "If true, the creature spawns naturally near players. Spawner items work either way. Default: false.",
+    "MaxPerChunk": "Most creatures of this kind in one 32-block chunk. Asteroid Mobs entries can override it. Default: 1.",
+    "MaxTotal": "Most creatures of this kind alive in the world at once. Default: 16.",
+    "MaxLightLevel": "Spawns only where light is at most this level, 0-15. 0 = darkness only. Asteroid Mobs entries can override it. Default: 0.",
+    "RequiresNaturalBlocks": "If true, spawns only next to a block it can eat (EdibleBlocks, or natural asteroid blocks), so not inside player bases. Default: true.",
+    "Interval": "Seconds between spawn attempts. Default: 5.",
+    "Chance": "Chance in percent (0-100) that a spawn attempt is made. Default: 30.",
+    "MinPlayerDistance": "Never spawns closer than this to a player, in blocks. Default: 16.",
+    "MaxPlayerDistance": "Spawns only in asteroids within this distance of a player, in blocks. Default: 48.",
+    "DespawnDistance": "Creatures farther than this from every player (in blocks) are removed. Default: 128."
+  },
+  "MobSpawnerItemJSON": {
+    "Mob": "Id of the creature to spawn, from the Mobs folder. Using the item spawns it where you look; in survival one item is used up.",
+    "UseCooldown": "Seconds between two spawns. Default: 0.5."
+  },
+  "ModConfig": {
+    "ModId": "Unique id of the GameSet, saved in worlds. Block and item ids get it as prefix (default:iron). Without it the folder name is used. Don't change it after release.",
+    "ModName": "Name shown in the GameSet list in Create World and the menus.",
+    "Description": "Short description shown in the GameSet list.",
+    "Author": "Author name shown in the GameSet list.",
+    "Version": "Version text of the GameSet, shown to players. Default: 0.",
+    "OxygenConsumeInterval": "Seconds between oxygen losses while the player is outside breathable air. 0 = oxygen is never used up. Default: 10.",
+    "Extends": "Base GameSet id this extension adds to (usually default). Empty = this is a base GameSet.",
+    "Includes": "Ids of other extensions that load before this one and are added to the world automatically. Only for extensions.",
+    "FolderName": "Filled in by the game with the GameSet folder name; a value written here is ignored.",
+    "ModPath": "Filled in by the game with the GameSet folder path; a value written here is ignored.",
+    "Icon": "Not used by the game yet. The icon is the icon.png file in the GameSet folder.",
+    "Textures": "Not used by the game yet. Textures are found automatically under Blocks/ and Items/.",
+    "ItemsOnStart": "Items given to a new player in survival. Equipment goes to a free equipment slot. Extension start items are added to these."
+  },
+  "Modlighting": {
+    "AmbientColor": "Base light color of the world (Optional/lighting.json), RGB 0-255. Darker values make unlit areas darker. Default: white.",
+    "FogColor": "Color of the distance fog, RGB 0-255. Default: black.",
+    "FogDensity": "Fog strength, 0-100. 0 = no fog, 100 = everything black. Default: 10."
+  },
+  "OxygenGeneratorJSON": {
+    "WaterItem": "Id of the item that fills the water tank. Default water.",
+    "TankCapacity": "How many water items the tank holds (minimum 1, default 30).",
+    "WaterConsumeInterval": "Seconds of work per water item used from the tank (default 120). Water is only used while it is filling a room.",
+    "WaterFillInterval": "Seconds to move one water item from the slot into the tank (default 1, minimum 0.05).",
+    "EmptySound": "Sound name played at the block when the tank runs dry. Default oxygenGeneratorEmpty; empty = no sound."
+  },
+  "PictureFrameJSON": {
+    "Width": "Width of the frame in blocks (1-4, default 1). Sets the block size.",
+    "Height": "Height of the frame in blocks (1-4, default 1). Sets the block size.",
+    "Pictures": "List of picture item ids that can be placed in this frame. Other pictures are refused.",
+    "ViewDistance": "Distance in blocks up to which the picture is drawn (4-256, default 64)."
+  },
+  "PipeJSON": {
+    "TransferInterval": "Seconds between moved items: the pipe moves one item per interval (0.05-60, default 1).",
+    "Power": "Power used by the pipe, in EU (0-1000, default 5).",
+    "OutputSides": "Sides the pipe pushes items to, relative to the block: Up, Down, Left, Right, Forward, Back. Default all but Down. Input sides are removed from this list.",
+    "InputSides": "Sides the pipe pulls items from, relative to the block: Up, Down, Left, Right, Forward, Back. Default Down."
+  },
+  "PlayerSpawnJSON": {
+    "MinAsteroidRadius": "New players only start next to asteroids at least this big (radius in blocks). 0 = any size.",
+    "ExcludedAsteroids": "Asteroid ids new players never start next to (for example ice asteroids without ores)."
+  },
+  "PowerGeneratorJSON": {
+    "Power": "Power the generator produces for its electrical network, in EU (0-1600, default 50)."
+  },
+  "ProjectileJSON": {
+    "Speed": "Flight speed in blocks per second. Default: 5.",
+    "MaxTravelDistance": "Distance in blocks after which the projectile disappears. Default: 100.",
+    "Length": "Length of the visible tracer in blocks (visual only). Default: 1.",
+    "Thickness": "Thickness of the visible tracer in blocks (visual only). Default: 0.2.",
+    "Color": "Tracer color, RGB 0-255. Default: blue (0, 0, 255).",
+    "Mass": "Not used by the game yet.",
+    "Damage": "Damage to players and creatures on hit, 0-255. Default: 0.",
+    "DamageBlocks": "Durability damage to blocks, 0-255. Leftover damage carries on to the next block. 50 or more plays an explosion sound. Default: 0.",
+    "Penetration": "Strongest block durability it can damage, 0-255. Blocks with more durability stop it without damage. Default: 255.",
+    "RicochetAngle": "Hits flatter than this angle (degrees from the surface) bounce off instead of damaging. 0 = never ricochets. Needs PossibleRicochets.",
+    "PossibleRicochets": "How many times the projectile can bounce off surfaces (at most 5 are used). 0 = none. Default: 0.",
+    "MaximumBlocksCanDestroy": "How many blocks one shot can break through in a row while damage is left. Default: 1.",
+    "DropBlock": "If true, blocks destroyed by the projectile drop their item. Default: false.",
+    "ImpactSphere": "If true, a flash sphere and an explosion effect appear where the projectile ends (visual only). Default: false.",
+    "ImpactExplosionRadius": "Size in blocks of the explosion effect shown with ImpactSphere (visual only, no damage). 0 = no explosion effect. Default: 0."
+  },
+  "RadarSettings": {
+    "Range": "How far away asteroid and ship markers are shown while this radar is equipped, in blocks (meters). Default 1000.",
+    "ShowMass": "If true, markers also show the mass of asteroids and ships. Default false."
+  },
+  "RecipeJSON": {
+    "Type": "Machine that runs this recipe, matching the machine block's Type (for example furnace or crusher). In Recipes/<machine>.json it comes from the file.",
+    "DurationSec": "Seconds the machine needs for one run. Default: 20.",
+    "PowerPerTickRequared": "Not used by the game yet.",
+    "Ingredient": "Item put into the machine and how many one run uses. Only one recipe per machine and ingredient. In recipes.json it defaults to the folder's entry.",
+    "Product": "Item the machine makes and how many per run."
+  },
+  "RecipejSONType": {
+    "Type": "Machine type for all recipes in this group, matching the machine block's Type (for example furnace or crusher).",
+    "Recipes": "Recipes this machine can process."
+  },
+  "RecipesJSON": {
+    "RecipeCatalog": "Machine recipe groups, one per machine type, each with its list of recipes."
+  },
+  "ShipCameraJSON": {
+    "Power": "Power used by the camera, in EU (0-8000, default 15). It must be powered to view through it."
+  },
+  "ShipConsoleJSON": {
+    "Buttons": "Number of key groups players can bind ship parts to (1-16, default 8).",
+    "Power": "Power used by the console, in EU (0-8000, default 15). It must be powered to sit at it.",
+    "Weapons": "If true, the console only controls cannons (weapons station). Default false.",
+    "Flight": "If true (default), the console flies the ship: automatic thrusters and mouse steering. Ignored when Weapons is on."
+  },
+  "ShipPhysicsSettings": {
+    "MaxSpeed": "Top speed of ships in blocks per second. Minimum 0.1. Default: 20.",
+    "MaxAngularSpeed": "Top turning speed of ships in radians per second (1.5 is about 86 degrees per second). Default: 1.5.",
+    "LinearDamping": "Speed a ship loses per second (blocks per second) when no thruster is firing. 0 = keeps drifting forever. Default: 0.25.",
+    "AngularDamping": "Turning speed a ship loses per second (radians per second) when no thruster is firing. 0 = keeps spinning. Default: 0.03.",
+    "LinearSnap": "Below this speed (blocks per second) a drifting ship stops completely. Default: 0.025.",
+    "AngularSnap": "Below this turning speed (radians per second) a drifting ship stops rotating. Default: 0.003.",
+    "MaxStep": "Longest physics step in seconds, 0.001-0.25. On slow frames ships move less instead of passing through blocks. Default: 0.05.",
+    "BoardDistance": "A player this close to a ship block (in blocks) starts moving with the ship. Minimum 0.5. Default: 2.5.",
+    "LeaveDistance": "A riding player farther than this from all ship blocks (in blocks) stops moving with it. At least BoardDistance + 0.5. Default: 5.",
+    "CollisionBounce": "How much a ship bounces back when it hits something, 0..1. 0 = no bounce, 1 = full bounce. Default: 0.2."
+  },
+  "SignJSON": {
+    "Width": "Width of the sign in blocks (1-4, default 1). Wider signs should use one texture spanning all cells (see CellPixels).",
+    "MaxLines": "Maximum number of text lines players can write (1-16, default 4).",
+    "MaxLineLength": "Maximum characters per line (1-256, default 15).",
+    "DefaultText": "Text a newly placed sign shows. Empty by default.",
+    "TextColor": "Default text colour: a colour name like white, black or red, or a hex code like #2b2118 (default).",
+    "Align": "Default text alignment: left, center (default) or right.",
+    "PixelsPerBlock": "Resolution of the text image per block of sign width (32-256, default 96). Higher = sharper text.",
+    "Margin": "Empty border around the text in pixels of the text image (default 4, up to a quarter of PixelsPerBlock).",
+    "Glow": "If true, the text is always fully lit, even in the dark. Default false = lit like the surroundings.",
+    "ViewDistance": "Distance in blocks up to which the text is drawn (4-256, default 48).",
+    "Font": "Path to a .ttf font file for the text. Empty (default) = the built-in pixel font."
+  },
+  "SoundGroup": {
+    "Place": "Sound name played when the block is placed. Default blockPlaceDefault; unknown names use the default.",
+    "Destroy": "Sound name played when the block is destroyed. Default blockDestroyDefault; unknown names use the default.",
+    "Footsteps": "List of sound names for footsteps on this block in gravity, one picked at random. Empty = stone sounds on asteroid blocks, metal on others."
+  },
+  "TextureConfig": {
+    "Type": "Not used by the game yet.",
+    "Name": "Not used by the game yet.",
+    "Path": "Not used by the game yet."
+  },
+  "TextureGroup": {
+    "Active": "Face textures used normally (and when a machine is working or powered).",
+    "Inactive": "Face textures used when the block is inactive (idle or without power) and for the build preview. Empty faces use the Active textures."
+  },
+  "ThrusterJSON": {
+    "Force": "Thrust pushing the ship away from the nozzle face (0-100000, default 20). The effect depends on the ship's total block mass.",
+    "Power": "Power used by the thruster, in EU (0-8000, default 8).",
+    "NozzleLength": "Number of blocks in front of the nozzle that must stay free (0-16, default 0 = none)."
+  },
+  "WeaponItemJSON": {
+    "Damage": "Not used by the game yet. Damage comes from the projectile's Damage and DamageBlocks.",
+    "ReloadTime": "Time between shots in ticks of 0.05 s (20 = 1 second). Default: 500 (25 seconds), so always set it.",
+    "Spread": "Random spread of shots, 0-255. 0 = perfectly accurate, 255 = up to about 15 degrees off the aim. Default: 0.",
+    "PowerUsage": "Player power used per shot. The weapon can't fire while the power bar is lower than this. 0 = free. Default: 0.",
+    "AnimationPushback": "How far the held weapon model kicks back on each shot (visual only), 0-255. Default: 0.",
+    "Recoil": "How hard each shot pushes the player backwards, 0-255. Most noticeable in zero gravity. 0 = no recoil. Default: 0.",
+    "AnimationSpeed": "Speed of the shot kick animation. 1 = normal, higher = faster. Default: 1.",
+    "Projectile": "Projectile fired, by its file name without .json from the Projectiles folder (for example p_laser). Extensions can only use base GameSet projectiles.",
+    "ShotSound": "Sound played on each shot. Sound name = audio file name without extension, global for the GameSet.",
+    "Ammo": "Item id used up as ammo, one per shot, taken from the hotbar or inventory. Empty = no ammo needed."
+  },
+  "WormSettingsJSON": {
+    "MinCount": "Fewest tunnels that start in each 32x32x32 block area of the asteroid.",
+    "MaxCount": "Most tunnels that start in each 32x32x32 block area.",
+    "DiameterInBlocks": "Tunnel width in blocks. 3 is player sized; 5+ makes large caves.",
+    "MaxTunnelLength": "Longest tunnel in blocks.",
+    "PathDeviation": "How curvy tunnels are: 0 = straight lines, 1 = they can turn in any direction.",
+    "StepSize": "Spacing between the carved spheres along a tunnel, as a share of the width. Smaller = smoother walls, larger = bumpier tunnels."
+  },
+  "ingredient": {
+    "Item": "Item or block id put into the machine. In recipes.json inside an entry folder it defaults to that entry.",
+    "Quantity": "How many one machine run uses, 1-255."
+  },
+  "ingridient": {
+    "Item": "Item or block id needed. $health or $power pays with the player's health or power.",
+    "Quantity": "How many are needed for one craft, 1-255."
+  },
+  "product": {
+    "Item": "Id of the item or block made. In blueprint.json or recipes.json inside an entry folder it can be left out for that entry.",
+    "Quantity": "How many are made per craft or machine run, 1-255."
+  }
+}

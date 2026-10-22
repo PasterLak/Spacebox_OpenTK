@@ -44,6 +44,23 @@ public static class GameSetCatalog
     };
 
     public static IEnumerable<string> ItemTypeNames => ItemTypes.Keys;
+
+    public static IEnumerable<Type> SchemaRoots()
+    {
+        foreach (var type in ItemTypes.Values) yield return type;
+        foreach (var type in FileSchemas.Values) yield return type;
+        yield return typeof(BlockJSON);
+        yield return typeof(BlueprintJSON);
+        yield return typeof(RecipeJSON);
+        yield return typeof(RecipejSONType);
+        yield return typeof(CraftingJSON);
+        yield return typeof(CraftingCategory);
+        yield return typeof(ProjectileJSON);
+        yield return typeof(LootEntry);
+        yield return typeof(MobJSON);
+        yield return typeof(AsteroidJSON);
+        yield return typeof(BiomeJSON);
+    }
     public static IEnumerable<string> BlockTypeNames => BlockFactory.Types;
 
     public static void RegisterItemType(string type, Type schema)

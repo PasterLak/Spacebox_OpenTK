@@ -23,6 +23,7 @@ public sealed class BlockEntryPreview : IEntryPreview
     public void DrawControls(EditorContext context, EditorEntry entry)
     {
         ImGui.Checkbox("Inactive textures", ref _inactive);
+        EditorWidgets.Tooltip("Show the textures the block uses when it is switched off or unpowered.");
         if (entry.File.IsDirty)
         {
             ImGui.SameLine();
@@ -131,13 +132,17 @@ public sealed class AsteroidEntryPreview : IEntryPreview
         float width = ImGui.GetContentRegionAvail().X;
         ImGui.SetNextItemWidth(width * 0.35f);
         ImGui.SliderInt("Radius", ref _radius, min, max);
+        EditorWidgets.Tooltip("Radius of the preview asteroid in blocks (between MinRadius and MaxRadius).");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(width * 0.25f);
         ImGui.InputInt("Seed", ref _seed);
+        EditorWidgets.Tooltip("Random seed of the preview. The same seed always gives the same asteroid; in worlds every asteroid has its own seed.");
         ImGui.SameLine();
         if (ImGui.Button("Generate")) _generation++;
+        EditorWidgets.Tooltip("Generates the asteroid again with the current settings and seed.");
         ImGui.SameLine();
         if (ImGui.Button("Random")) { _seed = Random.Shared.Next(); _generation++; }
+        EditorWidgets.Tooltip("Picks a new random seed: shows another asteroid of this type (another shape, size and ore layout).");
     }
 
     public void Apply(EditorContext context, EditorEntry entry, PreviewViewport viewport)
@@ -210,10 +215,13 @@ public sealed class MobEntryPreview : IEntryPreview
         float width = ImGui.GetContentRegionAvail().X;
         ImGui.SetNextItemWidth(width * 0.25f);
         ImGui.Combo("Action", ref _action, Actions, Actions.Length);
+        EditorWidgets.Tooltip("Animation the preview mob plays.");
         ImGui.SameLine();
         _bite |= ImGui.Button("Bite");
+        EditorWidgets.Tooltip("Plays the bite animation.");
         ImGui.SameLine();
         _hurt |= ImGui.Button("Hurt");
+        EditorWidgets.Tooltip("Plays the hurt flash.");
         ImGui.SameLine();
         ImGui.Checkbox("Ranges", ref _showRanges);
         EditorWidgets.Tooltip("Green: hit radius, red: attack range");

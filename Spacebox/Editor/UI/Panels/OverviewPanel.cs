@@ -33,6 +33,7 @@ public sealed class OverviewPanel : IEditorPanel, IDisposable
             DrawIcon(project, side);
             ImGui.TextWrapped(project.RootPath);
             if (ImGui.Button("Open folder")) OpenFolder(project.RootPath);
+            EditorWidgets.Tooltip("Opens the GameSet folder in the file explorer.");
             DrawConversion(context);
             ImGui.Separator();
             DrawStatistics();

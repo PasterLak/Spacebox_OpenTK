@@ -183,7 +183,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 ## Generation options
 
 - New generation features only apply to worlds with `GeneratorVersion` 2 (`GeneratorVersions.UsesRules`); version 1 must stay bit-identical (`LegacyGenerationTests`). Sector planning: `SectorAsteroidPlanner`, biome choice: `BiomeSelector`, per-asteroid inputs: `AsteroidGenerationContext` (saved by `AsteroidGenerationTags`), vein checks: `VeinRules`, caves: `AsteroidCavities`. New options get a JSON field with a default, a runtime field in `WorldGenerator.cs`, loading in `GenerationLoader` and a line in modding-guide "Generation".
-- Asteroid forms (version 3): `Shapes/Asteroids/` (`AsteroidShape`, `ShapeSdf`, `AsteroidSolidMask` + `AsteroidSolidMaskBuilder` for floating-block removal); a new form is a part or cut in `AsteroidShape` with its JSON section in `AsteroidShapeJSON`.
+- Asteroid forms (new worlds, version 2): `Shapes/Asteroids/` (`AsteroidShape`, `ShapeSdf`, `AsteroidSolidMask` + `AsteroidSolidMaskBuilder` for floating-block removal); a new form is a part or cut in `AsteroidShape` with its JSON section in `AsteroidShapeJSON`.
 
 ## Armor visuals
 
@@ -237,7 +237,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 ## GameSet editor
 
 - `Spacebox/Editor/`: `GameSetEditorScene` (+ `GameSetEditorLauncher` for `--editor`), `EditorContext` (project, runtime assets, previews, status), `Data/` (JSON files, entry sources, `JsonSchema`, `GameSetCatalog`), `UI/` (`EditorShell`, `JsonInspector`, `Fields/`, `Panels/`), `Preview/` (offscreen previews), `Generation/` (biome map).
-- New content type: add an `EntryDefinition` (+ schema DTO) to `GameSetCatalog` and a `CollectionPanel` in `EditorPanelFactory`. Blocks, items, blueprints, categories and processing recipes come from `GameSetSources` (flat files and folder format combined by `CompositeEntrySource`; `EntryFolderSource` for entry folders, `RecipeGroupFolderSource` for `Recipes/<type>.json`). Overview converts flat GameSets (`GameSetFolderConverter`). New reference/value widget: an `IJsonFieldEditor` (or `ReferenceFieldEditor`) registered in `JsonFieldEditors.CreateDefault`. New preview: `IPreviewContent` + `IEntryPreview`.
+- New content type: add an `EntryDefinition` (+ schema DTO) to `GameSetCatalog` and a `CollectionPanel` in `EditorPanelFactory`. Every new JSON field (any DTO the editor shows) needs a tooltip text in `Resources/Editor/field-help.json`; `FieldHelpTests` lists missing ones. Blocks, items, blueprints, categories and processing recipes come from `GameSetSources` (flat files and folder format combined by `CompositeEntrySource`; `EntryFolderSource` for entry folders, `RecipeGroupFolderSource` for `Recipes/<type>.json`). Overview converts flat GameSets (`GameSetFolderConverter`). New reference/value widget: an `IJsonFieldEditor` (or `ReferenceFieldEditor`) registered in `JsonFieldEditors.CreateDefault`. New preview: `IPreviewContent` + `IEntryPreview`.
 - The editor theme (`EditorTheme`) and font scale are applied only during the editor's GUI pass and restored from an `ImGuiStyleSnapshot`, so menu and game styles are untouched; the editor does not change fonts.
 - Previews read runtime assets (need Save & Reload after edits), projectile previews read the JSON live. GL work only in `IPreviewContent.Update/Render`; asteroid meshes are built on workers.
 

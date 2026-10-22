@@ -80,7 +80,9 @@ public sealed class EditorShell : IDisposable
             _context.SetStatus("Changes discarded");
         }
         ImGui.SameLine();
-        if (ImGui.Button("Back to menu"))
+        bool back = ImGui.Button("Back to menu");
+        EditorWidgets.Tooltip("Leave the editor. Asks first if there are unsaved changes.");
+        if (back)
         {
             if (dirty > 0) _confirmExit = true;
             else _context.RequestExit();
