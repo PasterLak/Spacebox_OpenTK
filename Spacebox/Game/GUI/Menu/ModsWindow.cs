@@ -83,7 +83,7 @@ public class ModsWindow : MenuWindow
         }
 
         ImGui.SetCursorPos(start);
-        if (mod.Icon != null) ImGui.Image(mod.Icon.Handle, new Vector2(rowHeight, rowHeight), new Vector2(0f, 1f), new Vector2(1f, 0f));
+        if (mod.Icon != null) ImGui.Image(mod.Icon.Handle, new Vector2(rowHeight, rowHeight));
         else ImGui.Dummy(new Vector2(rowHeight, rowHeight));
 
         ImGui.SameLine();

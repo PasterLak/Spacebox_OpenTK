@@ -116,6 +116,7 @@ Fixes
 - mods window list icons were upside down
 - ship viewer pictures had no skybox (new render textures left the texture binding cache stale)
 - ship viewer turned ships the wrong way: up now comes from the console top face, forward from the main thrusters and cannons
+- GameSet and texture pack icons showed the game icon (shared "icon" resource name) and were upside down
 - a world with a broken world.json no longer crashes the menu or the loading of other worlds
 - multiplayer: mobs no longer play the alert sound when they first appear for a joining client
 - multiplayer: explosions that broke blocks were dropped by every client (cell count limit too small), so clients never saw the blast

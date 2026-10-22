@@ -114,13 +114,7 @@ public sealed class TexturePacksWindow : MenuWindow
     {
         if (_icons.TryGetValue(pack.Folder, out var cached)) return cached;
 
-        Texture2D icon = null;
-        if (File.Exists(pack.IconPath))
-        {
-            icon = Resources.Load<Texture2D>(pack.IconPath);
-            icon.FlipY();
-            icon.FilterMode = FilterMode.Nearest;
-        }
+        var icon = MenuIcons.Load(pack.IconPath);
         _icons[pack.Folder] = icon;
         return icon;
     }

@@ -341,11 +341,6 @@ namespace Spacebox.Game.GUI.Menu
             {
                 var gameSetInfo = installed.Config;
                 gameSetInfo.Icon = LoadIcon(installed.Folder);
-                if (gameSetInfo.Icon != null)
-                {
-                    gameSetInfo.Icon.FlipY();
-                    gameSetInfo.Icon.FilterMode = FilterMode.Nearest;
-                }
 
                 installedGameSets.Add(installed);
                 allGameSets.Add(gameSetInfo);
@@ -358,15 +353,10 @@ namespace Spacebox.Game.GUI.Menu
 
 
             var iconPath = Path.Combine(modPath, "icon.png");
-            if (File.Exists(iconPath))
-            {
+            var icon = MenuIcons.Load(iconPath);
+            if (icon == null) Debug.Warning("No icon.png for GameSet found! Path: " + iconPath);
 
-                return Resources.Load<Texture2D>(iconPath);
-            }
-
-            Debug.Warning("No icon.png for GameSet found! Path: " + iconPath);
-
-            return null;
+            return icon;
         }
 
         public void CreateNewWorld()
