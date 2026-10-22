@@ -187,10 +187,12 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     {
 
         var savedEntities = WorldSaveLoad.ScanAllEntities(PositionIndex);
+        if (!Spacebox.Network.GameSession.IsRemoteClient) AddCachedEntities(savedEntities);
 
         foreach (var saved in savedEntities)
         {
             if (destroyedSinceSave != null && Array.IndexOf(destroyedSinceSave, saved.FileName) >= 0) continue;
+            if (!Spacebox.Network.GameSession.IsRemoteClient && WorldPersistenceManager.IsCachedInOtherSector(saved.Id, PositionIndex)) continue;
             saved.positionWorld = LocalToWorldPosition(saved.positionInSector);
 
             if (!_savedHere.Add(saved.Id))
@@ -215,6 +217,17 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 EntitiesGeneratedData.Add(saved.Id, saved);
                 octreeNotGenerated.Add(saved, saved.positionWorld);
             }
+        }
+    }
+
+    private void AddCachedEntities(List<NotGeneratedEntity> savedEntities)
+    {
+        var cachedEntities = new List<NotGeneratedEntity>();
+        WorldPersistenceManager.CollectCachedEntities(PositionIndex, cachedEntities);
+
+        foreach (var cached in cachedEntities)
+        {
+            if (!savedEntities.Exists(saved => saved.Id == cached.Id)) savedEntities.Add(cached);
         }
     }
 
@@ -532,7 +545,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             return;
         }
 
-        if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
+        if (WorldPersistenceManager.TryGetCachedEntity(data.Id, PositionIndex, out var cachedTag))
         {
             loadingEntities.Add(data.Id);
             LoadEntityAsync(() => cachedTag, data, false, null);
@@ -764,6 +777,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         }
 
         EntitiesDestroyed.Add(name);
+        WorldPersistenceManager.ForgetEntity(id);
         IsModified = true;
         Spacebox.Game.Protection.ClaimRegistry.ForgetEntity(id);
         EntityDestroyedPermanently?.Invoke(this, id);
@@ -1004,7 +1018,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                     CompoundTag tag = null;
                     string fileName = null;
 
-                    if (WorldPersistenceManager.TryGetCachedEntity(data.Id, out var cachedTag))
+                    if (WorldPersistenceManager.TryGetCachedEntity(data.Id, PositionIndex, out var cachedTag))
                     {
                         tag = cachedTag;
                     }

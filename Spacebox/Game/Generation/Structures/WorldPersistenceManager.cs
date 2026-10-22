@@ -5,6 +5,7 @@ using Engine;
 using Engine.Multithreading;
 using OpenTK.Mathematics;
 using Spacebox.Game.GameMath;
+using Spacebox.Game.Generation.Structures;
 
 namespace Spacebox.Game.Generation
 {
@@ -57,15 +58,25 @@ namespace Spacebox.Game.Generation
             var tag = NBTHelper.SpaceEntityToTag(entity);
             var sectorIndex = entity.Sector?.PositionIndex ?? SpaceMath.Sector.GetSectorIndex(entity.PositionWorld);
 
+            CacheEntityTag(entity.EntityID, tag, sectorIndex, entity.SavedSectorIndex, entity.Name);
+        }
+
+        public static void CacheEntityTag(long id, CompoundTag tag, Vector3i sectorIndex, Vector3i? previousSectorIndex, string name)
+        {
             var data = new CachedEntityData
             {
                 Tag = tag,
                 SectorIndex = sectorIndex,
-                PreviousSectorIndex = entity.SavedSectorIndex,
-                Name = entity.Name
+                PreviousSectorIndex = previousSectorIndex,
+                Name = name
             };
 
-            _modifiedEntitiesCache.AddOrUpdate(entity.EntityID, data, (key, oldValue) => data);
+            _modifiedEntitiesCache.AddOrUpdate(id, data, (key, oldValue) => data);
+        }
+
+        public static void ForgetEntity(long id)
+        {
+            _modifiedEntitiesCache.TryRemove(id, out _);
         }
 
         public static bool TryGetCachedEntity(long id, out CompoundTag tag)
@@ -77,6 +88,44 @@ namespace Spacebox.Game.Generation
             }
             tag = null;
             return false;
+        }
+
+        public static bool TryGetCachedEntity(long id, Vector3i sectorIndex, out CompoundTag tag)
+        {
+            if (_modifiedEntitiesCache.TryGetValue(id, out var data) && data.SectorIndex == sectorIndex)
+            {
+                tag = data.Tag;
+                return true;
+            }
+            tag = null;
+            return false;
+        }
+
+        public static bool IsCachedInOtherSector(long id, Vector3i sectorIndex)
+        {
+            return _modifiedEntitiesCache.TryGetValue(id, out var data) && data.SectorIndex != sectorIndex;
+        }
+
+        public static void CollectCachedEntities(Vector3i sectorIndex, List<NotGeneratedEntity> output)
+        {
+            foreach (var pair in _modifiedEntitiesCache)
+            {
+                var data = pair.Value;
+                if (data.SectorIndex != sectorIndex || data.Tag == null) continue;
+
+                var x = data.Tag.Get<FloatTag>(NBTKey.ENTITY.local_x);
+                var y = data.Tag.Get<FloatTag>(NBTKey.ENTITY.local_y);
+                var z = data.Tag.Get<FloatTag>(NBTKey.ENTITY.local_z);
+                if (x == null || y == null || z == null) continue;
+
+                output.Add(new NotGeneratedEntity
+                {
+                    Id = pair.Key,
+                    positionInSector = new Vector3(x.Value, y.Value, z.Value),
+                    FileName = data.Name,
+                    radiusBlocks = 32
+                });
+            }
         }
 
         public static void SaveAllCacheToDiskAsync(string worldPath)
