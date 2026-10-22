@@ -1,116 +1,156 @@
 {
-        "Id": "heavy",
-        "Name": "Heavy asteroid",
-      
-        "MinRadius": 42,
-        "MaxRadius": 64,
-        "DensityThreshold": 30,
-        "NoiseOctaves": 3,
-        "NoiseScale": 1,
-        "HasCavities": true,
-        "HasOreDeposits": true,
-        "UsePerlinWorms": true,
-        "Shape": { "Chance": 70, "Stretch": 0.3, "Warp": 0.35, "Roughness": 0.22, "Lobes": { "Chance": 70, "MinCount": 2, "MaxCount": 4, "MinSize": 0.3, "MaxSize": 0.6 }, "Double": { "Chance": 15, "MinSize": 0.55, "MaxSize": 0.95, "Neck": 0.55 }, "Torus": { "Chance": 5, "MinTube": 0.25, "MaxTube": 0.35 }, "Bite": { "Chance": 12, "MinSize": 0.35, "MaxSize": 0.6 }, "Craters": { "MinCount": 1, "MaxCount": 5, "MinSize": 0.1, "MaxSize": 0.25 } },
-        "Mobs": [ { "Mob": "mineral_parasite", "Chance": 100, "MaxPerEntity": 4, "MinDepth": 0.2 } ],
-        "WormSettings": {
-            "MinCount": 5,
-            "MaxCount": 15,
-            "DiameterInBlocks": 5,
-            "MaxTunnelLength": 64,
-            "PathDeviation": 0.7,
-            "StepSize": 1
-        },
-        "Layers": [
-            {
-                "Name": "Stone",
-                "FillBlockID": "light_rock",
-                "Ratio": 100,
-                "Veins": [
-                    {
-                        "BlockId": "cobaltite_rock",
-                        "SpawnChance": 25000,
-                        "MinVeinSize": 4,
-                        "MaxVeinSize": 10,
-                        "CanSpawnNearVoid": true
-                    },
-                    {
-                        "BlockId": "ice_rock",
-                        "SpawnChance": 25000,
-                        "MinVeinSize": 4,
-                        "MaxVeinSize": 10,
-                        "CanSpawnNearVoid": true
-                    },
-                    {
-                        "BlockId": "aluminium_ore",
-                        "SpawnChance": 15000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
-                        "CanSpawnNearVoid": false
-                    },
-                    {
-                        "BlockId": "iron_ore",
-                        "SpawnChance": 15000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 4,
-                        "CanSpawnNearVoid": false
-                    }
-                ]
-            },
-            {
-                "Name": "Stone",
-                "FillBlockID": "medium_rock",
-                "Ratio": 70,
-                "Veins": [
-                    {
-                        "BlockId": "titanium_ore",
-                        "SpawnChance": 12000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
-                        "CanSpawnNearVoid": true
-                    },
-                    {
-                        "BlockId": "thulium_ore",
-                        "SpawnChance": 8000,
-                        "MinVeinSize": 2,
-                        "MaxVeinSize": 6,
-                        "CanSpawnNearVoid": true
-                    },
-                    {
-                        "BlockId": "uranium_ore",
-                        "SpawnChance": 2000,
-                        "MinVeinSize": 1,
-                        "MaxVeinSize": 2,
-                        "CanSpawnNearVoid": true
-                    },
-                     {
-                        "BlockId": "void",
-                        "SpawnChance": 500,
-                        "MinVeinSize": 16,
-                        "MaxVeinSize": 64,
-                        "CanSpawnNearVoid": true
-                    }
-                ]
-            },
-            {
-                "Name": "Stone",
-                "FillBlockID": "heavy_rock",
-                "Ratio": 50,
-                "Veins": [
-                    {
-                        "BlockId": "obscurium_ore",
-                        "SpawnChance": 5000,
-                        "MinVeinSize": 1,
-                        "MaxVeinSize": 2,
-                        "CanSpawnNearVoid": false
-                    },
-                     {
-                        "BlockId": "void",
-                        "SpawnChance": 2000,
-                        "MinVeinSize": 16,
-                        "MaxVeinSize": 64,
-                        "CanSpawnNearVoid": true
-                    }
-                ]
-            }
-        ]
+  "Id": "heavy",
+  "Name": "Heavy asteroid",
+  "MinRadius": 42,
+  "MaxRadius": 64,
+  "DensityThreshold": 30,
+  "NoiseOctaves": 3,
+  "NoiseScale": 1,
+  "HasCavities": true,
+  "HasOreDeposits": true,
+  "UsePerlinWorms": true,
+  "Shape": {
+    "Chance": 70,
+    "Stretch": 0.3,
+    "Warp": 0.151,
+    "Roughness": 0.22,
+    "Lobes": {
+      "Chance": 56,
+      "MinCount": 2,
+      "MaxCount": 4,
+      "MinSize": 0.3,
+      "MaxSize": 0.6
+    },
+    "Double": {
+      "Chance": 22,
+      "MinSize": 0.55,
+      "MaxSize": 0.95,
+      "Neck": 0.55
+    },
+    "Torus": {
+      "Chance": 17,
+      "MinTube": 0.25,
+      "MaxTube": 0.35
+    },
+    "Bite": {
+      "Chance": 23,
+      "MinSize": 0.35,
+      "MaxSize": 0.6
+    },
+    "Craters": {
+      "MinCount": 1,
+      "MaxCount": 5,
+      "MinSize": 0.1,
+      "MaxSize": 0.25
     }
+  },
+  "Mobs": [
+    {
+      "Mob": "mineral_parasite",
+      "Chance": 100,
+      "MaxPerEntity": 12,
+      "MinDepth": 0.2
+    }
+  ],
+  "WormSettings": {
+    "MinCount": 5,
+    "MaxCount": 15,
+    "DiameterInBlocks": 5,
+    "MaxTunnelLength": 64,
+    "PathDeviation": 0.7,
+    "StepSize": 1
+  },
+  "Layers": [
+    {
+      "Name": "Stone",
+      "FillBlockID": "light_rock",
+      "Ratio": 100,
+      "Veins": [
+        {
+          "BlockId": "cobaltite_rock",
+          "SpawnChance": 25000,
+          "MinVeinSize": 4,
+          "MaxVeinSize": 10,
+          "CanSpawnNearVoid": true
+        },
+        {
+          "BlockId": "ice_rock",
+          "SpawnChance": 25000,
+          "MinVeinSize": 4,
+          "MaxVeinSize": 10,
+          "CanSpawnNearVoid": true
+        },
+        {
+          "BlockId": "aluminium_ore",
+          "SpawnChance": 15000,
+          "MinVeinSize": 2,
+          "MaxVeinSize": 6,
+          "CanSpawnNearVoid": false
+        },
+        {
+          "BlockId": "iron_ore",
+          "SpawnChance": 15000,
+          "MinVeinSize": 2,
+          "MaxVeinSize": 4,
+          "CanSpawnNearVoid": false
+        }
+      ]
+    },
+    {
+      "Name": "Stone",
+      "FillBlockID": "medium_rock",
+      "Ratio": 70,
+      "Veins": [
+        {
+          "BlockId": "titanium_ore",
+          "SpawnChance": 12000,
+          "MinVeinSize": 2,
+          "MaxVeinSize": 6,
+          "CanSpawnNearVoid": true
+        },
+        {
+          "BlockId": "thulium_ore",
+          "SpawnChance": 8000,
+          "MinVeinSize": 2,
+          "MaxVeinSize": 6,
+          "CanSpawnNearVoid": true
+        },
+        {
+          "BlockId": "uranium_ore",
+          "SpawnChance": 2000,
+          "MinVeinSize": 1,
+          "MaxVeinSize": 2,
+          "CanSpawnNearVoid": true
+        },
+        {
+          "BlockId": "void",
+          "SpawnChance": 500,
+          "MinVeinSize": 16,
+          "MaxVeinSize": 64,
+          "CanSpawnNearVoid": true
+        }
+      ]
+    },
+    {
+      "Name": "Stone",
+      "FillBlockID": "heavy_rock",
+      "Ratio": 50,
+      "Veins": [
+        {
+          "BlockId": "obscurium_ore",
+          "SpawnChance": 5000,
+          "MinVeinSize": 1,
+          "MaxVeinSize": 2,
+          "CanSpawnNearVoid": false
+        },
+        {
+          "BlockId": "void",
+          "SpawnChance": 2000,
+          "MinVeinSize": 16,
+          "MaxVeinSize": 64,
+          "CanSpawnNearVoid": true
+        }
+      ]
+    }
+  ]
+}
