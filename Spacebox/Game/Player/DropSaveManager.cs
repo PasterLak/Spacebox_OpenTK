@@ -54,10 +54,7 @@ public static class DropSaveManager
 
     public static void SaveToFile(List<DropSaveData> dropData, string filePath)
     {
-        if(dropData == null || dropData.Count == 0)
-        {
-            return;
-        }
+        dropData ??= new List<DropSaveData>();
         try
         {
             var json = JsonSerializer.Serialize(dropData, JsonOptions);

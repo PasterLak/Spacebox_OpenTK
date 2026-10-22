@@ -217,6 +217,7 @@ Fixes
 - multiplayer: clients could rename any storage and start, cancel or clear any ore scanner from any distance; the server checks reach (16 m)
 - multiplayer: / command output sent to an admin could include unrelated log lines from worker threads (and the shared list was written from two threads); only lines from the command itself are captured
 - multiplayer: player names like CON, NUL or COM1 were accepted although their save file cannot be written on Windows; they are refused on join
+- picked-up drops came back after reloading a world saved with no drops left (old drop.json was kept)
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

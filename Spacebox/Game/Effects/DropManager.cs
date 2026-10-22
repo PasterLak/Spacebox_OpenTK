@@ -855,10 +855,6 @@ namespace Spacebox.Game.Effects
 
         public void SaveDrops(string filePath)
         {
-            if (_activeDrops.Count == 0)
-            {
-                return;
-            }
             var dropData = DropSaveManager.SerializeDrops(_activeDrops);
             DropSaveManager.SaveToFile(dropData, filePath);
         }
