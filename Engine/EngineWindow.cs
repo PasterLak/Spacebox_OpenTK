@@ -129,11 +129,13 @@ namespace Engine
             InputManager0.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
         }
 
+        internal const string PassthroughShaderCode = "--Vert\r\n\r\n#version 330 core\r\nlayout (location = 0) in vec2 aPos;\r\nlayout (location = 1) in vec2 aTexCoords;\r\nout vec2 TexCoords;\r\nvoid main()\r\n{\r\n    TexCoords = aTexCoords;\r\n    gl_Position = vec4(aPos, 0.0, 1.0);\r\n}\r\n\r\n\r\n--Frag\r\n\r\n#version 330 core\r\nout vec4 FragColor;\r\nin vec2 TexCoords;\r\nuniform sampler2D scene;\r\nvoid main()\r\n{\r\n    FragColor = texture(scene, TexCoords);\r\n   \r\n}\r\n";
+
         private void SetupDefaultPostProcessing()
         {
            // var passthroughShader = Resources.Load<Shader>("Resources/Shaders/PostProcessing/passthrough", true);
 
-            var code = "--Vert\r\n\r\n#version 330 core\r\nlayout (location = 0) in vec2 aPos;\r\nlayout (location = 1) in vec2 aTexCoords;\r\nout vec2 TexCoords;\r\nvoid main()\r\n{\r\n    TexCoords = aTexCoords;\r\n    gl_Position = vec4(aPos, 0.0, 1.0);\r\n}\r\n\r\n\r\n--Frag\r\n\r\n#version 330 core\r\nout vec4 FragColor;\r\nin vec2 TexCoords;\r\nuniform sampler2D scene;\r\nvoid main()\r\n{\r\n    FragColor = texture(scene, TexCoords);\r\n   \r\n}\r\n";
+            var code = PassthroughShaderCode;
 
             var passthroughShader = new Shader(code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
             Resources.AddResource("passthrough_shader", passthroughShader, true);

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Glslang.NET" Version="1.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
     <PackageReference Include="xunit" Version="2.5.3" />
@@ -26,6 +27,13 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Engine.Tests\Shaders\GlslReferenceCompiler.cs" Link="Shaders\GlslReferenceCompiler.cs" />
+    <Compile Include="..\Engine.Tests\Shaders\GlslPortabilityLint.cs" Link="Shaders\GlslPortabilityLint.cs" />
+    <Compile Include="..\Engine.Tests\Shaders\ShaderValidator.cs" Link="Shaders\ShaderValidator.cs" />
+    <Compile Include="..\Engine.Tests\Shaders\ShaderSources.cs" Link="Shaders\ShaderSources.cs" />
   </ItemGroup>
 
   <ItemGroup>

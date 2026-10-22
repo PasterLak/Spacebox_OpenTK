@@ -70,6 +70,7 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 ## Rendering
 
 - Shaders are single files with `--Vert` / `--Frag` sections, loaded by path without extension; hot-reloaded via a file watcher (reload runs on the main thread). UBOs are bound automatically.
+- Shader portability tests (GPU vendors differ: NVIDIA accepts code that AMD/Intel/macOS reject): every game shader file (`Spacebox.Tests/Shaders/ShaderCompileTests`) and every shader embedded in engine code (`Engine.Tests/Shaders/EmbeddedShaderCompileTests`, the sources are `internal` for the tests) is checked by `ShaderValidator` = the Khronos reference compiler glslang (Glslang.NET, test-only package; desktop GLSL, forward-compatible, per-stage parse and program link) plus `GlslPortabilityLint` (names removed from the core profile such as `texture2D`, `gl_FragColor`, `varying`). `ShaderPortabilityCanaryTests` keep a list of typical driver differences that must stay rejected. New shaders embedded in C# need a case in `EmbeddedShaderCompileTests`.
 - Matrix convention is row-vector: `vec4(aPos, 1) * model * view * projection`; `SetMatrix4` transposes by default.
 - `LightSystem` limits: `MAX_DIR = 4`, `MAX_POINT = 64`, `MAX_SPOT = 32`.
 - Materials derive from `MaterialBase` (shader, color, render mode/queue, textures, `Apply(node)`).

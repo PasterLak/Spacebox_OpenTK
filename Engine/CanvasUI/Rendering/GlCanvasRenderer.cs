@@ -1,4 +1,4 @@
-using Engine.Graphics;
+﻿using Engine.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -10,7 +10,7 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
     private const int FloatsPerVertex = 8;
     private const int FloatsPerQuad = FloatsPerVertex * 4;
 
-    private static readonly string[] ShaderCode =
+    internal static readonly string[] ShaderCode =
     {
         "--Vert",
         "#version 330 core",

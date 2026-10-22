@@ -1,4 +1,4 @@
-using Engine.Graphics.Debugging;
+﻿using Engine.Graphics.Debugging;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -6,7 +6,7 @@ namespace Engine.Graphics.Occlusion;
 
 public sealed class OcclusionBoxRenderer : IDisposable
 {
-    private static readonly string[] Source =
+    internal static readonly string[] Source =
     {
         "--Vert",
         "#version 330 core",

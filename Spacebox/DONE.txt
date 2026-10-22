@@ -301,6 +301,7 @@ Fixes
 - unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
 - entering a sector while it was still loading in the background could drop its unsaved changes (mined-out asteroids came back)
 Engine
+- shader tests: every game and engine shader is checked with the GLSL reference compiler (strict like AMD/Intel drivers) and a lint for removed core-profile names
 - CanvasUI: HFlowContainer; ItemList clips its rows and scrolls to the selection after the first layout
 - WAV sounds load from read-only installs (files opened read-only and shared)
 - console log keeps the last 5000 messages, draws the last 400, thread-safe for every log call; no log line per disposed GL object

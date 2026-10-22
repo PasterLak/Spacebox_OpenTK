@@ -1,4 +1,4 @@
-using Engine.Graphics;
+﻿using Engine.Graphics;
 using Engine.Graphics.Debugging;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -7,7 +7,7 @@ namespace Engine.PostProcessing;
 
 public sealed class GBufferDebugPass : IDisposable
 {
-    private static readonly string[] Source =
+    internal static readonly string[] Source =
     {
         "--Vert",
         "#version 330 core",

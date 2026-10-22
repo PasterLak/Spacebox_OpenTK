@@ -4,25 +4,7 @@ namespace Spacebox.Tests.Assets;
 
 public sealed class ShippedResourceTests
 {
-    private static readonly string[] BuiltinFunctionNames = { "noise1", "noise2", "noise3", "noise4" };
     private static readonly Regex TexturePath = new Regex(@"""(Resources/Textures/[^""]+\.png)""", RegexOptions.Compiled);
-
-    [Fact]
-    public void Shaders_DoNotRedefineBuiltinFunctions()
-    {
-        string shaders = Path.Combine(GameFolder(), "Resources", "Shaders");
-        var problems = new List<string>();
-        foreach (var file in Directory.EnumerateFiles(shaders, "*.glsl", SearchOption.AllDirectories))
-        {
-            string source = File.ReadAllText(file);
-            foreach (var name in BuiltinFunctionNames)
-            {
-                if (Regex.IsMatch(source, $@"\b(float|vec[234])\s+{name}\s*\(")) problems.Add($"{Path.GetFileName(file)} defines {name}");
-            }
-        }
-
-        Assert.Empty(problems);
-    }
 
     [Fact]
     public void TexturePathsInCode_PointToExistingFiles()
