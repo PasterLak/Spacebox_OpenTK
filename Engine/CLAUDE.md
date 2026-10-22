@@ -24,7 +24,7 @@ Game-independent engine over OpenTK (GL 3.3 core). Namespace `Engine.*`. Must ne
 | `UI/` | `DevGui`, `Canvas`/`Node2D`/`Rect` (old ImGui-based 2D layer, rarely used) |
 | `CanvasUI/` | Godot-like retained UI (namespace `Engine.CanvasUI`, see below): `CanvasItem` tree, `Node2D`/`Sprite2D`, `Control` with anchors/offsets/size flags, containers, controls, themes and style boxes, `SkiaCanvasFont`, batched `GlCanvasRenderer`, `CanvasRoot` (virtual resolution, input), `CanvasLayer` (engine glue) |
 | `Input/` | `Input` (raw keyboard/mouse state); `InputPro/` the current input system (`InputManager.Instance`); `InputManager0`/`InputAction0` legacy input — do not use in new code |
-| `Audio/` | OpenAL `AudioDevice`, `AudioClip`, `AudioSource`, `AudioMixer` (master + channels Effects/Music/Ambient/UI, `Muted`; set a source's `Channel`), Ogg/Wave loaders |
+| `Audio/` | OpenAL `AudioDevice` (follows the system default output: `AudioDeviceWatcher` reopens the device with `ALC_SOFT_reopen_device`, keeping all sources, when the default changes (`ALC_SOFT_system_events` if the OpenAL build has it, else `WindowsDefaultOutputMonitor` polls the Windows Core Audio default endpoint once a second) or the device disconnects; Linux/macOS backends follow the default themselves), `AudioClip`, `AudioSource`, `AudioMixer` (master + channels Effects/Music/Ambient/UI, `Muted`; set a source's `Channel`), Ogg/Wave loaders |
 | `Animation/` | `Animator`, move/rotate tweens |
 | `ParticleSystem/` | Emitters and renderer |
 | `Commands/` | Debug-console commands (`CommandManager`, `CommandBase`) |

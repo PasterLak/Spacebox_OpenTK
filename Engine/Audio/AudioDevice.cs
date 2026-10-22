@@ -12,6 +12,7 @@ namespace Engine.Audio
         public ALContext Context { get; private set; }
 
         private bool isDisposed = false;
+        private AudioDeviceWatcher _watcher;
 
         private static bool _unavailable;
 
@@ -72,11 +73,14 @@ namespace Engine.Audio
             }
 
             CheckALError("Initializing AudioManager");
+            _watcher = AudioDeviceWatcher.TryCreate(Device);
+            string switching = _watcher == null ? "no automatic switching" : _watcher.FollowsDefaultDevice ? "follows the system default" : "switches only when disconnected";
+            Debug.Log($"[Audio] Output: {ALC.GetString(Device, AlcGetString.AllDevicesSpecifier)} ({switching})");
         }
 
         public void Update()
         {
-
+            _watcher?.Update();
         }
 
         public void Dispose()

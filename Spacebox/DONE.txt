@@ -133,6 +133,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- sound follows the system output: switching from headphones to speakers (or unplugging a device) moves game audio to the new default device without losing sounds
 - game window showed no icon in the taskbar: the icon is now set when the window is created, in 16-256 px sizes
 - "Fly 100 blocks with a ship" and Distance In Ships counted jetpack flying inside a ship; now only the ship's own movement counts (also through ship cameras)
 - flashlight beam drew a white screen on some graphics drivers (shader function named like a GLSL built-in)
