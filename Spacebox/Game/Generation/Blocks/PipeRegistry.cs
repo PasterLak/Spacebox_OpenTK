@@ -22,6 +22,11 @@ public static class PipeRegistry
         }
     }
 
+    public static void UnregisterEntity(SpaceEntity entity)
+    {
+        _pipes.RemoveAll(pipe => pipe.Entity == entity);
+    }
+
     public static void Clear()
     {
         _pipes.Clear();

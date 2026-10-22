@@ -1323,6 +1323,8 @@ namespace Spacebox.Game.Generation
             _invisibleBlocks?.Dispose();
             _shipControl?.Dispose();
             GravityField.UnregisterEntity(this);
+            PipeRegistry.UnregisterEntity(this);
+            AnalyzerRegistry.UnregisterEntity(this);
             Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.UnregisterEntity(this);
             Spacebox.Game.Protection.ClaimRegistry.UnregisterEntity(this);
             Sector = null;

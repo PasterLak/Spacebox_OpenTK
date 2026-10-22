@@ -16,6 +16,11 @@ public static class AnalyzerRegistry
         _analyzers.Remove(block);
     }
 
+    public static void UnregisterEntity(SpaceEntity entity)
+    {
+        _analyzers.RemoveWhere(analyzer => analyzer.Entity == entity);
+    }
+
     public static void Clear()
     {
         _analyzers.Clear();

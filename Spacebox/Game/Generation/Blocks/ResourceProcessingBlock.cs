@@ -42,6 +42,8 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntit
         _cell = localCell;
     }
 
+    public bool IsEntityDisposed => _entity != null && _entity.IsDisposed;
+
     public void OnRemovedFromEntity()
     {
         _entity = null;

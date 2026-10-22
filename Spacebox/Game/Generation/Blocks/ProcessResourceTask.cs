@@ -15,7 +15,7 @@ namespace Spacebox.Game
 
         private void OnCompleteHandler()
         {
-            if (_block == null || _block.Durability == 0 || !_block.IsRunning)
+            if (_block == null || _block.Durability == 0 || !_block.IsRunning || _block.IsEntityDisposed)
             {
                 base.Stop();
                 return;
