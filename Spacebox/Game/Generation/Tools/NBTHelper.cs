@@ -1,6 +1,7 @@
 ﻿using Engine;
 using OpenTK.Mathematics;
 using SharpNBT;
+using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Resource;
@@ -77,10 +78,7 @@ namespace Spacebox.Game.Generation.Tools
 
         private static Vector3 ReadWorldPosition(CompoundTag tag, Sector sector)
         {
-            var x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x);
-            var y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y);
-            var z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z);
-            return sector.LocalToWorldPosition(new Vector3(x, y, z));
+            return EntityTagLocation.ReadWorld(tag, sector.PositionWorld);
         }
 
         private static Asteroid CreateAsteroid(CompoundTag tag, Sector sector, NotGeneratedEntity generationData)
@@ -228,9 +226,7 @@ namespace Spacebox.Game.Generation.Tools
 
             var localPos = entity.PositionWorld - sectorOrigin;
 
-            root.Add(new FloatTag(NBTKey.ENTITY.local_x, localPos.X));
-            root.Add(new FloatTag(NBTKey.ENTITY.local_y, localPos.Y));
-            root.Add(new FloatTag(NBTKey.ENTITY.local_z, localPos.Z));
+            EntityTagLocation.Write(root, SpaceMath.Sector.GetSectorIndex(sectorOrigin), localPos);
 
             Quaternion rot = entity.Orientation;
 

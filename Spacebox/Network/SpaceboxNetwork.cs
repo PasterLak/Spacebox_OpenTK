@@ -39,5 +39,6 @@ public static class SpaceboxNetwork
         ClaimNetwork.Register(network);
         ServerRulesNetwork.Register(network);
         Mobs.MobSpawnNetwork.Register(network);
+        Players.ReconstructionNetwork.Register(network);
     }
 }

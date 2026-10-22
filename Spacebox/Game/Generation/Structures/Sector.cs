@@ -192,7 +192,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private void ScanAndRegisterCustomEntities(string[] destroyedSinceSave)
     {
 
-        var savedEntities = WorldSaveLoad.ScanAllEntities(PositionIndex);
+        var savedEntities = StoredEntities();
         if (!Spacebox.Network.GameSession.IsRemoteClient) AddCachedEntities(savedEntities);
 
         foreach (var saved in savedEntities)
@@ -235,6 +235,27 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         {
             if (!savedEntities.Exists(saved => saved.Id == cached.Id)) savedEntities.Add(cached);
         }
+    }
+
+    private List<NotGeneratedEntity> StoredEntities()
+    {
+        var list = new List<NotGeneratedEntity>();
+        if (Spacebox.Network.GameSession.IsRemoteClient) return list;
+
+        var records = new List<EntityRecord>();
+        WorldPersistenceManager.CollectStoredEntities(PositionIndex, records);
+        for (int i = 0; i < records.Count; i++)
+        {
+            var record = records[i];
+            list.Add(new NotGeneratedEntity
+            {
+                Id = record.Id,
+                positionInSector = record.Local,
+                FileName = record.Name,
+                radiusBlocks = 32
+            });
+        }
+        return list;
     }
 
     private void GenerateDataForPoints(Vector3[] positions)
@@ -559,10 +580,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             return;
         }
 
-        string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, PositionIndex);
-
         string fileName = !string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id.ToString();
-        string filePath = EntityFiles.PathOf(sectorPath, fileName);
+        string filePath = EntityFiles.PathInWorld(World.WorldData.WorldFolderPath, fileName);
 
         if (File.Exists(filePath))
         {
@@ -704,6 +723,17 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         sectorOctree.Add(entity, positionWorld);
         world?.RequestEntityCheck(entity);
+        EntityAdded?.Invoke(entity);
+    }
+
+    public static event Action<SpaceEntity> EntityAdded;
+
+    public bool RequestEntityLoad(long entityId)
+    {
+        if (!EntitiesGeneratedData.TryGetValue(entityId, out var data)) return false;
+
+        GenerateAsteroidFromData(data);
+        return true;
     }
 
     internal void ReleaseEntity(SpaceEntity entity)
@@ -1013,7 +1043,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             return;
         }
 
-        string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, PositionIndex);
+        string worldPath = World.WorldData.WorldFolderPath;
         int totalToLoad = nearby.Count;
         int loadedCount = 0;
 
@@ -1034,7 +1064,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                     else
                     {
                         fileName = EntityFiles.NameOf(!string.IsNullOrEmpty(data.FileName) ? data.FileName : data.Id.ToString());
-                        tag = WorldSaveLoad.LoadSpaceEntityTagFromFile(EntityFiles.PathOf(sectorPath, fileName));
+                        tag = WorldSaveLoad.LoadSpaceEntityTagFromFile(EntityFiles.PathInWorld(worldPath, fileName));
                     }
 
                     if (tag == null && CanGenerateFresh(data))

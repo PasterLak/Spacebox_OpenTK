@@ -16,9 +16,11 @@ namespace Spacebox.Game.Generation
         {
             public CompoundTag Tag;
             public Vector3i SectorIndex;
-            public Vector3i? PreviousSectorIndex;
+            public Vector3 Local;
             public string Name;
         }
+
+        public static EntityCatalog Catalog { get; private set; } = new EntityCatalog();
 
         private static ConcurrentDictionary<long, CachedEntityData> _modifiedEntitiesCache = new();
 
@@ -64,16 +66,16 @@ namespace Spacebox.Game.Generation
             var tag = NBTHelper.SpaceEntityToTag(entity);
             var sectorIndex = entity.Sector?.PositionIndex ?? SpaceMath.Sector.GetSectorIndex(entity.PositionWorld);
 
-            CacheEntityTag(entity.EntityID, tag, sectorIndex, entity.SavedSectorIndex, entity.Name);
+            CacheEntityTag(entity.EntityID, tag, sectorIndex, entity.Name);
         }
 
-        public static void CacheEntityTag(long id, CompoundTag tag, Vector3i sectorIndex, Vector3i? previousSectorIndex, string name)
+        public static void CacheEntityTag(long id, CompoundTag tag, Vector3i sectorIndex, string name)
         {
             var data = new CachedEntityData
             {
                 Tag = tag,
                 SectorIndex = sectorIndex,
-                PreviousSectorIndex = previousSectorIndex,
+                Local = EntityTagLocation.TryReadLocal(tag, out var local) ? local : Vector3.Zero,
                 Name = name
             };
 
@@ -134,6 +136,69 @@ namespace Spacebox.Game.Generation
             }
         }
 
+        public static void LoadCatalog(string worldPath)
+        {
+            Catalog = EntityCatalogFile.Load(worldPath, true);
+            Debug.Log($"[Persistence] Entity index loaded: {Catalog.Count} saved entities");
+        }
+
+        public static void SaveCatalog(string worldPath)
+        {
+            try
+            {
+                EntityCatalogFile.Write(worldPath, Catalog);
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[Persistence] Failed to save the entity index: {ex.Message}");
+            }
+        }
+
+        public static bool TryLocate(long id, out EntityRecord record)
+        {
+            if (_modifiedEntitiesCache.TryGetValue(id, out var data))
+            {
+                record = new EntityRecord(id, data.Name, data.SectorIndex, data.Local);
+                return true;
+            }
+
+            return Catalog.TryGet(id, out record);
+        }
+
+        public static void CollectStoredEntities(Vector3i sectorIndex, List<EntityRecord> output)
+        {
+            Catalog.CollectInSector(sectorIndex, output);
+        }
+
+        public static void WriteEntityFile(string worldPath, SpaceEntity entity, CompoundTag tag)
+        {
+            var sectorIndex = entity.Sector?.PositionIndex ?? SpaceMath.Sector.GetSectorIndex(entity.PositionWorld);
+            var local = entity.PositionWorld - SpaceMath.Sector.GetSectorPosition(sectorIndex);
+            WriteEntityFile(worldPath, new EntityRecord(entity.EntityID, entity.Name, sectorIndex, local), tag);
+        }
+
+        private static void WriteEntityFile(string worldPath, EntityRecord record, CompoundTag tag)
+        {
+            string folder = EntityFiles.FolderOf(worldPath);
+            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+            if (Catalog.TryGet(record.Id, out var old) && old.Name != record.Name)
+            {
+                string oldPath = EntityFiles.PathOf(folder, old.Name);
+                if (File.Exists(oldPath)) File.Delete(oldPath);
+            }
+
+            AtomicFile.Write(EntityFiles.PathOf(folder, record.Name), temp => NbtFile.Write(temp, tag, FormatOptions.Java, CompressionType.GZip));
+            Catalog.Upsert(record);
+        }
+
+        public static void DeleteEntityFile(string worldPath, string name)
+        {
+            string path = EntityFiles.PathInWorld(worldPath, name);
+            if (File.Exists(path)) File.Delete(path);
+            Catalog.RemoveByName(EntityFiles.NameOf(name));
+        }
+
         public static void SaveAllCacheToDiskAsync(string worldPath)
         {
             if (_modifiedEntitiesCache.IsEmpty) return;
@@ -144,6 +209,7 @@ namespace Spacebox.Game.Generation
             WorkerPoolManager.Enqueue(token =>
             {
                 SaveEntitiesInternal(entitiesToSave, worldPath);
+                SaveCatalog(worldPath);
                 Debug.Success($"[Persistence] Background save complete. Saved {entitiesToSave.Length} entities.");
 
             }, WorkerPoolManager.Priority.Low);
@@ -164,34 +230,18 @@ namespace Spacebox.Game.Generation
 
         private static void SaveEntitiesInternal(KeyValuePair<long, CachedEntityData>[] entities, string worldPath)
         {
-            string sectorsRoot = Path.Combine(worldPath, "Sectors");
-            if (!Directory.Exists(sectorsRoot))
-            {
-                Directory.CreateDirectory(sectorsRoot);
-            }
-
             foreach (var kvp in entities)
             {
                 long id = kvp.Key;
                 CachedEntityData data = kvp.Value;
 
-                string sectorFolderName = SpaceMath.Sector.IndexToFolderName(data.SectorIndex);
-                string sectorPath = Path.Combine(sectorsRoot, sectorFolderName);
-
                 try
                 {
-                    if (!Directory.Exists(sectorPath))
-                    {
-                        Directory.CreateDirectory(sectorPath);
-                    }
-
-                    string filePath = EntityFiles.PathOf(sectorPath, data.Name);
-                    AtomicFile.Write(filePath, temp => NbtFile.Write(temp, data.Tag, FormatOptions.Java, CompressionType.GZip));
-                    WorldSaveLoad.DeleteStaleEntityFile(worldPath, data.PreviousSectorIndex, data.SectorIndex, data.Name);
+                    WriteEntityFile(worldPath, new EntityRecord(id, data.Name, data.SectorIndex, data.Local), data.Tag);
                 }
                 catch (Exception ex)
                 {
-                    Debug.Error($"[Persistence] Failed to save entity {id} to sector {sectorFolderName}: {ex.Message}");
+                    Debug.Error($"[Persistence] Failed to save entity {id}: {ex.Message}");
                     // try again later
                     _modifiedEntitiesCache.TryAdd(id, data);
                 }
@@ -218,6 +268,7 @@ namespace Spacebox.Game.Generation
         {
             _modifiedEntitiesCache.Clear();
             _sectorCache.Clear();
+            Catalog = new EntityCatalog();
         }
     }
 }

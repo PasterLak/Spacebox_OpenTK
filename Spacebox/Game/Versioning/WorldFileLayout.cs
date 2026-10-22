@@ -41,7 +41,12 @@ public static class WorldFileLayout
 
     public static IEnumerable<string> EntityFilePaths(string worldFolder)
     {
-        return FilesInSectors(worldFolder, "*" + EntityFiles.Extension);
+        foreach (var file in FilesInSectors(worldFolder, "*" + EntityFiles.Extension)) yield return file;
+
+        string entities = EntityFiles.FolderOf(worldFolder ?? "");
+        if (!Directory.Exists(entities)) yield break;
+
+        foreach (var file in Directory.GetFiles(entities, "*" + EntityFiles.Extension)) yield return file;
     }
 
     private static IEnumerable<string> FilesInSectors(string worldFolder, string pattern)

@@ -19,6 +19,9 @@ namespace Spacebox.Game.Generation.Tools
             public const string local_x = "local_x";
             public const string local_y = "local_y";
             public const string local_z = "local_z";
+            public const string sector_x = "sector_x";
+            public const string sector_y = "sector_y";
+            public const string sector_z = "sector_z";
 
             public const string rotation_x = "rotation_x";
             public const string rotation_y = "rotation_y";

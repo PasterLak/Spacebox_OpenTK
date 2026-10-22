@@ -1,6 +1,7 @@
 using System.Text.Json;
 using SharpNBT;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Versioning;
 
 namespace Spacebox.Game.ShipViewer;
@@ -54,7 +55,7 @@ public sealed class ReadOnlyShipLoader
             var result = new WorldUpgrader(_registry, Path.Combine(sandbox, SandboxBackupFolder)).Upgrade(info, worldCopy, _targetVersion);
             if (!result.Success) throw new InvalidDataException(result.Error ?? $"The world could not be converted from {result.FromVersion}");
 
-            return NbtFileEditor.Read(entityCopy);
+            return NbtFileEditor.Read(File.Exists(entityCopy) ? entityCopy : EntityFiles.PathInWorld(worldCopy, EntityFiles.NameOf(entityCopy)));
         }
         finally
         {

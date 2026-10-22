@@ -168,6 +168,7 @@ public sealed class NetworkSession : IDisposable
         EntitySync.Update();
         PlayerListNetwork.Update();
         Players.ItemGiftNetwork.Update();
+        Players.ReconstructionNetwork.Update();
         Players.AstronautNetwork.UpdateGifts();
         UpdateAutoSave();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
@@ -266,6 +267,7 @@ public sealed class NetworkSession : IDisposable
         Combat.CombatNetwork.Reset();
         WorldEditNetwork.Reset();
         Players.ItemGiftNetwork.Reset();
+        Players.ReconstructionNetwork.Reset();
         Players.AstronautNetwork.ClearGifts();
         EntitySync.Clear();
         Spacebox.Network.Mobs.MobSpawnNetwork.Reset();

@@ -116,6 +116,8 @@ public class World : Component, ISpaceStructure
         WorldPersistenceManager.SaveAllCacheToDiskNow(WorldData.WorldFolderPath);
 
         WorldSaveLoad.SaveWorld(WorldData.WorldFolderPath, loadedSectors);
+        WorldPersistenceManager.SaveCatalog(WorldData.WorldFolderPath);
+        Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.Save(WorldData.WorldFolderPath);
 
         if (Spacebox.Network.GameSession.HasLocalPlayer)
             WorldData.Info.GameMode = Player.GameMode;
@@ -150,6 +152,13 @@ public class World : Component, ISpaceStructure
 
     public void Load()
     {
+        if (!Spacebox.Network.GameSession.IsRemoteClient)
+        {
+            Spacebox.Game.Versioning.EntityStorageLayout.UpgradeInPlace(WorldData.WorldFolderPath);
+            WorldPersistenceManager.LoadCatalog(WorldData.WorldFolderPath);
+            Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.Load(WorldData.WorldFolderPath);
+        }
+
         CurrentSector = LoadSectorNow(SpaceMath.Sector.GetSectorIndex(Player.Position));
 
         if (CurrentSector == null)
@@ -174,7 +183,7 @@ public class World : Component, ISpaceStructure
         return work;
     }
 
-    private Sector GetOrLoadSector(Vector3i index)
+    public Sector GetOrLoadSector(Vector3i index)
     {
         return loadedSectors.TryGetValue(index, out var sector) ? sector : LoadSectorNow(index);
     }
@@ -274,6 +283,8 @@ public class World : Component, ISpaceStructure
         }
 
         _entityTracker.Process();
+        WorldObservers.Update(Time.Delta);
+        EntityLoadRequests.Update(Time.Delta);
 
         Explosions.Update(Time.Delta);
         Spacebox.Game.Generation.Blocks.BlockDamageVisuals.Instance.Update(Time.Delta);
@@ -327,6 +338,7 @@ public class World : Component, ISpaceStructure
         base.OnDetached();
         GravityField.Clear();
         WorldObservers.Clear();
+        EntityLoadRequests.Clear();
         Explosions?.Dispose();
         ThrusterEffects?.Dispose();
         JetpackEffects?.Dispose();

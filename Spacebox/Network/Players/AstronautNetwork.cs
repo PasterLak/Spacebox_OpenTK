@@ -291,10 +291,9 @@ public sealed class AstronautNetwork : NetworkTransform
         _fallSound.Play(damage, astronaut.Position);
     }
 
-    private void OnLocalReconstructed(DnaReconstructorBlock reconstructor)
+    private void OnLocalReconstructed(ReconstructionGrant grant)
     {
-        if (reconstructor.Entity == null) return;
-        SendRpc(nameof(ReportReconstructed), reconstructor.Entity.EntityID, reconstructor.LocalCell);
+        SendRpc(nameof(ReportReconstructed), grant.Key.EntityId, grant.Key.Cell);
     }
 
     [Rpc(RpcTarget.Server)]

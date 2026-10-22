@@ -5,6 +5,17 @@ namespace Spacebox.Game.Generation.Tools;
 public static class EntityFiles
 {
     public const string Extension = ".entity";
+    public const string FolderName = "Entities";
+
+    public static string FolderOf(string worldFolder)
+    {
+        return Path.Combine(worldFolder, FolderName);
+    }
+
+    public static string PathInWorld(string worldFolder, string name)
+    {
+        return PathOf(FolderOf(worldFolder), name);
+    }
 
     public static string NameOf(string fileNameOrName)
     {

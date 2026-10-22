@@ -24,7 +24,7 @@ public class EntityCacheTests
     {
         long id = 0x5EC70001;
         var sector = new Vector3i(3, 0, -2);
-        WorldPersistenceManager.CacheEntityTag(id, EntityTag(id, new Vector3(10, 20, 30)), sector, null, "ship");
+        WorldPersistenceManager.CacheEntityTag(id, EntityTag(id, new Vector3(10, 20, 30)), sector, "ship");
         try
         {
             var own = new List<NotGeneratedEntity>();
@@ -53,7 +53,7 @@ public class EntityCacheTests
     {
         long id = 0x5EC70002;
         var sector = new Vector3i(1, 1, 1);
-        WorldPersistenceManager.CacheEntityTag(id, EntityTag(id, Vector3.Zero), sector, null, "destroyed");
+        WorldPersistenceManager.CacheEntityTag(id, EntityTag(id, Vector3.Zero), sector, "destroyed");
 
         WorldPersistenceManager.ForgetEntity(id);
 

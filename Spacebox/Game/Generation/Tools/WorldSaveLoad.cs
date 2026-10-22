@@ -110,7 +110,7 @@ namespace Spacebox.Game.Generation.Tools
 
         private static void SaveSector(string worldPath, Sector sector)
         {
-            string sectorFolderPath = SaveSectorData(worldPath, sector);
+            SaveSectorData(worldPath, sector);
             var entities = sector.Entities;
 
             for (int i = 0; i < entities.Count; i++)
@@ -122,8 +122,7 @@ namespace Spacebox.Game.Generation.Tools
 
                 Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].EntityID + "  pos: " + entities[i].PositionWorld);
                 //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
-                AtomicFile.Write(EntityFiles.PathOf(sectorFolderPath, entity.Name), temp => NbtFile.Write(temp, entityTag, FormatOptions.Java, CompressionType.GZip));
-                DeleteStaleEntityFile(worldPath, entity.SavedSectorIndex, sector.PositionIndex, entity.Name);
+                WorldPersistenceManager.WriteEntityFile(worldPath, entity, entityTag);
                 entity.SavedSectorIndex = sector.PositionIndex;
             }
         }
@@ -145,68 +144,11 @@ namespace Spacebox.Game.Generation.Tools
 
             foreach (var deleted in destroyedEntities)
             {
-                string deletedEntityPath = EntityFiles.PathOf(sectorFolderPath, deleted.ToString());
-                if (File.Exists(deletedEntityPath))
-                {
-                    File.Delete(deletedEntityPath);
-
-                }
+                WorldPersistenceManager.DeleteEntityFile(worldPath, deleted);
             }
 
             AtomicFile.Write(Path.Combine(sectorFolderPath, Sector.IndexToFolderName(sectorIndex) + ".sector"), temp => NbtFile.Write(temp, sectorTag, FormatOptions.Java, CompressionType.GZip));
             return sectorFolderPath;
-        }
-
-        public static void DeleteStaleEntityFile(string worldPath, Vector3i? previousSector, Vector3i currentSector, string name)
-        {
-            if (!previousSector.HasValue || previousSector.Value == currentSector || string.IsNullOrEmpty(name)) return;
-
-            string stalePath = EntityFiles.PathOf(GetSectorFolderPath(worldPath, previousSector.Value), name);
-            if (File.Exists(stalePath)) File.Delete(stalePath);
-        }
-
-        public static List<NotGeneratedEntity> ScanAllEntities(Vector3i sectorIndex)
-        {
-            var list = new List<NotGeneratedEntity>();
-            if (!CanLoadSectorHere(sectorIndex, out var folderPath)) return list;
-
-            if (!Spacebox.Network.GameSession.IsRemoteClient) EntityFiles.RepairDoubleExtensions(folderPath);
-
-            var files = Directory.GetFiles(folderPath, "*" + EntityFiles.Extension);
-            foreach (var file in files)
-            {
-                try
-                {
-
-                    var tag = NbtFile.Read(file, FormatOptions.Java, CompressionType.GZip);
-
-                    if (tag == null) continue;
-
-                    long id = tag.Get<LongTag>(NBTKey.ENTITY.id).Value;
-
-                    float x = tag.Get<FloatTag>(NBTKey.ENTITY.local_x).Value;
-                    float y = tag.Get<FloatTag>(NBTKey.ENTITY.local_y).Value;
-                    float z = tag.Get<FloatTag>(NBTKey.ENTITY.local_z).Value;
-
-                    string fileNameNoExt = EntityFiles.NameOf(file);
-
-                    var meta = new NotGeneratedEntity
-                    {
-                        Id = id,
-                        positionInSector = new Vector3(x, y, z),
-                        FileName = fileNameNoExt,
-
-                        radiusBlocks = 32
-                    };
-                    list.Add(meta);
-                }
-                catch (Exception ex)
-                {
-                    Debug.Error($"[WorldSaveLoad] Cannot read entity file {file}: {ex.Message}. A copy is kept as {Path.GetFileName(file)}.corrupt");
-                    try { File.Copy(file, file + ".corrupt", true); } catch (IOException) { }
-                }
-            }
-            return list;
         }
 
         private static bool Validate(string path)

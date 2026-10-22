@@ -1,4 +1,6 @@
 using System.Text.Json.Nodes;
+using Spacebox.Game.Generation.Tools;
+using Spacebox.Game.Player.Respawn;
 using Spacebox.Game.Versioning;
 
 namespace Spacebox.Tests.Versioning;
@@ -38,6 +40,22 @@ public static class WorldInspector
         foreach (var drop in (JsonArray)JsonNode.Parse(File.ReadAllText(path))) items.Add(drop?["ItemId"]?.GetValue<string>());
         return items;
     }
+
+    public static List<string> EntityFiles(string folder)
+    {
+        var files = new List<string>();
+        foreach (var file in WorldFileLayout.EntityFilePaths(folder)) files.Add(Path.GetRelativePath(folder, file).Replace(Path.DirectorySeparatorChar, '/'));
+        files.Sort(StringComparer.Ordinal);
+        return files;
+    }
+
+    public static List<EntityRecord> EntityIndex(string folder)
+    {
+        string path = EntityCatalogFile.PathOf(folder);
+        return File.Exists(path) ? EntityCatalogFile.FromTag(NbtFileEditor.Read(path)) : new List<EntityRecord>();
+    }
+
+    public static List<ReconstructorRecord> Reconstructors(string folder) => ReconstructorRecordsFile.Read(folder);
 
     public static Dictionary<string, byte[]> Snapshot(string folder)
     {

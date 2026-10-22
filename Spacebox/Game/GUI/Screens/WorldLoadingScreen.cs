@@ -11,6 +11,7 @@ public static class WorldLoadingScreen
     private const int StableFramesRequired = 5;
     private const float MinDuration = 0.3f;
     private const float MaxDuration = 60f;
+    private const float MaxConditionWait = 15f;
     private const string Title = "Loading world";
 
     private static readonly uint TitleColor = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f));
@@ -27,13 +28,15 @@ public static class WorldLoadingScreen
     private static float _progress;
     private static string _step = "Preparing";
     private static Action _onComplete;
+    private static Func<bool> _waitFor;
 
     public static bool IsActive { get; private set; }
 
-    public static void Begin(LocalAstronaut player, Action onComplete = null)
+    public static void Begin(LocalAstronaut player, Action onComplete = null, Func<bool> waitFor = null)
     {
         _player = player;
         _onComplete = onComplete;
+        _waitFor = waitFor;
         _elapsed = 0f;
         _stableFrames = 0;
         _maxPending = 1;
@@ -61,7 +64,7 @@ public static class WorldLoadingScreen
         _progress = MathF.Max(_progress, 1f - pending / (float)_maxPending);
         _stableFrames = pending == 0 ? _stableFrames + 1 : 0;
 
-        bool isReady = _stableFrames >= StableFramesRequired && _elapsed >= MinDuration;
+        bool isReady = _stableFrames >= StableFramesRequired && _elapsed >= MinDuration && IsConditionMet();
         if (isReady || _elapsed >= MaxDuration) Finish();
     }
 
@@ -91,6 +94,12 @@ public static class WorldLoadingScreen
         StreamingBudget.IsLoading = false;
         _player = null;
         _onComplete = null;
+        _waitFor = null;
+    }
+
+    private static bool IsConditionMet()
+    {
+        return _waitFor == null || _elapsed >= MaxConditionWait || _waitFor();
     }
 
     private static string GetStep(StreamingWork work)

@@ -11,11 +11,14 @@ namespace Spacebox.Tests.Versioning;
 public sealed class WorldFixtureBuilder
 {
     private const int ChunkVolume = 32 * 32 * 32;
+    public const string EntityFolderVersion = "0.1.5";
 
     private sealed class ChunkSpec
     {
         public string[] Blocks;
         public string[] Items;
+        public int[] Cells;
+        public List<(int Flat, int Item, int Count)> Storages = new List<(int, int, int)>();
     }
 
     private readonly string _folder;
@@ -26,6 +29,7 @@ public sealed class WorldFixtureBuilder
     private string _version = Engine.Application.Version;
     private string _modId = "default";
     private string _name = "Fixture";
+    private bool _legacyEntityLayout;
 
     public WorldFixtureBuilder(string folder)
     {
@@ -46,6 +50,12 @@ public sealed class WorldFixtureBuilder
         return this;
     }
 
+    public WorldFixtureBuilder LegacyEntityLayout()
+    {
+        _legacyEntityLayout = true;
+        return this;
+    }
+
     public WorldFixtureBuilder Named(string name)
     {
         _name = name;
@@ -54,14 +64,21 @@ public sealed class WorldFixtureBuilder
 
     public WorldFixtureBuilder Chunk(string[] blocks, string[] items = null, string entity = "1")
     {
-        int index = _entities.FindIndex(e => e.Name == entity);
-        if (index < 0)
+        EntityChunks(entity).Add(new ChunkSpec { Blocks = blocks ?? new[] { "default:air" }, Items = items ?? Array.Empty<string>() });
+        return this;
+    }
+
+    public WorldFixtureBuilder SparseChunk(string entity, string block, Vector3i[] cells, string storedItem = null, int storedCount = 0)
+    {
+        var spec = new ChunkSpec { Blocks = new[] { "default:air", block }, Items = storedItem != null ? new[] { storedItem } : Array.Empty<string>(), Cells = new int[ChunkVolume] };
+        foreach (var cell in cells)
         {
-            _entities.Add((entity, new List<ChunkSpec>()));
-            index = _entities.Count - 1;
+            int flat = (cell.X * 32 + cell.Y) * 32 + cell.Z;
+            spec.Cells[flat] = 1;
+            if (storedItem != null) spec.Storages.Add((flat, 0, storedCount));
         }
 
-        _entities[index].Chunks.Add(new ChunkSpec { Blocks = blocks ?? new[] { "default:air" }, Items = items ?? Array.Empty<string>() });
+        EntityChunks(entity).Add(spec);
         return this;
     }
 
@@ -69,6 +86,20 @@ public sealed class WorldFixtureBuilder
     {
         _entityIds[entity] = id;
         return this;
+    }
+
+    private List<ChunkSpec> EntityChunks(string entity)
+    {
+        int index = _entities.FindIndex(e => e.Name == entity);
+        if (index >= 0) return _entities[index].Chunks;
+
+        _entities.Add((entity, new List<ChunkSpec>()));
+        return _entities[^1].Chunks;
+    }
+
+    public static bool UsesEntityFolder(string version)
+    {
+        return System.Version.TryParse(version, out var parsed) && parsed >= System.Version.Parse(EntityFolderVersion);
     }
 
     public WorldFixtureBuilder Player(string item, int count = 1, string file = WorldFileLayout.LocalPlayerFile, string list = "InventorySlots")
@@ -126,11 +157,30 @@ public sealed class WorldFixtureBuilder
         Directory.CreateDirectory(sector);
         NbtFileEditor.Write(Path.Combine(sector, SectorFolderName + WorldFileLayout.SectorExtension), CreateSector());
 
-        foreach (var (name, chunks) in _entities)
-            NbtFileEditor.Write(EntityFiles.PathOf(sector, name), CreateEntity(name, chunks, _entityIds.TryGetValue(name, out long id) ? id : -1));
+        bool entityFolder = !_legacyEntityLayout && UsesEntityFolder(_version);
+        var catalog = new EntityCatalog();
+        for (int i = 0; i < _entities.Count; i++)
+        {
+            var (name, chunks) = _entities[i];
+            long id = _entityIds.TryGetValue(name, out long explicitId) ? explicitId : -(i + 1);
+            var entity = CreateEntity(id, name, chunks);
+            if (!entityFolder)
+            {
+                NbtFileEditor.Write(EntityFiles.PathOf(sector, name), entity);
+                continue;
+            }
 
+            EntityTagLocation.Write(entity, Vector3i.Zero, EntityPosition);
+            Directory.CreateDirectory(EntityFiles.FolderOf(_folder));
+            NbtFileEditor.Write(EntityFiles.PathInWorld(_folder, name), entity);
+            catalog.Upsert(new EntityRecord(id, name, Vector3i.Zero, EntityPosition));
+        }
+
+        if (entityFolder) EntityCatalogFile.Write(_folder, catalog);
         return _folder;
     }
+
+    public static readonly Vector3 EntityPosition = new Vector3(10f, 20f, 30f);
 
     private static CompoundTag CreateSector()
     {
@@ -142,14 +192,14 @@ public sealed class WorldFixtureBuilder
         return root;
     }
 
-    private static CompoundTag CreateEntity(string name, List<ChunkSpec> chunks, long id)
+    private static CompoundTag CreateEntity(long id, string name, List<ChunkSpec> chunks)
     {
         var root = new CompoundTag("SpaceEntity");
         root.Add(new LongTag(NBTKey.ENTITY.id, id));
         root.Add(new StringTag(NBTKey.ENTITY.name, name));
-        root.Add(new FloatTag(NBTKey.ENTITY.local_x, 10f));
-        root.Add(new FloatTag(NBTKey.ENTITY.local_y, 20f));
-        root.Add(new FloatTag(NBTKey.ENTITY.local_z, 30f));
+        root.Add(new FloatTag(NBTKey.ENTITY.local_x, EntityPosition.X));
+        root.Add(new FloatTag(NBTKey.ENTITY.local_y, EntityPosition.Y));
+        root.Add(new FloatTag(NBTKey.ENTITY.local_z, EntityPosition.Z));
         root.Add(new FloatTag(NBTKey.ENTITY.rotation_x, 0f));
         root.Add(new FloatTag(NBTKey.ENTITY.rotation_y, 0f));
         root.Add(new FloatTag(NBTKey.ENTITY.rotation_z, 0f));
@@ -170,14 +220,22 @@ public sealed class WorldFixtureBuilder
         chunk.Add(new ByteTag(NBTKey.CHUNK.index_z, 0));
 
         var blocks = new byte[ChunkVolume];
-        for (int i = 0; i < blocks.Length; i++) blocks[i] = (byte)(i % spec.Blocks.Length);
+        for (int i = 0; i < blocks.Length; i++) blocks[i] = spec.Cells != null ? (byte)spec.Cells[i] : (byte)(i % spec.Blocks.Length);
         chunk.Add(new ByteArrayTag(NBTKey.CHUNK.blocks, blocks));
 
         chunk.Add(StringList(NBTKey.CHUNK.palette_blocks, spec.Blocks));
         chunk.Add(StringList(NBTKey.CHUNK.palette_items, spec.Items));
         chunk.Add(new IntArrayTag(NBTKey.CHUNK.directions, Array.Empty<int>()));
         chunk.Add(new IntArrayTag(NBTKey.CHUNK.rotations, Array.Empty<int>()));
-        chunk.Add(new ListTag(NBTKey.CHUNK.storages, TagType.Compound));
+        var storages = new ListTag(NBTKey.CHUNK.storages, TagType.Compound);
+        foreach (var (flat, item, count) in spec.Storages)
+        {
+            var storage = new CompoundTag(null);
+            storage.Add(new IntTag("flat_index", flat));
+            storage.Add(new IntTag("slot_data", PackingTools.PackShorts((short)item, (short)count)));
+            storages.Add(storage);
+        }
+        chunk.Add(storages);
         return chunk;
     }
 

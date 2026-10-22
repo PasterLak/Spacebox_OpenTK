@@ -229,9 +229,8 @@ public static class EntitySync
     {
         if (World.WorldData == null) return null;
 
-        string sectorPath = WorldSaveLoad.GetSectorFolderPath(World.WorldData.WorldFolderPath, message.Sector);
         string fileName = string.IsNullOrEmpty(message.FileName) ? message.EntityId.ToString() : message.FileName;
         if (fileName != Path.GetFileName(fileName) || fileName.Contains("..")) return null;
-        return EntityFiles.PathOf(sectorPath, fileName);
+        return EntityFiles.PathInWorld(World.WorldData.WorldFolderPath, fileName);
     }
 }

@@ -124,6 +124,13 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, ICo
     private void OnDnaChanged()
     {
         MarkModified();
+        DnaReconstructorRegistry.NotifyChanged(this);
         if (Entity != null) Spacebox.Network.BlockStateNetwork.MarkDirty(Entity, LocalCell, this);
+    }
+
+    protected override void OnActiveStateChanged(bool isActive)
+    {
+        base.OnActiveStateChanged(isActive);
+        DnaReconstructorRegistry.NotifyChanged(this);
     }
 }
