@@ -97,9 +97,6 @@ namespace Spacebox.Game.GUI
                     }
                 }
 
-                if (tagsJsonList.Count == 0)
-                    return true;
-
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
