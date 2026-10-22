@@ -92,6 +92,7 @@ public sealed class ContainerServer
 
     public void HandleChange(int peer, ContainerChangeMessage message)
     {
+        message.Deltas = ContainerDeltas.Normalize(message.Deltas);
         var denied = new List<ItemAmount>();
         var rejected = new List<ItemAmount>();
 
