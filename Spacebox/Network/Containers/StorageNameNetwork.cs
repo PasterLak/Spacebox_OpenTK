@@ -65,7 +65,7 @@ public static class StorageNameNetwork
         var network = NetworkManager.Instance;
         string name = Sanitize(message.Name);
         if (name == null || !ContainerResolver.TryResolve(message.Key, out var container) || container is not StorageBlock block) return;
-        if (network.IsServer && ProtectionNetwork.BlocksPeerKey(sender, message.Key)) return;
+        if (network.IsServer && (ProtectionNetwork.BlocksPeerKey(sender, message.Key) || !ContainerServer.IsInReach(sender, message.Key, WorldEditNetwork.MaxEditDistance))) return;
 
         if (network.IsServer)
         {

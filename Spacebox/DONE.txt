@@ -212,6 +212,7 @@ Fixes
 - multiplayer: chat messages with line breaks could fake server or player lines; control characters are removed
 - multiplayer: sending the join request again during a password login reset the wrong-password counter (and could switch the name); repeated requests are ignored
 - network transfers: a chunk offset near the int limit overflowed the size check and threw instead of failing the download
+- multiplayer: clients could rename any storage and start, cancel or clear any ore scanner from any distance; the server checks reach (16 m)
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

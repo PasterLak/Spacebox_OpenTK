@@ -79,7 +79,7 @@ public static class AnalyzerNetwork
     {
         if (!NetworkManager.Instance.IsServer) return;
         if (!ContainerResolver.TryResolveBlock(message.Key, out var block, out _) || block is not AnalyzerBlock analyzer) return;
-        if (ProtectionNetwork.BlocksPeerKey(sender, message.Key)) return;
+        if (ProtectionNetwork.BlocksPeerKey(sender, message.Key) || !Containers.ContainerServer.IsInReach(sender, message.Key, WorldEditNetwork.MaxEditDistance)) return;
 
         Apply(analyzer, message.Action);
     }
