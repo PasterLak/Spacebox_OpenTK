@@ -132,6 +132,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- ricocheted shots hit their own shooter (guns and ship cannons, also the own ship after a ricochet); death text "Hit by their own shot"
 - server restart reloads the world in the same process: the console keeps taking commands (before, input went to the shell after a restart)
 - GameSet editor: Crafting list showed block files instead of blueprints
 - ricochets: projectiles stopped after the 5th bounce and often failed at shallow angles far from the world center (the bounced ray started inside the surface)

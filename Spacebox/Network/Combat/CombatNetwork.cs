@@ -79,6 +79,8 @@ public static class CombatNetwork
         else
             network.Send(victimPeer, message);
 
+        if (attackerPeer == victimPeer)
+            return;
         if (attackerPeer == network.LocalPeerId)
             HitMarkerUI.Show(headshot);
         else if (attackerPeer != victimPeer)
@@ -183,9 +185,9 @@ public static class CombatNetwork
         var local = AstronautNetwork.Local?.Owner as LocalAstronaut;
         if (local == null || !local.IsAlive || local.GameMode != Spacebox.Game.Player.GameModes.GameMode.Survival) return;
 
-        local.RegisterAttacker(message.AttackerPeer);
-        string attacker = GetPlayerName(message.AttackerPeer);
-        local.TakeDamage(message.Damage, new DeathCase(message.Headshot ? $"Headshot by {attacker}" : $"Killed by {attacker}"));
+        bool self = message.AttackerPeer == NetworkManager.Instance.LocalPeerId;
+        if (!self) local.RegisterAttacker(message.AttackerPeer);
+        local.TakeDamage(message.Damage, new DeathCase(ProjectileTargets.DeathCause(GetPlayerName(message.AttackerPeer), self, message.Headshot)));
     }
 
     public static bool AcceptsDamageFrom(int sender) => sender == NetworkManager.ServerPeerId;

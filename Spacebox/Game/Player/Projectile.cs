@@ -252,7 +252,8 @@ public class Projectile : Node3D
 
     private bool CheckPlayerCollision()
     {
-        if (!PlayerHitboxes.Raycast(ray.Origin, ray.Direction, ray.Length, _ownerPeer, _isAuthoritative ? _rewind : 0f, out var hit)) return false;
+        int ignoredPeer = ProjectileTargets.IgnoredPeer(_ownerPeer, currentRicochets);
+        if (!PlayerHitboxes.Raycast(ray.Origin, ray.Direction, ray.Length, ignoredPeer, _isAuthoritative ? _rewind : 0f, out var hit)) return false;
 
         if (RaycastVoxels(out var voxelHit) &&
             Vector3.DistanceSquared(ray.Origin, voxelHit.hitPosition) < hit.Distance * hit.Distance)
@@ -354,6 +355,7 @@ public class Projectile : Node3D
 
         SetLineRenderer();
         currentRicochets++;
+        _ignoreTime = 0f;
 
         return true;
     }
