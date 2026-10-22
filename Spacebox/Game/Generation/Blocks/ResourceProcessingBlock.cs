@@ -45,6 +45,7 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntit
     public void OnRemovedFromEntity()
     {
         _entity = null;
+        StopTask();
     }
 
     public void WriteNetworkState(NetWriter writer) => WriteContainerState(writer);
@@ -220,7 +221,7 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntit
 
     public int GetTicksWithEfficiency(int basicTicks)
     {
-        return (int)(basicTicks * TestingCoefficient / Efficiency);
+        return Math.Max(1, (int)(basicTicks * TestingCoefficient / Efficiency));
     }
 
     public bool TryStartTask(out ProcessResourceTask task)
