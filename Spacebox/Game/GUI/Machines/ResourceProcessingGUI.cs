@@ -378,7 +378,8 @@ namespace Spacebox.Game.GUI
             float imageSize = 40f * scaleFactor;
             float numberSize = ImGui.GetTextLineHeight();
 
-            List<Recipe> recipes = GameAssets.Recipes[processingBlock.BlockType].Values.ToList();
+            if (!GameAssets.Recipes.TryGetValue(processingBlock.BlockType, out var recipesById)) return;
+            List<Recipe> recipes = recipesById.Values.ToList();
 
             for (int i = 0; i < recipes.Count; i++)
             {
