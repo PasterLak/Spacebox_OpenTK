@@ -583,6 +583,8 @@ namespace Spacebox.Game.Effects
             {
                 if (nearbyDrop.Info.item.Id == stoppedDrop.Info.item.Id &&
                     !nearbyDrop.IsMovingToPlayer &&
+                    !nearbyDrop.IsExpired &&
+                    nearbyDrop.Info.quantity > 0 &&
                     nearbyDrop != stoppedDrop)
                 {
                     var distanceSquared = (nearbyDrop.Position - stoppedDrop.Position).LengthSquared;

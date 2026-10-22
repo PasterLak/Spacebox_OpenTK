@@ -221,6 +221,7 @@ Fixes
 - destroyed entities came back from the unsaved entity cache after Save; unsaved ships in a reloaded sector were invisible, and a stale file in the old sector loaded the cached ship one sector off
 - dying and going to the menu showed the death screen and hid the held item in the next loaded world; a world saved while dead loaded the player with 0 health
 - furnaces and crushers kept processing after being removed by explosions, bulk erase, mobs or collisions, and stopped forever when a recipe rounded to 0 ticks; their window crashed for block types without recipes
+- a thrown drop could merge into a drop that expired in the same frame and vanish with it
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons
