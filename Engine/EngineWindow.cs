@@ -77,6 +77,7 @@ namespace Engine
                 GL.Enable(EnableCap.DepthTest);
             }
 
+            LogSystemReport();
             FrameLimiter.Initialize(120);
             FrameLimiter.IsRunning = true;
 
@@ -127,6 +128,28 @@ namespace Engine
 
             InputManager0.AddAction("debugUI", Keys.F9, true);
             InputManager0.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
+        }
+
+        private void LogSystemReport()
+        {
+            bool gpu = !Application.IsHeadless;
+            var monitor = gpu ? Monitors.GetMonitorFromWindow(this) : null;
+            var report = new Diagnostics.SystemReport
+            {
+                GameVersion = Application.Version,
+                OperatingSystem = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+                Architecture = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
+                Runtime = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+                Cpu = Diagnostics.CpuName.Detect(),
+                LogicalCores = Environment.ProcessorCount,
+                MemoryBytes = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes,
+                GpuRenderer = gpu ? GL.GetString(StringName.Renderer) : "",
+                GpuVendor = gpu ? GL.GetString(StringName.Vendor) : "",
+                OpenGlVersion = gpu ? GL.GetString(StringName.Version) : "",
+                GlslVersion = gpu ? GL.GetString(StringName.ShadingLanguageVersion) : "",
+                Monitor = monitor == null ? "" : $"{monitor.HorizontalResolution}x{monitor.VerticalResolution}"
+            };
+            foreach (var line in report.Lines()) Debug.Log(line);
         }
 
         internal const string PassthroughShaderCode = "--Vert\r\n\r\n#version 330 core\r\nlayout (location = 0) in vec2 aPos;\r\nlayout (location = 1) in vec2 aTexCoords;\r\nout vec2 TexCoords;\r\nvoid main()\r\n{\r\n    TexCoords = aTexCoords;\r\n    gl_Position = vec4(aPos, 0.0, 1.0);\r\n}\r\n\r\n\r\n--Frag\r\n\r\n#version 330 core\r\nout vec4 FragColor;\r\nin vec2 TexCoords;\r\nuniform sampler2D scene;\r\nvoid main()\r\n{\r\n    FragColor = texture(scene, TexCoords);\r\n   \r\n}\r\n";

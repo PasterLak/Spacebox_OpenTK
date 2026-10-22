@@ -40,8 +40,6 @@ public class SpaceboxWindow : EngineWindow
 
     protected override void OnGameLoad()
     {
-        AppIconLoader.LoadAndSetIcon(this, "Resources/Textures/icon.png");
-
         _screenshotAudio = new AudioSource(Resources.Load<AudioClip>("screenshot", true), AudioChannel.UI);
 
         ApplyDisplaySettings();

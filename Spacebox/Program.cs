@@ -9,6 +9,7 @@ namespace Spacebox;
 
 public static class Program
 {
+    private const string WindowIconPath = "Resources/Textures/icon.png";
 
 
    // [STAThread]
@@ -54,6 +55,7 @@ public static class Program
 
             Flags = ContextFlags.ForwardCompatible,
             StartVisible = !LaunchOptions.IsDedicated && !LaunchOptions.IsHidden,
+            Icon = LaunchOptions.IsDedicated ? null : Engine.Utils.AppIconLoader.CreateWindowIcon(WindowIconPath, Engine.Utils.AppIconLoader.WindowIconSizes),
         };
      
         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());

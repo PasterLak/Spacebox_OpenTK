@@ -41,7 +41,7 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - abstract: `OnRegisterScenes`, `OnGameLoad`
 - virtual: `OnLoadImGui`, `OnSetupInput`, `OnSetupPostProcessing(PostProcessManager)`, `OnRenderGameGUI`, `OnUpdateInput`, `OnPostRender`
 
-`OnLoad` order: `Input.Initialize` → `ResourceFallbacks.Initialize` → `LightSystem.InitializeGpu` → `VisualDebug.InitializeGpu` → `SceneRenderer` → `FrameLimiter` → `SceneManager.Initialize(OnRegisterScenes)` → `ImGuiController` → `OnLoadImGui` → default F-key bindings → `OnSetupInput` → `PostProcessManager` → `OnSetupPostProcessing` → `OnGameLoad`.
+`OnLoad` order: `Input.Initialize` → `ResourceFallbacks.Initialize` → `LightSystem.InitializeGpu` → `VisualDebug.InitializeGpu` → `SceneRenderer` → system report in the log (`Core/Diagnostics/SystemReport` + `CpuName`: game version, OS, .NET, CPU, cores, RAM, GPU/driver/OpenGL/GLSL, monitor; no GPU lines headless) → `FrameLimiter` → `SceneManager.Initialize(OnRegisterScenes)` → `ImGuiController` → `OnLoadImGui` → default F-key bindings → `OnSetupInput` → `PostProcessManager` → `OnSetupPostProcessing` → `OnGameLoad`.
 
 `OnUpdateFrame`: `SceneManager.ApplyPendingSceneChange` → `RenderSpace.BeginFrame` → `InputInjector.Apply` → `Input.Update` → `Time.Update` → ImGui update → `InputManager.Update` (InputPro) → `InputManager0.Update` → drain main-thread action queue → `OnUpdateInput` → `SceneManager.Update` → `GlobalUniforms.Push` → `AudioDevice.Update`.
 
