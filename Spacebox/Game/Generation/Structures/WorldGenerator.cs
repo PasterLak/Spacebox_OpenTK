@@ -240,6 +240,7 @@ public class AsteroidData
     public DistanceRange Distance { get; set; } = DistanceRange.Everywhere;
     public byte HollowCorePercent { get; set; }
     public AsteroidCavitiesJSON? Cavities { get; set; }
+    public AsteroidShapeJSON? Shape { get; set; }
     public AsteroidMobRule[] Mobs { get; set; } = new AsteroidMobRule[0];
 
     public AsteroidLayer[] Layers { get; set; } = new AsteroidLayer[0];

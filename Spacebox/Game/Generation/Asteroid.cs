@@ -26,6 +26,9 @@ namespace Spacebox.Game.Generation
 
         public NotGeneratedEntity NotGeneratedEntity;
         private readonly AsteroidGenerationContext generationContext = AsteroidGenerationContext.Legacy;
+        private readonly object _maskLock = new();
+        private Spacebox.Game.Generation.Shapes.Asteroids.AsteroidSolidMask _solidMask;
+        private bool _solidMaskBuilt;
         protected readonly int Seed;
 
         public Asteroid(NotGeneratedEntity data, Sector sector) : this(data, sector, true) { }
@@ -51,6 +54,36 @@ namespace Spacebox.Game.Generation
                 seed: (int)Seed,
                 generationContext
             );
+        }
+
+        public float GenerationDepthAt(Vector3 local)
+        {
+            if (generationContext.Shape != null) return generationContext.DepthAt(local);
+            return AsteroidLayers.Depth(local.Length, NotGeneratedEntity?.radiusBlocks ?? 0);
+        }
+
+        private Spacebox.Game.Generation.Shapes.Asteroids.AsteroidSolidMask SolidMask()
+        {
+            if (!generationContext.RemovesFloatingBlocks) return null;
+
+            lock (_maskLock)
+            {
+                if (!_solidMaskBuilt)
+                {
+                    _solidMask = Spacebox.Game.Generation.Shapes.Asteroids.AsteroidSolidMaskBuilder.TryBuild(voxelGen, NotGeneratedEntity.asteroid, Seed, generationContext, diameterBlocks);
+                    _solidMaskBuilt = true;
+                }
+                return _solidMask;
+            }
+        }
+
+        private void ReleaseSolidMask()
+        {
+            lock (_maskLock)
+            {
+                _solidMask = null;
+                _solidMaskBuilt = false;
+            }
         }
 
         public static Quaternion CreateOrientation(int seed)
@@ -233,12 +266,15 @@ namespace Spacebox.Game.Generation
                         }
                         result.meshData.Release();
 
+                        bool done;
                         lock (_genLock)
                         {
                             pendingChunks.Remove(idx);
                             generatingChunks.Remove(idx);
                             loadedChunks.Add(idx);
+                            done = pendingChunks.Count == 0 && generatingChunks.Count == 0;
                         }
+                        if (done) ReleaseSolidMask();
                     });
                 }
                 catch (Exception ex)
@@ -306,7 +342,7 @@ namespace Spacebox.Game.Generation
 
         private (Chunk chunk, MeshData meshData) CreateChunk(Vector3SByte idx)
         {
-            var paddedBlocks = AsteroidChunkBuilder.BuildPaddedBlocks(voxelGen, NotGeneratedEntity.asteroid, Seed, EntityID, idx, generationContext);
+            var paddedBlocks = AsteroidChunkBuilder.BuildPaddedBlocks(voxelGen, NotGeneratedEntity.asteroid, Seed, EntityID, idx, generationContext, SolidMask());
             var chunk = new Chunk(idx, this, c => new BlockGeneratorFromPadded(c, c.PositionWorld, paddedBlocks));
 
             var tempGenerator = new MeshGenerator(chunk.PositionIndex, paddedBlocks, Chunk.MeasureGenerationTime);

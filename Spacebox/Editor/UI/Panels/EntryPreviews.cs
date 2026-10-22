@@ -145,7 +145,11 @@ public sealed class AsteroidEntryPreview : IEntryPreview
         var key = (entry.Key, _generation);
         viewport.SetContent(key, context.Assets.Version, () => Create(entry));
 
-        if (viewport.Content is AsteroidPreviewContent asteroid) DrawStatistics(context, asteroid);
+        if (viewport.Content is AsteroidPreviewContent asteroid)
+        {
+            ImGui.TextDisabled(asteroid.ShapeDescription);
+            DrawStatistics(context, asteroid);
+        }
     }
 
     private IPreviewContent Create(EditorEntry entry)

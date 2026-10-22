@@ -88,7 +88,8 @@ namespace Spacebox.Generation
 
         private void ProcessVeinsWithRules(ref int[,,] voxelData, int x, int y, int z, AsteroidLayer layer)
         {
-            float depth = AsteroidLayers.Depth((chunkOrigin + new Vector3i(x, y, z)).EuclideanLength, context.Radius);
+            var local = chunkOrigin + new Vector3i(x, y, z);
+            float depth = context.DepthAt(new Vector3(local.X, local.Y, local.Z));
 
             foreach (var vein in layer.Veins)
             {

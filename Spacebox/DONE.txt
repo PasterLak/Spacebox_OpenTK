@@ -26,6 +26,7 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- experimental asteroid shapes (new worlds only, generator version 3): every asteroid rolls its own form: lumpy stretched blobs with lobes, double asteroids, rare donuts, Pac-Man mouths and bites, craters; no floating blocks
 - generation options for new worlds: biomes, asteroid types and ore veins by distance from the world center, biome density, spacing, size and ore multipliers, worm settings per biome, hollow asteroids, round caves, veins by depth or only near caves, fallback biome; old worlds keep generating exactly as before (generator version in world.json)
 - asteroids decide which mobs live in them (Mobs list: chance, max per chunk and per asteroid, layers, depth, light, biomes, distance); parasites now live in medium, heavy and icy asteroids, not in light ones
 - GameSet editor biome map: distance rings and a switch for old worlds

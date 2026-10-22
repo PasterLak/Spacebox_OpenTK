@@ -97,7 +97,7 @@ public sealed class MobSpawner
         {
             var cell = origin + new Vector3i(_random.Next(Chunk.Size), _random.Next(Chunk.Size), _random.Next(Chunk.Size));
             if (!IsValidCell(definition, limits, cell)) continue;
-            if (rule != null && entity is Asteroid asteroid && !MobSpawnRules.AllowsCell(rule, asteroid.NotGeneratedEntity.asteroid, new Vector3(cell.X, cell.Y, cell.Z), asteroid.NotGeneratedEntity.radiusBlocks)) continue;
+            if (rule != null && entity is Asteroid asteroid && !MobSpawnRules.AllowsCell(rule, asteroid.NotGeneratedEntity.asteroid, asteroid.GenerationDepthAt(new Vector3(cell.X, cell.Y, cell.Z)))) continue;
 
             position = _probe.CellToWorld(cell);
             if (IsPlayerDistanceValid(definition.Spawn, position)) return true;

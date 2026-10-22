@@ -183,6 +183,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 ## Generation options
 
 - New generation features only apply to worlds with `GeneratorVersion` 2 (`GeneratorVersions.UsesRules`); version 1 must stay bit-identical (`LegacyGenerationTests`). Sector planning: `SectorAsteroidPlanner`, biome choice: `BiomeSelector`, per-asteroid inputs: `AsteroidGenerationContext` (saved by `AsteroidGenerationTags`), vein checks: `VeinRules`, caves: `AsteroidCavities`. New options get a JSON field with a default, a runtime field in `WorldGenerator.cs`, loading in `GenerationLoader` and a line in modding-guide "Generation".
+- Asteroid forms (version 3): `Shapes/Asteroids/` (`AsteroidShape`, `ShapeSdf`, `AsteroidSolidMask` + `AsteroidSolidMaskBuilder` for floating-block removal); a new form is a part or cut in `AsteroidShape` with its JSON section in `AsteroidShapeJSON`.
 
 ## Armor visuals
 

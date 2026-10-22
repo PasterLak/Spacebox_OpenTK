@@ -67,11 +67,11 @@ public class MobSpawnRulesTests
         var deep = new AsteroidMobRule { MobId = "parasite", MinDepth = 0.8f };
         var asteroid = Asteroid(inner, deep);
 
-        Assert.False(MobSpawnRules.AllowsCell(inner, asteroid, new Vector3(18, 0, 0), 20f));
-        Assert.True(MobSpawnRules.AllowsCell(inner, asteroid, new Vector3(2, 0, 0), 20f));
-        Assert.False(MobSpawnRules.AllowsCell(deep, asteroid, new Vector3(10, 0, 0), 20f));
-        Assert.True(MobSpawnRules.AllowsCell(deep, asteroid, new Vector3(1, 0, 0), 20f));
-        Assert.True(MobSpawnRules.AllowsCell(null, asteroid, new Vector3(19, 0, 0), 20f));
+        Assert.False(MobSpawnRules.AllowsCell(inner, asteroid, AsteroidLayers.Depth(18f, 20f)));
+        Assert.True(MobSpawnRules.AllowsCell(inner, asteroid, AsteroidLayers.Depth(2f, 20f)));
+        Assert.False(MobSpawnRules.AllowsCell(deep, asteroid, AsteroidLayers.Depth(10f, 20f)));
+        Assert.True(MobSpawnRules.AllowsCell(deep, asteroid, AsteroidLayers.Depth(1f, 20f)));
+        Assert.True(MobSpawnRules.AllowsCell(null, asteroid, AsteroidLayers.Depth(19f, 20f)));
     }
 
     [Fact]

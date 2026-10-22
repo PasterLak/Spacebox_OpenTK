@@ -16,6 +16,20 @@ public sealed class AsteroidPreviewContent : IPreviewContent
     private readonly Dictionary<short, int> _blockCounts = new Dictionary<short, int>();
     private readonly object _countsLock = new object();
     private AsteroidGenerationContext _context = AsteroidGenerationContext.Legacy;
+    private readonly Lazy<Game.Generation.Shapes.Asteroids.AsteroidSolidMask> _mask;
+
+    public string ShapeDescription { get; }
+
+    private static string Describe(Game.Generation.Shapes.Asteroids.AsteroidShape shape)
+    {
+        if (shape == null) return "Shape: sphere noise (no Shape section)";
+
+        string text = $"Shape: {shape.Kind}";
+        if (shape.LobeCount > 0) text += $", {shape.LobeCount} lobes";
+        if (shape.HasBite) text += ", bite";
+        if (shape.CraterCount > 0) text += $", {shape.CraterCount} craters";
+        return text;
+    }
     private readonly BlockMaterial _material;
     private volatile bool _cancelled;
     private int _pendingChunks;
@@ -35,8 +49,12 @@ public sealed class AsteroidPreviewContent : IPreviewContent
 
         int diameter = radius * 2;
         AsteroidChunkBuilder.GetChunkRange(diameter, out int minChunk, out int maxChunk);
-        _context = new AsteroidGenerationContext(GeneratorVersions.Current, null, 0f, radius);
+        var shape = AsteroidGenerationContext.CreateShape(GeneratorVersions.Current, asteroid, seed);
+        ShapeDescription = Describe(shape);
+        _context = new AsteroidGenerationContext(GeneratorVersions.Current, null, 0f, radius, shape);
         var generator = new AsteroidVoxelDataGenerator(new Vector3(diameter), 1f, asteroid, seed, _context);
+        var context = _context;
+        _mask = new Lazy<Game.Generation.Shapes.Asteroids.AsteroidSolidMask>(() => Game.Generation.Shapes.Asteroids.AsteroidSolidMaskBuilder.TryBuild(generator, asteroid, seed, context, diameter));
 
         for (int x = minChunk; x <= maxChunk; x++)
         for (int y = minChunk; y <= maxChunk; y++)
@@ -89,7 +107,7 @@ public sealed class AsteroidPreviewContent : IPreviewContent
         {
             if (_cancelled) return;
 
-            var padded = AsteroidChunkBuilder.BuildPaddedBlocks(generator, asteroid, seed, seed, index, _context);
+            var padded = AsteroidChunkBuilder.BuildPaddedBlocks(generator, asteroid, seed, seed, index, _context, _mask.Value);
             CountBlocks(padded);
             var meshData = new MeshGenerator(index, padded, false).GenerateMeshData();
             PaddedArrayPools.Blocks.Return(padded);

@@ -61,11 +61,10 @@ public sealed class MobSpawnRules
             rule.Chance);
     }
 
-    public static bool AllowsCell(AsteroidMobRule rule, AsteroidData asteroid, Vector3 cellFromCenter, float radius)
+    public static bool AllowsCell(AsteroidMobRule rule, AsteroidData asteroid, float depth)
     {
         if (rule == null) return true;
 
-        float depth = AsteroidLayers.Depth(cellFromCenter.Length, radius);
         if (depth < rule.MinDepth || depth > rule.MaxDepth) return false;
         if (rule.Layers.Length == 0) return true;
 

@@ -56,6 +56,7 @@ public class AsteroidJSON
     public int MaxDistanceFromCenter { get; set; } = 0;
     public byte HollowCorePercent { get; set; } = 0;
     public AsteroidCavitiesJSON? Cavities { get; set; }
+    public AsteroidShapeJSON? Shape { get; set; }
 
     public AsteroidLayerJSON[] Layers { get; set; } = new AsteroidLayerJSON[0];
     public AsteroidMobJSON[] Mobs { get; set; } = new AsteroidMobJSON[0];

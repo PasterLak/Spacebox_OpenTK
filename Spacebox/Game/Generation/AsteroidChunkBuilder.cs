@@ -1,6 +1,7 @@
 using Engine;
 using Engine.Utils;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Shapes.Asteroids;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Generation;
 
@@ -15,29 +16,19 @@ public static class AsteroidChunkBuilder
         return BuildPaddedBlocks(voxelGen, asteroid, seed, entityId, idx, AsteroidGenerationContext.Legacy);
     }
 
-    public static Block[,,] BuildPaddedBlocks(AsteroidVoxelDataGenerator voxelGen, AsteroidData asteroid, int seed, long entityId, Vector3SByte idx, AsteroidGenerationContext context)
+    public static Block[,,] BuildPaddedBlocks(AsteroidVoxelDataGenerator voxelGen, AsteroidData asteroid, int seed, long entityId, Vector3SByte idx, AsteroidGenerationContext context, AsteroidSolidMask mask = null)
     {
-        var paddedData = voxelGen.GeneratePaddedDataForChunk(idx);
         var chunkSeed = SeedHelper.GetChunkIdInt(entityId, idx);
-
-        if (asteroid.UsePerlinWorms)
+        int[,,] paddedData;
+        if (mask != null)
         {
-            var worms = context.WormsFor(asteroid);
-            var wormParams = new WormParameters(
-                worms.MinCount,
-                worms.MaxCount,
-                worms.DiameterInBlocks,
-                worms.PathDeviation,
-                worms.MaxTunnelLength,
-                ComputeStep(worms.DiameterInBlocks, worms.StepSize),
-                seed);
-
-            PerlinWorms.CarvePaddedChunk(paddedData, idx, seed, wormParams);
+            paddedData = voxelGen.GeneratePaddedDataForChunk(idx, mask);
         }
-
-        var cavities = context.CavitiesFor(asteroid);
-        if (cavities != null)
-            AsteroidCavities.Carve(paddedData, idx, AsteroidCavities.Create(seed, context.Radius, cavities));
+        else
+        {
+            paddedData = voxelGen.GeneratePaddedDataForChunk(idx);
+            CarveTunnels(paddedData, asteroid, seed, idx, context);
+        }
 
         var oreGen = new AsteroidOreGenerator(asteroid, chunkSeed, context, idx);
         oreGen.ApplyOres(ref paddedData);
@@ -56,6 +47,28 @@ public static class AsteroidChunkBuilder
 
         PaddedArrayPools.Voxels.Return(paddedData);
         return paddedBlocks;
+    }
+
+    public static void CarveTunnels(int[,,] paddedData, AsteroidData asteroid, int seed, Vector3SByte idx, AsteroidGenerationContext context)
+    {
+        if (asteroid.UsePerlinWorms)
+        {
+            var worms = context.WormsFor(asteroid);
+            var wormParams = new WormParameters(
+                worms.MinCount,
+                worms.MaxCount,
+                worms.DiameterInBlocks,
+                worms.PathDeviation,
+                worms.MaxTunnelLength,
+                ComputeStep(worms.DiameterInBlocks, worms.StepSize),
+                seed);
+
+            PerlinWorms.CarvePaddedChunk(paddedData, idx, seed, wormParams);
+        }
+
+        var cavities = context.CavitiesFor(asteroid);
+        if (cavities != null)
+            AsteroidCavities.Carve(paddedData, idx, AsteroidCavities.Create(seed, context.Radius, cavities));
     }
 
     public static void GetChunkRange(int diameterBlocks, out int minChunk, out int maxChunk)

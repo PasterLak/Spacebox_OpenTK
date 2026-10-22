@@ -269,6 +269,7 @@ public class GenerationLoader
                 Distance = new DistanceRange(json.MinDistanceFromCenter, json.MaxDistanceFromCenter),
                 HollowCorePercent = Math.Min(json.HollowCorePercent, (byte)90),
                 Cavities = NormalizeCavities(json.Cavities),
+                Shape = json.Shape,
                 Mobs = ConvertMobRules(json),
                 Layers = new AsteroidLayer[json.Layers.Length]
             };
