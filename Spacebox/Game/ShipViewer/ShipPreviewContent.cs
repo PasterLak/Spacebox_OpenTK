@@ -8,6 +8,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Ships;
 using Spacebox.Game.Versioning;
 
 namespace Spacebox.Game.ShipViewer;
@@ -24,6 +25,7 @@ public sealed class ShipPreviewContent : IPreviewContent
     private int _pendingJobs;
     private int _totalChunks = -1;
     private int _meshedChunks;
+    private Matrix4 _view = Matrix4.Identity;
 
     public ShipPreviewContent(Func<CompoundTag> loadTag, ShipFraming framing)
     {
@@ -52,7 +54,7 @@ public sealed class ShipPreviewContent : IPreviewContent
         {
             var mesh = new Mesh(data.Vertices, data.Indices, BuffersData.CreateBlockBuffer());
             var origin = new Vector3(data.Index.X, data.Index.Y, data.Index.Z) * Chunk.Size;
-            _meshes.Add((mesh, Matrix4.CreateTranslation(origin)));
+            _meshes.Add((mesh, Matrix4.CreateTranslation(origin) * _view));
         }
     }
 
@@ -88,6 +90,7 @@ public sealed class ShipPreviewContent : IPreviewContent
                 chunks[index] = blocks;
             }
 
+            _view = BuildView(DetectOrientation(chunks));
             Volatile.Write(ref _totalChunks, chunks.Count);
             var air = GameAssets.CreateBlockFromId(0);
             foreach (var index in chunks.Keys)
@@ -107,6 +110,29 @@ public sealed class ShipPreviewContent : IPreviewContent
         {
             Interlocked.Decrement(ref _pendingJobs);
         }
+    }
+
+    private Matrix4 BuildView(Matrix3 rotation)
+    {
+        return Matrix4.CreateTranslation(-Center) * new Matrix4(rotation) * Matrix4.CreateTranslation(Center);
+    }
+
+    private static Matrix3 DetectOrientation(Dictionary<Vector3SByte, Block[,,]> chunks)
+    {
+        var orientation = new ShipViewOrientation();
+        foreach (var blocks in chunks.Values)
+        {
+            foreach (var block in blocks)
+            {
+                if (block == null || block.HasMultiblockOffset) continue;
+                if (GameAssets.GetBlockDataById(block.Id) is not ShipConsoleBlockData console) continue;
+
+                var frame = ShipPartFrame.Compute(block, Vector3i.Zero);
+                orientation.AddConsole(-frame.Front, frame.Up, console.Flight);
+            }
+        }
+
+        return orientation.Resolve();
     }
 
     private void MeshChunk(IReadOnlyDictionary<Vector3SByte, Block[,,]> chunks, Vector3SByte index, Block air)

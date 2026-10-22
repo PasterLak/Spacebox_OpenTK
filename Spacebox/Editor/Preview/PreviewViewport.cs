@@ -11,7 +11,7 @@ public sealed class PreviewViewport : IDisposable
     private const float AutoRotateSpeed = 18f;
 
     private readonly RenderTexture _target = new RenderTexture(256, 256);
-    private readonly OrbitViewCamera _camera = new OrbitViewCamera();
+    private readonly TrackballViewCamera _camera = new TrackballViewCamera();
     private IPreviewContent _content;
     private object _key;
     private int _assetsVersion = -1;
@@ -79,7 +79,7 @@ public sealed class PreviewViewport : IDisposable
         {
             float wheel = ImGui.GetIO().MouseWheel;
             if (wheel != 0f) _camera.Zoom(wheel);
-            if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) Reframe();
+            if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) ResetView();
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Right)) _autoRotate = !_autoRotate;
         }
 
@@ -94,7 +94,7 @@ public sealed class PreviewViewport : IDisposable
 
         _content.Update(deltaTime);
         if (_content.IsReady && !_framed) Reframe();
-        if (_autoRotate) _camera.Orbit(AutoRotateSpeed * deltaTime, 0f);
+        if (_autoRotate) _camera.Spin(OpenTK.Mathematics.Vector3.UnitY, AutoRotateSpeed * deltaTime);
     }
 
     public void Render()
@@ -109,6 +109,12 @@ public sealed class PreviewViewport : IDisposable
             background?.Invoke();
             if (content != null && content.IsReady) content.Render();
         });
+    }
+
+    public void ResetView()
+    {
+        _framed = false;
+        Reframe();
     }
 
     public void Reframe()
