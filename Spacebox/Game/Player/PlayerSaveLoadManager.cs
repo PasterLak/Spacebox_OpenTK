@@ -240,7 +240,7 @@ namespace Spacebox.Game.Player
 
                 if (data.EquipmentSlots != null) LoadEquipment(player, data.EquipmentSlots);
                 else GameSetLoader.GiveStartEquipment(player);
-                player.HealthBar.StatsData.Value = data.Health;
+                if (data.Health > 0) player.HealthBar.StatsData.Value = data.Health;
                 player.PowerBar.StatsData.Value = data.Power;
                 player.OxygenBar.StatsData.Value = data.Oxygen;
                 if (WasSavedDead(data.Health)) RespawnSavedDeadPlayer(player);

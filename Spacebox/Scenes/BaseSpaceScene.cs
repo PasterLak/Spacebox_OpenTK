@@ -433,7 +433,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipWeapons.Reset();
         TutorialService.Detach();
         Spacebox.Game.Waypoints.WaypointWindowUI.Reset();
-        PanelUI.Player = null;
+        PanelUI.Reset();
+        DeathScreen.IsVisible = false;
 
         TickTaskManager.Dispose();
         radarWindow?.Dispose();

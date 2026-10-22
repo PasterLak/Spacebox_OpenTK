@@ -219,6 +219,7 @@ Fixes
 - multiplayer: player names like CON, NUL or COM1 were accepted although their save file cannot be written on Windows; they are refused on join
 - picked-up drops came back after reloading a world saved with no drops left (old drop.json was kept)
 - destroyed entities came back from the unsaved entity cache after Save; unsaved ships in a reloaded sector were invisible, and a stale file in the old sector loaded the cached ship one sector off
+- dying and going to the menu showed the death screen and hid the held item in the next loaded world; a world saved while dead loaded the player with 0 health
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

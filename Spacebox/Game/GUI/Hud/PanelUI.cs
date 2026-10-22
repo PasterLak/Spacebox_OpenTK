@@ -58,6 +58,17 @@ namespace Spacebox.Game.GUI
             _lastSelectedCount = 0;
         }
 
+        public static void Reset()
+        {
+            if (Storage != null) Storage.OnDataWasChanged -= OnStorageDataWasChanged;
+            Player = null;
+            Storage = null;
+            ItemModel = null;
+            SelectedSlot = null;
+            IsItemModelVisible = true;
+            AreHandsBlocked = false;
+        }
+
         private static void OnStorageDataWasChanged(Storage storage)
         {
             SelectSlot(SelectedSlotId);
