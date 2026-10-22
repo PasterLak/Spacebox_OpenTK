@@ -93,7 +93,7 @@ public sealed class EntryFolderSource : IEntrySource
     private EditorEntry Create(string id, JsonNode node)
     {
         string folder = _roots[0].TrimEnd('/') + "/" + id;
-        var file = _project.CreateFile(folder + "/" + _entryFile, node);
+        var file = _project.CreateFile(folder + "/" + EntryFiles.NamedFile(id), node);
         AppendToOrder(id);
         _version = -1;
         foreach (var entry in GetEntries())
@@ -122,7 +122,8 @@ public sealed class EntryFolderSource : IEntrySource
             {
                 if (string.Equals(Definition.GetId(entry.Node), id, StringComparison.OrdinalIgnoreCase)) return true;
             }
-            return _project.Exists(_roots[0].TrimEnd('/') + "/" + id + "/" + _entryFile);
+            string folder = _roots[0].TrimEnd('/') + "/" + id + "/";
+            return _project.Exists(folder + EntryFiles.NamedFile(id)) || _project.Exists(folder + _entryFile);
         });
     }
 
@@ -149,7 +150,7 @@ public sealed class EntryFolderSource : IEntrySource
     {
         string prefix = root.TrimEnd('/') + "/";
         if (!path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) return false;
-        if (!string.Equals(Path.GetFileName(path), _entryFile, StringComparison.OrdinalIgnoreCase)) return false;
+        if (!EntryFiles.IsEntryFile(path, _entryFile, _project.Exists)) return false;
 
         var segments = path.Substring(prefix.Length).Split('/');
         if (segments.Length < 2) return false;

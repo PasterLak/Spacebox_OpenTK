@@ -192,11 +192,13 @@ A GameSet is a folder (or a `.zip` / `.rar` archive, extracted by `GameSetsUnpac
 Mods/GameSets/Default/
   config.json      ModId, ModName, Author, Version, OxygenConsumeInterval (s per 1 oxygen, default 10), Dependencies, ItemsOnStart,
                    Extends (base GameSet id, extensions only), Includes (other extensions loaded first)
-  Blocks/<group>/<id>/block.json   one block (ID, Name, Type, PowerToDrill, Mass, Durability, Textures, Sounds, Drop, DropQuantity, Model, ...)
-  Items/<group>/<id>/item.json     one item
+  Blocks/<group>/<id>/<id>.json    one block (ID, Name, Type, PowerToDrill, Mass, Durability, Textures, Sounds, Drop, DropQuantity, Model, ...); the entry file is named after its folder (`EntryFiles`) or `block.json` (old name; ignored when `<folder>.json` exists); `blueprint.json`, `recipes.json` and `order.json` are never entry files
+  Items/<group>/<id>/<id>.json     one item (or `item.json`)
   <entry>/*.png, <entry>/Emissions/*.png, <entry>/*.ogg|*.wav   the entry's textures, emission maps and sounds (names stay global)
   <entry>/blueprint.json           crafting blueprint for this entry (Product defaults to the entry, Quantity 1)
   <entry>/recipes.json             processing recipes with this entry as ingredient: [ { Type, Ingredient (default: the entry), Product, DurationSec, PowerPerTickRequared } ]
+  Default groups: Blocks/ Resources, MetalBlocks, Windows, Doors, Lights, Crates, Machines, Devices, Power, Logistics, Explosives, Frames, Signs, Ships/(Cannons|Thrusters|Control), Other, Shared (textures used by several groups); Items/ Ingots, Dusts, Materials, Components, Drills, Tools, Weapons, Consumables, Equipment/(Armor|Devices), Pictures. Every emission map lies in an `Emissions/` folder next to its texture
+  Builds delete files from the output copies of the shipped mods (Mods/GameSets|Extensions|TexturePacks/<mod>) that no longer exist in the source (`RemoveStaleModFiles` in Spacebox.csproj), so moved files cannot leave duplicate ids or old textures behind
   Blocks/order.json, Items/order.json   optional ids in load order (numeric ids, creative/crafting order); unlisted entries follow by path
   Crafting/*.json  { Categories, Blueprints } fragments (Default: categories.json; blueprints.json for products without an entry folder)
   Recipes/<type>.json  { Type, Recipes [ ... ] } processing recipes of one machine type, in UI order; crusher recycling never returns more metal dust than the item's crafting cost in ingots (checked by `DefaultCrusherRecipesTests`)

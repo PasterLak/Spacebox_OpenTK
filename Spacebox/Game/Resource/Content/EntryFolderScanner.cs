@@ -19,8 +19,8 @@ public static class EntryFolderScanner
             string name = Path.GetFileName(child);
             if (name.StartsWith('_') || string.Equals(name, GameSetFormat.EmissionsFolder, StringComparison.OrdinalIgnoreCase)) continue;
 
-            string entryFile = Path.Combine(child, entryFileName);
-            if (File.Exists(entryFile))
+            string entryFile = EntryFiles.Find(child, entryFileName);
+            if (entryFile != null)
             {
                 result.Add(entryFile);
                 continue;

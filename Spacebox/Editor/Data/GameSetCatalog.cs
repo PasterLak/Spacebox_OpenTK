@@ -57,14 +57,20 @@ public static class GameSetCatalog
         return ItemTypes.TryGetValue(type, out var schema) ? schema : typeof(ItemJSON);
     }
 
+    private static bool IsEntryFile(string relativePath, string folder, string entryFile)
+    {
+        return relativePath.StartsWith(folder + "/", StringComparison.OrdinalIgnoreCase)
+            && Game.Resource.Content.EntryFiles.IsEntryFile(relativePath, entryFile, _ => false);
+    }
+
     public static Type FileSchema(string relativePath)
     {
         relativePath = GameSetProject.Normalize(relativePath);
         if (FileSchemas.TryGetValue(relativePath, out var schema)) return schema;
         if (relativePath.StartsWith(BlocksFile, StringComparison.OrdinalIgnoreCase)) return typeof(List<BlockJSON>);
         string fileName = Path.GetFileName(relativePath);
-        if (fileName.Equals(Game.Resource.Content.GameSetFormat.BlockEntryFile, StringComparison.OrdinalIgnoreCase)) return typeof(BlockJSON);
-        if (fileName.Equals(Game.Resource.Content.GameSetFormat.ItemEntryFile, StringComparison.OrdinalIgnoreCase)) return typeof(ItemJSON);
+        if (IsEntryFile(relativePath, Game.Resource.Content.GameSetFormat.BlocksFolder, Game.Resource.Content.GameSetFormat.BlockEntryFile)) return typeof(BlockJSON);
+        if (IsEntryFile(relativePath, Game.Resource.Content.GameSetFormat.ItemsFolder, Game.Resource.Content.GameSetFormat.ItemEntryFile)) return typeof(ItemJSON);
         if (fileName.Equals(Game.Resource.Content.GameSetFormat.BlueprintFile, StringComparison.OrdinalIgnoreCase)) return typeof(BlueprintJSON);
         if (fileName.Equals(Game.Resource.Content.GameSetFormat.EntryRecipesFile, StringComparison.OrdinalIgnoreCase)) return typeof(List<RecipeJSON>);
         if (relativePath.StartsWith(Game.Resource.Content.GameSetFormat.RecipesFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(RecipejSONType);

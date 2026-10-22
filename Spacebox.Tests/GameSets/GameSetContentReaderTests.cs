@@ -179,4 +179,22 @@ public sealed class GameSetContentReaderTests : IDisposable
         Assert.Contains("good", Ids(content.Blocks));
         Assert.NotEmpty(content.Warnings);
     }
+
+    [Fact]
+    public void FolderFormat_EntryFileCanBeNamedAfterItsFolder()
+    {
+        _sets.Write("Base/Blocks/Rocks/stone/stone.json", "{ \"ID\": \"stone\" }");
+        _sets.Write("Base/Blocks/iron/block.json", "{ \"ID\": \"iron\" }");
+        _sets.Write("Base/Blocks/lamp/lamp.json", "{ \"ID\": \"lamp\" }");
+        _sets.Write("Base/Blocks/lamp/block.json", "{ \"ID\": \"ignored\" }");
+        _sets.Write("Base/Items/ingot/ingot.json", "{ \"ID\": \"ingot\" }");
+        _sets.Write("Base/Items/ingot/blueprint.json", "{ \"Ingredients\": [ { \"Item\": \"ingot\", \"Quantity\": 2 } ] }");
+        _sets.Write("Base/Items/blueprint/blueprint.json", "{ \"Ingredients\": [] }");
+
+        var content = GameSetContentReader.ReadFolder(Path.Combine(_sets.Root, "Base"));
+
+        Assert.Equal(new[] { "iron", "lamp", "stone" }, Ids(content.Blocks));
+        Assert.Equal(new[] { "ingot" }, Ids(content.Items));
+        Assert.Equal(new[] { "ingot" }, Ids(content.Blueprints));
+    }
 }

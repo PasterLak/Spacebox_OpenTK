@@ -21,21 +21,21 @@ Mods/GameSets/MyMod/
   Blocks/
     order.json                  optional: ["my_lamp", "my_panel"] = order in the creative menu
     Lights/my_lamp/             any grouping folders are allowed
-      block.json                one block object
-      myLamp.png                textures used by Textures in block.json
+      my_lamp.json              one block object, file named like its folder (block.json works too)
+      myLamp.png                textures used by Textures in my_lamp.json
       Emissions/myLamp.png      glow map for the texture with the same name
       myLampPlace.ogg           sounds (Sounds.Place = "myLampPlace")
       blueprint.json            how to craft it (Product defaults to this block)
       recipes.json              machine recipes that use this block as input
   Items/
     my_gem/
-      item.json
+      my_gem.json
       myGem.png
   Recipes/furnace.json          { "Type": "furnace", "Recipes": [ ... ] }  all recipes of one machine
   Crafting/categories.json      { "Categories": [ ... ] }
 ```
 
-- `block.json` / `item.json` hold exactly the object that used to be one array element of `blocks.json` / `items.json`. Field reference: `Spacebox/Game/Resource/Json/BlockJSON.cs`, `ItemJSON.cs` (or the GameSet editor, which lists every field).
+- The entry file is named like its folder (`my_lamp/my_lamp.json`, so a search for the id finds it) or `block.json` / `item.json`; if both exist, the named one is used. It holds exactly the object that used to be one array element of `blocks.json` / `items.json`. Field reference: `Spacebox/Game/Resource/Json/BlockJSON.cs`, `ItemJSON.cs` (or the GameSet editor, which lists every field).
 - `blueprint.json`: `{ "Ingredients": [ { "Item": "iron_ingot", "Quantity": 2 } ], "Product": { "Quantity": 4 } }`.
 - `recipes.json`: `[ { "Type": "crusher", "DurationSec": 4, "PowerPerTickRequared": 5, "Product": { "Item": "my_gem", "Quantity": 3 } } ]` (the ingredient defaults to the folder's entry).
 - Texture and sound names are global for the whole stack (base GameSet, Default fallback and all extensions): the file name without extension is the name (`myLamp`). A file with a name that already exists replaces it everywhere (later layers win), so prefix your names. Any PNG under `Blocks/` is a block texture, any PNG under `Items/` an item sprite, wherever it lies; shared textures can stay in a group folder. Folders starting with `_` are ignored.

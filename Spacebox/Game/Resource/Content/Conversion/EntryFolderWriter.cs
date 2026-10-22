@@ -67,7 +67,7 @@ public sealed class EntryFolderWriter
             var owned = textures.OwnedBy(entry);
             string directory = _entryDirectories.TryGetValue(id, out var existing) ? existing : NewEntryDirectory(id, owned);
             Directory.CreateDirectory(directory);
-            ContentJson.WriteFile(Path.Combine(directory, _kind.EntryFile), entry);
+            ContentJson.WriteFile(EntryFiles.PathFor(directory, _kind.EntryFile), entry);
             _entryDirectories[id] = directory;
 
             foreach (var texture in owned)

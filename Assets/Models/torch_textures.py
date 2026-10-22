@@ -5,7 +5,7 @@ from PIL import Image
 
 GAMESET = sys.argv[1] if len(sys.argv) > 1 else os.path.join("Spacebox", "GameSets", "Default")
 BLOCKS = os.path.join(GAMESET, "Blocks", "Lights")
-EMISSIONS = os.path.join(GAMESET, "Emissions", "Lights")
+EMISSIONS = os.path.join(GAMESET, "Blocks", "Lights", "Emissions")
 
 COLORS = ["white", "blue", "red", "yellow", "cyan", "orange", "green", "pink"]
 

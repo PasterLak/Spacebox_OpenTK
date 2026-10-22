@@ -128,6 +128,14 @@
 	  <Folder Include="Mods\GameSets\Default\Models\" />
 	</ItemGroup>
 
-
+	<Target Name="RemoveStaleModFiles" AfterTargets="CopyFilesToOutputDirectory">
+		<ItemGroup>
+			<_ShippedModKind Include="GameSets;Extensions;TexturePacks" />
+			<_OutputModFile Include="$(OutDir)Mods\%(_ShippedModKind.Identity)\*\**\*" Kind="%(_ShippedModKind.Identity)" />
+			<_StaleModFile Include="@(_OutputModFile)" Condition="'%(RecursiveDir)' != '' and Exists('$(MSBuildProjectDirectory)\Mods\%(Kind)\$([System.String]::Copy(`%(RecursiveDir)`).Split(`\`)[0])') and !Exists('$(MSBuildProjectDirectory)\Mods\%(Kind)\%(RecursiveDir)%(Filename)%(Extension)')" />
+		</ItemGroup>
+		<Delete Files="@(_StaleModFile)" />
+		<Message Importance="normal" Text="Removed stale mod file @(_StaleModFile)" Condition="'@(_StaleModFile)' != ''" />
+	</Target>
 
 </Project>

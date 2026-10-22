@@ -38,8 +38,8 @@ public sealed class FolderFormatSourcesTests : IDisposable
         var added = source.Add(null);
         project.SaveAll();
 
-        Assert.Equal("Blocks/new_block/block.json", added.File.RelativePath);
-        Assert.True(File.Exists(Path.Combine(Root, "Blocks", "new_block", "block.json")));
+        Assert.Equal("Blocks/new_block/new_block.json", added.File.RelativePath);
+        Assert.True(File.Exists(Path.Combine(Root, "Blocks", "new_block", "new_block.json")));
         Assert.Equal(new[] { "stone", "new_block" }, GameSetContentReader.ReadFolder(Root).Blocks.Select(b => b.Key));
     }
 

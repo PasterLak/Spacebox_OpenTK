@@ -65,6 +65,8 @@ New
 - servers share texture packs: TexturePacks in serverconfig.json (a host shares its enabled packs), downloaded and checked with the GameSet like extensions, shown below the player's own packs
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 Small
+- Default GameSet sorted into group folders (machines, devices, power, logistics, doors, windows, ship parts, components, materials, armor, ...), glow maps next to their textures
+- block and item files can be named after their id (Blocks/Machines/furnace/furnace.json) so a search finds them; block.json/item.json still work
 - all power blocks and ship cannons stretch their textures over the whole block (TextureFit)
 - own worlds: Final builds save automatically when leaving (menu, exit, closing the window) and autosave by default; Debug/Release only save with the Save button and ask Save / Don't Save / Cancel when leaving with changes; saves are announced in chat
 - Options > Game: Autosave and Autosave Interval (1-60 min; off by default, on by default in Final builds)
@@ -118,6 +120,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- builds remove old files of the shipped mods from the output folder (moved files left duplicate blocks and old textures behind)
 - LAN: players who join a world opened to the network can use / commands (got "Only admins can use / commands"); commands they type act on themselves, not on the host
 - command descriptions and the server guide name no other games
 - nuclear power block glows again when active (its glow map still had the old 32x32 size); cable angles and hubs glow like straight cables

@@ -132,7 +132,7 @@ Goal: ships built anywhere, thrusters push at their position, consoles bind thru
 
 ### 3.0 Status
 
-WP1–WP9 are implemented (`Spacebox/Game/Ships/`, `Spacebox/Network/ShipNetwork.cs`, ship blocks in `Game/Generation/Blocks/`, data in GameSet block entries (`Blocks/**/block.json`) / `ships.json`). Differences from the plan below:
+WP1–WP9 are implemented (`Spacebox/Game/Ships/`, `Spacebox/Network/ShipNetwork.cs`, ship blocks in `Game/Generation/Blocks/`, data in GameSet block entries (`Blocks/**/<id>.json`) / `ships.json`). Differences from the plan below:
 
 - WP1 kept chunk world caches: `SpaceEntity.SetPose` shifts them instead of switching chunks to local origins. Rotation stays around `PositionWorld`; `ShipBody` keeps the center of mass fixed while rotating.
 - WP4 binding happens from the seat (`ShipBindingTool`), not with a held tool item.

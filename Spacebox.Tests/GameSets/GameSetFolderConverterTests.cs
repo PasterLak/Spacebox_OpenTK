@@ -37,13 +37,13 @@ public sealed class GameSetFolderConverterTests : IDisposable
 
         Assert.True(result.Success, string.Join("\n", result.Errors.Concat(result.Differences)));
         Assert.False(GameSetFolderConverter.HasFlatFiles(Root));
-        Assert.True(File.Exists(Path.Combine(Root, "Blocks", "Rocks", "stone", "block.json")));
+        Assert.True(File.Exists(Path.Combine(Root, "Blocks", "Rocks", "stone", "stone.json")));
         Assert.True(File.Exists(Path.Combine(Root, "Blocks", "Rocks", "stone", "stone.png")));
         Assert.True(File.Exists(Path.Combine(Root, "Blocks", "lamp", "lamp.png")));
         Assert.True(File.Exists(Path.Combine(Root, "Blocks", "lamp", "Emissions", "lamp.png")));
         Assert.True(File.Exists(Path.Combine(Root, "Blocks", "shared.png")));
         Assert.True(File.Exists(Path.Combine(Root, "Blocks", "lamp", "blueprint.json")));
-        Assert.True(File.Exists(Path.Combine(Root, "Items", "Ingots", "ingot", "item.json")));
+        Assert.True(File.Exists(Path.Combine(Root, "Items", "Ingots", "ingot", "ingot.json")));
         Assert.True(File.Exists(Path.Combine(Root, "Items", "Ingots", "ingot", "Emissions", "ingot.png")));
         Assert.True(File.Exists(Path.Combine(Root, "Crafting", "categories.json")));
         Assert.True(File.Exists(Path.Combine(Root, "Crafting", "blueprints.json")));
@@ -89,7 +89,7 @@ public sealed class GameSetFolderConverterTests : IDisposable
         var result = GameSetFolderConverter.Convert(Root);
 
         Assert.True(result.Success, string.Join("\n", result.Errors.Concat(result.Differences)));
-        var lamp = (JsonObject)JsonNode.Parse(File.ReadAllText(Path.Combine(Root, "Blocks", "lamp", "block.json")))!;
+        var lamp = (JsonObject)JsonNode.Parse(File.ReadAllText(Path.Combine(Root, "Blocks", "lamp", "lamp.json")))!;
         Assert.Equal("Bright Lamp", lamp["Name"]!.GetValue<string>());
         Assert.Equal(new[] { "lamp", "stone" }, GameSetContentReader.ReadFolder(Root).Blocks.Select(b => b.Key));
     }

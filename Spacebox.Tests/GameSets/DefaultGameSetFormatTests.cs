@@ -6,7 +6,7 @@ namespace Spacebox.Tests.GameSets;
 
 public sealed class DefaultGameSetFormatTests
 {
-    private const string RegenerateHint = "If Default content was changed on purpose, regenerate the snapshot: dotnet run --project Tools/Spacebox.GameSetTool -- snapshot Spacebox/GameSets/Default Spacebox.Tests/Fixtures/GameSets/Default.snapshot.json";
+    private const string RegenerateHint = "If Default content was changed on purpose, regenerate the snapshot: dotnet run --project Tools/Spacebox.GameSetTool -- snapshot Spacebox/Mods/GameSets/Default Spacebox.Tests/Fixtures/GameSets/Default.snapshot.json";
 
     private static string SnapshotFile()
     {
