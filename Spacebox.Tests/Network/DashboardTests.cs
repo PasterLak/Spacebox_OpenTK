@@ -185,14 +185,6 @@ public class DashboardTests : IDisposable
     }
 
     [Fact]
-    public void Restart_PassesArgumentsAndWaitPid()
-    {
-        var info = ServerRestart.CreateStartInfo("/srv/Spacebox", new[] { "/srv/Spacebox.dll", "--server", "--wait-pid", "5" }, 42);
-
-        Assert.Equal(new[] { "--server", "--wait-pid", "42" }, info.ArgumentList.ToArray());
-    }
-
-    [Fact]
     public void ItemIcons_ReadTextureNamesFromTheDefaultGameSet()
     {
         string folder = Spacebox.Tests.Versioning.WorldToolkitTests.DefaultGameSet().DefaultGameSet;

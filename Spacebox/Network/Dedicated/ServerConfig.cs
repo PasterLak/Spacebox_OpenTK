@@ -23,7 +23,7 @@ public sealed class ServerConfig
     public List<string> TexturePacks { get; set; } = new List<string>();
     public int Port { get; set; } = NetworkManager.DefaultPort;
     public int MaxPlayers { get; set; } = 16;
-    public byte GameMode { get; set; } = 0;
+    public byte GameMode { get; set; } = (byte)Spacebox.Game.Player.GameModes.GameMode.Creative;
     public float AutoSaveInterval { get; set; } = 300f;
     public int UpdateRate { get; set; } = DefaultUpdateRate;
     public bool FriendlyMobs { get; set; } = false;
@@ -79,10 +79,15 @@ public sealed class ServerConfig
             }
         }
 
-        var config = new ServerConfig { Seed = new Random().Next().ToString() };
+        var config = CreateNew();
         if (Save(config, path, options)) Debug.Warning($"[Server] Created default {FileName}");
 
         return config;
+    }
+
+    public static ServerConfig CreateNew()
+    {
+        return new ServerConfig { Seed = new Random().Next().ToString(), RegistrationEnabled = true };
     }
 
     public bool Save()

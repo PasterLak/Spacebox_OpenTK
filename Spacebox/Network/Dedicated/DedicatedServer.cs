@@ -24,6 +24,21 @@ public static class DedicatedServer
     public static void Launch()
     {
         Debug.MirrorToStandardOutput = true;
+        RegisterCommands();
+        StartConsoleReader();
+        _shutdownSignals = new ServerShutdownSignals(action => EngineWindow._mainThreadActions.Enqueue(action), ServerRestart.Stop);
+        _shutdownSignals.Register();
+        StartWorld();
+    }
+
+    public static void Relaunch()
+    {
+        Dashboard.DashboardService.Stop();
+        StartWorld();
+    }
+
+    private static void StartWorld()
+    {
         Config = ServerConfig.LoadOrCreate();
         FrameLimiter.IsRunning = true;
         FrameLimiter.TargetFPS = Config.GetClampedUpdateRate();
@@ -50,10 +65,6 @@ public static class DedicatedServer
             return;
         }
 
-        RegisterCommands();
-        StartConsoleReader();
-        _shutdownSignals = new ServerShutdownSignals(action => EngineWindow._mainThreadActions.Enqueue(action), ServerRestart.Stop);
-        _shutdownSignals.Register();
         Dashboard.DashboardService.Start(Config);
 
         Debug.Success($"[Server] Starting '{Config.ServerName}' with world '{world.Name}' on port {Config.Port}");

@@ -19,7 +19,6 @@ public static class Program
 #if AGENT_API
         Agent.AgentHost.Configure(args);
 #endif
-        Network.Dedicated.ServerRestart.WaitForPreviousProcess(LaunchOptions.WaitForProcessId);
 
         if (LaunchOptions.IsDedicated)
         {

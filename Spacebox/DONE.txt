@@ -73,6 +73,8 @@ New
 - servers share texture packs: TexturePacks in serverconfig.json (a host shares its enabled packs), downloaded and checked with the GameSet like extensions, shown below the player's own packs
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 Small
+- new server configs use registration and Creative by default
+- dashboard map: one finger rotates, pinch zooms, two fingers pan, tap selects, double tap resets (phones and tablets)
 - GameSet editor: tooltips for every setting (what it does, unit, type and default) and for all buttons; biome map legend shows distance ranges and explains the rings
 - Default GameSet sorted into group folders (machines, devices, power, logistics, doors, windows, ship parts, components, materials, armor, ...), glow maps next to their textures
 - block and item files can be named after their id (Blocks/Machines/furnace/furnace.json) so a search finds them; block.json/item.json still work
@@ -129,6 +131,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- server restart reloads the world in the same process: the console keeps taking commands (before, input went to the shell after a restart)
 - GameSet editor: Crafting list showed block files instead of blueprints
 - ricochets: projectiles stopped after the 5th bounce and often failed at shallow angles far from the world center (the bounced ray started inside the surface)
 - weapon and cannon ReloadTime are seconds now (were ticks and milliseconds); unused settings removed (weapon Damage, equipment Tier, projectile Mass, recipe PowerPerTickRequared, item Info, generator Version/NoiseModifier, config Dependencies/Textures)

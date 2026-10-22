@@ -10,7 +10,7 @@ const spaceMap = (() => {
   const filters = { regenerated: true, changed: true, ships: true, claimedOnly: false, labels: true };
   const state = { snapshot: null, origin: null, focus: "", radius: 2000, items: [], hover: null, selected: null, dirty: true, initialized: false, framed: false, loading: false };
 
-  let canvas, ctx, tooltip, info, stats, width = 0, height = 0, dpr = 1, drag = null;
+  let canvas, ctx, tooltip, info, stats, width = 0, height = 0, dpr = 1, drag = null, touch = null, lastTap = 0;
 
   function init() {
     if (state.initialized) return;
@@ -29,6 +29,11 @@ const spaceMap = (() => {
     canvas.addEventListener("dblclick", () => { state.framed = false; frame(); });
     canvas.addEventListener("contextmenu", event => event.preventDefault());
     canvas.addEventListener("mouseleave", () => { tooltip.classList.add("hidden"); state.hover = null; invalidate(); });
+    canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+    canvas.addEventListener("touchend", onTouchEnd, { passive: false });
+    canvas.addEventListener("touchcancel", () => { touch = null; });
+    canvas.addEventListener("gesturestart", event => event.preventDefault());
 
     document.getElementById("map-radius").addEventListener("change", event => { state.radius = Number(event.target.value); state.framed = false; refresh(); });
     document.getElementById("map-focus").addEventListener("change", event => { state.focus = event.target.value; state.origin = null; state.framed = false; refresh(); });
@@ -351,7 +356,7 @@ const spaceMap = (() => {
 
   function updateInfo() {
     if (!state.selected) {
-      info.replaceChildren(el("div", { class: "dim", text: "Click a dot for details. Drag to rotate, right drag to pan, wheel to zoom, double click to reset." }));
+      info.replaceChildren(el("div", { class: "dim", text: "Click or tap a dot for details. Drag to rotate, right drag or two fingers to pan, wheel or pinch to zoom, double click or double tap to reset." }));
       return;
     }
     info.replaceChildren(...describe(state.selected).map((line, i) => el("div", { class: i === 0 ? "" : "dim", text: line })));
@@ -395,11 +400,76 @@ const spaceMap = (() => {
   function canvasClick() {
     window.addEventListener("mouseup", event => {
       if (!canvas || event.target !== canvas || !drag || drag.moved || drag.button !== 0) return;
-      const rect = canvas.getBoundingClientRect();
-      state.selected = pick(event.clientX - rect.left, event.clientY - rect.top);
-      updateInfo();
-      invalidate();
+      selectAt(event.clientX, event.clientY);
     }, true);
+  }
+
+  function selectAt(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    state.selected = pick(clientX - rect.left, clientY - rect.top);
+    updateInfo();
+    invalidate();
+  }
+
+  function touchPoints(event) {
+    return Array.from(event.touches, t => ({ x: t.clientX, y: t.clientY }));
+  }
+
+  function onTouchStart(event) {
+    event.preventDefault();
+    const points = touchPoints(event);
+    if (!touch) touch = { moved: 0, multi: false, points };
+    touch.points = points;
+    if (points.length > 1) touch.multi = true;
+  }
+
+  function onTouchMove(event) {
+    event.preventDefault();
+    if (!touch) return;
+    const points = touchPoints(event);
+    const previous = touch.points;
+    if (points.length === 1 && previous.length === 1) {
+      const dx = points[0].x - previous[0].x, dy = points[0].y - previous[0].y;
+      touch.moved += Math.abs(dx) + Math.abs(dy);
+      view.yaw += dx * 0.008;
+      view.pitch = Math.max(-1.5, Math.min(1.5, view.pitch + dy * 0.008));
+    } else if (points.length >= 2 && previous.length >= 2) {
+      const before = Math.hypot(previous[0].x - previous[1].x, previous[0].y - previous[1].y);
+      const after = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+      if (before > 0 && after > 0) zoomBy(before / after);
+      pan((points[0].x + points[1].x - previous[0].x - previous[1].x) / 2, (points[0].y + points[1].y - previous[0].y - previous[1].y) / 2);
+      touch.moved += 10;
+    }
+    touch.points = points;
+    invalidate();
+  }
+
+  function onTouchEnd(event) {
+    event.preventDefault();
+    if (!touch) return;
+    const points = touchPoints(event);
+    if (points.length > 0) {
+      touch.points = points;
+      return;
+    }
+
+    const tap = touch.moved < 8 && !touch.multi;
+    touch = null;
+    if (!tap) return;
+    const now = performance.now();
+    const point = event.changedTouches[0];
+    if (now - lastTap < 350) {
+      lastTap = 0;
+      state.framed = false;
+      frame();
+      return;
+    }
+    lastTap = now;
+    selectAt(point.clientX, point.clientY);
+  }
+
+  function zoomBy(factor) {
+    view.distance = Math.max(20, Math.min(40000, view.distance * factor));
   }
 
   function pan(dx, dy) {
@@ -412,7 +482,7 @@ const spaceMap = (() => {
 
   function onWheel(event) {
     event.preventDefault();
-    view.distance = Math.max(20, Math.min(40000, view.distance * Math.pow(1.0015, event.deltaY)));
+    zoomBy(Math.pow(1.0015, event.deltaY));
     invalidate();
   }
 

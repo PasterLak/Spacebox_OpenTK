@@ -316,6 +316,16 @@ public class AuthTests : IDisposable
     }
 
     [Fact]
+    public void ServerConfig_NewFileUsesRegistrationAndCreative()
+    {
+        var config = ServerConfig.CreateNew();
+
+        Assert.True(config.RegistrationEnabled);
+        Assert.Equal((byte)Spacebox.Game.Player.GameModes.GameMode.Creative, config.GameMode);
+        Assert.False(string.IsNullOrEmpty(config.Seed));
+    }
+
+    [Fact]
     public void Login_IsLockedAfterRepeatedFailuresAcrossConnections()
     {
         var server = new FakeServer(AccountsPath);

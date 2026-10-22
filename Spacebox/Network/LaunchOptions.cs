@@ -11,7 +11,6 @@ public static class LaunchOptions
     public static string PlayerName { get; private set; }
     public static string EditorGameSet { get; private set; }
     public static string EditorPanel { get; private set; }
-    public static int WaitForProcessId { get; private set; }
     public static bool UiShowcase { get; private set; }
 
     public static bool HasConnectTarget => !string.IsNullOrEmpty(ConnectAddress);
@@ -37,10 +36,6 @@ public static class LaunchOptions
                     break;
                 case "--connect" when next != null:
                     ParseAddress(next);
-                    i++;
-                    break;
-                case "--wait-pid" when next != null:
-                    if (int.TryParse(next, out int pid)) WaitForProcessId = pid;
                     i++;
                     break;
                 case "--name" when next != null:
