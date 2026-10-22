@@ -39,15 +39,20 @@ namespace Spacebox.Game.Generation
             };
         }
 
-        public static bool TryTakeCachedSector(Vector3i index, out CompoundTag tag, out string[] destroyed)
+        public static bool TryPeekCachedSector(Vector3i index, out CompoundTag tag, out string[] destroyed)
         {
             tag = null;
             destroyed = Array.Empty<string>();
-            if (!_sectorCache.TryRemove(index, out var data)) return false;
+            if (!_sectorCache.TryGetValue(index, out var data)) return false;
 
             tag = data.Tag;
             destroyed = data.Destroyed;
             return true;
+        }
+
+        public static void ForgetCachedSector(Vector3i index)
+        {
+            _sectorCache.TryRemove(index, out _);
         }
 
         public static bool HasUnsavedData => !_modifiedEntitiesCache.IsEmpty || !_sectorCache.IsEmpty;

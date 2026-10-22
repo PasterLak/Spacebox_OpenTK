@@ -78,7 +78,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         CompoundTag cachedTag = null;
         string[] cachedDestroyed = null;
-        bool cached = !Spacebox.Network.GameSession.IsRemoteClient && WorldPersistenceManager.TryTakeCachedSector(PositionIndex, out cachedTag, out cachedDestroyed);
+        bool cached = !Spacebox.Network.GameSession.IsRemoteClient && WorldPersistenceManager.TryPeekCachedSector(PositionIndex, out cachedTag, out cachedDestroyed);
 
         ScanAndRegisterCustomEntities(cachedDestroyed);
 

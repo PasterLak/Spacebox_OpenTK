@@ -549,6 +549,7 @@ public class World : Component, ISpaceStructure
                             return;
                         }
 
+                        WorldPersistenceManager.ForgetCachedSector(sectorIndex);
                         worldOctree.Add(sector, sector.BoundingBox);
                         loadedSectors[sectorIndex] = sector;
                         loadingSectors.Remove(sectorIndex);
@@ -588,6 +589,7 @@ public class World : Component, ISpaceStructure
     {
         Vector3 sectorPosition = SpaceMath.Sector.GetSectorPosition(sectorIndex);
         var newSector = new Sector(sectorPosition, sectorIndex, Seed);
+        WorldPersistenceManager.ForgetCachedSector(sectorIndex);
 
         worldOctree.Add(newSector, newSector.BoundingBox);
         loadedSectors.Add(newSector.PositionIndex, newSector);

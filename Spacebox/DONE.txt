@@ -231,6 +231,7 @@ Fixes
 - saves (entities, sectors, player, world.json, tags, drops) are written to a temp file and moved into place, so a crash while saving no longer truncates them
 - deleted waypoints came back after reload when only unnamed static tags were left
 - unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
+- entering a sector while it was still loading in the background could drop its unsaved changes (mined-out asteroids came back)
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons
