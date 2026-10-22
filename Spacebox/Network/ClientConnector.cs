@@ -20,6 +20,7 @@ public static class ClientConnector
     public static void Connect(string address, int port, Action<RemoteWorldInfo> onAccepted, Action<string> onFailed)
     {
         Cancel();
+        Discovery.ServerAddressValidator.Resolve(address, port, out address, out port);
 
         _onAccepted = onAccepted;
         _onFailed = onFailed;

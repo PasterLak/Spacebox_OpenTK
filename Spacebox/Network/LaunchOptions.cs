@@ -57,14 +57,8 @@ public static class LaunchOptions
 
     private static void ParseAddress(string value)
     {
-        int colon = value.LastIndexOf(':');
-        if (colon > 0 && int.TryParse(value.Substring(colon + 1), out int port))
-        {
-            ConnectAddress = value.Substring(0, colon);
-            ConnectPort = port;
-            return;
-        }
-
-        ConnectAddress = value;
+        Discovery.ServerAddressValidator.Resolve(value, ConnectPort, out var host, out var port);
+        ConnectAddress = host;
+        ConnectPort = port;
     }
 }

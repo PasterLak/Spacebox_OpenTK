@@ -217,10 +217,7 @@ public sealed class ServerInfoWindow
 
     private void SplitPort()
     {
-        if (!ServerAddressValidator.TrySplitHostPort(_host, out var host, out var port)) return;
-
-        _host = host;
-        _port = port;
+        ServerAddressValidator.Resolve(_host, _port, out _host, out _port);
     }
 
     private static void DrawField(float x, float y, float labelWidth, float inputWidth, string label, Func<bool> input)

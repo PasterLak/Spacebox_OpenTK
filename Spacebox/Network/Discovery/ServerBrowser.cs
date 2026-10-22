@@ -78,7 +78,11 @@ public sealed class ServerBrowser : IDisposable
         if (item == null) return;
 
         item.State = ServerOnlineState.Pinging;
-        if (item.IsSaved) _client.RequestInfo(item.Key, item.Entry.IP, item.Entry.Port);
+        if (item.IsSaved)
+        {
+            ServerAddressValidator.Resolve(item.Entry.IP, item.Entry.Port, out var host, out var port);
+            _client.RequestInfo(item.Key, host, port);
+        }
         else if (item.EndPoint != null) _client.RequestInfo(item.Key, item.EndPoint.Address.ToString(), item.EndPoint.Port);
     }
 

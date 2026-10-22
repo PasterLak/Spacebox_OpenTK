@@ -37,7 +37,7 @@ public static class ServerAddressValidator
         port = 0;
         if (string.IsNullOrWhiteSpace(text)) return false;
 
-        string trimmed = text.Trim();
+        string trimmed = StripUrl(text);
         int colon = trimmed.LastIndexOf(':');
         if (colon <= 0 || colon == trimmed.Length - 1) return false;
 
@@ -50,6 +50,32 @@ public static class ServerAddressValidator
         host = hostPart;
         port = parsed;
         return host.Length > 0;
+    }
+
+    public static string Host(string text)
+    {
+        if (TrySplitHostPort(text, out var host, out _)) return host;
+        string stripped = StripUrl(text);
+        return stripped.StartsWith('[') && stripped.EndsWith(']') ? stripped.Substring(1, stripped.Length - 2) : stripped;
+    }
+
+    public static void Resolve(string text, int fallbackPort, out string host, out int port)
+    {
+        if (TrySplitHostPort(text, out host, out port)) return;
+        host = Host(text);
+        port = fallbackPort;
+    }
+
+    private static string StripUrl(string text)
+    {
+        string value = (text ?? "").Trim();
+        int scheme = value.IndexOf("://", StringComparison.Ordinal);
+        if (scheme >= 0) value = value.Substring(scheme + 3);
+        int end = value.IndexOfAny(new[] { '/', '?', '#' });
+        if (end >= 0) value = value.Substring(0, end);
+        int user = value.LastIndexOf('@');
+        if (user >= 0) value = value.Substring(user + 1);
+        return value.Trim();
     }
 
     public static string ResolveName(string name, string host)

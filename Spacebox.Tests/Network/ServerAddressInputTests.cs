@@ -29,6 +29,21 @@ public class ServerAddressInputTests
         Assert.False(ServerAddressValidator.TrySplitHostPort(text, out _, out _));
     }
 
+    [Theory]
+    [InlineData("http://spacebox.duckdns.org", 7777, "spacebox.duckdns.org", 7777)]
+    [InlineData("https://spacebox.duckdns.org:7780/dashboard/", 7777, "spacebox.duckdns.org", 7780)]
+    [InlineData("spacebox.duckdns.org:7781", 7777, "spacebox.duckdns.org", 7781)]
+    [InlineData("  play.example.com  ", 7777, "play.example.com", 7777)]
+    [InlineData("http://[2a02::1]:9000/", 7777, "2a02::1", 9000)]
+    [InlineData("2a02::1", 7777, "2a02::1", 7777)]
+    [InlineData("http://user@10.0.0.2?x=1", 7777, "10.0.0.2", 7777)]
+    public void Resolve_AcceptsPastedUrlsAndPorts(string text, int fallback, string host, int port)
+    {
+        ServerAddressValidator.Resolve(text, fallback, out var parsedHost, out var parsedPort);
+        Assert.Equal(host, parsedHost);
+        Assert.Equal(port, parsedPort);
+    }
+
     [Fact]
     public void ClipboardText_TakesFirstLineAndLimitsLength()
     {
