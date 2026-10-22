@@ -4,7 +4,7 @@
   "Description": "Pushes the ship away from its nozzle side",
   "Type": "thruster",
   "Thruster": {
-    "Force": 60,
+    "Force": 180,
     "Power": 15,
     "NozzleLength": 2
   },

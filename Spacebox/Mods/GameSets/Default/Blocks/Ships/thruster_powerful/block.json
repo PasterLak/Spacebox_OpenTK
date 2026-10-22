@@ -4,7 +4,7 @@
   "Description": "Pushes the ship hard away from its nozzle side",
   "Type": "thruster",
   "Thruster": {
-    "Force": 160,
+    "Force": 460,
     "Power": 30,
     "NozzleLength": 2
   },
@@ -22,6 +22,7 @@
     "y": 1,
     "z": 0
   },
+  "TextureFit": true,
   "Textures": {
     "Active": {
       "All": "thrusterPowerfulWalls",
