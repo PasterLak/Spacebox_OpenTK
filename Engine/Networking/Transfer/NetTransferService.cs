@@ -137,7 +137,7 @@ public sealed class NetTransferService
         if (sender != NetworkManager.ServerPeerId && !_network.IsServer) return;
         if (!_incoming.TryGetValue(message.RequestId, out var transfer)) return;
 
-        if (message.Total < 0 || message.Total > MaxTransferSize || message.Offset < 0 || message.Offset + message.DataLength > message.Total)
+        if (!IsValidChunk(message.Total, message.Offset, message.DataLength))
         {
             Fail(message.RequestId, "Invalid transfer data");
             return;
@@ -158,6 +158,11 @@ public sealed class NetTransferService
 
         _incoming.Remove(message.RequestId);
         transfer.Completed?.Invoke(transfer.Buffer);
+    }
+
+    public static bool IsValidChunk(int total, int offset, int length)
+    {
+        return total >= 0 && total <= MaxTransferSize && offset >= 0 && length >= 0 && (long)offset + length <= total;
     }
 
     private void OnFailed(int sender, TransferFailedMessage message)

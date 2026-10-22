@@ -211,6 +211,7 @@ Fixes
 - dedicated server: Ctrl+C, closing the terminal and SIGTERM (systemd, Docker) killed the server without saving; they now save the world and stop like the stop command (a second Ctrl+C still ends it at once)
 - multiplayer: chat messages with line breaks could fake server or player lines; control characters are removed
 - multiplayer: sending the join request again during a password login reset the wrong-password counter (and could switch the name); repeated requests are ignored
+- network transfers: a chunk offset near the int limit overflowed the size check and threw instead of failing the download
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

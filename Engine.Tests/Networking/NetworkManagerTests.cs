@@ -8,11 +8,11 @@ public class NetworkManagerTests
 {
     private sealed class FakeTransport : INetTransport
     {
-        public event Action<int> PeerConnected;
-        public event Action<int, string> PeerDisconnected;
-        public event Action<int, byte[], int, int> DataReceived;
-        public event Action<string> ConnectionFailed;
-        public event Action<IPEndPoint, byte[], int, int, bool> UnconnectedReceived;
+        public event Action<int> PeerConnected { add { } remove { } }
+        public event Action<int, string> PeerDisconnected { add { } remove { } }
+        public event Action<int, byte[], int, int> DataReceived { add { } remove { } }
+        public event Action<string> ConnectionFailed { add { } remove { } }
+        public event Action<IPEndPoint, byte[], int, int, bool> UnconnectedReceived { add { } remove { } }
 
         public bool IsRunning { get; private set; }
         public int MaxPeers { get; set; }

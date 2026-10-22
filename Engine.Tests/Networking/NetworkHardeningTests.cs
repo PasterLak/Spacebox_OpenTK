@@ -88,4 +88,15 @@ public class NetworkHardeningTests
         Assert.False(limiter.TryConsume(a, 600, 1));
         Assert.True(limiter.TryConsume(a, 600, 3));
     }
+
+    [Fact]
+    public void TransferChunk_RejectsOverflowingOffsets()
+    {
+        Assert.True(NetTransferService.IsValidChunk(100, 0, 100));
+        Assert.True(NetTransferService.IsValidChunk(0, 0, 0));
+        Assert.False(NetTransferService.IsValidChunk(100, int.MaxValue - 10, 32));
+        Assert.False(NetTransferService.IsValidChunk(100, 90, 20));
+        Assert.False(NetTransferService.IsValidChunk(-1, 0, 0));
+        Assert.False(NetTransferService.IsValidChunk(NetTransferService.MaxTransferSize + 1, 0, 0));
+    }
 }
