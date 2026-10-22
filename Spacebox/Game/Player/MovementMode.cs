@@ -451,6 +451,7 @@ public class MovementMode : GameModeBase
                 Chunk ch = collideInfo.chunk;
                 if (ch != null)
                 {
+                    WorldEditNetwork.NotifyDamaged(ch, collideInfo.blockPositionIndex, collideInfo.block.Id, collideInfo.block.Durability);
                     ch.RemoveBlock(collideInfo.blockPositionIndex, new Vector3SByte(0, 0, 0));
                     WorldEditNetwork.NotifyRemoved(ch, collideInfo.blockPositionIndex);
                     if (blockDestroy != null)

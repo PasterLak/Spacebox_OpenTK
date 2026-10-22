@@ -43,19 +43,16 @@ public sealed class AstronautNetwork : NetworkTransform
     {
         _flashlight = CreateVariable(false, NetworkWritePermission.Owner);
         _heldItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
-        _isAlive = CreateVariable(true, NetworkWritePermission.Owner);
-        _isVulnerable = CreateVariable(false, NetworkWritePermission.Owner);
+        _isAlive = CreateVariable(true, NetworkWritePermission.Server);
+        _isVulnerable = CreateVariable(false, NetworkWritePermission.Server);
         _flashlightItem = CreateVariable(NoItem, NetworkWritePermission.Owner);
         _hasOxygen = CreateVariable(true, NetworkWritePermission.Owner);
         _isUsingItem = CreateVariable(false, NetworkWritePermission.Owner);
         _isBoosting = CreateVariable(false, NetworkWritePermission.Owner);
         _equipment = new NetworkVariable<short>[EquipmentSlots.Length];
         for (int i = 0; i < _equipment.Length; i++) _equipment[i] = CreateVariable(NoItem, NetworkWritePermission.Owner);
-        _isAlive.Changed += (previous, alive) =>
-        {
-            if (alive && !previous) _movement.AllowJump(Time.Total, RespawnGraceSeconds);
-        };
     }
+
 
     private const double SpawnGraceSeconds = 10.0;
     private const double RespawnGraceSeconds = 10.0;
@@ -78,6 +75,7 @@ public sealed class AstronautNetwork : NetworkTransform
 
     protected override void OnOwnerStateRejected(TransformState previous, TransformState next)
     {
+        if (!_isAlive.Value) return;
         float now = Time.Total;
         if (now - _lastCorrection < CorrectionInterval) return;
         _lastCorrection = now;
@@ -94,9 +92,11 @@ public sealed class AstronautNetwork : NetworkTransform
     {
         base.OnUpdate();
 
+        if (IsSpawned && IsServer)
+            _isVulnerable.Value = (IsOwner && Owner is LocalAstronaut host ? host.GameMode : PlayerGameModeService.Of(PlayerName)) == GameMode.Survival;
+
         if (IsSpawned && IsOwner && Owner is LocalAstronaut local)
         {
-            _isVulnerable.Value = local.GameMode == GameMode.Survival;
             _flashlightItem.Value = local.ActiveFlashlightItem?.Id ?? NoItem;
             _hasOxygen.Value = local.HasOxygen;
             _isUsingItem.Value = local.IsUsingItem;
@@ -118,7 +118,7 @@ public sealed class AstronautNetwork : NetworkTransform
             _flashlight.Value = astronaut.Flashlight.Enabled;
             if (astronaut is LocalAstronaut localAstronaut)
             {
-                _isAlive.Value = localAstronaut.IsAlive;
+                if (!localAstronaut.IsAlive) SendRpc(nameof(ReportSpawnedDead));
                 localAstronaut.OnDeath += OnLocalDeath;
                 localAstronaut.OnRevived += OnLocalRevived;
                 localAstronaut.FallDamage.Impact += OnLocalFallImpact;
@@ -193,8 +193,6 @@ public sealed class AstronautNetwork : NetworkTransform
 
     private void OnLocalDeath()
     {
-        _isAlive.Value = false;
-
         var local = Owner as LocalAstronaut;
         int killer = local != null ? local.GetRecentAttacker() : -1;
         SendRpc(nameof(ReportDeath), killer, local?.LastDeathCase?.CauseOfDeath ?? "");
@@ -510,12 +508,29 @@ public sealed class AstronautNetwork : NetworkTransform
 
     private void OnLocalRevived()
     {
+        SendRpc(nameof(ReportRevived));
+    }
+
+    [Rpc(RpcTarget.Server)]
+    private void ReportSpawnedDead()
+    {
+        if (!_isAlive.Value) return;
+        _isAlive.Value = false;
+    }
+
+    [Rpc(RpcTarget.Server)]
+    private void ReportRevived()
+    {
+        if (_isAlive.Value) return;
         _isAlive.Value = true;
+        _movement.AllowJump(Time.Total, RespawnGraceSeconds);
     }
 
     [Rpc(RpcTarget.Server)]
     private void ReportDeath(int killerPeer, string reason)
     {
+        if (!_isAlive.Value) return;
+        _isAlive.Value = false;
         PlayerDied?.Invoke(OwnerPeer);
 
         string victim = Spacebox.Network.Combat.CombatNetwork.GetPlayerName(OwnerPeer);

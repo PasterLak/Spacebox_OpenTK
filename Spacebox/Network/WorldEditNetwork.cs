@@ -103,6 +103,8 @@ public static class WorldEditNetwork
         if (sender == network.LocalPeerId) return;
         if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnBlockDamage(sender, message))) return;
 
+        if (network.IsServer && !DamageMessages.TryConsume(sender, Time.Total)) return;
+
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
         if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell)) return;
@@ -150,15 +152,21 @@ public static class WorldEditNetwork
     private static readonly Random SoundRandom = new Random();
 
     private static readonly PendingEntityEdits<BlockEditMessage> PendingEdits = new PendingEntityEdits<BlockEditMessage>();
+    private static readonly PeerRateLimiter DamageMessages = new PeerRateLimiter(200, 100);
+    private static readonly PeerRateLimiter Removals = new PeerRateLimiter(120, 60);
 
     public static void Reset()
     {
         EditSounds.Clear();
         PendingEdits.Clear();
+        DamageMessages.Clear();
+        Removals.Clear();
     }
 
     public static void ForgetPeer(int peer)
     {
+        DamageMessages.Forget(peer);
+        Removals.Forget(peer);
         foreach (var message in PendingEdits.RemovePeer(peer))
         {
             if (!message.IsRemoval && GameAssets.TryGetItemByBlockID(message.BlockId, out var item))
@@ -295,7 +303,8 @@ public static class WorldEditNetwork
         short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
         bool unbreakable = message.IsRemoval && Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(previousId) &&
                            Spacebox.Network.Players.PlayerGameModeService.Of(senderName) != Spacebox.Game.Player.GameModes.GameMode.Creative;
-        if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || !IsInReach(sender, entity, message.Cell)))
+        bool unbroken = message.IsRemoval && known && !CanRemoveNow(sender, senderName, entity, message.Cell);
+        if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || unbroken || !IsInReach(sender, entity, message.Cell)))
         {
             SendCorrection(sender, entity, message.Cell);
             if (!message.IsRemoval) SendRefund(sender, message.BlockId);
@@ -312,6 +321,17 @@ public static class WorldEditNetwork
     }
 
     public const float MaxEditDistance = 16f;
+
+    private static bool CanRemoveNow(int sender, string senderName, SpaceEntity entity, Vector3i cell)
+    {
+        if (sender == NetworkManager.Instance.LocalPeerId) return true;
+        if (Spacebox.Network.Players.PlayerGameModeService.Of(senderName) == Spacebox.Game.Player.GameModes.GameMode.Creative) return true;
+        if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) return true;
+
+        var block = chunk.Blocks[index.X, index.Y, index.Z];
+        if (block == null || block.IsAir) return true;
+        return block.Durability == 0 && Removals.TryConsume(sender, Time.Total);
+    }
 
     private static void RejectUnknown(int sender, BlockEditMessage message)
     {

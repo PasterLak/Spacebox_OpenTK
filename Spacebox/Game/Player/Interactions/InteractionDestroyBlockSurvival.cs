@@ -123,14 +123,11 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         if (hit.chunk != null) hit.chunk.IsModified = true;
         Spacebox.Game.Generation.Blocks.BlockDamageVisuals.OnDurabilityChanged(hit.chunk, hit.block, before);
         astronaut.PlayerStatistics.BlockDamageDealt += damage;
+        WorldEditNetwork.NotifyDamaged(hit.chunk, hit.blockPositionIndex, hit.block.Id, damage);
         if (hit.block.Durability <= 0)
         {
             DestroyBlock(hit, astronaut);
             astronaut.PowerBar.StatsData.Decrement(drill.PowerUsage);
-        }
-        else
-        {
-            WorldEditNetwork.NotifyDamaged(hit.chunk, hit.blockPositionIndex, hit.block.Id, damage);
         }
 
     }
