@@ -18,7 +18,7 @@ Tools/agent/game.sh stop                  # quit and wait for the process to exi
 ```
 
 - The running game locks `Spacebox/bin/Release/net8.0/Spacebox.exe`: **stop the game before `dotnet build -c Release`**, then start again.
-- Worlds are in `Spacebox/bin/Release/net8.0/Worlds/<name>`. `--fresh` deletes and recreates the world.
+- Worlds are in `Spacebox/bin/Release/net8.0/Worlds/<name>`. `--fresh` deletes and recreates the world. `--extensions a,b` picks extension GameSets for a new world.
 - Port: 47800 (`SPACEBOX_AGENT_PORT` changes it). `SPACEBOX_AGENT_CONFIG=Debug` uses the Debug build.
 - A new world may open the tutorial prompt: `game.sh click "No, thanks"`.
 - Don't minimize the game window: ImGui text capture and screenshots need rendered frames.

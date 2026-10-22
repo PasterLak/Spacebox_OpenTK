@@ -8,6 +8,7 @@ using Engine.SceneManagement;
 using Spacebox.Scenes;
 using static Spacebox.Game.Resource.GameSetLoader;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Resource.Content;
 using Spacebox.GUI;
 using Spacebox.Game.Player.GameModes;
 
@@ -23,6 +24,9 @@ namespace Spacebox.Game.GUI.Menu
 
         private readonly List<WorldInfo> worlds = new();
         private readonly List<ModConfig> gameSets = new();
+        private readonly List<ModConfig> allGameSets = new();
+        private readonly List<InstalledGameSet> installedGameSets = new();
+        public readonly List<string> NewWorldExtensions = new();
         private readonly string[] gamemodes;
         private int selectedGameModeIndex = 1;
         public string newWorldName = "New World";
@@ -39,6 +43,7 @@ namespace Spacebox.Game.GUI.Menu
 
         private DeleteWindow deleteWindow;
         private UpdateVersionWindow updateVersionWindow;
+        private readonly MenuMessageWindow messageWindow = new MenuMessageWindow();
 
         public GameMenu()
         {
@@ -58,6 +63,7 @@ namespace Spacebox.Game.GUI.Menu
             Reg(new OptionsHostWindow(this));
             Reg(new ModsWindow(this));
             Reg(new ShipViewerWindow(this));
+            Reg(new TexturePacksWindow(this));
 
             deleteWindow = new DeleteWindow(this);
             updateVersionWindow = new UpdateVersionWindow(this);
@@ -120,6 +126,7 @@ namespace Spacebox.Game.GUI.Menu
 
                 if (showDeleteWindow) deleteWindow.Render();
                 if (showVersionConvertWindow) updateVersionWindow.Render();
+                messageWindow.Render(this);
             }
         }
 
@@ -178,6 +185,30 @@ namespace Spacebox.Game.GUI.Menu
 
         public List<WorldInfo> Worlds => worlds;
         public List<ModConfig> GameSets => gameSets;
+        public List<ModConfig> AllGameSets => allGameSets;
+        public IReadOnlyList<InstalledGameSet> InstalledGameSets => installedGameSets;
+
+        public void ShowMessage(string title, string text) => messageWindow.Show(title, text);
+
+        public InstalledGameSet FindInstalled(ModConfig config)
+        {
+            foreach (var installed in installedGameSets)
+            {
+                if (string.Equals(installed.FolderName, config?.FolderName, StringComparison.OrdinalIgnoreCase)) return installed;
+            }
+            return null;
+        }
+
+        public List<InstalledGameSet> ExtensionsFor(ModConfig baseConfig)
+        {
+            return Spacebox.Game.Resource.Content.InstalledGameSets.ExtensionsFor(installedGameSets, FindInstalled(baseConfig));
+        }
+
+        public ExtensionResolution ResolveNewWorldExtensions()
+        {
+            var baseSet = gameSets.Count > 0 ? FindInstalled(gameSets[Math.Clamp(selectedGameSetIndex, 0, gameSets.Count - 1)]) : null;
+            return ExtensionResolver.Resolve(baseSet, installedGameSets, NewWorldExtensions);
+        }
 
         public string NewWorldName { get => newWorldName; set => newWorldName = value; }
         public string NewWorldAuthor { get => newWorldAuthor; set => newWorldAuthor = value; }
@@ -187,6 +218,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public void GenerateRandomSeedAndName()
         {
+            NewWorldExtensions.Clear();
             Random r = new Random();
             newWorldSeed = r.Next(int.MinValue, int.MaxValue).ToString();
             newWorldName = GetNewWorldUniqueName();
@@ -300,27 +332,24 @@ namespace Spacebox.Game.GUI.Menu
         private void LoadGameSets()
         {
             gameSets.Clear();
+            allGameSets.Clear();
+            installedGameSets.Clear();
             string gameSetsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GameSets");
             if (!Directory.Exists(gameSetsDirectory)) Directory.CreateDirectory(gameSetsDirectory);
-            string[] modFolders = Directory.GetDirectories(gameSetsDirectory);
-            foreach (string modFolder in modFolders)
+
+            foreach (var installed in Spacebox.Game.Resource.Content.InstalledGameSets.Scan(gameSetsDirectory))
             {
-                string configJsonPath = Path.Combine(modFolder, "config.json");
-                if (File.Exists(configJsonPath))
+                var gameSetInfo = installed.Config;
+                gameSetInfo.Icon = LoadIcon(installed.Folder);
+                if (gameSetInfo.Icon != null)
                 {
-                    string jsonContent = File.ReadAllText(configJsonPath);
-                    ModConfig gameSetInfo = JsonSerializer.Deserialize<ModConfig>(jsonContent);
-                    if (gameSetInfo != null)
-                    {
-                        gameSetInfo.FolderName = Path.GetFileName(modFolder);
-
-                        gameSetInfo.Icon = LoadIcon(modFolder);
-                        gameSetInfo.Icon.FlipY();
-                        gameSetInfo.Icon.FilterMode = FilterMode.Nearest;
-
-                        gameSets.Add(gameSetInfo);
-                    }
+                    gameSetInfo.Icon.FlipY();
+                    gameSetInfo.Icon.FilterMode = FilterMode.Nearest;
                 }
+
+                installedGameSets.Add(installed);
+                allGameSets.Add(gameSetInfo);
+                if (!installed.IsExtension) gameSets.Add(gameSetInfo);
             }
         }
 
@@ -335,7 +364,7 @@ namespace Spacebox.Game.GUI.Menu
                 return Resources.Load<Texture2D>(iconPath);
             }
 
-            Debug.Error("No icon.png for mod " + ModInfo.ModName + " found! Path: " + iconPath);
+            Debug.Warning("No icon.png for GameSet found! Path: " + iconPath);
 
             return null;
         }
@@ -349,6 +378,7 @@ namespace Spacebox.Game.GUI.Menu
                 GameMode = (GameMode)selectedGameModeIndex,
                 Seed = newWorldSeed,
                 ModId = gameSets[selectedGameSetIndex].ModId,
+                Extensions = new List<string>(Spacebox.Game.Resource.Content.WorldExtensionList.Normalize(NewWorldExtensions)),
                 GameVersion = Application.Version,
                 LastEditDate = WorldInfo.GetCurrentDate(),
                 FolderName = newWorldName,
@@ -489,6 +519,13 @@ namespace Spacebox.Game.GUI.Menu
 
         public void LoadWorld(WorldInfo world, bool multiplayer = false)
         {
+            if (!WorldGameSetCheck.TryResolve(world, out var gameSetError))
+            {
+                Debug.Error($"[Menu] {gameSetError}");
+                ShowMessage("Missing GameSet content", gameSetError);
+                return;
+            }
+
             ModConfig modInfo = null;
             foreach (var mod in gameSets)
             {
@@ -500,6 +537,7 @@ namespace Spacebox.Game.GUI.Menu
             {
                 worldName = world.Name,
                 modId = world.ModId,
+                extensions = WorldGameSetCheck.ExtensionsOf(world),
                 seed = world.Seed,
                 modfolderName = modInfo?.FolderName ?? "",
                 skinColor = clientConfig.SkinColor

@@ -13,6 +13,7 @@ public sealed class AgentOptions
     public GameMode GameMode { get; private set; } = GameMode.Creative;
     public string Seed { get; private set; }
     public bool FreshWorld { get; private set; }
+    public string[] Extensions { get; private set; } = Array.Empty<string>();
 
     public bool HasWorld => !string.IsNullOrWhiteSpace(WorldName);
 
@@ -45,6 +46,10 @@ public sealed class AgentOptions
                     break;
                 case "--agent-seed" when next != null:
                     options.Seed = next;
+                    i++;
+                    break;
+                case "--agent-extensions" when next != null:
+                    options.Extensions = Spacebox.Game.Resource.Content.WorldExtensionList.Parse(next);
                     i++;
                     break;
                 case "--agent-fresh":

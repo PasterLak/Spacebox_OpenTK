@@ -8,7 +8,7 @@ public static class WorldProvisioner
 {
     public static string WorldsDirectory => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
 
-    public static WorldInfo Ensure(string worldName, string author, GameMode gameMode, string seed, string modId, string logTag)
+    public static WorldInfo Ensure(string worldName, string author, GameMode gameMode, string seed, string modId, string logTag, IReadOnlyList<string> extensions = null)
     {
         string worldDirectory = Path.Combine(WorldsDirectory, worldName);
         string worldJson = Path.Combine(worldDirectory, "world.json");
@@ -26,6 +26,7 @@ public static class WorldProvisioner
             GameMode = gameMode,
             Seed = string.IsNullOrWhiteSpace(seed) ? new Random().Next().ToString() : seed,
             ModId = modId,
+            Extensions = new List<string>(Spacebox.Game.Resource.Content.WorldExtensionList.Normalize(extensions)),
             GameVersion = Application.Version,
             LastEditDate = WorldInfo.GetCurrentDate(),
             FolderName = worldName,

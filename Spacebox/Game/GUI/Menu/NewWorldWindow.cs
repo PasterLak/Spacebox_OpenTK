@@ -11,9 +11,11 @@ namespace Spacebox.Game.GUI.Menu
         public GameMenu menu;
 
         private Texture2D diceIcon;
+        private readonly ExtensionPicker extensionPicker;
         public NewWorldWindow(GameMenu menu)
         {
             this.menu = menu;
+            extensionPicker = new ExtensionPicker(menu);
 
             diceIcon = Resources.Load<Texture2D>("Resources/Textures/UI/dice.png");
             diceIcon.FilterMode = FilterMode.Nearest;
@@ -24,7 +26,7 @@ namespace Spacebox.Game.GUI.Menu
         {
             Vector2 windowSize = ImGui.GetIO().DisplaySize;
             float windowWidth = windowSize.X * 0.3f;
-            float windowHeight = windowSize.Y * 0.4f;
+            float windowHeight = windowSize.Y * 0.58f;
             Vector2 windowPos = GameMenu.CenterNextWindow2(windowWidth, windowHeight);
             ImGui.SetNextWindowPos(windowPos);
             ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
@@ -40,7 +42,8 @@ namespace Spacebox.Game.GUI.Menu
             float spacing = windowHeight * 0.02f;
             float labelHeight = ImGui.CalcTextSize("A").Y;
             GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), windowSize.Y, 0.004f);
-            float totalInputHeight = (labelHeight + inputHeight + spacing) * 4;
+            float extensionsHeight = windowHeight * 0.2f;
+            float totalInputHeight = (labelHeight + inputHeight + spacing) * 4 + labelHeight + extensionsHeight + spacing;
             float topPadding = (windowHeight - totalInputHeight - buttonHeight - ImGui.GetStyle().WindowPadding.Y * 2) / 2;
             ImGui.Dummy(new Vector2(0, topPadding / 2f));
 
@@ -123,6 +126,7 @@ namespace Spacebox.Game.GUI.Menu
                     if (ImGui.Selectable(" " + menu.GameSets[i].ModName, isSelected))
                     {
                         menu.Click1.Play();
+                        if (menu.SelectedGameSetIndex != i) menu.NewWorldExtensions.Clear();
                         menu.SelectedGameSetIndex = i;
                     }
 
@@ -136,6 +140,8 @@ namespace Spacebox.Game.GUI.Menu
             if (menu.IsEditMode) ImGui.EndDisabled();
 
             ImGui.PopStyleVar();
+            ImGui.Dummy(new Vector2(0, spacing));
+            extensionPicker.Render((windowWidth - inputWidth) / 2, inputWidth, extensionsHeight, menu.IsEditMode);
             float totalButtonWidth = buttonWidth * 2 + spacing;
             float bottomMargin = windowHeight * 0.05f;
             float buttonY = windowHeight - buttonHeight - bottomMargin;
@@ -169,6 +175,10 @@ namespace Spacebox.Game.GUI.Menu
 
                         menu.SetStateToWorldSelect();
                         menu.SaveEditedWorld();
+                    }
+                    else if (extensionPicker.HasErrors)
+                    {
+                        menu.ShowMessage("Extensions", "Fix the extension errors before creating the world");
                     }
                     else
                     {

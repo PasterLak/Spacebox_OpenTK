@@ -6,6 +6,7 @@ using Spacebox.Game.Generation;
 using Spacebox.Game.Resource;
 using Spacebox.Game.Player;
 using Spacebox.Network.Messages;
+using Spacebox.Game.Resource.Content;
 using Spacebox.Network.Players;
 using Spacebox.Scenes;
 
@@ -356,6 +357,7 @@ public sealed class NetworkSession : IDisposable
             PlayerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false),
             GameSetHash = GameSetPackage.Hash,
             GameSetFolder = GameSetPackage.FolderName,
+            Extensions = WorldExtensionList.Format(GameSetLoader.Stack?.ExtensionIds),
             HasSpawnPoint = Spacebox.Game.Player.Respawn.WorldSpawn.TryGet(out var spawnPoint),
             SpawnPoint = spawnPoint
         });

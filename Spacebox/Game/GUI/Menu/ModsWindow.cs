@@ -32,14 +32,14 @@ public class ModsWindow : MenuWindow
         ImGui.SetCursorPos(new Vector2(padding, padding));
         ImGui.TextColored(new Vector4(1f, 0.8f, 0.2f, 1f), "GameSets");
 
-        var gameSets = _menu.GameSets;
+        var gameSets = _menu.AllGameSets;
         _selected = Math.Clamp(_selected, 0, Math.Max(0, gameSets.Count - 1));
 
         ImGui.SetCursorPosX(padding);
         if (ImGui.BeginChild("##gameSets", new Vector2(width - padding * 2f, listHeight), ImGuiChildFlags.Border))
         {
             for (int i = 0; i < gameSets.Count; i++)
-                DrawGameSet(gameSets[i], i, buttonHeight * 1.4f);
+                DrawGameSet(gameSets[i], i, buttonHeight * (string.IsNullOrWhiteSpace(gameSets[i].Extends) ? 1.4f : 2f));
         }
         ImGui.EndChild();
 
@@ -66,6 +66,9 @@ public class ModsWindow : MenuWindow
 
         _menu.ButtonWithBackground("Back", new Vector2(buttonWidth, buttonHeight), new Vector2((width - buttonWidth) * 0.5f, y + buttonHeight + padding * 0.5f), _menu.SetStateToMain);
 
+        _menu.ButtonWithBackground("Texture packs", new Vector2(buttonWidth, buttonHeight), new Vector2(padding * 3f + buttonWidth * 2f, y + buttonHeight + padding * 0.5f), _menu.Open<TexturePacksWindow>);
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Global texture packs: enable several and order them, the top pack wins");
+
         ImGui.End();
     }
 
@@ -87,6 +90,11 @@ public class ModsWindow : MenuWindow
         ImGui.BeginGroup();
         ImGui.Text($"{mod.ModName}  v{mod.Version}");
         ImGui.TextDisabled($"{mod.ModId} by {(string.IsNullOrEmpty(mod.Author) ? "unknown" : mod.Author)}  -  {mod.Description}");
+        if (!string.IsNullOrWhiteSpace(mod.Extends))
+        {
+            string includes = mod.Includes != null && mod.Includes.Count > 0 ? $", includes {string.Join(", ", mod.Includes)}" : "";
+            ImGui.TextColored(new Vector4(0.6f, 0.8f, 1f, 1f), $"Extension of '{mod.Extends}'{includes} - pick it when creating a world");
+        }
         ImGui.EndGroup();
         ImGui.SetCursorPos(start + new Vector2(0f, rowHeight + ImGui.GetStyle().ItemSpacing.Y + 2f));
         ImGui.PopID();

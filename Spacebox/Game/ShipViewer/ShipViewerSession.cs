@@ -3,6 +3,7 @@ using Engine.Light;
 using Engine.Multithreading;
 using Spacebox.Editor.Preview;
 using Spacebox.Game.Versioning;
+using Spacebox.Game.GUI;
 
 namespace Spacebox.Game.ShipViewer;
 
@@ -143,7 +144,7 @@ public sealed class ShipViewerSession : IDisposable
         if (_requestedShip == null || SelectedWorld == null || _viewport == null) return;
 
         var world = SelectedWorld;
-        if (!_gameSet.IsLoadedFor(world.ModId))
+        if (!_gameSet.IsLoadedFor(world.ModId, WorldGameSetCheck.ExtensionsOf(world.Info)))
         {
             if (!_gameSetLoadAnnounced)
             {
@@ -154,7 +155,7 @@ public sealed class ShipViewerSession : IDisposable
 
             _viewport.Clear();
             WaitForWorkers();
-            if (!_gameSet.Load(world.ModId))
+            if (!_gameSet.Load(world.ModId, WorldGameSetCheck.ExtensionsOf(world.Info)))
             {
                 Status = _gameSet.Notice;
                 _requestedShip = null;

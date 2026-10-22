@@ -1,6 +1,7 @@
 using Engine;
 using Engine.Networking;
 using Spacebox.Network.Messages;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Network;
 
@@ -86,6 +87,7 @@ public static class ClientConnector
             Ticks = message.Ticks,
             GameSetHash = message.GameSetHash,
             GameSetFolder = message.GameSetFolder,
+            Extensions = WorldExtensionList.Parse(message.Extensions),
             SpawnPoint = message.HasSpawnPoint ? new[] { message.SpawnPoint.X, message.SpawnPoint.Y, message.SpawnPoint.Z } : null
         };
 

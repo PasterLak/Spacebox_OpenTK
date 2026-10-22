@@ -1,5 +1,6 @@
 using Engine;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Resource.Content;
 using Spacebox.Network;
 using Spacebox.Scenes;
 
@@ -11,16 +12,18 @@ public sealed class ShipViewerGameSet
     private const string DefaultFolder = "Default";
 
     public string LoadedModId { get; private set; }
+    private string _loadedExtensions = "";
     public string Notice { get; private set; } = "";
     public int Version { get; private set; }
     public bool IsLoaded => LoadedModId != null && GameAssets.IsInitialized;
 
-    public bool IsLoadedFor(string modId)
+    public bool IsLoadedFor(string modId, IReadOnlyList<string> extensions = null)
     {
-        return IsLoaded && string.Equals(LoadedModId, modId, StringComparison.OrdinalIgnoreCase);
+        return IsLoaded && string.Equals(LoadedModId, modId, StringComparison.OrdinalIgnoreCase) &&
+               string.Equals(_loadedExtensions, WorldExtensionList.Format(extensions), StringComparison.OrdinalIgnoreCase);
     }
 
-    public bool Load(string modId)
+    public bool Load(string modId, IReadOnlyList<string> extensions = null)
     {
         Release();
 
@@ -35,9 +38,11 @@ public sealed class ShipViewerGameSet
             {
                 modId = loadId,
                 modfolderName = folder,
+                extensions = found && extensions != null ? new List<string>(extensions).ToArray() : Array.Empty<string>(),
                 SearchForGameSetInLocalFolder = true
             });
             LoadedModId = modId;
+            _loadedExtensions = WorldExtensionList.Format(extensions);
             Version++;
             return true;
         }

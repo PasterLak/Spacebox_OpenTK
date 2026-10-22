@@ -13,13 +13,14 @@ public sealed class AppModule : IAgentModule
             return AgentJson.Response(new { ok = true });
         });
 
-        router.Post("/world/load", "Load (or create) a single-player world from the main menu: ?name=AgentWorld&mode=creative|survival&seed=&fresh=1", request =>
+        router.Post("/world/load", "Load (or create) a single-player world from the main menu: ?name=AgentWorld&mode=creative|survival&seed=&fresh=1&extensions=a,b (extensions only for new worlds)", request =>
         {
             if (AgentGame.Player != null) throw new AgentRequestException("A world is already loaded; exit to the menu first", 409);
 
             var args = new List<string> { "--agent-world", AgentQuery.Text(request, "name", AgentOptions.DefaultWorld) };
             if (AgentQuery.Has(request, "mode")) args.AddRange(new[] { "--agent-mode", AgentQuery.Text(request, "mode") });
             if (AgentQuery.Has(request, "seed")) args.AddRange(new[] { "--agent-seed", AgentQuery.Text(request, "seed") });
+            if (AgentQuery.Has(request, "extensions")) args.AddRange(new[] { "--agent-extensions", AgentQuery.Text(request, "extensions") });
             if (AgentQuery.Bool(request, "fresh")) args.Add("--agent-fresh");
 
             bool started = AgentWorldLauncher.Launch(AgentOptions.Parse(args.ToArray()));

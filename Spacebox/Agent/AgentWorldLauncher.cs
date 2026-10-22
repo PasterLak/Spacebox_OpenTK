@@ -16,10 +16,16 @@ public static class AgentWorldLauncher
     {
         if (options.FreshWorld) DeleteWorld(options.WorldName);
 
-        var world = WorldProvisioner.Ensure(options.WorldName, PlayerName, options.GameMode, options.Seed, GameSetId, LogTag);
+        var world = WorldProvisioner.Ensure(options.WorldName, PlayerName, options.GameMode, options.Seed, GameSetId, LogTag, options.Extensions);
         if (world == null)
         {
             Debug.Error($"[Agent] World '{options.WorldName}' cannot be loaded");
+            return false;
+        }
+
+        if (!WorldGameSetCheck.TryResolve(world, out var gameSetError))
+        {
+            Debug.Error($"[Agent] {gameSetError}");
             return false;
         }
 
@@ -31,6 +37,7 @@ public static class AgentWorldLauncher
         {
             worldName = world.Name,
             modId = world.ModId,
+            extensions = WorldGameSetCheck.ExtensionsOf(world),
             seed = world.Seed,
             modfolderName = GameSetLocator.FindFolder(world.ModId),
             nickname = PlayerName,

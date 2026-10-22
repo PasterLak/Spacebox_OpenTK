@@ -63,7 +63,7 @@ namespace Spacebox.Game
 
             try
             {
-                return Versioning.GameSetIdIndex.Load(Spacebox.Network.GameSetLocator.LocalDirectory, worldInfo.ModId);
+                return Versioning.GameSetIdIndex.Load(Spacebox.Network.GameSetLocator.LocalDirectory, worldInfo.ModId, WorldGameSetCheck.ExtensionsOf(worldInfo));
             }
             catch (Exception ex)
             {

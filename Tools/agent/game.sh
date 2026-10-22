@@ -27,7 +27,7 @@ usage() {
   cat <<'EOF'
 Usage: Tools/agent/game.sh <command> [args]
 
-  start [world] [--no-build] [--fresh] [--mode survival] [--seed N]   build Release, launch, wait until the world is loaded
+  start [world] [--no-build] [--fresh] [--mode survival] [--seed N] [--extensions a,b]   build Release, launch, wait until the world is loaded
   menu [--no-build]          launch to the main menu with the API on
   stop                       quit the game
   help                       list all API routes
@@ -90,6 +90,7 @@ case "$cmd" in
         --fresh) args+=(--agent-fresh); shift ;;
         --mode) args+=(--agent-mode "$2"); shift 2 ;;
         --seed) args+=(--agent-seed "$2"); shift 2 ;;
+        --extensions) args+=(--agent-extensions "$2"); shift 2 ;;
         *) args+=("$1"); shift ;;
       esac
     done

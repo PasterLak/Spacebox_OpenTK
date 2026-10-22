@@ -38,6 +38,7 @@ public struct JoinAcceptedMessage : INetMessage
     public string PlayerJson;
     public string GameSetHash;
     public string GameSetFolder;
+    public string Extensions;
     public bool HasSpawnPoint;
     public OpenTK.Mathematics.Vector3 SpawnPoint;
 
@@ -53,6 +54,7 @@ public struct JoinAcceptedMessage : INetMessage
         writer.Write(PlayerJson);
         writer.Write(GameSetHash);
         writer.Write(GameSetFolder);
+        writer.Write(Extensions ?? string.Empty);
         writer.Write(HasSpawnPoint);
         writer.Write(SpawnPoint);
     }
@@ -69,6 +71,7 @@ public struct JoinAcceptedMessage : INetMessage
         PlayerJson = reader.ReadString();
         GameSetHash = reader.ReadString();
         GameSetFolder = reader.ReadString();
+        Extensions = reader.ReadString();
         HasSpawnPoint = reader.ReadBool();
         SpawnPoint = reader.ReadVector3();
     }

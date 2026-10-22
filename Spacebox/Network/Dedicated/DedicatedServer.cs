@@ -42,6 +42,14 @@ public static class DedicatedServer
             return;
         }
 
+        if (!WorldGameSetCheck.TryResolve(world, out var gameSetError))
+        {
+            Debug.Error($"[Server] {gameSetError}");
+            Debug.Error("[Server] Install the missing GameSets or edit \"Extensions\" in the world's world.json, the server stops");
+            Application.Quit();
+            return;
+        }
+
         RegisterCommands();
         StartConsoleReader();
         _shutdownSignals = new ServerShutdownSignals(action => EngineWindow._mainThreadActions.Enqueue(action), ServerRestart.Stop);
@@ -54,6 +62,7 @@ public static class DedicatedServer
         {
             worldName = world.Name,
             modId = world.ModId,
+            extensions = WorldGameSetCheck.ExtensionsOf(world),
             seed = world.Seed,
             modfolderName = GameSetLocator.FindFolder(world.ModId)
         });
