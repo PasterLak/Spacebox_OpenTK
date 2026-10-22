@@ -50,7 +50,7 @@ public static class ClientConfigStore
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
-            File.WriteAllText(path, JsonSerializer.Serialize(config, Options));
+            Engine.Utils.AtomicFile.WriteAllText(path, JsonSerializer.Serialize(config, Options));
         }
         catch (Exception ex)
         {

@@ -280,10 +280,14 @@ namespace Spacebox.Game.Generation
                 catch (Exception ex)
                 {
                     Debug.Error($"Asteroid chunk {idx} generation failed: {ex}");
+                    bool done;
                     lock (_genLock)
                     {
                         generatingChunks.Remove(idx);
+                        pendingChunks.Remove(idx);
+                        done = pendingChunks.Count == 0 && generatingChunks.Count == 0;
                     }
+                    if (done) ReleaseSolidMask();
                 }
             }, WorkerPoolManager.Priority.High);
         }

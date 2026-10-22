@@ -348,8 +348,12 @@ namespace Spacebox.Game
             IsInitialized = false;
         }
 
+        public const int MaxBlockCount = 4096;
+
         public static void IncrementBlockId(BlockData blockData)
         {
+            if (MaxBlockId + 1 >= MaxBlockCount)
+                throw new InvalidOperationException($"Too many blocks: the GameSet and its extensions can have at most {MaxBlockCount} blocks");
             MaxBlockId++;
             blockData.Id = MaxBlockId;
         }

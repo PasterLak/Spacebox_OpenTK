@@ -182,14 +182,14 @@ namespace Spacebox.Game.Generation
             string folder = EntityFiles.FolderOf(worldPath);
             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
-            if (Catalog.TryGet(record.Id, out var old) && old.Name != record.Name)
-            {
-                string oldPath = EntityFiles.PathOf(folder, old.Name);
-                if (File.Exists(oldPath)) File.Delete(oldPath);
-            }
+            string newPath = EntityFiles.PathOf(folder, record.Name);
+            string oldPath = Catalog.TryGet(record.Id, out var old) && old.Name != record.Name ? EntityFiles.PathOf(folder, old.Name) : null;
 
-            AtomicFile.Write(EntityFiles.PathOf(folder, record.Name), temp => NbtFile.Write(temp, tag, FormatOptions.Java, CompressionType.GZip));
+            AtomicFile.Write(newPath, temp => NbtFile.Write(temp, tag, FormatOptions.Java, CompressionType.GZip));
             Catalog.Upsert(record);
+
+            if (oldPath != null && !string.Equals(Path.GetFullPath(oldPath), Path.GetFullPath(newPath), StringComparison.OrdinalIgnoreCase) && File.Exists(oldPath))
+                File.Delete(oldPath);
         }
 
         public static void DeleteEntityFile(string worldPath, string name)

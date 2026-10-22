@@ -52,15 +52,10 @@ namespace Spacebox.Game
             SpaceboxWindow.OnResized += Resize;
         }
 
-        ~ItemModel()
-        {
-            SpaceboxWindow.OnResized -= Resize;
-        }
-
         public void Resize(Vector2 size)
         {
             if (itemCamera == null) return;
-            if (Camera.Main == null) return;
+            if (Camera.Main == null || size.X <= 0 || size.Y <= 0) return;
             itemCamera.AspectRatio = size.X / size.Y;
         }
 

@@ -126,18 +126,28 @@ public class World : Component, ISpaceStructure
         WorldData.Info.Ticks = GameTime.DayTick;
         WorldInfoSaver.Save(WorldData.Info);
 
-        if (capturePreview && !Engine.Application.IsHeadless)
-        {
-            var screenSize = SpaceboxWindow.Instance.ClientSize;
-            string path = Path.Combine(WorldData.WorldFolderPath, "preview.jpg");
-
-            FramebufferCapture.SaveWorldPreview(screenSize, path);
-        }
         TagsSaveLoader.SaveTags(WorldData.WorldFolderPath);
 
         DropEffectManager.SaveDrops(Versioning.WorldFileLayout.DropsPath(WorldData.WorldFolderPath), Versioning.WorldFileLayout.LegacyDropsPath(WorldData.WorldFolderPath));
 
         if (Spacebox.Network.GameSession.HasLocalPlayer) WorldSaveState.MarkSaved(PlayerSaveLoadManager.Serialize(Player));
+
+        if (capturePreview && !Engine.Application.IsHeadless) SavePreview();
+    }
+
+    private void SavePreview()
+    {
+        var screenSize = SpaceboxWindow.Instance.ClientSize;
+        if (screenSize.X <= 0 || screenSize.Y <= 0) return;
+
+        try
+        {
+            FramebufferCapture.SaveWorldPreview(screenSize, Path.Combine(WorldData.WorldFolderPath, "preview.jpg"));
+        }
+        catch (Exception ex)
+        {
+            Debug.Warning($"[World] Could not save the world preview: {ex.Message}");
+        }
     }
 
     public bool HasUnsavedChanges()
@@ -593,13 +603,13 @@ public class World : Component, ISpaceStructure
             )
             .ContinueWith(t =>
             {
-                if (t.IsFaulted)
+                if (t.IsFaulted || t.IsCanceled)
                 {
 
                     var realError = t.Exception?.Flatten().InnerException;
 
-                    Debug.Error($"[World] Failed to load sector {sectorIndex}: {realError?.Message}");
-                    Debug.Error(realError?.StackTrace);
+                    if (t.IsFaulted) Debug.Error($"[World] Failed to load sector {sectorIndex}: {realError?.Message}");
+                    if (t.IsFaulted) Debug.Error(realError?.StackTrace);
 
                     MainThreadDispatcher.Instance.Enqueue(() =>
                     {

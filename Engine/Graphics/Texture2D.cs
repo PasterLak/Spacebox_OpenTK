@@ -426,7 +426,7 @@ namespace Engine
 
             using (var image = SKImage.FromBitmap(bitmap))
             using (var data = image.Encode(SKEncodedImageFormat.Jpeg, quality))
-            using (var stream = File.OpenWrite(path))
+            using (var stream = File.Create(path))
             {
                 data.SaveTo(stream);
             }
@@ -455,7 +455,7 @@ namespace Engine
 
             using var image = surface.Snapshot();
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = File.OpenWrite(path);
+            using var stream = File.Create(path);
             data.SaveTo(stream);
 
             Debug.Success($"[Texture2D] PNG image saved to: {Path.GetFullPath(path)} , Size X:{Width} Y:{Height}");
@@ -485,7 +485,7 @@ namespace Engine
 
             using var image = surface.Snapshot();
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = File.OpenWrite(path);
+            using var stream = File.Create(path);
             data.SaveTo(stream);
 
         }

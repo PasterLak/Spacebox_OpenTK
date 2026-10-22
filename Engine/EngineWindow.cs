@@ -520,7 +520,7 @@ namespace Engine
 
         public float GetAspectRatio()
         {
-            return ClientSize.X / (float)ClientSize.Y;
+            return ClientSize.Y > 0 ? ClientSize.X / (float)ClientSize.Y : 1f;
         }
 
         public bool IsQuitting { get; private set; }
@@ -582,7 +582,7 @@ namespace Engine
             _sceneRenderer?.Resize(SceneSize.X, SceneSize.Y);
             _processManager?.UpdateResolution(ClientSize);
             OnResized?.Invoke(Size);
-            if (Camera.Main != null)
+            if (Camera.Main != null && Size.X > 0 && Size.Y > 0)
                 Camera.Main.AspectRatio = (float)Size.X / Size.Y;
             _controller?.WindowResized(ClientSize.X, ClientSize.Y);
         }

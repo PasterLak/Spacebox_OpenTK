@@ -277,9 +277,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         if (!Debug.IsVisible)
         {
-            if (Input.IsKeyDown(Keys.KeyPadEnter))
+            if (Input.IsKeyDown(Keys.KeyPadEnter) && !UIManager.IsUIMode)
             {
-                SceneManager.Load<MenuScene>();
+                PauseUI.RequestGoToMenu();
             }
             if (Input.IsKeyDown(Keys.F8))
             {

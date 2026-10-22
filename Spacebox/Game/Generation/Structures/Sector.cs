@@ -155,7 +155,18 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         loadingEntities.Remove(data.Id);
         if (Entities == null || tag == null || Entities.Exists(e => e.EntityID == data.Id)) return;
 
-        var entity = NBTHelper.TagToSpaceEntity(tag, this, data, prepared);
+        SpaceEntity entity;
+        try
+        {
+            entity = NBTHelper.TagToSpaceEntity(tag, this, data, prepared);
+        }
+        catch (Exception ex)
+        {
+            _failedEntityLoads[data.Id] = _failedEntityLoads.GetValueOrDefault(data.Id) + 1;
+            Debug.Error($"[Sector] Could not load entity {data.Id} ({fileName}): {ex.Message}");
+            return;
+        }
+
         if (entity == null) return;
         if (Entities.Exists(e => e.EntityID == entity.EntityID))
         {

@@ -145,7 +145,6 @@ namespace Engine
             GL.ReadPixels(dropXSize, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
             Color4[,] colorData = ConvertToColorArray(pixels, width, height);
             Color4[,] finalData;
-            DownscaleColor4(colorData, width, height);
 
             if (width > maxPreviewSize)
             {

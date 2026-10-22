@@ -284,6 +284,11 @@ namespace Spacebox.Game.GUI
             leave?.Invoke();
         }
 
+        public static void RequestGoToMenu()
+        {
+            if (!TryPromptBeforeLeaving(GoToMenu)) GoToMenu();
+        }
+
         private static void GoToMenu()
         {
             UIManager.CloseAll();

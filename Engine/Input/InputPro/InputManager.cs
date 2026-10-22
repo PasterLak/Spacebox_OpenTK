@@ -173,7 +173,7 @@ public class InputManager
     {
         try
         {
-            File.WriteAllText(path, SerializeConfiguration());
+            Engine.Utils.AtomicFile.WriteAllText(path, SerializeConfiguration());
         }
         catch (Exception ex)
         {

@@ -309,6 +309,15 @@ Fixes
 - unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
 - entering a sector while it was still loading in the background could drop its unsaved changes (mined-out asteroids came back)
 - dashboard security: atomic login throttle (IPv6 by /64, global limit), sessions end after 7 days, unknown Host names refused, no plain HTTP from the internet without DashboardAllowPublicHttp, stronger admin password hash, private key files on Linux
+- numpad Enter left the world without saving or asking; it now uses the normal leave prompt and only without open windows
+- typing J in a menu text field switched to a test scene; the menu wrote test files into the game folder on every visit
+- one failing background callback (e.g. a damaged entity file) crashed the game
+- autosave while minimized broke off before saving waypoints and drops; old bytes stayed at the end of a smaller preview.jpg
+- a failed asteroid chunk job kept the loading screen waiting
+- renaming an entity file deleted the old file before the new one was written
+- settings, key bindings, ship keys and saved servers are written atomically
+- minimizing the window gave cameras an invalid aspect ratio
+- GameSets with more than 4096 blocks are refused instead of turning blocks into air
 Engine
 - OpenTK 4.9.4 (GLFW 3.4); Linux picks the window system: native Wayland on Wayland desktops, X11 otherwise, each with the other as fallback, --window-system x11|wayland|auto or SPACEBOX_WINDOW_SYSTEM to force one; GLFW errors are logged instead of crashing
 - dedicated servers run without a window or GPU on every OS (Linux servers no longer need X11, Wayland or xvfb)

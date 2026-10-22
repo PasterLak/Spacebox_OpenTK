@@ -60,7 +60,7 @@ public static class ShipKeyMemory
     {
         try
         {
-            File.WriteAllText(FilePath, Presets.Serialize());
+            Engine.Utils.AtomicFile.WriteAllText(FilePath, Presets.Serialize());
         }
         catch (IOException exception)
         {

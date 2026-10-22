@@ -312,7 +312,7 @@ namespace Spacebox.Game
             string path = FilePath;
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            File.WriteAllText(path, Serialize(settings));
+            Engine.Utils.AtomicFile.WriteAllText(path, Serialize(settings));
 
 
 
