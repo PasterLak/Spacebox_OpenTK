@@ -10,6 +10,7 @@ public static class ChatCommands
     public const int MaxOutputLines = 40;
 
     private static readonly List<CommandOutputLine> _output = new List<CommandOutputLine>();
+    private static int _captureThread;
 
     public static string CurrentSender { get; private set; }
 
@@ -42,6 +43,7 @@ public static class ChatCommands
         if (string.IsNullOrWhiteSpace(commandLine)) return _output;
 
         CurrentSender = sender;
+        _captureThread = Environment.CurrentManagedThreadId;
         Debug.MessageLogged += Capture;
         try
         {
@@ -51,6 +53,7 @@ public static class ChatCommands
         {
             Debug.MessageLogged -= Capture;
             CurrentSender = null;
+            _captureThread = 0;
         }
         return _output;
     }
@@ -59,7 +62,7 @@ public static class ChatCommands
 
     private static void Capture(string text, Debug.MessageType type)
     {
-        if (_output.Count >= MaxOutputLines || IsEchoOfChat(text)) return;
+        if (Environment.CurrentManagedThreadId != _captureThread || _output.Count >= MaxOutputLines || IsEchoOfChat(text)) return;
         _output.Add(new CommandOutputLine(text, type));
     }
 }
