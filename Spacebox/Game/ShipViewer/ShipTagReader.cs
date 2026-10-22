@@ -44,6 +44,30 @@ public static class ShipTagReader
         return string.Equals(shortId, AirId, StringComparison.OrdinalIgnoreCase) || string.Equals(shortId, VoidId, StringComparison.OrdinalIgnoreCase);
     }
 
+    public static bool ContainsBlock(CompoundTag entity, Func<string, bool> match)
+    {
+        foreach (var chunk in ChunkTagAccess.Chunks(entity))
+        {
+            var palette = ChunkTagAccess.BlockPalette(chunk);
+            var wanted = new bool[palette.Count];
+            bool any = false;
+            for (int i = 0; i < wanted.Length; i++)
+            {
+                wanted[i] = match(palette[i]);
+                any |= wanted[i];
+            }
+            if (!any) continue;
+
+            var cells = ChunkBlockIndices.Read(chunk);
+            for (int i = 0; i < cells.Length; i++)
+            {
+                int paletteIndex = cells[i];
+                if (paletteIndex >= 0 && paletteIndex < wanted.Length && wanted[paletteIndex]) return true;
+            }
+        }
+        return false;
+    }
+
     public static ShipBlockStats Measure(CompoundTag entity)
     {
         int chunks = 0;

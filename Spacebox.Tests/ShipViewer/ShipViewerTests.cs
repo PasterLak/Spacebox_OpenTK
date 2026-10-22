@@ -95,6 +95,45 @@ public class ShipViewerTests : IDisposable
     }
 
     [Fact]
+    public void Scanner_EntitiesWithoutShipPartsAreBases()
+    {
+        var parts = ShipPartBlocks.FromContent(DefaultGameSetContent.Content, "default");
+        string folder = Build("Bases", b => b
+            .Chunk(new[] { "default:stone", "default:thruster_weak" }, entity: "flyer")
+            .Chunk(StonePattern, entity: "station"));
+
+        var result = ShipScanner.Scan(folder, parts.Contains);
+
+        Assert.True(result.Ships.Single(s => s.Name == "flyer").HasShipParts);
+        Assert.False(result.Ships.Single(s => s.Name == "station").HasShipParts);
+    }
+
+    [Fact]
+    public void ShipParts_ComeFromBlockTypes()
+    {
+        var parts = ShipPartBlocks.FromContent(DefaultGameSetContent.Content, "default");
+
+        Assert.True(parts.Contains("default:thruster_weak"));
+        Assert.False(parts.Contains("default:stone"));
+    }
+
+    [Fact]
+    public void Labels_NumberShipsAndBasesSeparatelyAndKeepCustomNames()
+    {
+        var stats = new ShipBlockStats(1, 1, Vector3i.Zero, Vector3i.One);
+        var result = new ShipScanResult(new List<SavedShip>
+        {
+            new SavedShip("a", "11", 11, stats, true),
+            new SavedShip("b", "12", 12, stats, false),
+            new SavedShip("c", "Falcon", 13, stats, true),
+            new SavedShip("d", "14", 14, stats, true),
+            new SavedShip("e", "15", 15, stats, false)
+        }, 0);
+
+        Assert.Equal(new[] { "Ship 1", "Base 1", "Falcon", "Ship 2", "Base 2" }, Enumerable.Range(0, 5).Select(result.Label));
+    }
+
+    [Fact]
     public void Scanner_EmptyWorldHasNoShips()
     {
         string folder = Build("Empty", null);

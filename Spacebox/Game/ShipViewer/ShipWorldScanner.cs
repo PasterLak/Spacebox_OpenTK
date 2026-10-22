@@ -60,7 +60,8 @@ public sealed class ShipWorldScanner : IDisposable
 
             try
             {
-                var ships = ShipScanner.Scan(world.FolderPath, token);
+                var parts = ShipPartBlocks.Load(Spacebox.Network.GameSetLocator.Local, world.Info.ModId, Spacebox.Game.GUI.WorldGameSetCheck.ExtensionsOf(world.Info));
+                var ships = ShipScanner.Scan(world.FolderPath, parts == null ? null : parts.Contains, token);
                 if (!token.IsCancellationRequested && ships.Ships.Count > 0) _found.Enqueue((world, ships));
             }
             catch (Exception ex)

@@ -109,11 +109,6 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         ImGui.PopStyleVar();
     }
 
-    private static string ShipLabel(SavedShip ship, int index)
-    {
-        return ship.Name == ship.EntityId.ToString() ? $"Ship {index + 1}" : ship.Name;
-    }
-
     private void DrawWorld(SavedWorld world, int index)
     {
         ImGui.PushID(index);
@@ -139,17 +134,17 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
             else if (result != null)
             {
                 for (int i = 0; i < result.Ships.Count; i++)
-                    DrawShip(result.Ships[i], i);
+                    DrawShip(result.Ships[i], result.Label(i), i);
                 if (result.UnreadableFiles > 0) ImGui.TextColored(WarningColor, $"{result.UnreadableFiles} damaged entity files skipped");
             }
         }
         EndList();
     }
 
-    private void DrawShip(SavedShip ship, int index)
+    private void DrawShip(SavedShip ship, string label, int index)
     {
         ImGui.PushID(index);
-        if (ImGui.Selectable(ShipLabel(ship, index), ReferenceEquals(ship, _session.SelectedShip))) _session.SelectShip(ship);
+        if (ImGui.Selectable(label, ReferenceEquals(ship, _session.SelectedShip))) _session.SelectShip(ship);
         if (ImGui.IsItemHovered()) ImGui.SetTooltip($"Entity {ship.EntityId}");
         ImGui.SameLine(0f, 12f);
         ImGui.TextDisabled($"{ship.Stats.Blocks} blocks");

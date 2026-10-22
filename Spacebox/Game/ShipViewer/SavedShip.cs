@@ -4,13 +4,17 @@ namespace Spacebox.Game.ShipViewer;
 
 public sealed class SavedShip
 {
-    public SavedShip(string filePath, string name, long entityId, ShipBlockStats stats)
+    public SavedShip(string filePath, string name, long entityId, ShipBlockStats stats, bool hasShipParts = true)
     {
         FilePath = filePath;
         Name = name;
         EntityId = entityId;
         Stats = stats;
+        HasShipParts = hasShipParts;
     }
+
+    public bool HasShipParts { get; }
+    public bool HasCustomName => Name != EntityId.ToString();
 
     public string FilePath { get; }
     public string Name { get; }
