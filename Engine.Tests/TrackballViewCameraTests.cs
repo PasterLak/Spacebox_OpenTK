@@ -46,4 +46,18 @@ public class TrackballViewCameraTests
 
         Assert.Equal(distance, (camera.Position - camera.Target).Length, 3);
     }
+
+    [Fact]
+    public void ViewportPointToDirection_CenterIsFront_CornersSpreadByFov()
+    {
+        var camera = new TrackballViewCamera { AspectRatio = 2f };
+        camera.Frame(Vector3.Zero, 1f);
+
+        Assert.True((camera.ViewportPointToDirection(new Vector2(0.5f, 0.5f)) - camera.Front).Length < 1e-5f);
+
+        var topRight = camera.ViewportPointToDirection(new Vector2(1f, 0f));
+        float halfFov = MathHelper.DegreesToRadians(camera.FOV) * 0.5f;
+        Assert.Equal(MathF.Tan(halfFov), Vector3.Dot(topRight, camera.Up) / Vector3.Dot(topRight, camera.Front), 4);
+        Assert.Equal(MathF.Tan(halfFov) * 2f, Vector3.Dot(topRight, camera.Right) / Vector3.Dot(topRight, camera.Front), 4);
+    }
 }

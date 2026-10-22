@@ -13,7 +13,7 @@ public static class ShipLightFlood
         (1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)
     };
 
-    public static void Propagate(IReadOnlyDictionary<Vector3SByte, Block[,,]> chunks)
+    public static void Propagate(IReadOnlyDictionary<Vector3SByte, Block[,,]> chunks, ISet<Vector3SByte> litChunks = null)
     {
         var queue = new Queue<(Block[,,] Blocks, Vector3SByte Chunk, int X, int Y, int Z)>();
         foreach (var pair in chunks)
@@ -38,7 +38,10 @@ public static class ShipLightFlood
                 if (!TryResolve(chunks, blocks, chunk, x + Offsets[i].X, y + Offsets[i].Y, z + Offsets[i].Z, out var target)) continue;
 
                 var neighbor = target.Blocks[target.X, target.Y, target.Z];
-                if (neighbor != null && LightFalloff.TrySpreadInto(neighbor, r, g, b)) queue.Enqueue(target);
+                if (neighbor == null || !LightFalloff.TrySpreadInto(neighbor, r, g, b)) continue;
+
+                queue.Enqueue(target);
+                litChunks?.Add(target.Chunk);
             }
         }
     }

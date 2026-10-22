@@ -111,6 +111,7 @@ Small
 - ship viewer: free rotation on all axes; ships are turned upright from their flight console
 - ship viewer: light slider, Power toggle for energy blocks (on by default), Engines (exhaust), Fire (one volley from all cannons), Save picture (2x render to the screenshots folder)
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
+- ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
 - mods window list icons were upside down
 - ship viewer pictures had no skybox (new render textures left the texture binding cache stale)

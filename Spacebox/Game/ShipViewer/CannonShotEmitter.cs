@@ -11,6 +11,8 @@ public sealed class CannonShotEmitter : IDisposable
     private const int FlashParticles = 8;
     private const float FlashLife = 0.12f;
     private const float MinLife = 0.2f;
+    private const int ImpactParticles = 18;
+    private const float ImpactLife = 0.35f;
 
     private static readonly Vector4 FlashStart = new Vector4(1f, 0.85f, 0.5f, 1f);
     private static readonly Vector4 FlashEnd = new Vector4(1f, 0.4f, 0.1f, 0f);
@@ -50,6 +52,19 @@ public sealed class CannonShotEmitter : IDisposable
         {
             var jitter = new Vector3(_random.NextSingle() - 0.5f, _random.NextSingle() - 0.5f, _random.NextSingle() - 0.5f);
             Push(muzzle, (direction + jitter) * 3f, FlashLife * (0.6f + 0.8f * _random.NextSingle()), FlashStart, FlashEnd, size * 2.5f, 0.05f);
+        }
+    }
+
+    public void Impact(Vector3 point, in ProjectileParameters projectile)
+    {
+        float size = MathF.Max(0.2f, projectile.Thickness * 3f);
+        var color = new Vector4(projectile.Color.R, projectile.Color.G, projectile.Color.B, 1f);
+        var fade = new Vector4(color.X, color.Y, color.Z, 0f);
+        for (int i = 0; i < ImpactParticles; i++)
+        {
+            var direction = new Vector3(_random.NextSingle() - 0.5f, _random.NextSingle() - 0.5f, _random.NextSingle() - 0.5f) * 6f;
+            var start = i % 3 == 0 ? FlashStart : color;
+            Push(point, direction, ImpactLife * (0.5f + _random.NextSingle()), start, fade, size * 2f, 0.05f);
         }
     }
 

@@ -145,6 +145,15 @@ namespace Engine
         }
         protected abstract void UpdateVectors();
 
+        public Vector3 ViewportPointToDirection(Vector2 viewportPoint)
+        {
+            if (_projectionType == ProjectionType.Orthographic) return _front;
+
+            float tan = MathF.Tan(_fov * 0.5f);
+            float x = (viewportPoint.X * 2f - 1f) * tan * AspectRatio;
+            float y = (1f - viewportPoint.Y * 2f) * tan;
+            return Vector3.Normalize(_front + _right * x + _up * y);
+        }
 
         public Vector2 WorldToScreenPoint(Vector3 worldPosition)
         {

@@ -10,6 +10,7 @@ public sealed class PreviewViewport : IDisposable
     private const float OrbitSpeed = 0.4f;
     private const float AutoRotateSpeed = 18f;
     private const int MaxCaptureSize = 4096;
+    private const float ClickDragTolerance = 4f;
 
     private readonly RenderTexture _target = new RenderTexture(256, 256);
     private readonly TrackballViewCamera _camera = new TrackballViewCamera();
@@ -71,6 +72,13 @@ public sealed class PreviewViewport : IDisposable
         ImGui.InvisibleButton("##previewInput", size);
 
         bool hovered = ImGui.IsItemHovered();
+        var clickTarget = _content is IPreviewClickTarget { AcceptsClicks: true } target && _content.IsReady ? target : null;
+        if (clickTarget != null && hovered && ImGui.IsMouseReleased(ImGuiMouseButton.Left) &&
+            ImGui.GetMouseDragDelta(ImGuiMouseButton.Left, 0f).Length() < ClickDragTolerance)
+        {
+            var point = (ImGui.GetMousePos() - start) / size;
+            clickTarget.Click(_camera.Position, _camera.ViewportPointToDirection(new OpenTK.Mathematics.Vector2(point.X, point.Y)));
+        }
         if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left, 0f))
         {
             var delta = ImGui.GetIO().MouseDelta;
@@ -82,12 +90,13 @@ public sealed class PreviewViewport : IDisposable
         {
             float wheel = ImGui.GetIO().MouseWheel;
             if (wheel != 0f) _camera.Zoom(wheel);
-            if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) ResetView();
+            if (clickTarget == null && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) ResetView();
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Right)) _autoRotate = !_autoRotate;
         }
 
         var drawList = ImGui.GetWindowDrawList();
-        string hint = _content == null ? "No preview" : _content.IsReady ? "Drag: rotate  Wheel: zoom  Double click: reset  RMB: auto rotate" : "Generating...";
+        string hint = _content == null ? "No preview" : !_content.IsReady ? "Generating..." :
+            clickTarget != null ? "Click: shoot  Drag: rotate  Wheel: zoom  RMB: auto rotate" : "Drag: rotate  Wheel: zoom  Double click: reset  RMB: auto rotate";
         drawList.AddText(start + new Vector2(6f, 4f), 0xB0FFFFFF, hint);
     }
 

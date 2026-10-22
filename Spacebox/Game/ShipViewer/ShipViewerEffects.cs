@@ -1,5 +1,7 @@
+using Engine;
 using Engine.Audio;
 using OpenTK.Mathematics;
+using Spacebox.Game.Player;
 using Spacebox.Game.Resource;
 using Spacebox.Game.Ships;
 
@@ -16,6 +18,7 @@ public sealed class ShipViewerEffects : IDisposable
     private readonly List<ViewerCannon> _cannons = new List<ViewerCannon>();
     private readonly List<float> _reloads = new List<float>();
     private readonly Dictionary<string, AudioSource> _sounds = new Dictionary<string, AudioSource>();
+    private AudioSource _hitSound;
     private float _range = 50f;
 
     public bool HasEngines => _engines.Count > 0;
@@ -58,6 +61,18 @@ public sealed class ShipViewerEffects : IDisposable
         for (int i = 0; i < _cannons.Count; i++) Fire(i);
     }
 
+    public void Shoot(Vector3 origin, Vector3 direction, float distance, in ProjectileParameters projectile)
+    {
+        _shots.Fire(origin, direction, projectile, distance);
+    }
+
+    public void Impact(Vector3 point, in ProjectileParameters projectile)
+    {
+        _shots.Impact(point, projectile);
+        _hitSound ??= new AudioSource(Resources.Load<AudioClip>("hitBlock"), AudioChannel.UI);
+        if (!_hitSound.IsDisposed) _hitSound.Play();
+    }
+
     public void Render()
     {
         _exhaust.Render();
@@ -69,6 +84,7 @@ public sealed class ShipViewerEffects : IDisposable
         _exhaust.Dispose();
         _shots.Dispose();
         foreach (var source in _sounds.Values) source.Dispose();
+        _hitSound?.Dispose();
         _sounds.Clear();
     }
 

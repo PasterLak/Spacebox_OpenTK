@@ -1,6 +1,8 @@
 using System.Numerics;
 using Engine;
 using ImGuiNET;
+using Spacebox.Game.Player;
+using Spacebox.Game.Resource;
 using Spacebox.Game.ShipViewer;
 
 namespace Spacebox.Game.GUI.Menu;
@@ -157,7 +159,7 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
     private void DrawPreview()
     {
         var available = ImGui.GetContentRegionAvail();
-        float infoHeight = ImGui.GetTextLineHeightWithSpacing() * 3f + ImGui.GetFrameHeightWithSpacing();
+        float infoHeight = ImGui.GetTextLineHeightWithSpacing() * 3f + ImGui.GetFrameHeightWithSpacing() * 2f;
         _session.DrawViewport(new Vector2(available.X, MathF.Max(32f, available.Y - infoHeight)));
         DrawControls();
 
@@ -205,6 +207,48 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         if (ImGui.Button("Save picture")) _session.SavePicture();
         ImGui.EndDisabled();
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Renders the ship and saves it to the screenshots folder");
+
+        DrawProjectiles();
+
+        ImGui.SameLine(0f, 16f);
+        ImGui.BeginDisabled(content == null || !content.CanRestore);
+        if (ImGui.Button("Restore ship")) _session.RestoreShip();
+        ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Reloads the ship from its save and removes all damage");
+    }
+
+    private void DrawProjectiles()
+    {
+        ImGui.Text("Shoot");
+        ImGui.SameLine();
+        string selected = _session.ProjectileName;
+        ProjectileParameters current = default;
+        bool found = selected != null && GameAssets.TryGetProjectileByName(selected, out current);
+        if (found) DrawProjectileColor(current, "##shipViewerShotColor");
+        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * 0.3f);
+        if (ImGui.BeginCombo("##shipViewerShot", found ? selected : "None", ImGuiComboFlags.HeightLargest))
+        {
+            if (ImGui.Selectable("None", !found)) _session.ProjectileName = null;
+            foreach (var projectile in GameAssets.Projectiles.Values)
+            {
+                ImGui.PushID(projectile.ID);
+                DrawProjectileColor(projectile, "##color");
+                if (ImGui.Selectable(projectile.Name, projectile.Name == selected)) _session.ProjectileName = projectile.Name;
+                if (ImGui.IsItemHovered())
+                    ImGui.SetTooltip($"Block damage {projectile.DamageBlocks}, penetration {projectile.Penetration}, up to {projectile.MaximumBlocksCanDestroy} blocks");
+                ImGui.PopID();
+            }
+            ImGui.EndCombo();
+        }
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Pick a projectile, then click on the ship to shoot it");
+    }
+
+    private static void DrawProjectileColor(ProjectileParameters projectile, string id)
+    {
+        float size = ImGui.GetFrameHeight();
+        var color = new Vector4(projectile.Color.R, projectile.Color.G, projectile.Color.B, 1f);
+        ImGui.ColorButton(id, color, ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoPicker, new Vector2(size, size));
+        ImGui.SameLine();
     }
 
     private void DrawShipInfo(SavedShip ship)
@@ -219,7 +263,8 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         else if (!content.IsFinished)
         {
             int total = content.TotalChunks;
-            ImGui.TextDisabled(total < 0 ? "Reading ship..." : $"Building mesh {content.MeshedChunks}/{total} chunks");
+            if (total < 0) ImGui.TextDisabled("Reading ship...");
+            else if (content.MeshedChunks < total) ImGui.TextDisabled($"Building mesh {content.MeshedChunks}/{total} chunks");
         }
     }
 }

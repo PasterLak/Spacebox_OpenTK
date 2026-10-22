@@ -3,6 +3,8 @@ using Engine.Light;
 using Spacebox.Editor.Preview;
 using Spacebox.Game.Versioning;
 using Spacebox.Game.GUI;
+using Spacebox.Game.Player;
+using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.ShipViewer;
 
@@ -24,8 +26,9 @@ public sealed class ShipViewerSession : IDisposable
     private SavedShip _requestedShip;
     private bool _gameSetLoadAnnounced;
     private bool _powered = true;
-    private bool _enginesOn;
-    private bool _autoFire = true;
+    private bool _enginesOn = true;
+    private bool _autoFire;
+    private string _projectileName;
 
     public ShipViewerSession(string worldsDirectory, WorldUpgradeRegistry registry, string version)
     {
@@ -73,6 +76,21 @@ public sealed class ShipViewerSession : IDisposable
             _autoFire = value;
             if (Content != null) Content.AutoFire = value;
         }
+    }
+
+    public string ProjectileName
+    {
+        get => _projectileName;
+        set
+        {
+            _projectileName = value;
+            if (Content != null) Content.ShotProjectile = ResolveProjectile();
+        }
+    }
+
+    public void RestoreShip()
+    {
+        Content?.Restore();
     }
 
     public void FireWeapons()
@@ -215,9 +233,14 @@ public sealed class ShipViewerSession : IDisposable
 
     private ShipPreviewContent CreateContent(SavedWorld world, SavedShip ship)
     {
-        var content = new ShipPreviewContent(() => _loader.Load(world, ship), ShipFraming.FromStats(ship.Stats)) { EnginesOn = _enginesOn, AutoFire = _autoFire };
+        var content = new ShipPreviewContent(() => _loader.Load(world, ship), ShipFraming.FromStats(ship.Stats)) { EnginesOn = _enginesOn, AutoFire = _autoFire, ShotProjectile = ResolveProjectile() };
         content.SetPowered(_powered);
         return content;
+    }
+
+    private ProjectileParameters? ResolveProjectile()
+    {
+        return _projectileName != null && GameAssets.TryGetProjectileByName(_projectileName, out var projectile) ? projectile : null;
     }
 
     private ShipPreviewContent Track(ShipPreviewContent content)
