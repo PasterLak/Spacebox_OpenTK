@@ -5,6 +5,7 @@ using Engine;
 using Spacebox.Editor.Data;
 using Spacebox.Editor.UI.Fields;
 using Spacebox.Game;
+using Spacebox.Game.Resource.Content.Conversion;
 
 namespace Spacebox.Editor.UI.Panels;
 
@@ -32,6 +33,7 @@ public sealed class OverviewPanel : IEditorPanel, IDisposable
             DrawIcon(project, side);
             ImGui.TextWrapped(project.RootPath);
             if (ImGui.Button("Open folder")) OpenFolder(project.RootPath);
+            DrawConversion(context);
             ImGui.Separator();
             DrawStatistics();
         }
@@ -46,6 +48,26 @@ public sealed class OverviewPanel : IEditorPanel, IDisposable
                 file.MarkDirty();
         }
         ImGui.EndChild();
+    }
+
+    private static void DrawConversion(EditorContext context)
+    {
+        var project = context.Project;
+        if (!GameSetFolderConverter.HasFlatFiles(project.RootPath)) return;
+
+        bool dirty = project.DirtyCount > 0;
+        if (dirty) ImGui.BeginDisabled();
+        if (ImGui.Button("Convert to folder format"))
+        {
+            var result = GameSetFolderConverter.Convert(project.RootPath);
+            project.ReloadFromDisk();
+            context.SetStatus(result.Success ? $"Converted: {result.Summary}" : "Conversion failed: " + string.Join("; ", result.Errors.Concat(result.Differences).Take(3)), !result.Success);
+            foreach (var line in result.Log) Engine.Debug.Log($"[Editor] {line}");
+            if (result.Success) context.RequestReload();
+        }
+        if (dirty) ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip(dirty ? "Save or discard your changes first" : "Moves every block and item into its own folder with its textures, blueprints into the entry folders and processing recipes into Recipes/. The loaded content stays identical.");
     }
 
     public void Dispose()

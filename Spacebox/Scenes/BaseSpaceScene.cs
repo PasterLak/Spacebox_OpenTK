@@ -31,6 +31,7 @@ public struct SpaceSceneArgs
 
     public string modfolderName;
     public string[] extensions = Array.Empty<string>();
+    public bool applyTexturePacks = true;
     public string key;
     public string hostIp;
     public int port;

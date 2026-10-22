@@ -62,6 +62,13 @@ public static class GameSetCatalog
         relativePath = GameSetProject.Normalize(relativePath);
         if (FileSchemas.TryGetValue(relativePath, out var schema)) return schema;
         if (relativePath.StartsWith(BlocksFile, StringComparison.OrdinalIgnoreCase)) return typeof(List<BlockJSON>);
+        string fileName = Path.GetFileName(relativePath);
+        if (fileName.Equals(Game.Resource.Content.GameSetFormat.BlockEntryFile, StringComparison.OrdinalIgnoreCase)) return typeof(BlockJSON);
+        if (fileName.Equals(Game.Resource.Content.GameSetFormat.ItemEntryFile, StringComparison.OrdinalIgnoreCase)) return typeof(ItemJSON);
+        if (fileName.Equals(Game.Resource.Content.GameSetFormat.BlueprintFile, StringComparison.OrdinalIgnoreCase)) return typeof(BlueprintJSON);
+        if (fileName.Equals(Game.Resource.Content.GameSetFormat.EntryRecipesFile, StringComparison.OrdinalIgnoreCase)) return typeof(List<RecipeJSON>);
+        if (relativePath.StartsWith(Game.Resource.Content.GameSetFormat.RecipesFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(RecipejSONType);
+        if (relativePath.StartsWith(Game.Resource.Content.GameSetFormat.CraftingFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(CraftingJSON);
         if (relativePath.StartsWith(ProjectilesFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(ProjectileJSON);
         if (relativePath.StartsWith(LootFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(List<LootEntry>);
         if (relativePath.StartsWith(MobsFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(MobJSON);

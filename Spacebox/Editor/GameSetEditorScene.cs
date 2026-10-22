@@ -108,6 +108,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         SceneAssetsPreloader.Preload(new SpaceSceneArgs
         {
             modId = _args.ModId,
+            applyTexturePacks = false,
             modfolderName = _args.ModFolderName,
             SearchForGameSetInLocalFolder = true
         });

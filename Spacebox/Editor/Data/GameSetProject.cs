@@ -141,6 +141,13 @@ public sealed class GameSetProject
         _structureVersion = EditorJsonFile.NextStamp();
     }
 
+    public void ReloadFromDisk()
+    {
+        _files.Clear();
+        _pendingDeletes.Clear();
+        _structureVersion = EditorJsonFile.NextStamp();
+    }
+
     public void DiscardChanges()
     {
         _pendingDeletes.Clear();

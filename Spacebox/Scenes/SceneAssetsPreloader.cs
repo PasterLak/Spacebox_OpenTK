@@ -10,12 +10,10 @@ namespace Spacebox.Scenes
 
     public static class SceneAssetsPreloader
     {
-        public static bool ApplyTexturePacks = true;
-
-        private static void InitializeGamesetData(GameSetStack stack)
+        private static void InitializeGamesetData(GameSetStack stack, bool applyTexturePacks)
         {
             var layers = stack?.Layers ?? Array.Empty<ContentLayer>();
-            var overrides = ApplyTexturePacks ? Spacebox.Game.Resource.TexturePacks.TexturePackService.ActiveOverrides() : null;
+            var overrides = applyTexturePacks ? Spacebox.Game.Resource.TexturePacks.TexturePackService.ActiveOverrides() : null;
             var assets = GameSetAssetIndex.Build(layers, GameAtlasFactory.BuiltInBlocksFolder, GameAtlasFactory.BuiltInItemsFolder, overrides);
 
             GameAssets.AtlasBlocks = GameAtlasFactory.CreateBlocksAtlas(assets);
@@ -42,7 +40,7 @@ namespace Spacebox.Scenes
             foreach (var error in result.Errors) Debug.Error($"[GameSetLoader] {error}");
 
             if (GameAssets.IsInitialized) GameAssets.DisposeAll();
-            InitializeGamesetData(result.Stack);
+            InitializeGamesetData(result.Stack, param.applyTexturePacks);
         }
     }
 }
