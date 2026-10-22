@@ -54,8 +54,9 @@ namespace Engine
         {
             Instance = this;
             _minimizedWindowSize = nativeWindowSettings.ClientSize;
+            if (Context == null && Graphics.Headless.NoOpGraphicsBindings.IsSupported) Graphics.Headless.NoOpGraphicsBindings.Install();
 
-            GPUDebug.Initialize(true);
+            if (!Application.IsHeadless) GPUDebug.Initialize(true);
 
             _inputManager = InputManager.Instance;
             _inputManager.Initialize(this);
@@ -133,7 +134,7 @@ namespace Engine
         private void LogSystemReport()
         {
             bool gpu = !Application.IsHeadless;
-            var monitor = gpu ? Monitors.GetMonitorFromWindow(this) : null;
+            var monitor = !gpu ? null : CanPositionWindow ? Monitors.GetMonitorFromWindow(this) : Monitors.GetPrimaryMonitor();
             var report = new Diagnostics.SystemReport
             {
                 GameVersion = Application.Version,
@@ -405,6 +406,7 @@ namespace Engine
 
         public void SetVSync(bool enabled)
         {
+            if (Context == null) return;
             VSync = enabled ? VSyncMode.On : VSyncMode.Off;
             FrameLimiter.IsRunning = !enabled;
         }
@@ -416,7 +418,7 @@ namespace Engine
             if (CurrentWindowMode == WindowMode.Windowed)
             {
                 _savedWindowSize = ClientSize;
-                _savedWindowLocation = Location;
+                if (CanPositionWindow) _savedWindowLocation = Location;
             }
 
             switch (mode)
@@ -430,6 +432,12 @@ namespace Engine
                     WindowBorder = WindowBorder.Hidden;
                     WindowState = WindowState.Normal;
 
+                    if (!CanPositionWindow)
+                    {
+                        WindowState = WindowState.Maximized;
+                        break;
+                    }
+
                     var monitor = Monitors.GetMonitorFromWindow(this);
                     Location = monitor.ClientArea.Min;
                     ClientSize = monitor.ClientArea.Size;
@@ -442,7 +450,7 @@ namespace Engine
                     if (_savedWindowSize != Vector2i.Zero)
                     {
                         ClientSize = _savedWindowSize;
-                        Location = _savedWindowLocation;
+                        if (CanPositionWindow) Location = _savedWindowLocation;
                     }
                     else
                     {
@@ -488,8 +496,11 @@ namespace Engine
             drawList.AddText(position, 0xFF66E0FF, text);
         }
 
+        public static bool CanPositionWindow => Platform.WindowSystemRules.SupportsWindowPosition(Platform.WindowSystemBootstrap.Current);
+
         public void CenterWindow()
         {
+            if (!CanPositionWindow) return;
             var (monitorWidth, monitorHeight) = Monitors.GetMonitorFromWindow(this).WorkArea.Size;
             int windowWidth = Size.X;
             int windowHeight = Size.Y;
@@ -566,7 +577,7 @@ namespace Engine
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
+            if (!Application.IsHeadless) GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
             _minimizedWindowSize = ClientSize;
             _sceneRenderer?.Resize(SceneSize.X, SceneSize.Y);
             _processManager?.UpdateResolution(ClientSize);

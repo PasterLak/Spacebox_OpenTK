@@ -35,6 +35,7 @@ public static class Program
 
         if (!LaunchOptions.IsDedicated) Engine.Platform.GpuSelection.PreferDedicatedGpu();
 
+        var windowSystem = Engine.Platform.WindowSystemBootstrap.Initialize(LaunchOptions.WindowSystem, LaunchOptions.IsDedicated);
         var monitor = Monitors.GetPrimaryMonitor();
         var _audioManager = AudioDevice.Instance; // move!!!!
 
@@ -47,16 +48,17 @@ public static class Program
             // ClientSize = new Vector2i(monitor.HorizontalResolution, monitor.VerticalResolution),
             ClientSize = new Vector2i(1280, 720),
             Size =  new Vector2i(1280, 720),
-            Location = new Vector2i((int)(monitor.HorizontalResolution / 2f - (1280/2f)), (int)(monitor.VerticalResolution / 2f -(720 / 2f))),
+            Location = Engine.Platform.WindowSystemRules.SupportsWindowPosition(windowSystem) ? new Vector2i((int)(monitor.HorizontalResolution / 2f - (1280/2f)), (int)(monitor.VerticalResolution / 2f -(720 / 2f))) : null,
             Title = "Spacebox",
             APIVersion = new Version(3, 3),
+            API = windowSystem == Engine.Platform.WindowSystem.None ? ContextAPI.NoAPI : ContextAPI.OpenGL,
             // This is needed to run on macos
 
            
 
             Flags = ContextFlags.ForwardCompatible,
             StartVisible = !LaunchOptions.IsDedicated && !LaunchOptions.IsHidden,
-            Icon = LaunchOptions.IsDedicated ? null : Engine.Utils.AppIconLoader.CreateWindowIcon(WindowIconPath, Engine.Utils.AppIconLoader.WindowIconSizes),
+            Icon = LaunchOptions.IsDedicated || !Engine.Platform.WindowSystemRules.SupportsWindowIcon(windowSystem) ? null : Engine.Utils.AppIconLoader.CreateWindowIcon(WindowIconPath, Engine.Utils.AppIconLoader.WindowIconSizes),
         };
      
         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());

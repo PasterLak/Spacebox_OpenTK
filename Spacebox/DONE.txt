@@ -304,6 +304,8 @@ Fixes
 - unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
 - entering a sector while it was still loading in the background could drop its unsaved changes (mined-out asteroids came back)
 Engine
+- OpenTK 4.9.4 (GLFW 3.4); Linux picks the window system: native Wayland on Wayland desktops, X11 otherwise, each with the other as fallback, --window-system x11|wayland|auto or SPACEBOX_WINDOW_SYSTEM to force one; GLFW errors are logged instead of crashing
+- dedicated servers run without a window or GPU on every OS (Linux servers no longer need X11, Wayland or xvfb)
 - laptops with integrated and dedicated graphics run the game on the dedicated GPU (NVIDIA Optimus, Windows graphics preference, Linux PRIME offload)
 - the log starts with a system report: OS, .NET, CPU, cores, RAM, GPU with driver and OpenGL/GLSL version, monitor
 - shader tests: every game and engine shader is checked with the GLSL reference compiler (strict like AMD/Intel drivers) and a lint for removed core-profile names

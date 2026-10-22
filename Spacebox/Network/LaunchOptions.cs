@@ -12,11 +12,13 @@ public static class LaunchOptions
     public static string EditorGameSet { get; private set; }
     public static string EditorPanel { get; private set; }
     public static bool UiShowcase { get; private set; }
+    public static Engine.Platform.WindowSystem WindowSystem { get; private set; }
 
     public static bool HasConnectTarget => !string.IsNullOrEmpty(ConnectAddress);
 
     public static void Parse(string[] args)
     {
+        ParseWindowSystem(Environment.GetEnvironmentVariable("SPACEBOX_WINDOW_SYSTEM"));
         for (int i = 0; i < args.Length; i++)
         {
             string arg = args[i].ToLowerInvariant();
@@ -38,6 +40,10 @@ public static class LaunchOptions
                     ParseAddress(next);
                     i++;
                     break;
+                case "--window-system" when next != null:
+                    ParseWindowSystem(next);
+                    i++;
+                    break;
                 case "--name" when next != null:
                     PlayerName = next;
                     i++;
@@ -53,6 +59,13 @@ public static class LaunchOptions
                     break;
             }
         }
+    }
+
+    private static void ParseWindowSystem(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+        if (Engine.Platform.WindowSystemRules.TryParse(value, out var system)) WindowSystem = system;
+        else Engine.Debug.Warning($"[Window] Unknown window system '{value}', use x11, wayland or auto");
     }
 
     private static void ParseAddress(string value)

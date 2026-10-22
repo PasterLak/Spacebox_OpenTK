@@ -25,8 +25,11 @@ namespace Spacebox.GUI
             if (_isEnabled)
             {
 
-                GL.ClearColor(Color4.Black);
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                if (!Engine.Application.IsHeadless)
+                {
+                    GL.ClearColor(Color4.Black);
+                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                }
 
 
                 ImGui.Begin("Black Screen Overlay", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove);

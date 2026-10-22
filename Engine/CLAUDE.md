@@ -120,6 +120,7 @@ Before the window is created the game calls `Platform/GpuSelection.PreferDedicat
 
 ## Headless mode
 
+- Window system: `Core/Platform/WindowSystemBootstrap.Initialize(requested, headless)` must run before the first window or `Monitors` call; it sets a logging GLFW error callback (OpenTK's default throws through native frames and aborts the process) and picks the GLFW platform from `WindowSystemRules` (Linux: Wayland session → Wayland then X11, else X11 then Wayland; headless → null platform). Check `EngineWindow.CanPositionWindow` before reading or setting window positions (Wayland has none). With the null platform the window has no context (`ContextAPI.NoAPI`) and `Graphics/Headless/NoOpGraphicsBindings` makes every GL call return 0; code that reads GL limits must tolerate 0.
 - `Application.EnableHeadless()` (before the window is created; the game calls it for `--server`): `EngineWindow` skips rendering, post-processing, scene renderer, light/debug GPU init and `GlobalUniforms`; ImGui keeps a context and frames but draws nothing; `AudioDevice` opens no OpenAL device and `AudioClip`/`AudioSource`/`AudioListener` do nothing; `Texture2D` from files is a 1x1 CPU placeholder with `Handle` 0, other textures keep CPU pixels only; `Shader` does not compile; `MeshBuffer`/`Mesh`/`UniformBuffer`/`ParticleRenderer` create no GL objects; `TextureAtlas` registers images as 1x1 placeholders. New GPU or audio code must keep working with handle 0 / `Application.IsHeadless`.
 
 ## Which to use

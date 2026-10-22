@@ -8,11 +8,4 @@ else
     set -- dotnet Spacebox.dll --server "$@"
 fi
 
-if [ -z "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; then
-    if command -v xvfb-run >/dev/null 2>&1; then
-        exec xvfb-run -a "$@"
-    fi
-    echo "No display found. Install xvfb (xvfb-run) to run the server without a desktop." >&2
-fi
-
 exec "$@"

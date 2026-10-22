@@ -23,7 +23,8 @@ namespace Engine
 
         readonly Dictionary<string, (TextureUnit unit, Texture2D tex)> _slots = new();
         readonly Dictionary<string, object> _parameters = new();
-        readonly int _maxUnits = GL.GetInteger(GetPName.MaxCombinedTextureImageUnits);
+        const int GuaranteedTextureUnits = 16;
+        readonly int _maxUnits = Math.Max(GuaranteedTextureUnits, GL.GetInteger(GetPName.MaxCombinedTextureImageUnits));
 
 
 
