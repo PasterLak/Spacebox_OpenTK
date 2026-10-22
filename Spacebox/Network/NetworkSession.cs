@@ -242,6 +242,7 @@ public sealed class NetworkSession : IDisposable
         {
             world.Save(!GameSession.IsDedicated);
             SaveRemotePlayers();
+            Statistics.ServerStatisticsService.Save();
             _autoSave.Reset();
             Debug.Success($"[Server] {reason}: world '{World.WorldData.Info?.Name}' saved in {stopwatch.ElapsedMilliseconds} ms, {PlayerRegistry.All.Count} player(s) online");
             if (GameSession.HasLocalPlayer) Spacebox.Game.GUI.Chat.Write(reason == AutosaveReason ? "Game autosaved" : "Game saved", OpenTK.Mathematics.Color4.LightGreen);
@@ -462,6 +463,7 @@ public sealed class NetworkSession : IDisposable
         ServerRulesNetwork.SendTo(sender);
         player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, player.SkinColor, Vector3.Zero, Quaternion.Identity);
         PlayerListNetwork.MarkDirty();
+        Statistics.ServerStatisticsService.PlayerJoined(player.Name, PlayerRegistry.All.Count);
         ChatService.Broadcast($"{player.Name} joined the game", Color4.Yellow);
     }
 
@@ -516,6 +518,7 @@ public sealed class NetworkSession : IDisposable
             PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
 
         PlayerListNetwork.MarkDirty();
+        Statistics.ServerStatisticsService.PlayerLeft(player.JoinedAtUtc);
         ChatService.Broadcast($"{player.Name} left the game", Color4.Yellow);
     }
 

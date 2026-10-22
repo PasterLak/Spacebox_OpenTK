@@ -123,6 +123,26 @@ public sealed class ServerModule : IDashboardModule
         return error == null;
     }
 
+    private static object Statistics()
+    {
+        var statistics = Spacebox.Network.Statistics.ServerStatisticsService.Current;
+        if (statistics == null) return null;
+
+        var data = statistics.Data;
+        var now = DateTime.Now;
+        return new
+        {
+            today = statistics.PeakOn(now),
+            allTime = data.AllTimePeak,
+            allTimeAt = DateTime.TryParse(data.AllTimePeakAt, out var at) ? at.ToString("yyyy-MM-dd HH:mm") : "",
+            joins = data.TotalJoins,
+            uniquePlayers = statistics.UniquePlayers,
+            playTime = Spacebox.Network.Statistics.ServerStatisticsReport.Hours(data.PlayerSeconds),
+            runningTime = Spacebox.Network.Statistics.ServerStatisticsReport.Hours(data.UptimeSeconds),
+            days = statistics.RecentDays(now, 14).Select(day => new { day = day.Key, peak = day.Value })
+        };
+    }
+
     private static object Info(DashboardContext context)
     {
         var config = context.Config;
@@ -140,6 +160,7 @@ public sealed class ServerModule : IDashboardModule
             dashboardPort = config.GetDashboardPort(),
             players = PlayerRegistry.All.Count,
             maxPlayers = config.MaxPlayers,
+            statistics = Statistics(),
             lanDiscovery = config.LanDiscovery,
             autoSaveInterval = config.AutoSaveInterval,
             updateRate = config.UpdateRate,

@@ -65,6 +65,7 @@ public static class DedicatedServer
             return;
         }
 
+        Statistics.ServerStatisticsService.Start();
         Dashboard.DashboardService.Start(Config);
 
         Debug.Success($"[Server] Starting '{Config.ServerName}' with world '{world.Name}' on port {Config.Port}");

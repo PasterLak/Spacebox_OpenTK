@@ -61,6 +61,24 @@ public sealed class KickCommand : CommandBase, Engine.Commands.IArgumentSuggesti
     }
 }
 
+public sealed class StatsCommand : CommandBase
+{
+    public override string Name => "stats";
+    public override string Description => "Show server statistics: most players today and ever, joins, play time";
+
+    public override void Execute(string[] args)
+    {
+        var statistics = Statistics.ServerStatisticsService.Current;
+        if (statistics == null)
+        {
+            Debug.Log("Statistics are only kept on a dedicated server");
+            return;
+        }
+
+        foreach (var line in Statistics.ServerStatisticsReport.Lines(statistics, PlayerRegistry.All.Count, DateTime.Now)) Debug.Log(line);
+    }
+}
+
 public sealed class SaveCommand : CommandBase
 {
     public override string Name => "save";

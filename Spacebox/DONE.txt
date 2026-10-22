@@ -26,6 +26,7 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- server statistics: most players today and ever, players per day, joins, different players, play time, running time; stats command and dashboard panel
 - GameSet editor rebuilt on the new retained UI: every page (blocks, items, projectiles, recipes, disassembly, loot, mobs, generation with biome map, tutorials, sounds, atlases, all files) with property grid, 3D previews and summaries
 - GameSet editor tutorials: outline of chapters and steps, the editor shows only the selected step or chapter, add/move/duplicate/delete steps and chapters
 - Player/spawn_parameters.json: start items with their place (hand, hotbar slot, inventory, equipment), start health/power/oxygen (also on respawn), preferred spawn biome and distance from the center

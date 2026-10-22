@@ -9,6 +9,7 @@ public sealed class ConnectedPlayer
     public string SkinColor { get; init; }
     public NetworkObject PlayerObject { get; set; }
     public string LastPlayerJson { get; set; }
+    public DateTime JoinedAtUtc { get; init; } = DateTime.UtcNow;
 }
 
 public static class PlayerRegistry

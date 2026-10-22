@@ -215,6 +215,7 @@ async function refreshOverview() {
   const cpuTone = latest.cpu < 60 ? "good" : latest.cpu < 85 ? "warn" : "bad";
   $("#cards").replaceChildren(
     card("Players", `${info.players} / ${info.maxPlayers}`),
+    ...(info.statistics ? [card("Most today", String(info.statistics.today)), card("Most ever", String(info.statistics.allTime))] : []),
     card("Uptime", formatDuration(metrics.uptimeSeconds)),
     card("CPU", `${latest.cpu}%`, cpuTone),
     card("Memory", `${Math.round(latest.ramMb)} MB`),
@@ -233,11 +234,52 @@ async function refreshOverview() {
   ];
   $("#server-info").replaceChildren(...rows.map(([key, value]) => el("tr", {}, el("td", { text: key }), el("td", { text: String(value) }))));
 
+  renderStatistics(info.statistics);
+
   const history = metrics.history;
   drawChart($("#chart-cpu"), history.map(s => s.cpu), "#ffc428", 100);
   drawChart($("#chart-ram"), history.map(s => s.ramMb), "#6ed2e6");
   drawChart($("#chart-players"), history.map(s => s.players), "#6edc6e", Math.max(4, info.maxPlayers));
   drawChart($("#chart-tps"), history.map(s => s.tps), "#ff9b3d", Math.max(10, Math.ceil(info.targetTps * 1.2)));
+}
+
+function renderStatistics(statistics) {
+  const panel = $("#statistics-panel");
+  panel.classList.toggle("hidden", !statistics);
+  if (!statistics) return;
+
+  const rows = [
+    ["Most players today", statistics.today],
+    ["Most players ever", statistics.allTimeAt ? `${statistics.allTime} (${statistics.allTimeAt})` : statistics.allTime],
+    ["Joins", statistics.joins], ["Different players", statistics.uniquePlayers],
+    ["Time played by all players", statistics.playTime], ["Server running time", statistics.runningTime]
+  ];
+  $("#statistics-info").replaceChildren(...rows.map(([key, value]) => el("tr", {}, el("td", { text: key }), el("td", { text: String(value) }))));
+  drawBars($("#chart-days"), statistics.days.map(d => d.peak), statistics.days.map(d => d.day.slice(5)));
+}
+
+function drawBars(canvas, values, labels) {
+  const ratio = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+  const g = canvas.getContext("2d");
+  g.scale(ratio, ratio);
+  g.clearRect(0, 0, width, height);
+  const max = Math.max(1, ...values);
+  const slot = width / Math.max(1, values.length);
+  g.font = "10px system-ui";
+  g.textAlign = "center";
+  values.forEach((value, i) => {
+    const bar = (height - 30) * value / max;
+    const x = i * slot + slot * 0.15;
+    g.fillStyle = "#6edc6e";
+    g.fillRect(x, height - 16 - bar, slot * 0.7, bar);
+    g.fillStyle = "#c8ccd4";
+    if (value > 0) g.fillText(String(value), x + slot * 0.35, height - 20 - bar);
+    g.fillStyle = "#828791";
+    if (i % 2 === values.length % 2) g.fillText(labels[i], x + slot * 0.35, height - 3);
+  });
 }
 
 function drawChart(canvas, values, color, fixedMax) {

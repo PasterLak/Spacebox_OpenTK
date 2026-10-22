@@ -19,6 +19,7 @@ public static class ServerCommandCatalog
             new MuteCommand(true),
             new MuteCommand(false),
             new SaveCommand(),
+            new StatsCommand(),
             new StopCommand(),
             new RestartCommand(),
             new ServerGameModeCommand()
