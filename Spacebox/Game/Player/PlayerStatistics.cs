@@ -106,11 +106,16 @@ namespace Spacebox.Game.Player
             LastPlayedUtc = nowUtc;
         }
 
-        public void AddDistance(double meters, bool inShip)
+        public void AddDistance(double meters)
         {
             if (!double.IsFinite(meters) || meters <= 0) return;
             DistanceTraveled += meters;
-            if (inShip) DistanceInShips += meters;
+        }
+
+        public void AddShipDistance(double meters)
+        {
+            if (!double.IsFinite(meters) || meters <= 0) return;
+            DistanceInShips += meters;
         }
 
         public void RecordSpeed(float speed)

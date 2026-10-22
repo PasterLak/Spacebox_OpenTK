@@ -133,6 +133,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- "Fly 100 blocks with a ship" and Distance In Ships counted jetpack flying inside a ship; now only the ship's own movement counts (also through ship cameras)
 - flashlight beam drew a white screen on some graphics drivers (shader function named like a GLSL built-in)
 - missing white.png for jetpack, hit sparks, explosions, thrusters and cannon effects; shipped serverconfig.json now uses registration and Creative
 - ricocheted shots hit their own shooter (guns and ship cannons, also the own ship after a ricochet); death text "Hit by their own shot"

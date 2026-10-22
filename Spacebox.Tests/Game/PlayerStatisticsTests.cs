@@ -128,11 +128,13 @@ public class PlayerStatisticsTests
     {
         var stats = new PlayerStatistics();
 
-        stats.AddDistance(10.5, false);
-        stats.AddDistance(4.5, true);
-        stats.AddDistance(-3, false);
-        stats.AddDistance(double.NaN, false);
-        stats.AddDistance(double.PositiveInfinity, true);
+        stats.AddDistance(10.5);
+        stats.AddDistance(4.5);
+        stats.AddShipDistance(4.5);
+        stats.AddDistance(-3);
+        stats.AddDistance(double.NaN);
+        stats.AddShipDistance(double.PositiveInfinity);
+        stats.AddShipDistance(-1);
 
         Assert.Equal(15.0, stats.DistanceTraveled, 6);
         Assert.Equal(4.5, stats.DistanceInShips, 6);
@@ -317,7 +319,8 @@ public class PlayerStatisticsTests
     {
         var stats = new PlayerStatistics();
         stats.StartSession(Now);
-        stats.AddDistance(123.25, true);
+        stats.AddDistance(123.25);
+        stats.AddShipDistance(123.25);
         stats.RecordSpeed(33.5f);
         stats.RecordAsteroid(42);
         stats.RecordSector("1,2,3");

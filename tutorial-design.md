@@ -107,7 +107,7 @@ Multiplayer joiners never see the welcome screen. A new player without saved tut
 | `pilot` | `Flight?` | the player sits at a console (flight or weapon) |
 | `bind_ship_part` | `Count` | ship parts are bound |
 | `ship_camera` | — | the player views through a ship camera |
-| `ship_travel` | `Distance` | `DistanceInShips` grows |
+| `ship_travel` | `Distance` | `DistanceInShips` grows (distance the boarded ship moves, not the player inside it) |
 | `enter_gravity` | — | the player stands in a gravity field |
 | `wait` | `Seconds` | auto-continue (for pure "read me" steps) |
 | `all_of` / `any_of` | `Tasks: [...]` | composite (e.g. "mine aluminium **or** cobaltite") |

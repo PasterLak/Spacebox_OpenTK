@@ -13,6 +13,8 @@ public sealed class PlayerStatsTracker
 
     private readonly LocalAstronaut _player;
     private readonly DistanceTracker _distance = new DistanceTracker();
+    private readonly DistanceTracker _shipDistance = new DistanceTracker();
+    private SpaceEntity _trackedShip;
     private float _explorationTimer;
 
     public PlayerStatsTracker(LocalAstronaut player)
@@ -47,6 +49,7 @@ public sealed class PlayerStatsTracker
 
     private void TrackMovement(PlayerStatistics stats, float deltaTime)
     {
+        TrackShipTravel(stats, deltaTime);
         if (!CanTrackMovement())
         {
             _distance.Invalidate();
@@ -56,8 +59,28 @@ public sealed class PlayerStatsTracker
         double meters = _distance.Step(_player.Position, deltaTime);
         if (meters <= 0) return;
 
-        stats.AddDistance(meters, ShipPilot.IsPiloting || ShipRider.IsBoarded);
+        stats.AddDistance(meters);
         stats.RecordSpeed(_distance.LastSpeed);
+    }
+
+    private void TrackShipTravel(PlayerStatistics stats, float deltaTime)
+    {
+        var ship = ShipRider.BoardedEntity;
+        if (ship == null || ship.IsDisposed || !_player.IsAlive || _player.GameMode == GameMode.Spectator)
+        {
+            _trackedShip = null;
+            _shipDistance.Invalidate();
+            return;
+        }
+
+        if (!ReferenceEquals(ship, _trackedShip))
+        {
+            _trackedShip = ship;
+            _shipDistance.Reset(ship.PositionWorld);
+            return;
+        }
+
+        stats.AddShipDistance(_shipDistance.Step(ship.PositionWorld, deltaTime));
     }
 
     private void TrackExploration(PlayerStatistics stats)
