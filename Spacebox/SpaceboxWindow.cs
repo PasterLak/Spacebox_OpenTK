@@ -151,6 +151,7 @@ public class SpaceboxWindow : EngineWindow
         SceneManager.Register<LogoScene>();
         SceneManager.Register<ParticleSystemEditor>();
         SceneManager.Register<UiShowcaseScene>();
+        SceneManager.Register<ServerSleepScene>();
     }
 
     protected override void OnLoadImGui()

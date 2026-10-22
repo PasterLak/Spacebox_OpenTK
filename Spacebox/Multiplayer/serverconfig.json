@@ -16,7 +16,9 @@
   "MaxPlayers": 16,
   "GameMode": 1,
   "AutoSaveInterval": 300,
-  "UpdateRate": 30,
+  "UpdateRate": 60,
+  "IdleUpdateRate": 10,
+  "SleepAfterMinutes": 0,
   "FriendlyMobs": false,
   "Gameplay": {
     "Pvp": true,

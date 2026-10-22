@@ -102,7 +102,7 @@ public sealed class NetworkSession : IDisposable
             peer => NetworkManager.Instance.GetPeerAddress(peer), isReservedName: Admin.ServerAdmins.IsAdmin);
     }
 
-    private static Discovery.ServerAdvertisement CreateAdvertisement()
+    internal static Discovery.ServerAdvertisement CreateAdvertisement()
     {
         var config = Dedicated.DedicatedServer.Config;
         if (GameSession.IsDedicated && config != null)
@@ -181,8 +181,27 @@ public sealed class NetworkSession : IDisposable
         _playerDataFlush.Start(peers, () => network.SendToClients(new PlayerDataRequestMessage(), DeliveryMode.Reliable), completed);
     }
 
+    private Dedicated.ServerActivity _activity;
+    private bool _sleepRequested;
+
+    private void UpdateActivity()
+    {
+        var config = Dedicated.DedicatedServer.Config;
+        if (!GameSession.IsDedicated || config == null || _sleepRequested) return;
+
+        _activity ??= new Dedicated.ServerActivity(config.GetClampedUpdateRate(), config.IdleUpdateRate, config.SleepAfterMinutes);
+        _activity.Configure(config.GetClampedUpdateRate(), config.IdleUpdateRate, config.SleepAfterMinutes);
+        var state = _activity.Update(NetworkManager.Instance.Peers.Count, Time.Delta);
+        FrameLimiter.TargetFPS = _activity.TargetRate;
+
+        if (state != Dedicated.ServerActivityState.Sleep) return;
+        _sleepRequested = true;
+        EngineWindow._mainThreadActions.Enqueue(() => Dedicated.ServerSleep.Enter(config.SleepAfterMinutes));
+    }
+
     public void Update()
     {
+        UpdateActivity();
         if (_playerDataFlush.Update(Time.Delta))
             Debug.Warning("[Server] Some players did not send their latest data in time, saving the last known state");
 

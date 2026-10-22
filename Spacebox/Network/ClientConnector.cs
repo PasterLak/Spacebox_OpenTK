@@ -11,6 +11,13 @@ public static class ClientConnector
     private static Action<string> _onFailed;
     private static bool _isConnecting;
     private static bool _isDownloading;
+    private static string _address;
+    private static int _port;
+    private static int _wakeAttempts;
+    private static int _generation;
+
+    public const int MaxWakeAttempts = 15;
+    public const int WakeRetryMilliseconds = 4000;
 
     public static bool IsConnecting => _isConnecting;
 
@@ -24,7 +31,18 @@ public static class ClientConnector
 
         _onAccepted = onAccepted;
         _onFailed = onFailed;
+        _address = address;
+        _port = port;
+        _wakeAttempts = 0;
+        Open();
+    }
+
+    private static void Open()
+    {
+        string address = _address;
+        int port = _port;
         _isConnecting = true;
+        _generation++;
         Step($"Connecting to {address}:{port}");
 
         GameSession.BeginClient(address, port);
@@ -45,6 +63,7 @@ public static class ClientConnector
     public static void Cancel()
     {
         if (!_isConnecting) return;
+        _generation++;
 
         Unsubscribe();
         NetworkManager.Instance.Shutdown("Cancelled");
@@ -132,12 +151,48 @@ public static class ClientConnector
 
     private static void OnJoinRejected(int sender, JoinRejectedMessage message)
     {
+        if (message.Reason == Dedicated.ServerSleep.WakingReason && _wakeAttempts < MaxWakeAttempts)
+        {
+            RetryWhileWaking();
+            return;
+        }
+
         Fail(message.Reason);
         NetworkManager.Instance.Shutdown("Rejected");
     }
 
+    private static void RetryWhileWaking()
+    {
+        _wakeAttempts++;
+        Step(_wakeAttempts == 1 ? "The server is starting, please wait..." : $"Still starting, trying again ({_wakeAttempts}/{MaxWakeAttempts})");
+
+        var onAccepted = _onAccepted;
+        var onFailed = _onFailed;
+        int attempts = _wakeAttempts;
+        Unsubscribe();
+        NetworkManager.Instance.Shutdown("Waiting for the server");
+
+        _onAccepted = onAccepted;
+        _onFailed = onFailed;
+        _wakeAttempts = attempts;
+        _isConnecting = true;
+        int generation = ++_generation;
+        Task.Delay(WakeRetryMilliseconds).ContinueWith(_ => EngineWindow._mainThreadActions.Enqueue(() =>
+        {
+            if (generation != _generation || !_isConnecting) return;
+            _isConnecting = false;
+            Open();
+        }));
+    }
+
     private static void OnConnectionLost(string reason)
     {
+        if (reason == Dedicated.ServerSleep.WakingReason && _wakeAttempts < MaxWakeAttempts)
+        {
+            RetryWhileWaking();
+            return;
+        }
+
         Fail(DisconnectReasons.Describe(reason));
     }
 

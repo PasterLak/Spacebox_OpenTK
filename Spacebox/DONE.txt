@@ -333,6 +333,8 @@ Fixes
 - anti-cheat: shots need the weapon in the server's item record, a living shooter and ammo; chat is rate limited; oversized client messages are dropped; skin colours are checked
 - server: admin names can only be registered from the server's local network
 - anti-cheat: pushing mobs and spacers needs the player nearby; ship aim values are checked; block repairs are rate limited
+- server: 60 updates per second by default, 10 while nobody is online (IdleUpdateRate)
+- server: optional sleep (SleepAfterMinutes): an empty server unloads its world and keeps the port open, the first join wakes it and the client joins by itself
 Engine
 - OpenTK 4.9.4 (GLFW 3.4); Linux picks the window system: native Wayland on Wayland desktops, X11 otherwise, each with the other as fallback, --window-system x11|wayland|auto or SPACEBOX_WINDOW_SYSTEM to force one; GLFW errors are logged instead of crashing
 - dedicated servers run without a window or GPU on every OS (Linux servers no longer need X11, Wayland or xvfb)

@@ -26,6 +26,8 @@ public sealed class ServerConfig
     public byte GameMode { get; set; } = (byte)Spacebox.Game.Player.GameModes.GameMode.Creative;
     public float AutoSaveInterval { get; set; } = 300f;
     public int UpdateRate { get; set; } = DefaultUpdateRate;
+    public int IdleUpdateRate { get; set; } = 10;
+    public float SleepAfterMinutes { get; set; } = 0f;
     public bool FriendlyMobs { get; set; } = false;
     public Spacebox.Game.Rules.ServerRules Gameplay { get; set; } = new Spacebox.Game.Rules.ServerRules();
     public Spacebox.Game.Protection.ClaimSettings Claims { get; set; } = new Spacebox.Game.Protection.ClaimSettings();
@@ -47,7 +49,7 @@ public sealed class ServerConfig
 
     public int GetDashboardPort() => DashboardPort > 0 ? DashboardPort : Port;
 
-    public const int DefaultUpdateRate = 30;
+    public const int DefaultUpdateRate = 60;
     public const int MinUpdateRate = 10;
     public const int MaxUpdateRate = 240;
 
