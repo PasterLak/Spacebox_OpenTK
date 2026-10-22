@@ -46,6 +46,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private readonly PointOctree<SpaceEntity> sectorOctree;
     private readonly PointOctree<NotGeneratedEntity> octreeNotGenerated;
     private HashSet<long> loadingEntities = new HashSet<long>();
+    private readonly Dictionary<long, int> _failedEntityLoads = new Dictionary<long, int>();
+    private const int MaxEntityLoadAttempts = 3;
     private readonly List<NotGeneratedEntity> _streamingNearby = new List<NotGeneratedEntity>();
     private readonly List<NotGeneratedEntity> _observerNearby = new List<NotGeneratedEntity>();
     private readonly List<SpaceEntity> _visitors = new List<SpaceEntity>();
@@ -139,7 +141,11 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             catch (Exception ex)
             {
                 Debug.Error($"[Sector] Async load failed for entity {data.Id}: {ex.Message}");
-                MainThreadDispatcher.Instance.Enqueue(() => loadingEntities.Remove(data.Id));
+                MainThreadDispatcher.Instance.Enqueue(() =>
+                {
+                    loadingEntities.Remove(data.Id);
+                    _failedEntityLoads[data.Id] = _failedEntityLoads.GetValueOrDefault(data.Id) + 1;
+                });
             }
         }, WorkerPoolManager.Priority.High);
     }
@@ -537,6 +543,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private void GenerateAsteroidFromData(NotGeneratedEntity data)
     {
         if (loadingEntities.Contains(data.Id)) return;
+        if (_failedEntityLoads.GetValueOrDefault(data.Id) >= MaxEntityLoadAttempts) return;
 
         if (Spacebox.Network.GameSession.IsRemoteClient)
         {
