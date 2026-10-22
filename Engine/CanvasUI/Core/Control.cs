@@ -34,6 +34,12 @@ public class Control : CanvasItem
     public bool ClipContents { get; set; }
     public string TooltipText { get; set; } = "";
     public bool IsHovered { get; internal set; }
+    public FocusMode FocusMode { get; set; } = FocusMode.None;
+    public bool HasFocus => Root != null && Root.FocusOwner == this;
+    public virtual bool CanTakeFocus => true;
+
+    public event Action<Control> FocusEntered;
+    public event Action<Control> FocusExited;
     public bool IsMouseDown { get; internal set; }
 
     public event Action<Control> MouseEntered;
@@ -281,6 +287,43 @@ public class Control : CanvasItem
     protected internal virtual bool OnMouseUp(Vector2 localPosition, MouseButton button, bool inside) => false;
 
     protected internal virtual bool OnScroll(Vector2 localPosition, float delta) => false;
+
+    protected internal virtual void OnMouseMove(Vector2 localPosition, bool pressed)
+    {
+    }
+
+    protected internal virtual bool OnKeyPress(KeyPress press) => false;
+
+    protected internal virtual void OnTextInput(string text)
+    {
+    }
+
+    protected virtual void OnFocusEntered()
+    {
+    }
+
+    protected virtual void OnFocusExited()
+    {
+    }
+
+    public void GrabFocus() => Root?.SetFocus(this);
+
+    public void ReleaseFocus()
+    {
+        if (HasFocus) Root.ReleaseFocus();
+    }
+
+    internal void NotifyFocusEntered()
+    {
+        OnFocusEntered();
+        FocusEntered?.Invoke(this);
+    }
+
+    internal void NotifyFocusExited()
+    {
+        OnFocusExited();
+        FocusExited?.Invoke(this);
+    }
 
     internal void ApplyRect(Rect2 rect)
     {

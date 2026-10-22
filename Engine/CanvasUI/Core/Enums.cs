@@ -65,3 +65,10 @@ public enum StretchMode
     KeepAspect,
     Expand
 }
+
+public enum FocusMode
+{
+    None,
+    Click,
+    All
+}

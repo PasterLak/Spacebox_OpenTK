@@ -25,6 +25,8 @@ public abstract class CanvasItem
         }
     }
 
+    internal void SetVisibleSilently(bool visible) => _visible = visible;
+
     public bool IsVisibleInTree
     {
         get

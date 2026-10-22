@@ -13,6 +13,7 @@ namespace Engine
         private static GameWindow _gameWindow;
         private static KeyboardState _lastState;
         public static KeyboardState Keyboard => _gameWindow.KeyboardState;
+        public static TextInputBuffer Text { get; } = new TextInputBuffer();
         private static MouseState MouseState => _gameWindow.MouseState;
 
         private static Vector2 _delta = Vector2.Zero;
@@ -49,6 +50,12 @@ namespace Engine
 
         public static void Update()
         {
+            var keyboard = _gameWindow.KeyboardState;
+            Text.BeginFrame(keyboard.IsKeyPressed,
+                keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift),
+                keyboard.IsKeyDown(Keys.LeftControl) || keyboard.IsKeyDown(Keys.RightControl),
+                keyboard.IsKeyDown(Keys.LeftAlt) || keyboard.IsKeyDown(Keys.RightAlt));
+
             if (_ignoreDeltaFrames > 0)
             {
                 _delta = Vector2.Zero;

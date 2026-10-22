@@ -91,7 +91,12 @@ public static class InputInjector
         if (_chars.Count > 0)
         {
             var io = ImGui.GetIO();
-            while (_chars.Count > 0) io.AddInputCharacter(_chars.Dequeue());
+            while (_chars.Count > 0)
+            {
+                char c = _chars.Dequeue();
+                io.AddInputCharacter(c);
+                Input.Text.AddChar(c);
+            }
         }
     }
 

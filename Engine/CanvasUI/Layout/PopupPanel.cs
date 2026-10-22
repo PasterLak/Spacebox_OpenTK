@@ -12,6 +12,17 @@ public class PopupPanel : PanelContainer
     public PopupSide PreferredSide { get => _side; set { if (_side == value) return; _side = value; QueueLayout(); } }
     public float Gap { get => _gap; set { if (_gap == value) return; _gap = value; QueueLayout(); } }
     public bool StayInSafeArea { get; set; } = true;
+    public bool AutoHide { get; set; }
+    public Control Owner { get; set; }
+
+    public event Action<PopupPanel> Hidden;
+
+    public void Hide()
+    {
+        if (!Visible) return;
+        Visible = false;
+        Hidden?.Invoke(this);
+    }
 
     public void Popup(Rect2 anchor, PopupSide side)
     {

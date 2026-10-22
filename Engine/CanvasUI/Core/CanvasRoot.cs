@@ -11,9 +11,40 @@ public struct PointerState
     public float Scroll;
 }
 
+public readonly struct KeyboardFrame
+{
+    public static readonly KeyboardFrame Empty = new KeyboardFrame(Array.Empty<KeyPress>(), "");
+
+    public KeyboardFrame(IReadOnlyList<KeyPress> keys, string text)
+    {
+        Keys = keys ?? Array.Empty<KeyPress>();
+        Text = text ?? "";
+    }
+
+    public IReadOnlyList<KeyPress> Keys { get; }
+    public string Text { get; }
+}
+
+public interface ICanvasClipboard
+{
+    string GetText();
+    void SetText(string text);
+}
+
+public sealed class MemoryClipboard : ICanvasClipboard
+{
+    private string _text = "";
+
+    public string GetText() => _text;
+
+    public void SetText(string text) => _text = text ?? "";
+}
+
 public sealed class CanvasRoot
 {
     private const float TooltipDelay = 0.45f;
+    private const float DoubleClickTime = 0.35f;
+    private const float DoubleClickDistance = 4f;
 
     private readonly Control _content = new Control { Name = "Root", MouseFilter = MouseFilter.Ignore };
     private readonly Dictionary<UiLayer, UiLayerRoot> _layers = new Dictionary<UiLayer, UiLayerRoot>();
@@ -27,6 +58,10 @@ public sealed class CanvasRoot
     private Control _pressedLeft;
     private Control _pressedRight;
     private float _hoverTime;
+    private float _time;
+    private float _lastClickTime = -10f;
+    private Vector2 _lastClickPosition;
+    private Control _focus;
 
     public StretchSettings Stretch { get; } = new StretchSettings();
     public Vector2 VirtualSize { get => Stretch.VirtualSize; set => Stretch.VirtualSize = value; }
@@ -42,6 +77,11 @@ public sealed class CanvasRoot
     public Control Hovered => _hovered;
     public Vector2 PointerPosition { get; private set; }
     public bool WantsPointer => _hovered != null || _pressedLeft != null || _pressedRight != null;
+    public bool WantsKeyboard => _focus != null;
+    public Control FocusOwner => _focus;
+    public int ClickCount { get; private set; }
+    public ICanvasClipboard Clipboard { get; set; } = new MemoryClipboard();
+    public event Action<KeyPress> UnhandledKeyPress;
     public bool IsLayoutDirty => _layoutDirty;
     public PopupPanel TooltipPanel => _tooltip.Panel;
     public string TooltipText => _hovered != null && _hoverTime >= TooltipDelay && !string.IsNullOrEmpty(_hovered.TooltipText) ? _hovered.TooltipText : null;
@@ -101,17 +141,101 @@ public sealed class CanvasRoot
 
     public void Update(float deltaTime, PointerState pointer)
     {
+        Update(deltaTime, pointer, KeyboardFrame.Empty);
+    }
+
+    public void Update(float deltaTime, PointerState pointer, KeyboardFrame keyboard)
+    {
+        _time += deltaTime;
         if (_layoutDirty) Layout();
         _content.ProcessTree(deltaTime);
         if (_layoutDirty) Layout();
 
+        var previousPosition = PointerPosition;
         PointerPosition = ScreenToCanvas(pointer.Position);
         UpdateHover(deltaTime);
+        if (PointerPosition != previousPosition) SendMouseMove();
         HandleButton(pointer.LeftDown, _previous.LeftDown, MouseButton.Left, ref _pressedLeft);
         HandleButton(pointer.RightDown, _previous.RightDown, MouseButton.Right, ref _pressedRight);
         if (pointer.Scroll != 0f) BubbleScroll(_hovered, pointer.Scroll);
         _previous = pointer;
+        HandleKeyboard(keyboard);
         _tooltip.Update(this, TooltipText, PointerPosition);
+    }
+
+    public void SetFocus(Control control)
+    {
+        if (control != null && (control.Root != this || control.FocusMode == FocusMode.None)) control = null;
+        if (_focus == control) return;
+
+        var previous = _focus;
+        _focus = control;
+        previous?.NotifyFocusExited();
+        _focus?.NotifyFocusEntered();
+    }
+
+    public void ReleaseFocus() => SetFocus(null);
+
+    public bool FocusNext(bool backwards)
+    {
+        var focusable = new List<Control>();
+        CollectFocusable(_content, focusable);
+        if (focusable.Count == 0) return false;
+
+        int index = _focus == null ? -1 : focusable.IndexOf(_focus);
+        int next = backwards ? (index <= 0 ? focusable.Count - 1 : index - 1) : (index + 1) % focusable.Count;
+        SetFocus(focusable[next]);
+        return true;
+    }
+
+    private static void CollectFocusable(CanvasItem item, List<Control> result)
+    {
+        if (!item.Visible) return;
+        if (item is Control control && control.FocusMode == FocusMode.All && control.CanTakeFocus) result.Add(control);
+        var children = item.Children;
+        for (int i = 0; i < children.Count; i++) CollectFocusable(children[i], result);
+    }
+
+    private void HandleKeyboard(KeyboardFrame keyboard)
+    {
+        if (_focus != null && (_focus.Root != this || !_focus.IsVisibleInTree)) SetFocus(null);
+
+        var keys = keyboard.Keys;
+        for (int i = 0; i < keys.Count; i++)
+        {
+            var press = keys[i];
+            if (BubbleKey(_focus, press)) continue;
+            if (press.Key == Keys.Tab && _focus != null && FocusNext(press.Shift)) continue;
+            UnhandledKeyPress?.Invoke(press);
+        }
+
+        if (keyboard.Text.Length > 0) _focus?.OnTextInput(keyboard.Text);
+    }
+
+    private static bool BubbleKey(Control start, KeyPress press)
+    {
+        for (CanvasItem item = start; item != null; item = item.Parent)
+            if (item is Control control && control.OnKeyPress(press)) return true;
+        return false;
+    }
+
+    private void SendMouseMove()
+    {
+        var target = _pressedLeft ?? _hovered;
+        target?.OnMouseMove(PointerPosition - target.Rect.Position, _pressedLeft != null);
+    }
+
+    private void UpdateFocusOnPress(Control hovered)
+    {
+        for (CanvasItem item = hovered; item != null; item = item.Parent)
+        {
+            if (item is Control control && control.FocusMode != FocusMode.None && control.CanTakeFocus)
+            {
+                SetFocus(control);
+                return;
+            }
+        }
+        SetFocus(null);
     }
 
     public void Draw(ICanvasRenderer renderer)
@@ -184,6 +308,9 @@ public sealed class CanvasRoot
     {
         if (down && !wasDown)
         {
+            if (button == MouseButton.Left) CountClick();
+            HideAutoPopups(_hovered);
+            UpdateFocusOnPress(_hovered);
             pressed = Bubble(_hovered, c => c.OnMouseDown(PointerPosition - c.Rect.Position, button));
             if (pressed != null) pressed.IsMouseDown = true;
             _hoverTime = 0f;
@@ -195,6 +322,34 @@ public sealed class CanvasRoot
             target.IsMouseDown = false;
             target.OnMouseUp(PointerPosition - target.Rect.Position, button, target.HasPoint(PointerPosition) && IsInsideClip(target));
         }
+    }
+
+    private void HideAutoPopups(Control target)
+    {
+        if (!_layers.TryGetValue(UiLayer.Popup, out var layer)) return;
+
+        var children = layer.Children;
+        for (int i = children.Count - 1; i >= 0; i--)
+        {
+            if (children[i] is not PopupPanel { AutoHide: true, Visible: true } popup) continue;
+            if (IsInside(target, popup) || (popup.Owner != null && IsInside(target, popup.Owner))) continue;
+            popup.Hide();
+        }
+    }
+
+    private static bool IsInside(CanvasItem item, CanvasItem ancestor)
+    {
+        for (var current = item; current != null; current = current.Parent)
+            if (current == ancestor) return true;
+        return false;
+    }
+
+    private void CountClick()
+    {
+        bool repeat = _time - _lastClickTime <= DoubleClickTime && (PointerPosition - _lastClickPosition).Length <= DoubleClickDistance;
+        ClickCount = repeat ? ClickCount + 1 : 1;
+        _lastClickTime = _time;
+        _lastClickPosition = PointerPosition;
     }
 
     private bool IsInsideClip(Control control)

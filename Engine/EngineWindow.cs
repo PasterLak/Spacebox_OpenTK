@@ -529,6 +529,13 @@ namespace Engine
         {
             base.OnTextInput(e);
             _controller.PressChar((char)e.Unicode);
+            Input.Text.AddText(e.AsString);
+        }
+
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            Input.Text.AddKey(new KeyPress(e.Key, e.Shift, e.Control, e.Alt, e.IsRepeat));
         }
 
         protected override void OnResize(ResizeEventArgs e)

@@ -27,7 +27,28 @@ public sealed class CanvasLayer : IDisposable
     public CanvasLayer(string name = "Canvas")
     {
         Name = name;
+        Root.Clipboard = new WindowClipboard();
         _active.Add(this);
+    }
+
+    private sealed class WindowClipboard : ICanvasClipboard
+    {
+        public string GetText()
+        {
+            try
+            {
+                return EngineWindow.Instance?.ClipboardString ?? "";
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public void SetText(string text)
+        {
+            if (EngineWindow.Instance != null) EngineWindow.Instance.ClipboardString = text ?? "";
+        }
     }
 
     public LayoutReport Validate()
@@ -51,7 +72,8 @@ public sealed class CanvasLayer : IDisposable
                 Scroll = Input.Mouse.ScrollDelta.Y
             }
             : default;
-        Root.Update(deltaTime, pointer);
+        var keyboard = InputEnabled ? new KeyboardFrame(Input.Text.FrameKeys, Input.Text.FrameText) : KeyboardFrame.Empty;
+        Root.Update(deltaTime, pointer, keyboard);
 
         if (!ShowLayoutIssues) return;
         _validationTimer -= deltaTime;
