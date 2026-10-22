@@ -42,9 +42,9 @@ public sealed class GameSetAssetIndex
         AssetFolderScanner.Overlay(BlockEmissions, blockEmissions);
         AssetFolderScanner.Overlay(ItemEmissions, itemEmissions);
 
-        var sounds = AssetFolderScanner.ScanByExtension(layer.PathOf(GameSetFormat.SoundsFolder), GameSetFormat.SoundExtensions, null);
-        AssetFolderScanner.Fill(sounds, AssetFolderScanner.ScanByExtension(blocks, GameSetFormat.SoundExtensions, null));
-        AssetFolderScanner.Fill(sounds, AssetFolderScanner.ScanByExtension(items, GameSetFormat.SoundExtensions, null));
+        var sounds = AssetFolderScanner.ScanByExtension(layer.PathOf(GameSetFormat.SoundsFolder), GameSetFormat.SoundExtensions, null, true);
+        AssetFolderScanner.Fill(sounds, AssetFolderScanner.ScanByExtension(blocks, GameSetFormat.SoundExtensions, null, true));
+        AssetFolderScanner.Fill(sounds, AssetFolderScanner.ScanByExtension(items, GameSetFormat.SoundExtensions, null, true));
         AssetFolderScanner.Overlay(Sounds, sounds);
     }
 

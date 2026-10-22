@@ -35,6 +35,18 @@ public sealed class GameSetAssetIndexTests : IDisposable
     }
 
     [Fact]
+    public void SoundNamesKeepTheirCase()
+    {
+        _sets.Write("Base/Sounds/blockPlaceHeavy.ogg", "a");
+        _sets.Write("Base/Blocks/lamp/lampClick.wav", "a");
+
+        var index = GameSetAssetIndex.Build(new[] { Layer("Base") });
+
+        Assert.Contains("blockPlaceHeavy", index.Sounds.Keys);
+        Assert.Contains("lampClick", index.Sounds.Keys);
+    }
+
+    [Fact]
     public void EntryEmissionsStayInTheirAtlasAndSharedEmissionsGoToBoth()
     {
         _sets.Write("Base/Blocks/furnace/furnace.png", "a");

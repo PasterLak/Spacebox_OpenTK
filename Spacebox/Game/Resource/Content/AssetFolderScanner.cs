@@ -2,7 +2,7 @@ namespace Spacebox.Game.Resource.Content;
 
 public static class AssetFolderScanner
 {
-    public static Dictionary<string, string> Scan(string root, string[] extensions, Func<string, bool> include, bool lastWins)
+    public static Dictionary<string, string> Scan(string root, string[] extensions, Func<string, bool> include, bool lastWins, bool keepCase = false)
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         if (string.IsNullOrEmpty(root) || !Directory.Exists(root)) return result;
@@ -16,18 +16,18 @@ public static class AssetFolderScanner
             if (GameSetFormat.IsIgnoredPath(root, file)) continue;
             if (include != null && !include(file)) continue;
 
-            string name = NameOf(file);
+            string name = keepCase ? Path.GetFileNameWithoutExtension(file) : NameOf(file);
             if (lastWins || !result.ContainsKey(name)) result[name] = file;
         }
 
         return result;
     }
 
-    public static Dictionary<string, string> ScanByExtension(string root, string[] extensions, Func<string, bool> include)
+    public static Dictionary<string, string> ScanByExtension(string root, string[] extensions, Func<string, bool> include, bool keepCase = false)
     {
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var extension in extensions)
-            Fill(result, Scan(root, new[] { extension }, include, false));
+            Fill(result, Scan(root, new[] { extension }, include, false, keepCase));
         return result;
     }
 
