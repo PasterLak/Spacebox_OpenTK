@@ -22,18 +22,7 @@ public class WorldInfoSaver
             if (!File.Exists(worldJsonPath))
                 continue;
 
-            WorldInfo? worldInfo;
-            try
-            {
-                worldInfo = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldJsonPath));
-            }
-            catch (Exception ex)
-            {
-                Debug.Warning($"Skipped world with an unreadable world.json: {worldFolder} ({ex.Message})");
-                continue;
-            }
-
-            if (worldInfo == null)
+            if (!TryReadWorldInfo(worldJsonPath, out var worldInfo))
                 continue;
 
             if (string.IsNullOrEmpty(worldInfo.FolderName))
@@ -74,6 +63,21 @@ public class WorldInfoSaver
                 WorldInfo.CreatePreviewFromPixels(worldPreview2.Value);
             }
         }
+    }
+
+    public static bool TryReadWorldInfo(string worldJsonPath, out WorldInfo worldInfo)
+    {
+        worldInfo = null;
+        try
+        {
+            worldInfo = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldJsonPath));
+        }
+        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
+        {
+            Debug.Warning($"[Worlds] Skipping unreadable world file {worldJsonPath}: {ex.Message}");
+        }
+
+        return worldInfo != null;
     }
 
     public static void Save(WorldInfo worldInfo)

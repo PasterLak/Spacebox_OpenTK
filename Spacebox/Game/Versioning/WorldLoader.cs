@@ -26,18 +26,7 @@ public static class WorldLoader
                 string worldJsonPath = Path.Combine(worldFolder, "world.json");
                 if (File.Exists(worldJsonPath))
                 {
-                    WorldInfo worldInfo;
-                    try
-                    {
-                        worldInfo = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldJsonPath));
-                    }
-                    catch (JsonException ex)
-                    {
-                        Debug.Warning($"Skipped world with an unreadable world.json: {worldFolder} ({ex.Message})");
-                        continue;
-                    }
-
-                    if (worldInfo != null && string.Equals(worldInfo.Name, worldName, StringComparison.OrdinalIgnoreCase))
+                    if (WorldInfoSaver.TryReadWorldInfo(worldJsonPath, out var worldInfo) && string.Equals(worldInfo.Name, worldName, StringComparison.OrdinalIgnoreCase))
                     {
                         LoadedWorld loadedWorld = new LoadedWorld
                         {

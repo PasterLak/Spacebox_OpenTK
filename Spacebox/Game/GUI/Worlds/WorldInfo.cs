@@ -47,7 +47,7 @@ public class WorldInfo
         }
         catch { }
 
-        info.pixeldata = loadTask.Result;
+        info.pixeldata = loadTask.IsCompletedSuccessfully ? loadTask.Result : null;
 
     }
 
