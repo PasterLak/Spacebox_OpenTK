@@ -131,6 +131,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if (!Application.IsHeadless) _flashlightBeams = new Spacebox.Game.Rendering.FlashlightBeamRenderer();
 
         Debug.RegisterCommand(new DebugTexturesCommand());
+        Debug.RegisterCommand(new Spacebox.Game.Commands.BackupCommand());
         Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer));
         Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer, "teleport"));
         Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer, "tpp"));

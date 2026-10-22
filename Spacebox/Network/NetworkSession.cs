@@ -278,8 +278,35 @@ public sealed class NetworkSession : IDisposable
         if (!NetworkManager.Instance.IsServer || GameSession.IsRemoteClient) return;
         if (Spacebox.Game.GUI.WorldLoadingScreen.IsActive) return;
 
+        if (Spacebox.Game.Backups.WorldBackupService.IsRunning) return;
+
         float interval = GameSession.IsDedicated ? Dedicated.DedicatedServer.Config?.AutoSaveInterval ?? HostAutoSaveInterval : Spacebox.Game.Settings.Gameplay.AutosaveIntervalSeconds;
         if (_autoSave.Tick(Time.Delta, interval)) SaveWorld(AutosaveReason);
+        UpdateBackups();
+    }
+
+    private float _backupTimer;
+    private bool _playedSinceBackup;
+
+    private void UpdateBackups()
+    {
+        var settings = Dedicated.DedicatedServer.Config?.Backups;
+        if (!GameSession.IsDedicated || settings == null || !settings.Enabled || World.WorldData == null) return;
+
+        if (NetworkManager.Instance.Peers.Count > 0) _playedSinceBackup = true;
+        _backupTimer += Time.Delta;
+        if (_backupTimer < settings.IntervalSeconds) return;
+
+        _backupTimer = 0f;
+        if (!_playedSinceBackup) return;
+        _playedSinceBackup = false;
+
+        SaveWorld("Backup");
+        Spacebox.Game.Backups.WorldBackupService.TryStart(World.WorldData.WorldFolderPath, Spacebox.Game.Backups.WorldBackupService.AutoLabel, settings.KeepLast, (path, error) =>
+        {
+            if (error == null) Debug.Success($"[Backup] Automatic backup saved: {Spacebox.Game.Backups.WorldBackupService.Describe(path)}");
+            else Debug.Error($"[Backup] Automatic backup failed: {error}");
+        });
     }
 
     public void SaveRemotePlayers()

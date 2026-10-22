@@ -31,6 +31,7 @@ public sealed class ServerConfig
     public bool FriendlyMobs { get; set; } = false;
     public Spacebox.Game.Rules.ServerRules Gameplay { get; set; } = new Spacebox.Game.Rules.ServerRules();
     public Spacebox.Game.Protection.ClaimSettings Claims { get; set; } = new Spacebox.Game.Protection.ClaimSettings();
+    public ServerBackupSettings Backups { get; set; } = new ServerBackupSettings();
     public bool DashboardEnabled { get; set; } = true;
     public int DashboardPort { get; set; } = 0;
     public string DashboardCertificateFile { get; set; } = "";

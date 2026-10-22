@@ -26,6 +26,7 @@ public static class ServerRestart
             try
             {
                 Save("Stop");
+                BackupOnStop();
                 NetworkSession.Current?.Dispose();
                 Application.Quit();
             }
@@ -49,6 +50,23 @@ public static class ServerRestart
             DedicatedServer.Relaunch();
         });
         return true;
+    }
+
+    private static void BackupOnStop()
+    {
+        var settings = DedicatedServer.Config?.Backups;
+        string folder = World.WorldData?.WorldFolderPath;
+        if (settings == null || !settings.Enabled || !settings.OnStop || string.IsNullOrEmpty(folder)) return;
+
+        try
+        {
+            string path = Spacebox.Game.Backups.WorldBackupService.CreateNow(folder, Spacebox.Game.Backups.WorldBackupService.StopLabel, settings.KeepLast);
+            Debug.Success($"[Backup] Backup on stop saved: {Spacebox.Game.Backups.WorldBackupService.Describe(path)}");
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[Backup] Backup on stop failed: {ex.Message}");
+        }
     }
 
     private static void FlushPlayersThen(Action action)

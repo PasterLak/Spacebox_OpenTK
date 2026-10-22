@@ -29,6 +29,12 @@
     "KeepInventory": true,
     "DeathDropMinutes": 10
   },
+  "Backups": {
+    "Enabled": true,
+    "IntervalMinutes": 360,
+    "KeepLast": 10,
+    "OnStop": true
+  },
   "Claims": {
     "Enabled": true,
     "Radius": 12,
