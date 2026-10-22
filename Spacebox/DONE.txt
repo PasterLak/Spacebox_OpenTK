@@ -230,6 +230,7 @@ Fixes
 - an unreadable entity file was reloaded and logged as an error every frame; it is now tried 3 times per sector load
 - saves (entities, sectors, player, world.json, tags, drops) are written to a temp file and moved into place, so a crash while saving no longer truncates them
 - deleted waypoints came back after reload when only unnamed static tags were left
+- unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

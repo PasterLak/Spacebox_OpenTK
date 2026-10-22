@@ -984,6 +984,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                     !WorldObservers.IsNearRemote(worldBounds.Center, Settings.ENTITY_UNLOAD_DISTANCE))
                 {
                     UnloadEntity(entity);
+                    i--;
+                    continue;
                 }
 
                 entity.RenderEffect(distSqr);
