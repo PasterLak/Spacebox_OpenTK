@@ -403,7 +403,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _finishedGifts.Clear();
         _gifts.TakeExpired(Time.Total, _finishedGifts);
         foreach (var gift in _finishedGifts)
-            Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, true, "", 0);
+            Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, false, "The player did not answer", RefundGift(gift.GiverPeer, gift.ItemId));
     }
 
     public static void ForgetGiftsOf(int peer)

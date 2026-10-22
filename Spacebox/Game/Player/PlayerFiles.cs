@@ -13,12 +13,24 @@ public static class PlayerFiles
 
     public static string PlayerPath(string worldFolder, string playerName)
     {
-        return Path.Combine(worldFolder, WorldFileLayout.PlayersFolder, SafeName(playerName) + WorldFileLayout.PlayerExtension);
+        return MatchingCase(Path.Combine(worldFolder, WorldFileLayout.PlayersFolder), SafeName(playerName) + WorldFileLayout.PlayerExtension);
     }
 
     public static string LegacyPlayerPath(string worldFolder, string playerName)
     {
-        return Path.Combine(worldFolder, WorldFileLayout.LegacyPlayersFolder, SafeName(playerName) + ".json");
+        return MatchingCase(Path.Combine(worldFolder, WorldFileLayout.LegacyPlayersFolder), SafeName(playerName) + ".json");
+    }
+
+    public static string MatchingCase(string folder, string fileName)
+    {
+        string path = Path.Combine(folder, fileName);
+        if (OperatingSystem.IsWindows() || File.Exists(path) || !Directory.Exists(folder)) return path;
+
+        foreach (var file in Directory.EnumerateFiles(folder))
+        {
+            if (string.Equals(Path.GetFileName(file), fileName, StringComparison.OrdinalIgnoreCase)) return file;
+        }
+        return path;
     }
 
     public static string LocalPlayerPath(string worldFolder) => Path.Combine(worldFolder, WorldFileLayout.LocalPlayerFile);

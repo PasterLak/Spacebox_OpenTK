@@ -59,6 +59,18 @@ public sealed class PendingEntityEdits<T>
         _ready.Clear();
     }
 
+    public List<T> RemovePeer(int peer)
+    {
+        var removed = new List<T>();
+        for (int i = _entries.Count - 1; i >= 0; i--)
+        {
+            if (_entries[i].Peer != peer) continue;
+            removed.Add(_entries[i].Message);
+            _entries.RemoveAt(i);
+        }
+        return removed;
+    }
+
     public void Clear()
     {
         _entries.Clear();

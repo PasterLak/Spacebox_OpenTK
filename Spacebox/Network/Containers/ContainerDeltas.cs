@@ -25,4 +25,23 @@ public static class ContainerDeltas
         }
         return result;
     }
+
+    public static bool MatchesTotals(Dictionary<short, int> before, Dictionary<short, int> after, List<ItemAmount> deltas)
+    {
+        var expected = new Dictionary<short, int>();
+        foreach (var delta in deltas)
+        {
+            if (expected.ContainsKey(delta.ItemId)) return false;
+            expected[delta.ItemId] = delta.Amount;
+        }
+
+        foreach (var id in before.Keys.Union(after.Keys).Union(expected.Keys))
+        {
+            before.TryGetValue(id, out int oldCount);
+            after.TryGetValue(id, out int newCount);
+            expected.TryGetValue(id, out int delta);
+            if (newCount - oldCount != delta) return false;
+        }
+        return true;
+    }
 }

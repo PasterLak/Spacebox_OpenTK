@@ -268,8 +268,9 @@ public sealed class NetworkSession : IDisposable
 
         foreach (var player in PlayerRegistry.All)
         {
-            if (player.Peer != NetworkManager.Instance.LocalPeerId && !string.IsNullOrEmpty(player.LastPlayerJson))
-                PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
+            if (player.Peer == NetworkManager.Instance.LocalPeerId || string.IsNullOrEmpty(player.LastPlayerJson)) continue;
+            player.LastPlayerJson = Items.ItemAuthority.ReconcileForSave(player.Peer, player.LastPlayerJson);
+            PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
         }
     }
 
@@ -511,6 +512,9 @@ public sealed class NetworkSession : IDisposable
         Players.AstronautNetwork.ForgetGiftsOf(peer);
 
         _playerDataFlush.Received(peer);
+        WorldEditNetwork.ForgetPeer(peer);
+        Players.ReconstructionNetwork.ForgetPeer(peer);
+        if (PlayerRegistry.TryGet(peer, out var leaving)) leaving.LastPlayerJson = Items.ItemAuthority.ReconcileForSave(peer, leaving.LastPlayerJson);
         Items.ItemAuthority.OnLeave(peer);
         if (!PlayerRegistry.Remove(peer, out var player)) return;
 

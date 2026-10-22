@@ -55,6 +55,11 @@ public static class DoorNetwork
         if (!NetworkManager.Instance.IsServer) return;
         if (!ContainerResolver.TryResolveBlock(message.Key, out var block, out var chunk) || block is not DoorBlock) return;
         if (!WorldEditNetwork.IsInReach(sender, chunk.SpaceEntity, message.Key.Cell)) return;
+        if (ProtectionNetwork.BlocksPeerKey(sender, message.Key))
+        {
+            ProtectionNetwork.Deny(sender);
+            return;
+        }
 
         var origin = chunk.PositionIndex * Chunk.Size;
         var index = new Vector3Byte((byte)(message.Key.Cell.X - origin.X), (byte)(message.Key.Cell.Y - origin.Y), (byte)(message.Key.Cell.Z - origin.Z));

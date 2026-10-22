@@ -318,6 +318,13 @@ Fixes
 - settings, key bindings, ship keys and saved servers are written atomically
 - minimizing the window gave cameras an invalid aspect ratio
 - GameSets with more than 4096 blocks are refused instead of turning blocks into air
+- multiplayer: container changes could credit items that were never in the container
+- multiplayer: leaving right after storing or placing items saved an old inventory (item duplication)
+- multiplayer: block placements waiting for an entity were refunded to the next player with the same connection id
+- multiplayer: gifts to a lagging player were reported as delivered but lost; now refunded after 20 s
+- multiplayer: DNA reconstruction used up DNA after the player had left
+- multiplayer: doors in claims could be opened by anyone; mob spawners worked without the item on the server
+- dedicated server on Linux: player names in another letter case got a fresh inventory
 Engine
 - OpenTK 4.9.4 (GLFW 3.4); Linux picks the window system: native Wayland on Wayland desktops, X11 otherwise, each with the other as fallback, --window-system x11|wayland|auto or SPACEBOX_WINDOW_SYSTEM to force one; GLFW errors are logged instead of crashing
 - dedicated servers run without a window or GPU on every OS (Linux servers no longer need X11, Wayland or xvfb)

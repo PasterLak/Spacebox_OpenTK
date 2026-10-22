@@ -157,6 +157,15 @@ public static class WorldEditNetwork
         PendingEdits.Clear();
     }
 
+    public static void ForgetPeer(int peer)
+    {
+        foreach (var message in PendingEdits.RemovePeer(peer))
+        {
+            if (!message.IsRemoval && GameAssets.TryGetItemByBlockID(message.BlockId, out var item))
+                Items.ItemAuthority.Gain(peer, item.Id, 1);
+        }
+    }
+
     public static void Update()
     {
         if (!NetworkManager.Instance.IsServer) return;

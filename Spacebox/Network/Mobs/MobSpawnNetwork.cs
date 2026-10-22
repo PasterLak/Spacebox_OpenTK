@@ -45,6 +45,7 @@ public static class MobSpawnNetwork
         if (!GameAssets.TryGetItemById(message.ItemId, out var item) || item is not MobSpawnerItem spawner) return;
         if (!IsRequestAllowed(sender, message.Position)) return;
         if ((Spacebox.Game.Mobs.MobSystem.Instance?.Mobs.Count ?? 0) >= MaxMobsFromSpawners) return;
+        if (!Items.ItemAuthority.TryLose(sender, spawner.Id, 1)) return;
 
         Spawn(spawner, message.Position);
     }

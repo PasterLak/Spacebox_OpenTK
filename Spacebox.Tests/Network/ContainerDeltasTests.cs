@@ -29,4 +29,16 @@ public sealed class ContainerDeltasTests
 
         Assert.Equal(int.MaxValue, result.Single().Amount);
     }
+
+    [Fact]
+    public void Totals_MustMatchEveryDeltaIncludingItemsNotInTheContainer()
+    {
+        var before = new Dictionary<short, int> { [3] = 10 };
+        var after = new Dictionary<short, int> { [3] = 4 };
+
+        Assert.True(ContainerDeltas.MatchesTotals(before, after, new List<ItemAmount> { A(3, -6) }));
+        Assert.False(ContainerDeltas.MatchesTotals(before, after, new List<ItemAmount> { A(3, -6), A(9, -100000) }));
+        Assert.False(ContainerDeltas.MatchesTotals(before, after, new List<ItemAmount> { A(3, -6), A(3, 0) }));
+        Assert.False(ContainerDeltas.MatchesTotals(before, before, new List<ItemAmount> { A(3, 5) }));
+    }
 }

@@ -18,6 +18,19 @@ public class ItemLedgerTests
     private static List<ItemAmount> Delta(short id, int amount) => new List<ItemAmount> { new ItemAmount { ItemId = id, Amount = amount } };
 
     [Fact]
+    public void ExcessOver_CountsItemsTakenSinceTheLastSnapshot()
+    {
+        var ledger = new ItemLedger(Totals((Iron, 64), (Stone, 10)));
+        ledger.TryLose(Iron, 64);
+        ledger.Gain(Stone, 5);
+
+        var excess = ledger.ExcessOver(Totals((Iron, 64), (Stone, 10)));
+
+        Assert.Equal(64, excess[Iron]);
+        Assert.False(excess.ContainsKey(Stone));
+    }
+
+    [Fact]
     public void Snapshot_WithItemsTheServerNeverGave_ReturnsTheExcess()
     {
         var ledger = new ItemLedger(Totals((Iron, 5)));

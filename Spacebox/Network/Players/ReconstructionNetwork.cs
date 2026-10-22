@@ -117,7 +117,7 @@ public static class ReconstructionNetwork
 {
     public const string Checking = "Checking DNA Reconstructors...";
     private const float StatusInterval = 1f;
-    private const float RequestTimeout = 45f;
+    private const float RequestTimeout = 180f;
 
     private sealed class PendingRequest
     {
@@ -127,7 +127,7 @@ public static class ReconstructionNetwork
 
     private static readonly Dictionary<int, PendingRequest> _pending = new Dictionary<int, PendingRequest>();
     private static readonly List<int> _expired = new List<int>();
-    private static readonly HashSet<int> _busyPeers = new HashSet<int>();
+    private static readonly Dictionary<int, object> _busyPeers = new Dictionary<int, object>();
     private static int _nextRequest = 1;
     private static string _blocker;
     private static float _lastStatusRequest = float.MinValue;
@@ -208,7 +208,8 @@ public static class ReconstructionNetwork
 
         int requestId = message.RequestId;
         var player = AstronautNetwork.Find(sender);
-        if (player == null || player.IsAlive || !NetValidation.IsFinite(message.Position) || !_busyPeers.Add(sender))
+        var token = new object();
+        if (player == null || player.IsAlive || !NetValidation.IsFinite(message.Position) || !_busyPeers.TryAdd(sender, token))
         {
             network.Send(sender, ReconstructionResultMessage.From(requestId, null));
             return;
@@ -216,9 +217,17 @@ public static class ReconstructionNetwork
 
         DnaReconstructionService.Request(message.Position, sender, grant =>
         {
+            if (!IsCurrent(sender, token)) return;
             _busyPeers.Remove(sender);
-            if (NetworkManager.Instance.Peers.Contains(sender)) NetworkManager.Instance.Send(sender, ReconstructionResultMessage.From(requestId, grant));
-        });
+            NetworkManager.Instance.Send(sender, ReconstructionResultMessage.From(requestId, grant));
+        }, () => IsCurrent(sender, token));
+    }
+
+    private static bool IsCurrent(int peer, object token) => _busyPeers.TryGetValue(peer, out var current) && current == token;
+
+    public static void ForgetPeer(int peer)
+    {
+        _busyPeers.Remove(peer);
     }
 
     private static void OnResult(int sender, ReconstructionResultMessage message)

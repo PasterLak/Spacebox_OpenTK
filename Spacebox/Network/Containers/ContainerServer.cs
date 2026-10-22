@@ -282,18 +282,7 @@ public sealed class ContainerServer
 
         var before = ContainerSlots.Totals(current);
         var after = ContainerSlots.Totals(desired);
-        var expected = new Dictionary<short, int>();
-        for (int i = 0; i < deltas.Count; i++) expected[deltas[i].ItemId] = deltas[i].Amount;
-
-        foreach (var id in before.Keys.Union(after.Keys))
-        {
-            before.TryGetValue(id, out int oldCount);
-            after.TryGetValue(id, out int newCount);
-            expected.TryGetValue(id, out int delta);
-            if (newCount - oldCount != delta) return false;
-        }
-
-        return true;
+        return ContainerDeltas.MatchesTotals(before, after, deltas);
     }
 
     private static void Merge(IReadOnlyList<Storage> storages, List<ItemAmount> deltas, List<ItemAmount> denied, List<ItemAmount> rejected)

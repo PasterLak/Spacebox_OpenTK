@@ -12,9 +12,9 @@ public static class DnaReconstructionService
     private const float EntityLoadTimeout = 20f;
     private const float KeepLoadedSeconds = 20f;
 
-    public static void Request(Vector3 deathPosition, int peer, Action<ReconstructionGrant?> done)
+    public static void Request(Vector3 deathPosition, int peer, Action<ReconstructionGrant?> done, Func<bool> isWanted = null)
     {
-        new Attempt(deathPosition, peer, done).Next();
+        new Attempt(deathPosition, peer, done, isWanted).Next();
     }
 
     private sealed class Attempt
@@ -22,19 +22,21 @@ public static class DnaReconstructionService
         private readonly Vector3 _position;
         private readonly int _peer;
         private readonly Action<ReconstructionGrant?> _done;
+        private readonly Func<bool> _isWanted;
         private readonly HashSet<ReconstructorKey> _excluded = new HashSet<ReconstructorKey>();
         private int _attempts;
 
-        public Attempt(Vector3 position, int peer, Action<ReconstructionGrant?> done)
+        public Attempt(Vector3 position, int peer, Action<ReconstructionGrant?> done, Func<bool> isWanted)
         {
             _position = position;
             _peer = peer;
             _done = done;
+            _isWanted = isWanted ?? (() => true);
         }
 
         public void Next()
         {
-            if (++_attempts > MaxAttempts || !DnaReconstructorRegistry.TryFindNearestReady(_position, _excluded, out var candidate))
+            if (!_isWanted() || ++_attempts > MaxAttempts || !DnaReconstructorRegistry.TryFindNearestReady(_position, _excluded, out var candidate))
             {
                 _done(null);
                 return;
@@ -78,6 +80,12 @@ public static class DnaReconstructionService
 
         private void Use(ReconstructorKey key, DnaReconstructorBlock block)
         {
+            if (!_isWanted())
+            {
+                _done(null);
+                return;
+            }
+
             if (!CanUse(key, block, out var position) || !block.TryConsumeDna())
             {
                 _excluded.Add(key);

@@ -12,7 +12,7 @@ public static class ItemGiftNetwork
 {
     public const float MaxDistance = 2f;
     public const float ServerDistanceTolerance = 1.5f;
-    public const float Timeout = 5f;
+    public const float Timeout = 20f;
     public const float ClientTimeout = 30f;
     public const int MaxReasonLength = 80;
 

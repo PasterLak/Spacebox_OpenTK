@@ -33,6 +33,17 @@ public sealed class ItemLedger
         return Math.Max(0, available);
     }
 
+    public Dictionary<short, int> ExcessOver(IReadOnlyDictionary<short, int> totals)
+    {
+        var excess = new Dictionary<short, int>();
+        foreach (var pair in totals)
+        {
+            int extra = pair.Value - Available(pair.Key);
+            if (extra > 0) excess[pair.Key] = extra;
+        }
+        return excess;
+    }
+
     public bool Has(IReadOnlyList<ItemAmount> items)
     {
         for (int i = 0; i < items.Count; i++)

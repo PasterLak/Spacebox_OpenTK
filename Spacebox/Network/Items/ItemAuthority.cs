@@ -45,6 +45,18 @@ public static class ItemAuthority
 
     public static void OnLeave(int peer) => Players.Remove(peer);
 
+    public static string ReconcileForSave(int peer, string json)
+    {
+        if (string.IsNullOrEmpty(json) || !TryGetTracked(peer, out var player)) return json;
+        if (!PlayerInventoryJson.TryReadTotals(json, ResolveItem, out var totals, out _)) return json;
+
+        var excess = player.Ledger.ExcessOver(totals);
+        if (excess.Count == 0) return json;
+
+        Debug.Log($"[Items] {player.Name} left before the last changes were saved; removed {excess.Count} item type(s) the server had already taken");
+        return WithServerFields(peer, PlayerInventoryJson.RemoveItems(json, ResolveItem, excess));
+    }
+
     public static void Clear() => Players.Clear();
 
     public static bool IsTracked(int peer) => Players.TryGetValue(peer, out var player) && IsSurvival(player);
