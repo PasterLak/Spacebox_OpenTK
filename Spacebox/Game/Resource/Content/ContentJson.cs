@@ -22,6 +22,7 @@ public static class ContentJson
     public static readonly JsonSerializerOptions Indented = new JsonSerializerOptions
     {
         WriteIndented = true,
+        TypeInfoResolver = new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver(),
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
@@ -117,5 +118,12 @@ public static class ContentJson
     public static string Write(JsonNode node)
     {
         return node.ToJsonString(Indented);
+    }
+
+    public static void WriteFile(string path, JsonNode node)
+    {
+        string directory = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
+        File.WriteAllText(path, Write(node) + Environment.NewLine);
     }
 }

@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{07C2787E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spacebox.AssetAudit", "Tools\Spacebox.AssetAudit\Spacebox.AssetAudit.csproj", "{8A7B3AE4-C32C-4E0B-B04B-C52A3153A071}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spacebox.GameSetTool", "Tools\Spacebox.GameSetTool\Spacebox.GameSetTool.csproj", "{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,12 +106,25 @@ Global
 		{8A7B3AE4-C32C-4E0B-B04B-C52A3153A071}.Release|x64.Build.0 = Release|Any CPU
 		{8A7B3AE4-C32C-4E0B-B04B-C52A3153A071}.Release|x86.ActiveCfg = Release|Any CPU
 		{8A7B3AE4-C32C-4E0B-B04B-C52A3153A071}.Release|x86.Build.0 = Release|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Debug|x64.Build.0 = Debug|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Debug|x86.Build.0 = Debug|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Release|x64.ActiveCfg = Release|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Release|x64.Build.0 = Release|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Release|x86.ActiveCfg = Release|Any CPU
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8A7B3AE4-C32C-4E0B-B04B-C52A3153A071} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{D7E6EDC5-37A7-4CD8-BA6F-4C8A2CA3A972} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {91ADBC6E-F0EA-4D64-93DF-ACEDA23BEC28}

@@ -1,4 +1,4 @@
-using System.Text.Json;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Versioning;
 
@@ -20,22 +20,43 @@ public sealed class GameSetIdIndex
         ModId = modId;
     }
 
-    public static GameSetIdIndex Load(string gameSetsDirectory, string modId)
+    public static GameSetIdIndex Load(string gameSetsDirectory, string modId, IReadOnlyList<string> extensions = null)
     {
-        string defaultPath = Path.Combine(gameSetsDirectory, DefaultFolder);
-        if (!Spacebox.Network.GameSetLocator.TryFindFolderPath(gameSetsDirectory, modId, out var modPath)) modPath = defaultPath;
-        return FromFolders(modPath, defaultPath, string.IsNullOrWhiteSpace(modId) ? "default" : modId);
+        string id = string.IsNullOrWhiteSpace(modId) ? "default" : modId;
+        var result = GameSetStackResolver.Resolve(gameSetsDirectory, id, extensions);
+        if (result.Stack == null)
+            result = GameSetStackResolver.Resolve(gameSetsDirectory, null, extensions, DefaultFolder);
+
+        var index = new GameSetIdIndex(id);
+        if (result.Stack != null) index.AddContent(result.Stack.ReadContent());
+        index.AddBuiltIns();
+        return index;
     }
 
-    public static GameSetIdIndex FromFolders(string modPath, string defaultPath, string modId)
+    public static GameSetIdIndex FromContent(GameSetContent content, string modId)
     {
         var index = new GameSetIdIndex(modId);
-        index.AddIds(PickFile(modPath, defaultPath, "blocks.json"), index._blocks);
-        index.AddIds(PickFile(modPath, defaultPath, "items.json"), index._items);
-
-        foreach (var id in BuiltInBlocks) index._blocks.Add(index.FullId(id));
-        foreach (var id in index._blocks) index._items.Add(id);
+        index.AddContent(content);
+        index.AddBuiltIns();
         return index;
+    }
+
+    private void AddContent(GameSetContent content)
+    {
+        foreach (var entry in content.Blocks) AddId(entry, _blocks);
+        foreach (var entry in content.Items) AddId(entry, _items);
+    }
+
+    private void AddBuiltIns()
+    {
+        foreach (var id in BuiltInBlocks) _blocks.Add(FullId(id));
+        foreach (var id in _blocks) _items.Add(id);
+    }
+
+    private void AddId(ContentEntry entry, HashSet<string> target)
+    {
+        string id = ContentJson.GetString(entry.Data, "ID");
+        if (!string.IsNullOrWhiteSpace(id)) target.Add(FullId(id));
     }
 
     public bool IsBlock(string fullId) => _blocks.Contains(fullId ?? "");
@@ -45,44 +66,5 @@ public sealed class GameSetIdIndex
     public string FullId(string id)
     {
         return id.Contains(':') ? id : ModId + ":" + id;
-    }
-
-    private void AddIds(string path, HashSet<string> target)
-    {
-        if (path == null) return;
-
-        using var document = JsonDocument.Parse(File.ReadAllText(path), new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
-        Collect(document.RootElement, target);
-    }
-
-    private void Collect(JsonElement element, HashSet<string> target)
-    {
-        if (element.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var item in element.EnumerateArray()) Collect(item, target);
-            return;
-        }
-
-        if (element.ValueKind != JsonValueKind.Object) return;
-
-        if (element.TryGetProperty("ID", out var id) && id.ValueKind == JsonValueKind.String)
-        {
-            target.Add(FullId(id.GetString()));
-            return;
-        }
-
-        foreach (var property in element.EnumerateObject())
-        {
-            if (property.Value.ValueKind == JsonValueKind.Array) Collect(property.Value, target);
-        }
-    }
-
-    private static string PickFile(string modPath, string defaultPath, string name)
-    {
-        string own = Path.Combine(modPath ?? "", name);
-        if (File.Exists(own)) return own;
-
-        string fallback = Path.Combine(defaultPath ?? "", name);
-        return File.Exists(fallback) ? fallback : null;
     }
 }

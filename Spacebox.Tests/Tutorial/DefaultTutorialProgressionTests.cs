@@ -17,7 +17,7 @@ public class DefaultTutorialProgressionTests
         throw new FileNotFoundException(relative);
     }
 
-    private static JsonElement Load(string relative) => JsonDocument.Parse(File.ReadAllText(DefaultPath(relative))).RootElement;
+    private static JsonElement Load(string relative) => DefaultGameSetContent.IsContentFile(relative) ? DefaultGameSetContent.Flat(relative) : JsonDocument.Parse(File.ReadAllText(DefaultPath(relative))).RootElement;
 
     private static IEnumerable<JsonElement> Entries(JsonElement root)
     {

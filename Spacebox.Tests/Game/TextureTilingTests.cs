@@ -111,13 +111,10 @@ public class TextureTilingTests
     [Fact]
     public void DefaultMultiCellBlocks_LookTheSameAsWithTheOldBlockSize()
     {
-        string gameSet = GameSetFolder();
-        var textureSizes = ReadTextureSizes(Path.Combine(gameSet, "Blocks"));
-        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(gameSet, "blocks.json")),
-            new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
+        var textureSizes = ReadTextureSizes(DefaultGameSetContent.Assets.BlockTextures);
 
         int checkedBlocks = 0;
-        foreach (var block in document.RootElement.EnumerateArray())
+        foreach (var block in DefaultGameSetContent.Flat("blocks.json").EnumerateArray())
         {
             if (!block.TryGetProperty("Size", out var sizeJson)) continue;
             var size = new Vector3Byte(Axis(sizeJson, "x"), Axis(sizeJson, "y"), Axis(sizeJson, "z"));
@@ -178,10 +175,10 @@ public class TextureTilingTests
         return result;
     }
 
-    private static Dictionary<string, Vector2i> ReadTextureSizes(string folder)
+    private static Dictionary<string, Vector2i> ReadTextureSizes(Dictionary<string, string> textures)
     {
         var sizes = new Dictionary<string, Vector2i>();
-        foreach (var file in Directory.EnumerateFiles(folder, "*.png", SearchOption.AllDirectories))
+        foreach (var file in textures.Values)
         {
             using var stream = File.OpenRead(file);
             var header = new byte[24];

@@ -217,7 +217,7 @@ public class PictureFrameTests
         return result;
     }
 
-    private static JsonElement Load(string name) => JsonDocument.Parse(File.ReadAllText(Path.Combine(GameSetFolder(), name))).RootElement;
+    private static JsonElement Load(string name) => DefaultGameSetContent.Flat(name);
 
     private static string GameSetFolder()
     {

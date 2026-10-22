@@ -15,7 +15,7 @@ public class DefaultTutorialContentTests
         {
             short next = 1;
             foreach (var file in new[] { "items.json", "blocks.json" })
-                foreach (var id in ReadIds(JsonDocument.Parse(File.ReadAllText(GameSetFile(file))).RootElement))
+                foreach (var id in ReadIds(DefaultGameSetContent.Flat(file)))
                     if (!_ids.ContainsKey(id)) _ids[id] = next++;
         }
 
@@ -55,7 +55,7 @@ public class DefaultTutorialContentTests
 
     private static HashSet<string> InputActions()
     {
-        var dir = new DirectoryInfo(Path.GetDirectoryName(GameSetFile("items.json")));
+        var dir = new DirectoryInfo(Path.GetDirectoryName(GameSetFile("config.json")));
         string path = Path.Combine(dir.Parent.Parent.FullName, "Resources", "default_input.json");
         var root = JsonDocument.Parse(File.ReadAllText(path)).RootElement;
         var actions = new HashSet<string>(StringComparer.Ordinal);

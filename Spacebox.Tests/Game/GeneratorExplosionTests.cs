@@ -76,9 +76,7 @@ public class DefaultReactorBalanceTests
 
     private static JsonElement[] Load(string file)
     {
-        string path = Path.Combine(Spacebox.Tests.Versioning.WorldToolkitTests.DefaultGameSet(), "Default", file);
-        using var document = JsonDocument.Parse(File.ReadAllText(path), new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
-        return document.RootElement.EnumerateArray().Select(e => e.Clone()).ToArray();
+        return DefaultGameSetContent.Flat(file).EnumerateArray().Select(e => e.Clone()).ToArray();
     }
 
     private static IEnumerable<JsonElement> ExplosiveGenerators()

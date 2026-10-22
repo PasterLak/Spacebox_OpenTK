@@ -17,7 +17,7 @@ public class DefaultCrusherRecipesTests
         throw new FileNotFoundException(name);
     }
 
-    private static JsonElement Load(string name) => JsonDocument.Parse(File.ReadAllText(GameSetFile(name))).RootElement;
+    private static JsonElement Load(string name) => DefaultGameSetContent.IsContentFile(name) ? DefaultGameSetContent.Flat(name) : JsonDocument.Parse(File.ReadAllText(GameSetFile(name))).RootElement;
 
     private static IEnumerable<JsonElement> Walk(JsonElement element)
     {

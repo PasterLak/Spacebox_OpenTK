@@ -9,9 +9,7 @@ public class DefaultDescriptionsTests
 
     private static IEnumerable<(string Id, string Description)> Entries(string file)
     {
-        string path = Path.Combine(Spacebox.Tests.Versioning.WorldToolkitTests.DefaultGameSet(), "Default", file);
-        using var document = JsonDocument.Parse(File.ReadAllText(path), new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
-        foreach (var entry in document.RootElement.EnumerateArray())
+        foreach (var entry in DefaultGameSetContent.Flat(file).EnumerateArray())
         {
             string description = entry.TryGetProperty("Description", out var value) ? value.GetString() : null;
             yield return (entry.GetProperty("ID").GetString(), description);
