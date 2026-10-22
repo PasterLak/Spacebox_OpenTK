@@ -178,8 +178,7 @@ public static class CombatNetwork
 
     private static void OnPlayerDamage(int sender, PlayerDamageMessage message)
     {
-        var network = NetworkManager.Instance;
-        if (sender != NetworkManager.ServerPeerId && !network.IsServer) return;
+        if (!AcceptsDamageFrom(sender)) return;
 
         var local = AstronautNetwork.Local?.Owner as LocalAstronaut;
         if (local == null || !local.IsAlive || local.GameMode != Spacebox.Game.Player.GameModes.GameMode.Survival) return;
@@ -188,6 +187,8 @@ public static class CombatNetwork
         string attacker = GetPlayerName(message.AttackerPeer);
         local.TakeDamage(message.Damage, new DeathCase(message.Headshot ? $"Headshot by {attacker}" : $"Killed by {attacker}"));
     }
+
+    public static bool AcceptsDamageFrom(int sender) => sender == NetworkManager.ServerPeerId;
 
     private static void OnHitConfirm(int sender, HitConfirmMessage message)
     {

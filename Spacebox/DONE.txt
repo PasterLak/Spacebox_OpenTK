@@ -202,6 +202,7 @@ Fixes
 - explosions no longer push a seated pilot (the stored push flung the player out when leaving the seat)
 - a player saved while dead loads alive at the spawn point with full health instead of with 0 HP; the death screen no longer carries over into the next world
 - right click in the ship binding mode left the console instead of returning to the seat
+- multiplayer: a client could send a damage message to the host and hurt or kill the host player (bypassing PvP rules); player damage is accepted only from the server
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

@@ -28,6 +28,15 @@ public class MultiplayerHardeningTests
         Assert.NotNull(PlayerNameRules.Validate(name));
     }
 
+    [Theory]
+    [InlineData(1, true)]
+    [InlineData(2, false)]
+    [InlineData(7, false)]
+    public void PlayerDamage_IsOnlyAcceptedFromTheServer(int sender, bool accepted)
+    {
+        Assert.Equal(accepted, CombatNetwork.AcceptsDamageFrom(sender));
+    }
+
     [Fact]
     public void DrillBudget_LimitsDamagePerSecond()
     {
