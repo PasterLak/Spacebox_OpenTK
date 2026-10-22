@@ -143,6 +143,9 @@ public static class CombatNetwork
         var shooter = PlayerHitboxes.FindPlayer(sender);
         if (shooter == null && sender != NetworkManager.Instance.LocalPeerId) return false;
         if (shooter != null && Vector3.DistanceSquared(shooter.Position, origin) > MaxOriginOffset * MaxOriginOffset) return false;
+        if (Players.AstronautNetwork.Find(sender) is { IsAlive: false }) return false;
+        if (Items.ItemAuthority.Available(sender, weapon.Id) < 1) return false;
+        if (weapon.NeedsAmmo && weapon.Ammo != null && !Items.ItemAuthority.TryLose(sender, weapon.Ammo.Id, 1)) return false;
 
         _lastShotTime[sender] = now;
         return true;

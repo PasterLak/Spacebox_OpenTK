@@ -51,6 +51,24 @@ public class AuthTests : IDisposable
     private static JoinRequestMessage Join(string name) => new JoinRequestMessage { Name = name };
 
     [Fact]
+    public void AdminNames_CanOnlyBeRegisteredFromTheLocalNetwork()
+    {
+        var rejections = new List<string>();
+        var challenges = new List<AuthChallengeMessage>();
+        var addresses = new Dictionary<int, string> { [2] = "85.10.20.30", [3] = "192.168.1.7" };
+        var service = new ServerAuthService(new AccountStore(AccountsPath), (_, c) => challenges.Add(c), (_, r) => rejections.Add(r), (_, _) => { },
+            peer => addresses[peer], isReservedName: name => name == "Boss");
+
+        service.Begin(2, Join("Boss"));
+        Assert.Equal(new[] { ServerAuthService.ReservedName }, rejections);
+
+        service.Begin(3, Join("Boss"));
+        service.Begin(2, Join("Guest"));
+        Assert.Equal(2, challenges.Count);
+        Assert.Single(rejections);
+    }
+
+    [Fact]
     public void DeriveKey_IsDeterministicAndSaltDependent()
     {
         var salt = PasswordCrypto.NewSalt();

@@ -12,6 +12,7 @@ public sealed class ServerAuthService
     public const string InvalidAccount = "Could not create the account";
     public const string LockedOut = "Too many wrong passwords, try again in a few minutes";
     public const string NameTaken = "Name is already taken";
+    public const string ReservedName = "This name belongs to a server admin. Create its account from the server's local network first";
 
     private sealed class PendingLogin
     {
@@ -32,10 +33,12 @@ public sealed class ServerAuthService
     private readonly List<int> _expired = new List<int>();
     private readonly Dashboard.LoginThrottle _throttle;
     private readonly Func<int, string> _addressOf;
+    private readonly Func<string, bool> _isReservedName;
 
     public ServerAuthService(AccountStore accounts, Action<int, AuthChallengeMessage> sendChallenge, Action<int, string> reject, Action<int, JoinRequestMessage> accept,
-        Func<int, string> addressOf = null, Dashboard.LoginThrottle throttle = null)
+        Func<int, string> addressOf = null, Dashboard.LoginThrottle throttle = null, Func<string, bool> isReservedName = null)
     {
+        _isReservedName = isReservedName ?? (_ => false);
         _accounts = accounts;
         _sendChallenge = sendChallenge;
         _reject = reject;
@@ -72,6 +75,11 @@ public sealed class ServerAuthService
             login.IsRegistered = true;
             login.Salt = account.GetSalt();
             login.Iterations = account.Iterations;
+        }
+        else if (_isReservedName(request.Name) && !Engine.Web.NetworkAddresses.IsLocal(_addressOf?.Invoke(peer) ?? ""))
+        {
+            _reject(peer, ReservedName);
+            return;
         }
         else
         {

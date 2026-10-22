@@ -330,8 +330,16 @@ public sealed class NetworkManager
         Query.Handle(sender, data, offset, length, isBroadcast, _transport.SendUnconnected);
     }
 
+    public const int MaxClientMessageBytes = 4 * 1024 * 1024;
+
     private void OnDataReceived(int peer, byte[] data, int offset, int length)
     {
+        if (IsServer && peer != LocalPeerId && length > MaxClientMessageBytes)
+        {
+            Debug.Warning($"[Network] Peer {peer} sent a {length / 1024} KB message, it was dropped");
+            return;
+        }
+
         _reader.Set(data, offset, length);
 
         try

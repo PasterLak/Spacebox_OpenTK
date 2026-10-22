@@ -9,6 +9,10 @@ namespace Spacebox.Network;
 
 public static class ChatService
 {
+    private static readonly PeerRateLimiter Messages = new PeerRateLimiter(6, 1);
+
+    public static void ForgetPeer(int peer) => Messages.Forget(peer);
+
     public static void Register(NetworkManager network)
     {
         network.Messages.Register<ChatSendMessage>(OnChatSend);
@@ -54,6 +58,11 @@ public static class ChatService
     private static void OnChatSend(int sender, ChatSendMessage message)
     {
         if (!NetworkManager.Instance.IsServer || string.IsNullOrWhiteSpace(message.Text)) return;
+        if (sender != NetworkManager.Instance.LocalPeerId && !Messages.TryConsume(sender, Time.Total))
+        {
+            SendPrivate(sender, "You are sending messages too fast", Color4.OrangeRed);
+            return;
+        }
 
         string name = sender == NetworkManager.Instance.LocalPeerId ? GameSession.PlayerName : PlayerRegistry.GetName(sender);
         if (ChatCommands.IsCommand(message.Text))

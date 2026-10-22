@@ -99,7 +99,7 @@ public sealed class NetworkSession : IDisposable
 
         var accounts = new Auth.AccountStore(Path.Combine(World.WorldData.WorldFolderPath, Auth.AccountStore.FileName));
         return new Auth.ServerAuthService(accounts, (peer, challenge) => NetworkManager.Instance.Send(peer, challenge), RejectJoin, AcceptJoin,
-            peer => NetworkManager.Instance.GetPeerAddress(peer));
+            peer => NetworkManager.Instance.GetPeerAddress(peer), isReservedName: Admin.ServerAdmins.IsAdmin);
     }
 
     private static Discovery.ServerAdvertisement CreateAdvertisement()
@@ -412,7 +412,7 @@ public sealed class NetworkSession : IDisposable
     {
         var network = NetworkManager.Instance;
         string name = message.Name.Trim();
-        PlayerRegistry.Add(new ConnectedPlayer { Peer = sender, Name = name, SkinColor = message.SkinColor });
+        PlayerRegistry.Add(new ConnectedPlayer { Peer = sender, Name = name, SkinColor = SafeSkinColor(message.SkinColor) });
         network.AdmitPeer(sender);
 
         var info = World.WorldData.Info;
@@ -450,6 +450,14 @@ public sealed class NetworkSession : IDisposable
         if (PlayerRegistry.TryGetByName(message.Name.Trim(), out var existing) && !TryReplaceStalePeer(existing, sender)) return "Name is already taken";
         if (!_access.IsAllowed(message.Name)) return "You are not on the whitelist of this server";
         return null;
+    }
+
+    public static string SafeSkinColor(string color)
+    {
+        if (string.IsNullOrEmpty(color) || color.Length > 16) return "Yellow";
+        foreach (char c in color)
+            if (!char.IsAsciiLetter(c)) return "Yellow";
+        return color;
     }
 
     private bool TryReplaceStalePeer(ConnectedPlayer existing, int sender)
@@ -526,6 +534,7 @@ public sealed class NetworkSession : IDisposable
 
         _playerDataFlush.Received(peer);
         WorldEditNetwork.ForgetPeer(peer);
+        ChatService.ForgetPeer(peer);
         Players.ReconstructionNetwork.ForgetPeer(peer);
         if (PlayerRegistry.TryGet(peer, out var leaving)) leaving.LastPlayerJson = Items.ItemAuthority.ReconcileForSave(peer, leaving.LastPlayerJson);
         Items.ItemAuthority.OnLeave(peer);

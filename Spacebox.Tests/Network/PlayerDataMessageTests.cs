@@ -23,4 +23,14 @@ public sealed class PlayerDataMessageTests
         Assert.Equal(9, data.Sequence);
         Assert.Equal(9, ack.Sequence);
     }
+
+    [Theory]
+    [InlineData("Red", "Red")]
+    [InlineData("../../evil", "Yellow")]
+    [InlineData("", "Yellow")]
+    [InlineData("VeryLongColorNameXX", "Yellow")]
+    public void SkinColor_OnlyAllowsShortLetterNames(string color, string expected)
+    {
+        Assert.Equal(expected, Spacebox.Network.NetworkSession.SafeSkinColor(color));
+    }
 }
