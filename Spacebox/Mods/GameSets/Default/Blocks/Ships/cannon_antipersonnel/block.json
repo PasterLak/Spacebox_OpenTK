@@ -3,6 +3,7 @@
   "Name": "Anti-Personnel Gun",
   "Description": "Fast ship gun against small targets. Bind it to a console",
   "Type": "cannon",
+  "TextureFit": true,
   "Cannon": {
     "Projectile": "p_cannon_antipersonnel",
     "ReloadTime": 200,

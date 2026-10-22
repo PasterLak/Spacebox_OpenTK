@@ -3,6 +3,7 @@
   "Name": "Heavy Assault Gun",
   "Description": "Heavy ship gun. Bind it to a console to aim and fire",
   "Type": "cannon",
+  "TextureFit": true,
   "Cannon": {
     "Projectile": "p_cannon_heavy",
     "ReloadTime": 300,

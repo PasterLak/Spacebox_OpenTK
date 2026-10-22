@@ -3,6 +3,7 @@
   "Name": "Standard Cobalt Power Block",
   "Description": "Makes power for machines and lights through cables",
   "Type": "generator",
+  "TextureFit": true,
   "Size": {
     "x": 1,
     "y": 2,

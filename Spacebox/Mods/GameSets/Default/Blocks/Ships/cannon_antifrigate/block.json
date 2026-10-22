@@ -3,6 +3,7 @@
   "Name": "Anti-Frigate Gun",
   "Description": "Plasma cannon against big ships. Bind it to a console",
   "Type": "cannon",
+  "TextureFit": true,
   "Cannon": {
     "Projectile": "p_cannon_plasma",
     "ReloadTime": 1000,

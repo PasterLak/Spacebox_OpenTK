@@ -3,6 +3,7 @@
   "Name": "Powerful Nuclear Power Block",
   "Description": "Very strong power source. Explodes when destroyed, protect it with armor",
   "Type": "generator",
+  "TextureFit": true,
   "Generator": {
     "Power": 300
   },

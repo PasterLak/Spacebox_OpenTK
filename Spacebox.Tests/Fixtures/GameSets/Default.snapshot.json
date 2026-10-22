@@ -1083,6 +1083,7 @@
         "Name": "Standard Cobalt Power Block",
         "Description": "Makes power for machines and lights through cables",
         "Type": "generator",
+        "TextureFit": true,
         "Size": {
           "x": 1,
           "y": 2,
@@ -1118,6 +1119,7 @@
         "Name": "Powerful Cobalt Power Block",
         "Description": "Makes more power in less space",
         "Type": "generator",
+        "TextureFit": true,
         "Generator": {
           "Power": 125
         },
@@ -1156,6 +1158,7 @@
         "Name": "Standard Nuclear Power Block",
         "Description": "Strong power source. Explodes when destroyed, protect it with armor",
         "Type": "generator",
+        "TextureFit": true,
         "Generator": {
           "Power": 180
         },
@@ -1205,6 +1208,7 @@
         "Name": "Powerful Nuclear Power Block",
         "Description": "Very strong power source. Explodes when destroyed, protect it with armor",
         "Type": "generator",
+        "TextureFit": true,
         "Generator": {
           "Power": 300
         },
@@ -2018,6 +2022,7 @@
         "Name": "Anti-Personnel Gun",
         "Description": "Fast ship gun against small targets. Bind it to a console",
         "Type": "cannon",
+        "TextureFit": true,
         "Cannon": {
           "Projectile": "p_cannon_antipersonnel",
           "ReloadTime": 200,
@@ -2061,6 +2066,7 @@
         "Name": "Light Assault Gun",
         "Description": "Ship gun. Bind it to a console to aim and fire",
         "Type": "cannon",
+        "TextureFit": true,
         "Cannon": {
           "Projectile": "p_cannon_light",
           "ReloadTime": 300,
@@ -2109,6 +2115,7 @@
         "Name": "Heavy Assault Gun",
         "Description": "Heavy ship gun. Bind it to a console to aim and fire",
         "Type": "cannon",
+        "TextureFit": true,
         "Cannon": {
           "Projectile": "p_cannon_heavy",
           "ReloadTime": 300,
@@ -2157,6 +2164,7 @@
         "Name": "Anti-Corvette Gun",
         "Description": "Strong ship gun against ships. Bind it to a console",
         "Type": "cannon",
+        "TextureFit": true,
         "Cannon": {
           "Projectile": "p_cannon_antipersonnel_heavy",
           "ReloadTime": 600,
@@ -2205,6 +2213,7 @@
         "Name": "Anti-Frigate Gun",
         "Description": "Plasma cannon against big ships. Bind it to a console",
         "Type": "cannon",
+        "TextureFit": true,
         "Cannon": {
           "Projectile": "p_cannon_plasma",
           "ReloadTime": 1000,

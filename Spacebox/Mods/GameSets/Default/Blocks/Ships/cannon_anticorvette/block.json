@@ -3,6 +3,7 @@
   "Name": "Anti-Corvette Gun",
   "Description": "Strong ship gun against ships. Bind it to a console",
   "Type": "cannon",
+  "TextureFit": true,
   "Cannon": {
     "Projectile": "p_cannon_antipersonnel_heavy",
     "ReloadTime": 600,

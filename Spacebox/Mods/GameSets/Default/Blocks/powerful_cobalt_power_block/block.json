@@ -3,6 +3,7 @@
   "Name": "Powerful Cobalt Power Block",
   "Description": "Makes more power in less space",
   "Type": "generator",
+  "TextureFit": true,
   "Generator": {
     "Power": 125
   },

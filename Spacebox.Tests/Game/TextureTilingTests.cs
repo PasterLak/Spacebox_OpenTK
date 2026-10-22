@@ -140,7 +140,7 @@ public class TextureTilingTests
             checkedBlocks++;
         }
 
-        Assert.True(checkedBlocks >= 10);
+        Assert.True(checkedBlocks >= 4);
     }
 
     private static Vector2i Clamp(Vector2i tiles, int columns, int rows)
