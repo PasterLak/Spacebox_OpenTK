@@ -288,8 +288,11 @@ public sealed class TextureAtlas : IDisposable
             var buffer = CreateBuffer();
             foreach (var (name, pixels) in layerPixels)
             {
-                if (_entries.TryGetValue(name, out var entry) && pixels.GetLength(0) == entry.Width && pixels.GetLength(1) == entry.Height)
+                if (!_entries.TryGetValue(name, out var entry)) continue;
+                if (pixels.GetLength(0) == entry.Width && pixels.GetLength(1) == entry.Height)
                     Blit(buffer, pixels, entry.Region);
+                else
+                    Debug.Warning($"[Atlas] {Name}: {layer} map '{name}' is {pixels.GetLength(0)}x{pixels.GetLength(1)} but the texture is {entry.Width}x{entry.Height}, it is not used");
             }
 
             _layerTextures.TryGetValue(layer, out var layerTexture);

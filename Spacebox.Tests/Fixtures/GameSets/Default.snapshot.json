@@ -8339,7 +8339,7 @@
     "green": "b3c7e50f38379f93",
     "greenore": "f5bbd14b735f911a",
     "moritz": "96f0dd7ef45c9131",
-    "nuclear_generator": "6c4b1afa9b283bcc",
+    "nuclear_generator": "04e5776e58b07a7b",
     "orange": "569e9d40ec52dc5c",
     "oxygengenerator": "a5323c67342ca2f0",
     "oxygengeneratorsides": "f5439b33ee625ffd",
@@ -8379,6 +8379,8 @@
     "torchyellow": "bbbfdc436ef7940f",
     "white": "15d0d38e09a9456a",
     "wire": "09de3bd8e0a34309",
+    "wireangle": "677c4fd34cc53ce2",
+    "wirehub": "a56e718e788f78ee",
     "wiretop": "51ea218f267f7833",
     "yellow": "6f88e42ccea820eb",
     "yellowore": "b04e35d1c45150aa"
