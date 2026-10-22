@@ -33,7 +33,8 @@ public static class Program
         Engine.Shader.HotReloadEnabled = false;
 #endif
 
-       
+        if (!LaunchOptions.IsDedicated) Engine.Platform.GpuSelection.PreferDedicatedGpu();
+
         var monitor = Monitors.GetPrimaryMonitor();
         var _audioManager = AudioDevice.Instance; // move!!!!
 

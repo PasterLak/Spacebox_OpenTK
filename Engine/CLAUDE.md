@@ -41,6 +41,8 @@ Hooks for the game subclass (`Spacebox/SpaceboxWindow.cs`):
 - abstract: `OnRegisterScenes`, `OnGameLoad`
 - virtual: `OnLoadImGui`, `OnSetupInput`, `OnSetupPostProcessing(PostProcessManager)`, `OnRenderGameGUI`, `OnUpdateInput`, `OnPostRender`
 
+Before the window is created the game calls `Platform/GpuSelection.PreferDedicatedGpu()` (rules in `GpuSelectionRules`, tested): on Windows it loads `nvapi64.dll` (NVIDIA Optimus then uses the dedicated GPU) and sets the per-exe Windows graphics preference to high performance (`HKCU\Software\Microsoft\DirectX\UserGpuPreferences`, only when the player chose nothing, never for `dotnet.exe`); on Linux with two GPUs it sets the PRIME offload variables (`__NV_PRIME_RENDER_OFFLOAD` + `__GLX_VENDOR_LIBRARY_NAME` with the NVIDIA driver, else `DRI_PRIME=1`) unless already set. Dedicated servers skip it.
+
 `OnLoad` order: `Input.Initialize` → `ResourceFallbacks.Initialize` → `LightSystem.InitializeGpu` → `VisualDebug.InitializeGpu` → `SceneRenderer` → system report in the log (`Core/Diagnostics/SystemReport` + `CpuName`: game version, OS, .NET, CPU, cores, RAM, GPU/driver/OpenGL/GLSL, monitor; no GPU lines headless) → `FrameLimiter` → `SceneManager.Initialize(OnRegisterScenes)` → `ImGuiController` → `OnLoadImGui` → default F-key bindings → `OnSetupInput` → `PostProcessManager` → `OnSetupPostProcessing` → `OnGameLoad`.
 
 `OnUpdateFrame`: `SceneManager.ApplyPendingSceneChange` → `RenderSpace.BeginFrame` → `InputInjector.Apply` → `Input.Update` → `Time.Update` → ImGui update → `InputManager.Update` (InputPro) → `InputManager0.Update` → drain main-thread action queue → `OnUpdateInput` → `SceneManager.Update` → `GlobalUniforms.Push` → `AudioDevice.Update`.
