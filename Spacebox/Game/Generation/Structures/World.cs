@@ -268,6 +268,7 @@ public class World : Component, ISpaceStructure
     public static void LoadWorldInfo(string worldName)
     {
         WorldData = WorldLoader.LoadWorldByName(worldName);
+        Versioning.WorldJsonToNbt.Convert(WorldData.WorldFolderPath);
         Seed = SeedHelper.ComputeSeed(WorldData.Info.Seed);
 
         GameTime.SetDay(WorldData.Info.Day);
