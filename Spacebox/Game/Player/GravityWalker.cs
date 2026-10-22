@@ -18,6 +18,7 @@ public sealed class GravityWalker
     private const float WalkSpeed = 4.5f;
     private const float RunSpeed = 7f;
     private const float CrouchSpeed = 2.2f;
+    private const float SlowWalkSpeed = 1.8f;
     private const float RunGaitSpeed = (WalkSpeed + RunSpeed) * 0.5f;
     private const float JumpHeight = 1.25f;
     private const float MinJumpHeight = 1.2f;
@@ -57,7 +58,8 @@ public sealed class GravityWalker
     public bool IsCrouching => _stance.IsCrouching;
     public float CurrentEyeHeight => _stance.EyeHeight;
     public float HorizontalSpeed => (_velocity - _up * Vector3.Dot(_velocity, _up)).Length;
-    public FootstepGait Gait => _stance.IsCrouching ? FootstepGait.Crouch : HorizontalSpeed > RunGaitSpeed ? FootstepGait.Run : FootstepGait.Walk;
+    public bool IsSlowWalking { get; private set; }
+    public FootstepGait Gait => _stance.IsCrouching || IsSlowWalking ? FootstepGait.Crouch : HorizontalSpeed > RunGaitSpeed ? FootstepGait.Run : FootstepGait.Walk;
 
     public GravityWalker()
     {
@@ -117,7 +119,7 @@ public sealed class GravityWalker
         var horizontal = _velocity - vertical;
 
         var wish = canMove ? GetWishDirection(player) : Vector3.Zero;
-        float speed = _stance.IsCrouching ? CrouchSpeed : canMove && Input.IsAction("sprint") ? RunSpeed : WalkSpeed;
+        float speed = MoveSpeed(canMove);
         float acceleration = _isGrounded ? GroundAcceleration : AirAcceleration;
         if (_isGrounded || wish != Vector3.Zero)
             horizontal = MoveTowards(horizontal, wish * speed, acceleration * deltaTime);
@@ -173,6 +175,14 @@ public sealed class GravityWalker
 
         block = chunk.Blocks[index.X, index.Y, index.Z];
         return block != null && !block.IsAir;
+    }
+
+    private float MoveSpeed(bool canMove)
+    {
+        IsSlowWalking = canMove && !_stance.IsCrouching && Input.IsAction("slow_walk");
+        if (_stance.IsCrouching) return CrouchSpeed;
+        if (IsSlowWalking) return SlowWalkSpeed;
+        return canMove && Input.IsAction("sprint") ? RunSpeed : WalkSpeed;
     }
 
     private void UpdateStance(LocalAstronaut player, bool wantsCrouch, float deltaTime)

@@ -81,6 +81,17 @@
                     }
                 ]
             },
+            "slow_walk": {
+                "Name": "Slow Walk",
+                "Description": "Walk slowly and quietly in gravity while held",
+                "Category": "Movement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftAlt"
+                    }
+                ]
+            },
             "rollLeft": {
                 "Name": "Roll Left",
                 "Description": "",
