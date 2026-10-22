@@ -117,8 +117,20 @@ public static class ContainerNetwork
         var network = NetworkManager.Instance;
         if (!network.IsServer) return;
 
-        bool granted = !ProtectionNetwork.BlocksPeerKey(peer, message.Key) && _server.TryTake(message.Key, message.ItemId, message.Amount);
+        bool granted = IsReconstructionTake(peer, message) && !ProtectionNetwork.BlocksPeerKey(peer, message.Key) && _server.TryTake(message.Key, message.ItemId, message.Amount);
         network.Send(peer, new ContainerTakeResultMessage { RequestId = message.RequestId, Granted = granted });
+    }
+
+    private static bool IsReconstructionTake(int peer, ContainerTakeRequestMessage message)
+    {
+        if (!ContainerResolver.TryResolveBlock(message.Key, out var block, out _) || block is not DnaReconstructorBlock reconstructor) return false;
+        var requester = Players.AstronautNetwork.Find(peer);
+        return IsValidReconstructionTake(reconstructor.Data.DnaItem, message.ItemId, message.Amount, requester == null || requester.IsAlive);
+    }
+
+    public static bool IsValidReconstructionTake(Item dnaItem, short itemId, int amount, bool requesterAlive)
+    {
+        return dnaItem != null && dnaItem.Id == itemId && amount == 1 && !requesterAlive;
     }
 
     private static void OnTakeResult(int peer, ContainerTakeResultMessage message)

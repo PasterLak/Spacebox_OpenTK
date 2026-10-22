@@ -205,6 +205,7 @@ Fixes
 - multiplayer: a client could send a damage message to the host and hurt or kill the host player (bypassing PvP rules); player damage is accepted only from the server
 - dashboard: a crafted link could inject response headers (for example Set-Cookie) through line breaks in the redirected path; header names and values are stripped of control characters
 - dashboard: changing Max players had no effect until a restart (the transport kept the old limit)
+- multiplayer: clients could take any item from any loaded container anywhere through the DNA take request; the server now only gives one DNA sample from a DNA reconstructor to a dead player
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

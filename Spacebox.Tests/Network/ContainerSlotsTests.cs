@@ -144,4 +144,14 @@ public class ContainerSlotsTests
         Assert.Equal((Ore.Id, -300), (read[0].ItemId, read[0].Amount));
         Assert.Equal((Cell.Id, 7), (read[1].ItemId, read[1].Amount));
     }
+
+    [Fact]
+    public void ReconstructionTake_OnlyOneDnaSampleForADeadPlayer()
+    {
+        Assert.True(ContainerNetwork.IsValidReconstructionTake(Cell, Cell.Id, 1, false));
+        Assert.False(ContainerNetwork.IsValidReconstructionTake(Cell, Ore.Id, 1, false));
+        Assert.False(ContainerNetwork.IsValidReconstructionTake(Cell, Cell.Id, 16, false));
+        Assert.False(ContainerNetwork.IsValidReconstructionTake(Cell, Cell.Id, 1, true));
+        Assert.False(ContainerNetwork.IsValidReconstructionTake(null, Cell.Id, 1, false));
+    }
 }
