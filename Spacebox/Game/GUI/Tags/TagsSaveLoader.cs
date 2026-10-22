@@ -108,7 +108,7 @@ namespace Spacebox.Game.GUI
                 string json = JsonSerializer.Serialize(tagsJsonList, options);
                 string filePath = Path.Combine(worldPath, "tags.json");
 
-                File.WriteAllText(filePath, json);
+                AtomicFile.WriteAllText(filePath, json);
 
                 Debug.Log($"[TagLoader] Saved {tagsJsonList.Count} static tags to {filePath}");
                 return true;

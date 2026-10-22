@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Engine.Utils;
+using System.Text.Json;
 using OpenTK.Mathematics;
 
 using Spacebox.Game.Generation;
@@ -46,7 +47,7 @@ namespace Spacebox.Game.Player
             try
             {
                 Directory.CreateDirectory(worldFolder);
-                File.WriteAllText(GetLocalPlayerFilePath(worldFolder), json);
+                AtomicFile.WriteAllText(GetLocalPlayerFilePath(worldFolder), json);
             }
             catch (Exception ex)
             {
@@ -60,7 +61,7 @@ namespace Spacebox.Game.Player
             {
                 string path = GetPlayerFilePath(worldFolder, playerName);
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
-                File.WriteAllText(path, json);
+                AtomicFile.WriteAllText(path, json);
             }
             catch (Exception ex)
             {

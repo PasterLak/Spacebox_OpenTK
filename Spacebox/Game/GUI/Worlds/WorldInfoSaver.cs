@@ -1,3 +1,4 @@
+using Engine.Utils;
 using System.Text.Json;
 
 using Engine;
@@ -101,7 +102,7 @@ public class WorldInfoSaver
         string worldJsonPath = Path.Combine(worldFolder, "world.json");
         string jsonContent = JsonSerializer.Serialize(worldInfo, new JsonSerializerOptions { WriteIndented = true });
 
-        File.WriteAllText(worldJsonPath, jsonContent);
+        AtomicFile.WriteAllText(worldJsonPath, jsonContent);
     }
 
     public static string GetWorldFolder(WorldInfo worldInfo)

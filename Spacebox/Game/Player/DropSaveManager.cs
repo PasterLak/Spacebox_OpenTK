@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Engine.Utils;
+using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
 using System.Text.Json;
@@ -58,7 +59,7 @@ public static class DropSaveManager
         try
         {
             var json = JsonSerializer.Serialize(dropData, JsonOptions);
-            File.WriteAllText(filePath, json);
+            AtomicFile.WriteAllText(filePath, json);
             Debug.Log($"[DropSaveManager] Saved {dropData.Count} drops to {filePath}");
         }
         catch (Exception ex)

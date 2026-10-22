@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using Engine.Utils;
+using Engine;
 using OpenTK.Mathematics;
 using SharpNBT;
 using Spacebox.Game.Generation.Structures;
@@ -121,7 +122,7 @@ namespace Spacebox.Game.Generation.Tools
 
                 Debug.Success("[WorldSaveLoad] Entity was saved: " + entities[i].EntityID + "  pos: " + entities[i].PositionWorld);
                 //NbtFile.WriteAsync(Path.Combine(sectorFolderPath, entity.Name + ".entity"), entityTag, FormatOptions.Java, CompressionType.GZip);
-                NbtFile.Write(EntityFiles.PathOf(sectorFolderPath, entity.Name), entityTag, FormatOptions.Java, CompressionType.GZip);
+                AtomicFile.Write(EntityFiles.PathOf(sectorFolderPath, entity.Name), temp => NbtFile.Write(temp, entityTag, FormatOptions.Java, CompressionType.GZip));
                 DeleteStaleEntityFile(worldPath, entity.SavedSectorIndex, sector.PositionIndex, entity.Name);
                 entity.SavedSectorIndex = sector.PositionIndex;
             }
@@ -152,7 +153,7 @@ namespace Spacebox.Game.Generation.Tools
                 }
             }
 
-            NbtFile.Write(Path.Combine(sectorFolderPath, Sector.IndexToFolderName(sectorIndex) + ".sector"), sectorTag, FormatOptions.Java, CompressionType.GZip);
+            AtomicFile.Write(Path.Combine(sectorFolderPath, Sector.IndexToFolderName(sectorIndex) + ".sector"), temp => NbtFile.Write(temp, sectorTag, FormatOptions.Java, CompressionType.GZip));
             return sectorFolderPath;
         }
 

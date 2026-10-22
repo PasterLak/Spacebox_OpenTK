@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using Engine.Utils;
+using System.Collections.Concurrent;
 using SharpNBT;
 using Spacebox.Game.Generation.Tools;
 using Engine;
@@ -180,7 +181,7 @@ namespace Spacebox.Game.Generation
                     }
 
                     string filePath = EntityFiles.PathOf(sectorPath, data.Name);
-                    NbtFile.Write(filePath, data.Tag, FormatOptions.Java, CompressionType.GZip);
+                    AtomicFile.Write(filePath, temp => NbtFile.Write(temp, data.Tag, FormatOptions.Java, CompressionType.GZip));
                     WorldSaveLoad.DeleteStaleEntityFile(worldPath, data.PreviousSectorIndex, data.SectorIndex, data.Name);
                 }
                 catch (Exception ex)

@@ -228,6 +228,7 @@ Fixes
 - pipes, analyzers and machine tasks of unloaded entities kept running (a new copy piled up on every sector reload)
 - a broken preview.jpg or world.json (e.g. after a crash while saving) crashed the main menu; such worlds are now skipped or shown without preview
 - an unreadable entity file was reloaded and logged as an error every frame; it is now tried 3 times per sector load
+- saves (entities, sectors, player, world.json, tags, drops) are written to a temp file and moved into place, so a crash while saving no longer truncates them
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons
