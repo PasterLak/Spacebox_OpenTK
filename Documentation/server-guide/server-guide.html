@@ -83,7 +83,7 @@
   </div>
 </div>
 <p>On the first start the server creates <code>serverconfig.json</code> and a new world in <code>Worlds/ServerWorld</code>. When the log shows <code>World ready</code>, players can join.</p>
-<div class="box tip"><b>Stop the server safely</b>Type <code>stop</code> in the terminal (or use Stop in the dashboard). The world is saved first. Closing the window without <code>stop</code> loses changes since the last autosave.</div>
+<div class="box tip"><b>Stop the server safely</b>Type <code>stop</code> in the terminal (or use Stop in the dashboard). The world is saved first. Ctrl+C, closing the terminal window and a system stop signal (SIGTERM, for example from systemd or Docker) also save before the server stops (Windows waits only about 5 seconds when the window is closed). Killing the process loses changes since the last autosave.</div>
 <p>Without the scripts: <code>Spacebox.exe --server</code> (Windows) or <code>./Spacebox --server</code> (Linux).</p>
 
 <h2>2. The config file</h2>

@@ -13,6 +13,8 @@ public static class DedicatedServer
 {
     public static ServerConfig Config { get; private set; }
 
+    private static ServerShutdownSignals _shutdownSignals;
+
     public static void WarnIfAdminsUnprotected(ServerConfig config)
     {
         if (config.Admins.Count > 0 && !Spacebox.Network.Admin.ServerAdmins.RightsActive(config))
@@ -42,6 +44,8 @@ public static class DedicatedServer
 
         RegisterCommands();
         StartConsoleReader();
+        _shutdownSignals = new ServerShutdownSignals(action => EngineWindow._mainThreadActions.Enqueue(action), ServerRestart.Stop);
+        _shutdownSignals.Register();
         Dashboard.DashboardService.Start(Config);
 
         Debug.Success($"[Server] Starting '{Config.ServerName}' with world '{world.Name}' on port {Config.Port}");
