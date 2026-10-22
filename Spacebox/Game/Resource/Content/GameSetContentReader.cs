@@ -10,11 +10,12 @@ public static class GameSetContentReader
     public static GameSetContent Read(IReadOnlyList<ContentLayer> layers, ContentLayer fallback = null)
     {
         var warnings = new List<string>();
-        var blocks = new KeyedContentList("Block", warnings);
-        var items = new KeyedContentList("Item", warnings);
-        var categories = new KeyedContentList("Crafting category", warnings);
-        var blueprints = new KeyedContentList("Blueprint", warnings);
-        var recipes = new KeyedContentList("Recipe", warnings);
+        Func<ContentLayer, bool> isBase = layer => (layers.Count > 0 && ReferenceEquals(layer, layers[0])) || ReferenceEquals(layer, fallback);
+        var blocks = new KeyedContentList("Block", warnings, isBase);
+        var items = new KeyedContentList("Item", warnings, isBase);
+        var categories = new KeyedContentList("Crafting category", warnings, isBase);
+        var blueprints = new KeyedContentList("Blueprint", warnings, isBase);
+        var recipes = new KeyedContentList("Recipe", warnings, isBase);
 
         for (int i = 0; i < layers.Count; i++)
         {

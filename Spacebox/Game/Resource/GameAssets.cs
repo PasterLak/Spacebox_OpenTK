@@ -210,10 +210,8 @@ namespace Spacebox.Game
         public static AudioClip GetBlockAudioClipFromItemID(short itemId, BlockInteractionType type)
         {
             var blockData = GetBlockDataById(itemId);
-            if (type == BlockInteractionType.Place)
-                return Sounds[blockData.SoundPlace];
-            else
-                return Sounds[blockData.SoundDestroy];
+            string name = type == BlockInteractionType.Place ? blockData?.SoundPlace : blockData?.SoundDestroy;
+            return name != null && Sounds.TryGetValue(name, out var clip) ? clip : null;
         }
 
         public static Storage CreateCreativeStorage(byte sizeX, List<Item> items)

@@ -365,17 +365,17 @@ public static class GameSetLoader
                     string idString = "";
                     Color3Byte color = new Color3Byte();
 
-                    if (itemElement.TryGetProperty("Type", out JsonElement typeElement))
+                    if (ContentJson.TryGetProperty(itemElement, "Type", out JsonElement typeElement))
                     {
                         type = typeElement.GetString().ToLower();
                     }
 
-                    if (itemElement.TryGetProperty("GlowColor", out JsonElement t))
+                    if (ContentJson.TryGetProperty(itemElement, "GlowColor", out JsonElement t))
                     {
                         try { color = t.Deserialize<Color3Byte>(); } catch { color = Color3Byte.Zero; }
                     }
 
-                    if (itemElement.TryGetProperty("ID", out JsonElement idElement))
+                    if (ContentJson.TryGetProperty(itemElement, "ID", out JsonElement idElement))
                     {
                         idString = idElement.GetString();
                         idString = ValidateIdString(ModInfo.ModId, idString);
@@ -396,43 +396,43 @@ public static class GameSetLoader
                     switch (type)
                     {
                         case "weapon":
-                            var weaponData = itemElement.Deserialize<WeaponItemJSON>();
+                            var weaponData = itemElement.Deserialize<WeaponItemJSON>(ContentJson.CaseInsensitive);
                             if (weaponData != null) registeredItem = RegisterWeaponItem(weaponData, idString);
                             break;
                         case "drill":
-                            var drillData = itemElement.Deserialize<DrillItemJSON>();
+                            var drillData = itemElement.Deserialize<DrillItemJSON>(ContentJson.CaseInsensitive);
                             if (drillData != null) registeredItem = RegisterDrillItem(drillData, idString);
                             break;
                         case "consumable":
-                            var consumableData = itemElement.Deserialize<ConsumableItemJSON>();
+                            var consumableData = itemElement.Deserialize<ConsumableItemJSON>(ContentJson.CaseInsensitive);
                             if (consumableData != null) registeredItem = RegisterConsumableItem(consumableData, idString);
                             break;
                         case "repair_tool":
-                            var repairData = itemElement.Deserialize<RepairToolItemJSON>();
+                            var repairData = itemElement.Deserialize<RepairToolItemJSON>(ContentJson.CaseInsensitive);
                             if (repairData != null) registeredItem = RegisterRepairToolItem(repairData, idString);
                             break;
                         case "mob_spawner":
-                            var spawnerData = itemElement.Deserialize<MobSpawnerItemJSON>();
+                            var spawnerData = itemElement.Deserialize<MobSpawnerItemJSON>(ContentJson.CaseInsensitive);
                             if (spawnerData != null) registeredItem = RegisterMobSpawnerItem(spawnerData, idString);
                             break;
                         case "picture":
-                            var pictureData = itemElement.Deserialize<PictureItemJSON>();
+                            var pictureData = itemElement.Deserialize<PictureItemJSON>(ContentJson.CaseInsensitive);
                             if (pictureData != null) registeredItem = RegisterPictureItem(pictureData, idString, entry);
                             break;
                         case "equipment":
-                            var equipmentData = itemElement.Deserialize<EquipmentJSON>();
+                            var equipmentData = itemElement.Deserialize<EquipmentJSON>(ContentJson.CaseInsensitive);
                             if (equipmentData != null) registeredItem = RegisterEquipmentItem(equipmentData, idString, entry);
                             break;
                         case "item":
                         default:
-                            var itemData = itemElement.Deserialize<ItemJSON>();
+                            var itemData = itemElement.Deserialize<ItemJSON>(ContentJson.CaseInsensitive);
                             if (itemData != null) registeredItem = RegisterItem(itemData, idString);
                             break;
                     }
 
                     if (registeredItem != null)
                     {
-                        if (itemElement.TryGetProperty("Description", out var v))
+                        if (ContentJson.TryGetProperty(itemElement, "Description", out var v))
                         {
                             registeredItem.Description = v.GetString();
                         }
@@ -685,6 +685,12 @@ public static class GameSetLoader
 
             Item? item = null;
 
+            if (e?.Product == null || string.IsNullOrWhiteSpace(e.Product.Item) || e.Ingredients == null)
+            {
+                Debug.Error($"[GameSetLoader] [Blueprints]: A blueprint without Product.Item or Ingredients was skipped");
+                continue;
+            }
+
             var productFullID = CombineId(ModInfo.ModId, e.Product.Item);
             item = GameAssets.GetItemByFullID(productFullID);
 
@@ -700,6 +706,11 @@ public static class GameSetLoader
             foreach (var ing in e.Ingredients)
             {
                 Item? item2 = null;
+                if (ing == null || string.IsNullOrWhiteSpace(ing.Item))
+                {
+                    Debug.Error($"[GameSetLoader] [Blueprints]: An ingredient without Item in the blueprint of {e.Product.Item} was skipped");
+                    continue;
+                }
 
                 var ingName = ing.Item.ToLower();
 

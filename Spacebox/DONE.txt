@@ -116,6 +116,11 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- mods: archives can't write outside their folder (RAR), get a safe folder name, never replace Default and only replace a folder of the same mod
+- mods: item JSON property names are case-insensitive like all other content
+- mods: textures and sounds a base GameSet lacks come from Default; a block without its place/break sound no longer crashes
+- mods: a blueprint without product or ingredients is skipped alone instead of stopping all crafting recipes
+- mods: a config.json without ModId uses the folder name; duplicate GameSet ids and extensions changing each other's entries are warned about
 - multiplayer: leaving a server no longer loses the last seconds of inventory (the client waits for the server to confirm its data) - fixes item duplication by leaving
 - multiplayer: edits, damage, explosions and block states for an asteroid or ship a client is still loading are applied after it loads instead of being lost
 - multiplayer: a ship that stops sends its final position several times, so clients don't keep it drifting

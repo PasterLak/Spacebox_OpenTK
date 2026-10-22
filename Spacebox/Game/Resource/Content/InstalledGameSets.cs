@@ -9,7 +9,28 @@ public static class InstalledGameSets
     {
         var result = new List<InstalledGameSet>();
         foreach (var folder in folders.ContentFolders) result.AddRange(Scan(folder));
+        foreach (var duplicate in DuplicateIds(result))
+            Engine.Debug.Warning($"[GameSets] Several GameSets use the id '{duplicate}', only the first one is used");
         return result;
+    }
+
+    public static List<string> DuplicateIds(IReadOnlyList<InstalledGameSet> gameSets)
+    {
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var duplicates = new List<string>();
+        foreach (var gameSet in gameSets)
+        {
+            if (!seen.Add(gameSet.Id) && !duplicates.Contains(gameSet.Id, StringComparer.OrdinalIgnoreCase)) duplicates.Add(gameSet.Id);
+        }
+        return duplicates;
+    }
+
+    private static bool HasProperty(System.Text.Json.Nodes.JsonNode node, string name)
+    {
+        if (node is not System.Text.Json.Nodes.JsonObject obj) return false;
+        foreach (var pair in obj)
+            if (string.Equals(pair.Key, name, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
     }
 
     public static List<InstalledGameSet> Scan(string modsDirectory)
@@ -43,6 +64,7 @@ public static class InstalledGameSets
             config.Extends ??= "";
             config.Includes ??= new List<string>();
             config.FolderName = Path.GetFileName(folder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+            if (!HasProperty(node, "ModId") || string.IsNullOrWhiteSpace(config.ModId)) config.ModId = config.FolderName.ToLowerInvariant();
             return config;
         }
         catch (System.Text.Json.JsonException)

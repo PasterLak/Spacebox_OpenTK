@@ -67,6 +67,8 @@ internal static class GameSetsUnpacker
                     foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                     {
                         string destinationPath = Path.Combine(tempExtractPath, entry.Key);
+                        if (!ModInstallTarget.IsInside(tempExtractPath, destinationPath))
+                            throw new InvalidDataException($"Archive entry '{entry.Key}' is outside the mod folder");
                         string directoryPath = Path.GetDirectoryName(destinationPath);
 
                         if (!Directory.Exists(directoryPath))
@@ -88,18 +90,19 @@ internal static class GameSetsUnpacker
                 }
 
                 string modName = useModNameAsFolder ? GetModNameFromConfig(modFolder) : null;
-                string targetFolderName = !string.IsNullOrEmpty(modName) ? modName : Path.GetFileNameWithoutExtension(archivePath);
-                bool isExtension = !string.IsNullOrWhiteSpace(InstalledGameSets.ReadConfig(modFolder)?.Extends);
+                string targetFolderName = ModInstallTarget.SafeFolderName(modName, Path.GetFileNameWithoutExtension(archivePath));
+                var config = InstalledGameSets.ReadConfig(modFolder);
+                bool isExtension = !string.IsNullOrWhiteSpace(config?.Extends);
                 string targetRoot = folders.FolderFor(isExtension);
                 Directory.CreateDirectory(targetRoot);
-                string targetFolder = Path.Combine(targetRoot, targetFolderName);
+                string targetFolder = ModInstallTarget.Resolve(targetRoot, targetFolderName, config?.ModId, folder => InstalledGameSets.ReadConfig(folder)?.ModId, out bool replaces);
 
                 Debug.Log($"[GameSetsUnpacker] Mod folder found: {modFolder}");
                 Debug.Log($"[GameSetsUnpacker] Target folder: {targetFolder}");
 
-                if (Directory.Exists(targetFolder))
+                if (replaces)
                 {
-                    Debug.Log($"[GameSetsUnpacker] Removing existing folder: {targetFolder}");
+                    Debug.Log($"[GameSetsUnpacker] Updating the installed mod in {targetFolder}");
                     Directory.Delete(targetFolder, true);
                 }
 

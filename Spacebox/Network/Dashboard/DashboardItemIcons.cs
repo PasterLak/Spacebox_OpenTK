@@ -52,7 +52,7 @@ public sealed class DashboardItemIcons
         return new IconSource
         {
             Textures = ReadTextureNames(result.Stack.ReadContent()),
-            Assets = GameSetAssetIndex.Build(result.Stack.Layers)
+            Assets = GameSetAssetIndex.Build(result.Stack.AssetLayers)
         };
     }
 

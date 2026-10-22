@@ -12,7 +12,7 @@ namespace Spacebox.Scenes
     {
         private static void InitializeGamesetData(GameSetStack stack, bool applyTexturePacks)
         {
-            var layers = stack?.Layers ?? Array.Empty<ContentLayer>();
+            var layers = stack?.AssetLayers ?? Array.Empty<ContentLayer>();
             var overrides = applyTexturePacks ? Spacebox.Game.Resource.TexturePacks.TexturePackService.ActiveOverrides() : null;
             var assets = GameSetAssetIndex.Build(layers, GameAtlasFactory.BuiltInBlocksFolder, GameAtlasFactory.BuiltInItemsFolder, overrides);
 

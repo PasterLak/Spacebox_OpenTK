@@ -20,6 +20,17 @@ public sealed class GameSetStack
             Fallback = new ContentLayer(Globals.GameSet.Default.ToLowerInvariant(), defaultFolder);
     }
 
+    public IReadOnlyList<ContentLayer> AssetLayers
+    {
+        get
+        {
+            if (Fallback == null) return Layers;
+            var layers = new List<ContentLayer>(Layers.Count + 1) { Fallback };
+            layers.AddRange(Layers);
+            return layers;
+        }
+    }
+
     public IReadOnlyList<string> ExtensionIds
     {
         get
