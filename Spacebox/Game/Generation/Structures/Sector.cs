@@ -205,7 +205,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     {
         BiomesMap = new BiomesMap(PositionIndex, World.BiomeGenerator, generatorVersion);
 
-        var planned = SectorAsteroidPlanner.Plan(World.WorldGenerator, Seed, PositionWorld, BiomesMap.GetFromSectorLocalCoord, NextAsteroidId);
+        var planned = SectorAsteroidPlanner.Plan(World.WorldGenerator, Seed, PositionWorld, BiomesMap.GetFromSectorLocalCoord, NextAsteroidId, generatorVersion);
         foreach (var data in planned)
         {
             if (EntitiesGeneratedData.ContainsKey(data.Id)) continue;

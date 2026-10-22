@@ -10,7 +10,7 @@
         "HasCavities": false,
         "HasOreDeposits": true,
         "UsePerlinWorms": true,
-        "Shape": { "Stretch": 0.4, "Warp": 0.3, "Roughness": 0.3, "Lobes": { "Chance": 60, "MinCount": 1, "MaxCount": 2, "MinSize": 0.3, "MaxSize": 0.55 }, "Bite": { "Chance": 8, "MinSize": 0.3, "MaxSize": 0.5 }, "Craters": { "MinCount": 1, "MaxCount": 5, "MinSize": 0.12, "MaxSize": 0.3 } },
+        "Shape": { "Chance": 70, "Stretch": 0.4, "Warp": 0.3, "Roughness": 0.3, "Lobes": { "Chance": 60, "MinCount": 1, "MaxCount": 2, "MinSize": 0.3, "MaxSize": 0.55 }, "Bite": { "Chance": 8, "MinSize": 0.3, "MaxSize": 0.5 }, "Craters": { "MinCount": 1, "MaxCount": 5, "MinSize": 0.12, "MaxSize": 0.3 } },
          
         "WormSettings": {
             "MinCount": 1,

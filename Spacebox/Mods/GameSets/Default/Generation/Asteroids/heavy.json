@@ -10,7 +10,7 @@
         "HasCavities": true,
         "HasOreDeposits": true,
         "UsePerlinWorms": true,
-        "Shape": { "Stretch": 0.3, "Warp": 0.35, "Roughness": 0.22, "Lobes": { "Chance": 70, "MinCount": 2, "MaxCount": 4, "MinSize": 0.3, "MaxSize": 0.6 }, "Double": { "Chance": 15, "MinSize": 0.55, "MaxSize": 0.95, "Neck": 0.55 }, "Torus": { "Chance": 5, "MinTube": 0.25, "MaxTube": 0.35 }, "Bite": { "Chance": 12, "MinSize": 0.35, "MaxSize": 0.6 }, "Craters": { "MinCount": 1, "MaxCount": 5, "MinSize": 0.1, "MaxSize": 0.25 } },
+        "Shape": { "Chance": 70, "Stretch": 0.3, "Warp": 0.35, "Roughness": 0.22, "Lobes": { "Chance": 70, "MinCount": 2, "MaxCount": 4, "MinSize": 0.3, "MaxSize": 0.6 }, "Double": { "Chance": 15, "MinSize": 0.55, "MaxSize": 0.95, "Neck": 0.55 }, "Torus": { "Chance": 5, "MinTube": 0.25, "MaxTube": 0.35 }, "Bite": { "Chance": 12, "MinSize": 0.35, "MaxSize": 0.6 }, "Craters": { "MinCount": 1, "MaxCount": 5, "MinSize": 0.1, "MaxSize": 0.25 } },
         "Mobs": [ { "Mob": "mineral_parasite", "Chance": 100, "MaxPerEntity": 4, "MinDepth": 0.2 } ],
         "WormSettings": {
             "MinCount": 5,

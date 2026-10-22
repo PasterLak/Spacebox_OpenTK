@@ -2,6 +2,7 @@ namespace Spacebox.Game.Generation.Structures;
 
 public class AsteroidShapeJSON
 {
+    public byte Chance { get; set; } = 100;
     public float Stretch { get; set; } = 0.3f;
     public float Warp { get; set; } = 0.25f;
     public float Roughness { get; set; } = 0.3f;

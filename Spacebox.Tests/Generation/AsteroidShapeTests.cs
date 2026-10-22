@@ -199,4 +199,33 @@ public class AsteroidShapeTests
         for (int z = 0; z < steps; z++)
             yield return (new Vector3(x, y, z) / (steps - 1) * 2f - Vector3.One) * radius;
     }
+
+    [Fact]
+    public void ShapeChance_KeepsSomeAsteroidsClassic()
+    {
+        var asteroid = new AsteroidData("mixed", "Mixed") { Shape = new AsteroidShapeJSON { Chance = 70 } };
+        int shaped = 0;
+        for (int seed = 0; seed < 1000; seed++)
+        {
+            var first = AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, asteroid, seed);
+            Assert.Equal(first != null, AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, asteroid, seed) != null);
+            if (first != null) shaped++;
+        }
+
+        Assert.InRange(shaped, 640, 760);
+        Assert.Null(AsteroidGenerationContext.CreateShape(GeneratorVersions.Shapes, new AsteroidData("never", "Never") { Shape = new AsteroidShapeJSON { Chance = 0 } }, 1));
+    }
+
+    [Fact]
+    public void Planner_GivesAsteroidsTheWorldVersion()
+    {
+        var biome = new Biome(new BiomeJSON { Id = "field", SpawnChance = 100 });
+        biome.AsteroidChances[new AsteroidData("rock", "Rock") { MinRadius = 10, MaxRadius = 20 }] = 1;
+        var generator = new WorldGenerator { MinAsteroidsInSector = 20, MaxAsteroidsInSector = 30, RejectionSamples = 5, MinDistanceBetweenAsteroids = 128, Biomes = new[] { biome } };
+
+        var planned = SectorAsteroidPlanner.Plan(generator, 5, Vector3.Zero, _ => biome, p => (long)p.LengthSquared, GeneratorVersions.Shapes);
+
+        Assert.NotEmpty(planned);
+        Assert.All(planned, a => Assert.Equal(GeneratorVersions.Shapes, a.generatorVersion));
+    }
 }

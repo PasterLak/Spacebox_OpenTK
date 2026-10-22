@@ -27,6 +27,7 @@ public sealed class AsteroidGenerationContext
     public static AsteroidShape CreateShape(int version, AsteroidData asteroid, int seed)
     {
         if (!GeneratorVersions.UsesShapes(version) || asteroid?.Shape == null) return null;
+        if (new Random(seed ^ 0x6A09E667).Next(100) >= asteroid.Shape.Chance) return null;
         return new AsteroidShape(asteroid.Shape, seed);
     }
 

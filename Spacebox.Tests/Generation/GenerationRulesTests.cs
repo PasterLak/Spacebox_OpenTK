@@ -29,7 +29,7 @@ public class GenerationRulesTests
 
     private static List<NotGeneratedEntity> Plan(WorldGenerator generator, Biome biome, long seed = 12345)
     {
-        return SectorAsteroidPlanner.Plan(generator, seed, new Vector3(8192, 0, 0), _ => biome, p => SeedHelper.GetAsteroidId(seed, p) & 0x7FFFFFFFFFFFFFFF);
+        return SectorAsteroidPlanner.Plan(generator, seed, new Vector3(8192, 0, 0), _ => biome, p => SeedHelper.GetAsteroidId(seed, p) & 0x7FFFFFFFFFFFFFFF, GeneratorVersions.Rules);
     }
 
     [Fact]

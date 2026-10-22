@@ -6,7 +6,7 @@ namespace Spacebox.Game.Generation.Structures;
 
 public static class SectorAsteroidPlanner
 {
-    public static List<NotGeneratedEntity> Plan(WorldGenerator generator, long sectorSeed, Vector3 sectorOrigin, Func<Vector3, Biome> biomeAt, Func<Vector3, long> idFor)
+    public static List<NotGeneratedEntity> Plan(WorldGenerator generator, long sectorSeed, Vector3 sectorOrigin, Func<Vector3, Biome> biomeAt, Func<Vector3, long> idFor, int generatorVersion)
     {
         var result = new List<NotGeneratedEntity>();
         int maxDensity = MaxDensity(generator);
@@ -52,7 +52,7 @@ public static class SectorAsteroidPlanner
                 positionWorld = world,
                 rotation = Vector3.Zero,
                 FileName = id.ToString(),
-                generatorVersion = GeneratorVersions.Rules,
+                generatorVersion = generatorVersion,
                 generationDistance = distance
             });
         }

@@ -39,7 +39,7 @@ public sealed class BiomeMapPreview : IDisposable
                 var origin = SpaceMath.Sector.GetSectorPosition(sectorIndex);
                 long sectorSeed = SeedHelper.GetSectorId(worldSeed, sectorIndex);
                 var asteroids = GeneratorVersions.UsesRules(generatorVersion)
-                    ? PlannedAsteroids(generator, sectorSeed, origin, map)
+                    ? PlannedAsteroids(generator, sectorSeed, origin, map, generatorVersion)
                     : LegacyAsteroids(generator, sectorSeed, origin, map);
 
                 _pending = new BuildResult(map, asteroids.ToArray(), origin, generator.Biomes);
@@ -52,9 +52,9 @@ public sealed class BiomeMapPreview : IDisposable
         }, WorkerPoolManager.Priority.Medium);
     }
 
-    private static List<Vector3> PlannedAsteroids(WorldGenerator generator, long sectorSeed, Vector3 origin, BiomesMap map)
+    private static List<Vector3> PlannedAsteroids(WorldGenerator generator, long sectorSeed, Vector3 origin, BiomesMap map, int generatorVersion)
     {
-        var planned = SectorAsteroidPlanner.Plan(generator, sectorSeed, origin, map.GetFromSectorLocalCoord, point => SeedHelper.GetAsteroidId(sectorSeed, point) & 0x7FFFFFFFFFFFFFFF);
+        var planned = SectorAsteroidPlanner.Plan(generator, sectorSeed, origin, map.GetFromSectorLocalCoord, point => SeedHelper.GetAsteroidId(sectorSeed, point) & 0x7FFFFFFFFFFFFFFF, generatorVersion);
         var asteroids = new List<Vector3>(planned.Count);
         foreach (var data in planned) asteroids.Add(data.positionInSector);
         return asteroids;

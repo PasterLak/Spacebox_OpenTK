@@ -22,7 +22,7 @@ public sealed class AsteroidPreviewContent : IPreviewContent
 
     private static string Describe(Game.Generation.Shapes.Asteroids.AsteroidShape shape)
     {
-        if (shape == null) return "Shape: sphere noise (no Shape section)";
+        if (shape == null) return "Shape: classic (sphere noise)";
 
         string text = $"Shape: {shape.Kind}";
         if (shape.LobeCount > 0) text += $", {shape.LobeCount} lobes";
