@@ -159,8 +159,9 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
     private void DrawPreview()
     {
         var available = ImGui.GetContentRegionAvail();
-        float infoHeight = ImGui.GetTextLineHeightWithSpacing() * 3f;
+        float infoHeight = ImGui.GetTextLineHeightWithSpacing() * 3f + ImGui.GetFrameHeightWithSpacing();
         _session.DrawViewport(new Vector2(available.X, MathF.Max(32f, available.Y - infoHeight)));
+        DrawControls();
 
         var ship = _session.SelectedShip;
         if (ship == null) ImGui.TextDisabled("Select a ship to view it");
@@ -169,6 +170,40 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         if (!string.IsNullOrEmpty(_session.Status)) ImGui.TextColored(WarningColor, _session.Status);
         if (!string.IsNullOrEmpty(_session.GameSetNotice)) ImGui.TextColored(WarningColor, _session.GameSetNotice);
         if (_session.SelectedWorld?.Status == SavedWorldStatus.NeedsUpgrade) ImGui.TextColored(WarningColor, _session.SelectedWorld.Message);
+    }
+
+    private void DrawControls()
+    {
+        var content = _session.Content;
+        bool ready = content != null && content.IsReady;
+
+        ImGui.Text("Light");
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * 0.2f);
+        float ambient = _session.AmbientLight;
+        if (ImGui.SliderFloat("##shipViewerLight", ref ambient, 0f, 1.5f, "%.2f")) _session.AmbientLight = ambient;
+
+        ImGui.SameLine(0f, 16f);
+        bool powered = _session.Powered;
+        if (ImGui.Checkbox("Power", ref powered)) _session.Powered = powered;
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Turns all energy blocks on or off (look only)");
+
+        ImGui.SameLine(0f, 16f);
+        ImGui.BeginDisabled(!ready || !content.HasEngines);
+        bool engines = _session.EnginesOn;
+        if (ImGui.Checkbox("Engines", ref engines)) _session.EnginesOn = engines;
+        ImGui.EndDisabled();
+
+        ImGui.SameLine(0f, 16f);
+        ImGui.BeginDisabled(!ready || !content.HasCannons);
+        if (ImGui.Button("Fire")) _session.FireWeapons();
+        ImGui.EndDisabled();
+
+        ImGui.SameLine(0f, 16f);
+        ImGui.BeginDisabled(!ready);
+        if (ImGui.Button("Save picture")) _session.SavePicture();
+        ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Renders the ship and saves it to the screenshots folder");
     }
 
     private void DrawShipInfo(SavedShip ship)

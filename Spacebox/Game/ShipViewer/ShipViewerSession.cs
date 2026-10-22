@@ -10,7 +10,7 @@ namespace Spacebox.Game.ShipViewer;
 public sealed class ShipViewerSession : IDisposable
 {
     private const int WorkerWaitMilliseconds = 3000;
-    private static readonly OpenTK.Mathematics.Vector3 PreviewAmbient = new OpenTK.Mathematics.Vector3(1f, 1f, 1f);
+    private const float PictureScale = 2f;
 
     private readonly string _worldsDirectory;
     private readonly WorldUpgradeRegistry _registry;
@@ -24,6 +24,8 @@ public sealed class ShipViewerSession : IDisposable
     private CancellationTokenSource _scanCancel;
     private SavedShip _requestedShip;
     private bool _gameSetLoadAnnounced;
+    private bool _powered = true;
+    private bool _enginesOn;
 
     public ShipViewerSession(string worldsDirectory, WorldUpgradeRegistry registry, string version)
     {
@@ -41,6 +43,37 @@ public sealed class ShipViewerSession : IDisposable
     public string Status { get; private set; } = "";
     public string GameSetNotice => _gameSet.Notice;
     public ShipPreviewContent Content => _viewport?.Content as ShipPreviewContent;
+    public float AmbientLight { get; set; } = 1f;
+
+    public bool Powered
+    {
+        get => _powered;
+        set
+        {
+            _powered = value;
+            Content?.SetPowered(value);
+        }
+    }
+
+    public bool EnginesOn
+    {
+        get => _enginesOn;
+        set
+        {
+            _enginesOn = value;
+            if (Content != null) Content.EnginesOn = value;
+        }
+    }
+
+    public void FireWeapons()
+    {
+        Content?.FireWeapons();
+    }
+
+    public void SavePicture()
+    {
+        _viewport?.RequestCapture(Engine.FramebufferCapture.CreateScreenshotPath("ship"), PictureScale);
+    }
 
     public void Open()
     {
@@ -94,7 +127,7 @@ public sealed class ShipViewerSession : IDisposable
 
         var ambient = Lighting.AmbientColor;
         int fog = Lighting.FogDensity;
-        Lighting.AmbientColor = PreviewAmbient;
+        Lighting.AmbientColor = new OpenTK.Mathematics.Vector3(AmbientLight);
         Lighting.FogDensity = 0;
         try
         {
@@ -166,7 +199,14 @@ public sealed class ShipViewerSession : IDisposable
         var ship = _requestedShip;
         _requestedShip = null;
         Status = "";
-        _viewport.SetContent(ship.FilePath, _gameSet.Version, () => Track(new ShipPreviewContent(() => _loader.Load(world, ship), ShipFraming.FromStats(ship.Stats))));
+        _viewport.SetContent(ship.FilePath, _gameSet.Version, () => Track(CreateContent(world, ship)));
+    }
+
+    private ShipPreviewContent CreateContent(SavedWorld world, SavedShip ship)
+    {
+        var content = new ShipPreviewContent(() => _loader.Load(world, ship), ShipFraming.FromStats(ship.Stats)) { EnginesOn = _enginesOn };
+        content.SetPowered(_powered);
+        return content;
     }
 
     private ShipPreviewContent Track(ShipPreviewContent content)

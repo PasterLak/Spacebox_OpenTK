@@ -15,7 +15,7 @@ public class ThrusterBlock : ElectricalBlock, IShipPart, IEntityBlockListener
     public bool IsFiring { get; set; }
     public float Force => _data.Force;
     public Vector3 ThrustDirection => -Frame.Front;
-    public Vector3 ExhaustPointLocal => Frame.Center + Frame.Front * Frame.ExtentAlong(Frame.Front);
+    public Vector3 ExhaustPointLocal => Frame.FrontFacePoint;
 
     public ThrusterBlock(BlockData blockData) : base(blockData)
     {

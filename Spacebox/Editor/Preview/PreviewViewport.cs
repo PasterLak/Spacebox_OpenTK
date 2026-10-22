@@ -9,6 +9,7 @@ public sealed class PreviewViewport : IDisposable
 {
     private const float OrbitSpeed = 0.4f;
     private const float AutoRotateSpeed = 18f;
+    private const int MaxCaptureSize = 4096;
 
     private readonly RenderTexture _target = new RenderTexture(256, 256);
     private readonly TrackballViewCamera _camera = new TrackballViewCamera();
@@ -18,6 +19,8 @@ public sealed class PreviewViewport : IDisposable
     private bool _visible;
     private bool _framed;
     private bool _autoRotate = true;
+    private string _capturePath;
+    private float _captureScale = 1f;
 
     public IPreviewContent Content => _content;
     public bool AutoRotate { get => _autoRotate; set => _autoRotate = value; }
@@ -97,18 +100,56 @@ public sealed class PreviewViewport : IDisposable
         if (_autoRotate) _camera.Spin(OpenTK.Mathematics.Vector3.UnitY, AutoRotateSpeed * deltaTime);
     }
 
+    public void RequestCapture(string path, float scale)
+    {
+        _capturePath = path;
+        _captureScale = MathF.Max(1f, scale);
+    }
+
     public void Render()
     {
+        Capture();
         if (!_visible) return;
         _visible = false;
 
+        RenderTo(_target);
+    }
+
+    private void RenderTo(RenderTexture target)
+    {
         var content = _content;
         var background = Background;
-        _target.Render(_camera, () =>
+        target.Render(_camera, () =>
         {
             background?.Invoke();
             if (content != null && content.IsReady) content.Render();
         });
+    }
+
+    private void Capture()
+    {
+        if (_capturePath == null) return;
+
+        string path = _capturePath;
+        _capturePath = null;
+        if (_content == null || !_content.IsReady) return;
+
+        float scale = MathF.Min(_captureScale, MaxCaptureSize / (float)Math.Max(_target.Width, _target.Height));
+        using var capture = new RenderTexture((int)(_target.Width * scale), (int)(_target.Height * scale));
+        try
+        {
+            RenderTo(capture);
+            FramebufferCapture.SaveRenderTexture(capture, path);
+            Debug.Success($"Preview picture saved: {Path.GetFullPath(path)}");
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[Editor] Preview picture could not be saved: {ex.Message}");
+        }
+        finally
+        {
+            _camera.AspectRatio = (float)_target.Width / _target.Height;
+        }
     }
 
     public void ResetView()

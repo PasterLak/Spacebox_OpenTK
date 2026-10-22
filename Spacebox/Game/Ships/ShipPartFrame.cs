@@ -33,6 +33,10 @@ public readonly struct ShipPartFrame
         return new ShipPartFrame(center, front, up, new Vector3(MathF.Abs(worldSize.X), MathF.Abs(worldSize.Y), MathF.Abs(worldSize.Z)));
     }
 
+    public Vector3 FrontFacePoint => Center + Front * ExtentAlong(Front);
+    public Vector3 BackFacePoint => Center - Front * ExtentAlong(Front);
+    public float Length => ExtentAlong(Front) * 2f;
+
     public float ExtentAlong(Vector3 direction)
     {
         return (MathF.Abs(direction.X) * Size.X + MathF.Abs(direction.Y) * Size.Y + MathF.Abs(direction.Z) * Size.Z) * 0.5f;

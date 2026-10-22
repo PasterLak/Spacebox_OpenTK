@@ -40,6 +40,12 @@ namespace Spacebox.Game.Generation.Blocks
             }
         }
 
+        public void SetActiveVisual(bool active)
+        {
+            _isActive = active;
+            SetEnableEmission(active);
+        }
+
         protected virtual void OnActiveStateChanged(bool isActive)
         {
         }

@@ -49,7 +49,7 @@ namespace Engine
         }
 
 
-        public static void SaveScreenshot(Vector2i clientSize)
+        public static string CreateScreenshotPath(string prefix)
         {
             string rootFolder;
 
@@ -76,8 +76,24 @@ namespace Engine
 
             string version = Application.Version;
             string timestamp = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
-            string fileName = $"screenshot_v{version}_{timestamp}.png";
-            string filePath = Path.Combine(rootFolder, fileName);
+            string fileName = $"{prefix}_v{version}_{timestamp}.png";
+            return Path.Combine(rootFolder, fileName);
+        }
+
+        public static void SaveRenderTexture(Graphics.RenderTexture target, string filePath)
+        {
+            byte[] pixels = target.ReadPixels();
+            for (int i = 3; i < pixels.Length; i += 4) pixels[i] = 255;
+            Color4[,] colorData = ConvertToColorArray(pixels, target.Width, target.Height);
+            Texture2D texture = new Texture2D(target.Width, target.Height);
+            texture.SetPixelsData(colorData);
+            texture.SaveToPng(filePath);
+            texture.Dispose();
+        }
+
+        public static void SaveScreenshot(Vector2i clientSize)
+        {
+            string filePath = CreateScreenshotPath("screenshot");
 
             SaveScreenshotUsingTexture(clientSize, filePath);
 

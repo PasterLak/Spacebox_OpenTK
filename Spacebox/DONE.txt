@@ -109,8 +109,10 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 - ship viewer: free rotation on all axes; ships are turned upright from their flight console
+- ship viewer: light slider, Power toggle for energy blocks (on by default), Engines (exhaust), Fire (one volley from all cannons), Save picture (2x render to the screenshots folder)
 Fixes
 - mods window list icons were upside down
+- ship viewer turned ships the wrong way: up now comes from the console top face, forward from the main thrusters and cannons
 - a world with a broken world.json no longer crashes the menu or the loading of other worlds
 - multiplayer: mobs no longer play the alert sound when they first appear for a joining client
 - multiplayer: explosions that broke blocks were dropped by every client (cell count limit too small), so clients never saw the blast

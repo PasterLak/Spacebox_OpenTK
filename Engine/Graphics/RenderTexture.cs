@@ -72,6 +72,17 @@ public sealed class RenderTexture : IDisposable
         }
     }
 
+    public byte[] ReadPixels()
+    {
+        var pixels = new byte[Width * Height * 4];
+        int previousFbo = GL.GetInteger(GetPName.FramebufferBinding);
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
+        GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
+        GL.ReadPixels(0, 0, Width, Height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, previousFbo);
+        return pixels;
+    }
+
     public void Dispose()
     {
         if (_disposed) return;

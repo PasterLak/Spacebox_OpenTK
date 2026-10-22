@@ -24,9 +24,9 @@ public class CannonBlock : ElectricalBlock, IShipPart, IEntityBlockListener
     public string ProjectileName => _data.ProjectileName;
     public CannonBlockData Data => _data;
     public float ReloadProgress => _data.ReloadSeconds > 0f ? 1f - Math.Clamp(_reload / _data.ReloadSeconds, 0f, 1f) : 1f;
-    public float Length => Frame.ExtentAlong(Frame.Front) * 2f;
-    public Vector3 PivotLocal => Frame.Center - Frame.Front * Frame.ExtentAlong(Frame.Front);
-    public Vector3 MuzzleLocal => PivotLocal + AimDirection * (MathF.Max(_data.BarrelLength, Length) + MuzzleClearance);
+    public float Length => Frame.Length;
+    public Vector3 PivotLocal => Frame.BackFacePoint;
+    public Vector3 MuzzleLocal => GetMuzzle(Frame, AimDirection, _data);
     public bool IsAtRest => ShipAiming.AngleBetween(AimDirection, Frame.Front) < RestAngle;
 
     public CannonBlock(BlockData blockData) : base(blockData)
@@ -35,6 +35,11 @@ public class CannonBlock : ElectricalBlock, IShipPart, IEntityBlockListener
         EFlags = ElectricalFlags.CanConsume;
         ConsumptionRate = _data.Power;
         MaxPower = (short)Math.Clamp(_data.Power * 2, 300, 16000);
+    }
+
+    public static Vector3 GetMuzzle(ShipPartFrame frame, Vector3 aimDirection, CannonBlockData data)
+    {
+        return frame.BackFacePoint + aimDirection * (MathF.Max(data.BarrelLength, frame.Length) + MuzzleClearance);
     }
 
     public void OnAddedToEntity(Chunk chunk, Vector3i localCell)
