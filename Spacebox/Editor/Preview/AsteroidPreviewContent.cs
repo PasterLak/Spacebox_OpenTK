@@ -15,6 +15,7 @@ public sealed class AsteroidPreviewContent : IPreviewContent
     private readonly List<(Mesh Mesh, Matrix4 Model)> _meshes = new List<(Mesh, Matrix4)>();
     private readonly Dictionary<short, int> _blockCounts = new Dictionary<short, int>();
     private readonly object _countsLock = new object();
+    private AsteroidGenerationContext _context = AsteroidGenerationContext.Legacy;
     private readonly BlockMaterial _material;
     private volatile bool _cancelled;
     private int _pendingChunks;
@@ -34,7 +35,8 @@ public sealed class AsteroidPreviewContent : IPreviewContent
 
         int diameter = radius * 2;
         AsteroidChunkBuilder.GetChunkRange(diameter, out int minChunk, out int maxChunk);
-        var generator = new AsteroidVoxelDataGenerator(new Vector3(diameter), 1f, asteroid, seed);
+        _context = new AsteroidGenerationContext(GeneratorVersions.Current, null, 0f, radius);
+        var generator = new AsteroidVoxelDataGenerator(new Vector3(diameter), 1f, asteroid, seed, _context);
 
         for (int x = minChunk; x <= maxChunk; x++)
         for (int y = minChunk; y <= maxChunk; y++)
@@ -87,7 +89,7 @@ public sealed class AsteroidPreviewContent : IPreviewContent
         {
             if (_cancelled) return;
 
-            var padded = AsteroidChunkBuilder.BuildPaddedBlocks(generator, asteroid, seed, seed, index);
+            var padded = AsteroidChunkBuilder.BuildPaddedBlocks(generator, asteroid, seed, seed, index, _context);
             CountBlocks(padded);
             var meshData = new MeshGenerator(index, padded, false).GenerateMeshData();
             PaddedArrayPools.Blocks.Return(padded);

@@ -82,6 +82,7 @@ public sealed class RemoteWorldInfo
     public string GameSetCacheName;
     public bool UseLocalGameSet = true;
     public float[] SpawnPoint;
+    public int GeneratorVersion = Spacebox.Game.Generation.GeneratorVersions.Legacy;
 
     public SpaceSceneArgs ToSceneArgs(string skinColor, string nickname)
     {

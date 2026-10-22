@@ -183,6 +183,13 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     private void PopulateSector()
     {
+        int generatorVersion = World.GeneratorVersion;
+        if (GeneratorVersions.UsesRules(generatorVersion))
+        {
+            PopulateSectorWithRules(generatorVersion);
+            return;
+        }
+
         BiomesMap = new BiomesMap(PositionIndex, World.BiomeGenerator);
 
         var points = SpaceMath.Sector.GenerateAsteroidPositions(Seed, PositionWorld, World.WorldGenerator.MinAsteroidsInSector,
@@ -192,6 +199,27 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         GenerateDataForPoints(points);
 
+    }
+
+    private void PopulateSectorWithRules(int generatorVersion)
+    {
+        BiomesMap = new BiomesMap(PositionIndex, World.BiomeGenerator, generatorVersion);
+
+        var planned = SectorAsteroidPlanner.Plan(World.WorldGenerator, Seed, PositionWorld, BiomesMap.GetFromSectorLocalCoord, NextAsteroidId);
+        foreach (var data in planned)
+        {
+            if (EntitiesGeneratedData.ContainsKey(data.Id)) continue;
+
+            EntitiesGeneratedData.Add(data.Id, data);
+            octreeNotGenerated.Add(data, data.positionWorld);
+        }
+    }
+
+    private long NextAsteroidId(Vector3 worldPoint)
+    {
+        long cleanId = GenerateUniqueIdForPoint(worldPoint, PointsIds) & 0x7FFFFFFFFFFFFFFF;
+        PointsIds.Add(cleanId);
+        return cleanId;
     }
 
     private void ScanAndRegisterCustomEntities(string[] destroyedSinceSave)

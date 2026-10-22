@@ -32,6 +32,7 @@ public class World : Component, ISpaceStructure
 
     public ProjectilesPool ProjectilesPool;
     public static int Seed { get; private set; }
+    public static int GeneratorVersion => GeneratorVersions.Normalize(WorldData?.Info?.GeneratorVersion ?? GeneratorVersions.Legacy);
     public static Sector? CurrentSector { get; private set; }
     public static BiomeGenerator BiomeGenerator { get; private set; }
 
@@ -207,7 +208,8 @@ public class World : Component, ISpaceStructure
                 FolderName = folder,
                 ShowWelcomeWindow = false,
                 IsLocalWorld = false,
-                SpawnPoint = remote.SpawnPoint
+                SpawnPoint = remote.SpawnPoint,
+                GeneratorVersion = remote.GeneratorVersion
             }
         };
 

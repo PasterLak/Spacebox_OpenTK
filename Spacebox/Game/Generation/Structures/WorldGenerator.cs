@@ -13,6 +13,7 @@ public class WorldGenerator
     public int MinDistanceBetweenAsteroids { get; set; } = 128;
     public float BiomesMapNoiseFrequency { get; set; } = 0.02f;
     public Biome[] Biomes { get; set; } = new Biome[] { };
+    public Biome? FallbackBiome { get; set; }
     public PlayerSpawnRules PlayerSpawn { get; set; } = PlayerSpawnRules.Default;
     public byte[] BiomeProbabilityRanges { get; private set; } = new byte[] { };
 
@@ -144,6 +145,12 @@ public class Biome
         SpawnChance = biomeJSON.SpawnChance;
         MinDistanceFromCenter = biomeJSON.MinDistanceFromCenter;
         MaxDistanceFromCenter = biomeJSON.MaxDistanceFromCenter;
+        Distance = new DistanceRange(biomeJSON.MinDistanceFromCenter, biomeJSON.MaxDistanceFromCenter);
+        Density = Math.Max(0, biomeJSON.Density);
+        MinDistanceBetweenAsteroids = Math.Max(0, biomeJSON.MinDistanceBetweenAsteroids);
+        RadiusMultiplier = biomeJSON.RadiusMultiplier > 0f ? biomeJSON.RadiusMultiplier : 1f;
+        OreMultiplier = Math.Max(0f, biomeJSON.OreMultiplier);
+        WormSettings = biomeJSON.WormSettings;
         DebugColor = biomeJSON.DebugColor;
 
         if (DebugColor == Color3Byte.Pink)
@@ -161,6 +168,12 @@ public class Biome
     public int MinDistanceFromCenter { get; private set; } = 100;
     public int MaxDistanceFromCenter { get; private set; } = 500;
     public Dictionary<AsteroidData, byte> AsteroidChances { get; private set; } = new Dictionary<AsteroidData, byte>();
+    public DistanceRange Distance { get; private set; } = DistanceRange.Everywhere;
+    public int Density { get; private set; } = 100;
+    public int MinDistanceBetweenAsteroids { get; private set; }
+    public float RadiusMultiplier { get; private set; } = 1f;
+    public float OreMultiplier { get; private set; } = 1f;
+    public WormSettingsJSON? WormSettings { get; private set; }
 
 
     public static AsteroidData SelectAsteroidBySpawnChance(Dictionary<AsteroidData, byte> asteroidChances, Random random)
@@ -224,7 +237,15 @@ public class AsteroidData
 
     public WormSettingsJSON WormSettings { get; set; } = new WormSettingsJSON();
 
+    public DistanceRange Distance { get; set; } = DistanceRange.Everywhere;
+    public byte HollowCorePercent { get; set; }
+    public AsteroidCavitiesJSON? Cavities { get; set; }
+    public AsteroidMobRule[] Mobs { get; set; } = new AsteroidMobRule[0];
+
     public AsteroidLayer[] Layers { get; set; } = new AsteroidLayer[0];
+
+    private float[] _layerThresholds;
+    public float[] LayerThresholds => _layerThresholds ??= AsteroidLayers.Thresholds(Layers);
 
 }
 
@@ -244,4 +265,9 @@ public class AsteroidVein
     public byte MinVeinSize { get; set; } = 1;
     public byte MaxVeinSize { get; set; } = 5;
     public bool CanSpawnNearVoid { get; set; } = true;
+    public float MinDepth { get; set; }
+    public float MaxDepth { get; set; } = 1f;
+    public DistanceRange Distance { get; set; } = DistanceRange.Everywhere;
+    public bool NearCavesOnly { get; set; }
+    public Dictionary<string, int> BiomeMultipliers { get; set; } = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 }

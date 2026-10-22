@@ -65,6 +65,7 @@ public class GenerationLoader
             generator.MinDistanceBetweenAsteroids  = generatorJson.MinDistanceBetweenAsteroids;
             generator.BiomesMapNoiseFrequency = generatorJson.BiomesMapNoiseFrequency;
             generator.PlayerSpawn = PlayerSpawnRules.FromJson(generatorJson.PlayerSpawn);
+            generator.FallbackBiome = LinkFallbackBiome(generatorJson.FallbackBiome, generator);
 
             for (int i = 0; i < generatorJson.Biomes.Length; i++)
             {
@@ -86,6 +87,15 @@ public class GenerationLoader
         {
             Debug.Error($"[GenerationLoader] Error loading generator: {ex.Message}");
         }
+    }
+
+    private static Biome LinkFallbackBiome(string biomeId, WorldGenerator generator)
+    {
+        if (string.IsNullOrWhiteSpace(biomeId)) return null;
+        if (generator.loadedBiomes.TryGetValue(biomeId, out Biome biome)) return biome;
+
+        Debug.Error($"[GenerationLoader] Fallback biome not found: {biomeId}");
+        return null;
     }
 
     private static void LoadAsteroids(string modPath, string defaultModPath, WorldGenerator generator)
@@ -256,6 +266,10 @@ public class GenerationLoader
                 HasOreDeposits = json.HasOreDeposits,
                 UsePerlinWorms = json.UsePerlinWorms,
                 WormSettings = json.WormSettings,
+                Distance = new DistanceRange(json.MinDistanceFromCenter, json.MaxDistanceFromCenter),
+                HollowCorePercent = Math.Min(json.HollowCorePercent, (byte)90),
+                Cavities = NormalizeCavities(json.Cavities),
+                Mobs = ConvertMobRules(json),
                 Layers = new AsteroidLayer[json.Layers.Length]
             };
 
@@ -284,6 +298,46 @@ public class GenerationLoader
             Debug.Error($"[GenerationLoader] Error converting asteroid {json.Id}: {ex.Message}");
             return null;
         }
+    }
+
+    private static AsteroidCavitiesJSON NormalizeCavities(AsteroidCavitiesJSON json)
+    {
+        if (json == null) return null;
+
+        return new AsteroidCavitiesJSON
+        {
+            MinCount = Math.Min(json.MinCount, json.MaxCount),
+            MaxCount = Math.Max(json.MinCount, json.MaxCount),
+            MinRadius = Math.Max((byte)1, Math.Min(json.MinRadius, json.MaxRadius)),
+            MaxRadius = Math.Max((byte)1, Math.Max(json.MinRadius, json.MaxRadius))
+        };
+    }
+
+    private static AsteroidMobRule[] ConvertMobRules(AsteroidJSON json)
+    {
+        if (json.Mobs == null || json.Mobs.Length == 0) return new AsteroidMobRule[0];
+
+        var rules = new List<AsteroidMobRule>(json.Mobs.Length);
+        foreach (var mob in json.Mobs)
+        {
+            if (mob == null || string.IsNullOrWhiteSpace(mob.Mob)) continue;
+
+            string mobId = ShortId(mob.Mob);
+            if (!GameAssets.Mobs.ContainsKey(mobId))
+            {
+                Debug.Warning($"[GenerationLoader] Asteroid {json.Id}: unknown mob '{mob.Mob}'");
+                continue;
+            }
+
+            rules.Add(AsteroidMobRule.FromJson(mob, mobId));
+        }
+        return rules.ToArray();
+    }
+
+    private static string ShortId(string id)
+    {
+        int colon = id.IndexOf(':');
+        return colon < 0 ? id.Trim() : id.Substring(colon + 1).Trim();
     }
 
     private static AsteroidLayer ConvertLayer(AsteroidLayerJSON json)
@@ -325,7 +379,12 @@ public class GenerationLoader
             SpawnChance = json.SpawnChance,
             MinVeinSize = json.MinVeinSize,
             MaxVeinSize = json.MaxVeinSize,
-            CanSpawnNearVoid = json.CanSpawnNearVoid
+            CanSpawnNearVoid = json.CanSpawnNearVoid,
+            MinDepth = Math.Clamp(Math.Min(json.MinDepth, json.MaxDepth), 0f, 1f),
+            MaxDepth = Math.Clamp(Math.Max(json.MinDepth, json.MaxDepth), 0f, 1f),
+            Distance = new DistanceRange(json.MinDistanceFromCenter, json.MaxDistanceFromCenter),
+            NearCavesOnly = json.NearCavesOnly,
+            BiomeMultipliers = new Dictionary<string, int>(json.BiomeMultipliers ?? new Dictionary<string, int>(), StringComparer.OrdinalIgnoreCase)
         };
 
         string fullBlockId = GameSetLoader.CombineId(GameSetLoader.ModInfo.ModId, json.BlockId);

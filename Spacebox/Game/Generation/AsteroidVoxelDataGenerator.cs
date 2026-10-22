@@ -17,9 +17,16 @@ namespace Spacebox.Game.Generation
         private NoiseGenerator noiseGenerator;
         private AsteroidData asteroidData;
         private float[] layerThresholds;
+        private float hollowRadius;
 
         public AsteroidVoxelDataGenerator(Vector3 asteroidDimensions, float blockSize, AsteroidData asteroidData, int seed)
+            : this(asteroidDimensions, blockSize, asteroidData, seed, AsteroidGenerationContext.Legacy)
         {
+        }
+
+        public AsteroidVoxelDataGenerator(Vector3 asteroidDimensions, float blockSize, AsteroidData asteroidData, int seed, AsteroidGenerationContext context)
+        {
+            if (context.UsesRules) hollowRadius = asteroidDimensions.X * 0.5f * asteroidData.HollowCorePercent / 100f;
             this.asteroidData = asteroidData;
             this.asteroidDimensions = asteroidDimensions;
             this.blockSize = blockSize;
@@ -33,37 +40,13 @@ namespace Spacebox.Game.Generation
 
         private void CalculateLayerThresholds()
         {
-            if (asteroidData.Layers.Length == 0) return;
-
-            int totalRatio = 0;
-            foreach (var layer in asteroidData.Layers)
-                totalRatio += layer.Ratio;
-
-            if (totalRatio == 0) return;
-
-            layerThresholds = new float[asteroidData.Layers.Length];
-            float currentThreshold = 0f;
-
-            for (int i = 0; i < asteroidData.Layers.Length; i++)
-            {
-                float layerPortion = (float)asteroidData.Layers[i].Ratio / totalRatio;
-                currentThreshold += layerPortion;
-                layerThresholds[i] = currentThreshold;
-            }
+            layerThresholds = AsteroidLayers.Thresholds(asteroidData.Layers);
         }
 
         private int GetBlockIdFromDistance(float normalizedDistance)
         {
-            if (layerThresholds == null || layerThresholds.Length == 0)
-                return 1;
-
-            for (int i = 0; i < layerThresholds.Length; i++)
-            {
-                if (normalizedDistance <= layerThresholds[i])
-                    return asteroidData.Layers[i].FillBlockID;
-            }
-
-            return asteroidData.Layers[asteroidData.Layers.Length - 1].FillBlockID;
+            int index = AsteroidLayers.IndexAt(layerThresholds, normalizedDistance);
+            return index < 0 ? 1 : asteroidData.Layers[index].FillBlockID;
         }
 
         public int[,,] GeneratePaddedDataForChunk(Vector3SByte chunkIdx)
@@ -103,7 +86,7 @@ namespace Spacebox.Game.Generation
                         );
 
                         int blockId = 0;
-                        if (noiseValue > threshold)
+                        if (noiseValue > threshold && (hollowRadius <= 0f || pos.Length >= hollowRadius))
                         {
                             float distance = pos.Length;
                             float normalized = 1.0f - (distance / radius);

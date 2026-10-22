@@ -35,6 +35,9 @@ namespace Spacebox.Game.Generation.Tools
             public const string angular_velocity = "angular_velocity";
             public const string asteroid_type = "asteroid_type";
             public const string asteroid_radius = "asteroid_radius";
+            public const string generator_version = "generator_version";
+            public const string generation_biome = "generation_biome";
+            public const string generation_distance = "generation_distance";
         }
 
         public static class CHUNK

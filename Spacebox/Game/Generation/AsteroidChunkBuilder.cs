@@ -12,12 +12,17 @@ public static class AsteroidChunkBuilder
 
     public static Block[,,] BuildPaddedBlocks(AsteroidVoxelDataGenerator voxelGen, AsteroidData asteroid, int seed, long entityId, Vector3SByte idx)
     {
+        return BuildPaddedBlocks(voxelGen, asteroid, seed, entityId, idx, AsteroidGenerationContext.Legacy);
+    }
+
+    public static Block[,,] BuildPaddedBlocks(AsteroidVoxelDataGenerator voxelGen, AsteroidData asteroid, int seed, long entityId, Vector3SByte idx, AsteroidGenerationContext context)
+    {
         var paddedData = voxelGen.GeneratePaddedDataForChunk(idx);
         var chunkSeed = SeedHelper.GetChunkIdInt(entityId, idx);
 
         if (asteroid.UsePerlinWorms)
         {
-            var worms = asteroid.WormSettings;
+            var worms = context.WormsFor(asteroid);
             var wormParams = new WormParameters(
                 worms.MinCount,
                 worms.MaxCount,
@@ -30,7 +35,11 @@ public static class AsteroidChunkBuilder
             PerlinWorms.CarvePaddedChunk(paddedData, idx, seed, wormParams);
         }
 
-        var oreGen = new AsteroidOreGenerator(asteroid, chunkSeed);
+        var cavities = context.CavitiesFor(asteroid);
+        if (cavities != null)
+            AsteroidCavities.Carve(paddedData, idx, AsteroidCavities.Create(seed, context.Radius, cavities));
+
+        var oreGen = new AsteroidOreGenerator(asteroid, chunkSeed, context, idx);
         oreGen.ApplyOres(ref paddedData);
 
         var paddedBlocks = PaddedArrayPools.Blocks.Rent();

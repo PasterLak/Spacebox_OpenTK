@@ -39,4 +39,11 @@ public class BiomeMapImageTests
         Assert.True(BiomeMapImage.IsInSlice(64 * 64, 64, 128, 8192, 2));
         Assert.False(BiomeMapImage.IsInSlice(0, 64, 128, 8192, 2));
     }
+
+    [Fact]
+    public void RingRadius_IsTheCircleOfTheDistanceInTheSlice()
+    {
+        Assert.Equal(400f, BiomeMapImage.RingRadius(500f, 300f), 3);
+        Assert.Equal(0f, BiomeMapImage.RingRadius(200f, 300f));
+    }
 }

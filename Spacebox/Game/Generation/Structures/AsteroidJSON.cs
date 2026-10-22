@@ -13,6 +13,7 @@ public class GeneratorJSON
     public int MinDistanceBetweenAsteroids { get; set; } = 128;
     public float BiomesMapNoiseFrequency { get; set; } = 0.02f;
     public string[] Biomes { get; set; } = new string[] { };
+    public string FallbackBiome { get; set; } = "";
     public PlayerSpawnJSON PlayerSpawn { get; set; } = new PlayerSpawnJSON();
 }
 
@@ -25,6 +26,11 @@ public class BiomeJSON
     public Color3Byte DebugColor { get; set; } = Color3Byte.Pink;
     public int MinDistanceFromCenter { get; set; } = 0;
     public int MaxDistanceFromCenter { get; set; } = 0;
+    public int Density { get; set; } = 100;
+    public int MinDistanceBetweenAsteroids { get; set; } = 0;
+    public float RadiusMultiplier { get; set; } = 1f;
+    public float OreMultiplier { get; set; } = 1f;
+    public WormSettingsJSON? WormSettings { get; set; }
    
     public Dictionary<string, byte> Asteroids { get; set; } = new Dictionary<string, byte>();
 }
@@ -46,8 +52,37 @@ public class AsteroidJSON
 
     public WormSettingsJSON? WormSettings { get; set; }
 
-    public AsteroidLayerJSON[] Layers { get; set; } = new AsteroidLayerJSON[0];
+    public int MinDistanceFromCenter { get; set; } = 0;
+    public int MaxDistanceFromCenter { get; set; } = 0;
+    public byte HollowCorePercent { get; set; } = 0;
+    public AsteroidCavitiesJSON? Cavities { get; set; }
 
+    public AsteroidLayerJSON[] Layers { get; set; } = new AsteroidLayerJSON[0];
+    public AsteroidMobJSON[] Mobs { get; set; } = new AsteroidMobJSON[0];
+
+}
+
+public class AsteroidCavitiesJSON
+{
+    public byte MinCount { get; set; } = 1;
+    public byte MaxCount { get; set; } = 3;
+    public byte MinRadius { get; set; } = 3;
+    public byte MaxRadius { get; set; } = 6;
+}
+
+public class AsteroidMobJSON
+{
+    public string Mob { get; set; } = "";
+    public byte Chance { get; set; } = 100;
+    public int? MaxPerChunk { get; set; }
+    public int MaxPerEntity { get; set; } = 0;
+    public int[] Layers { get; set; } = new int[0];
+    public float MinDepth { get; set; } = 0f;
+    public float MaxDepth { get; set; } = 1f;
+    public float? MaxLightLevel { get; set; }
+    public string[] Biomes { get; set; } = new string[0];
+    public int MinDistanceFromCenter { get; set; } = 0;
+    public int MaxDistanceFromCenter { get; set; } = 0;
 }
 
 public class WormSettingsJSON  
@@ -75,4 +110,10 @@ public class AsteroidVeinJSON
     public byte MinVeinSize { get; set; } = 1;
     public byte MaxVeinSize { get; set; } = 5;
     public bool CanSpawnNearVoid { get; set; } = true;
+    public float MinDepth { get; set; } = 0f;
+    public float MaxDepth { get; set; } = 1f;
+    public int MinDistanceFromCenter { get; set; } = 0;
+    public int MaxDistanceFromCenter { get; set; } = 0;
+    public bool NearCavesOnly { get; set; } = false;
+    public Dictionary<string, int> BiomeMultipliers { get; set; } = new Dictionary<string, int>();
 }

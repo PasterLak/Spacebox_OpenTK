@@ -8,6 +8,7 @@
    
     "BiomesMapNoiseFrequency" : 0.001,
     "Biomes": [ "asteroid_field", "dense_cluster" ],
+    "FallbackBiome": "asteroid_field",
     "Structures": [  ],
     "PlayerSpawn": {
         "MinAsteroidRadius": 24,

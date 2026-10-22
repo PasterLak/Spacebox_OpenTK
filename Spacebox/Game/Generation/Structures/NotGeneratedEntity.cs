@@ -13,6 +13,8 @@ public class NotGeneratedEntity
     public Vector3 positionInSector;
     public Vector3 positionWorld;
     public Vector3 rotation;
+    public int generatorVersion = GeneratorVersions.Legacy;
+    public float generationDistance;
 
     public NotGeneratedEntity()
     {

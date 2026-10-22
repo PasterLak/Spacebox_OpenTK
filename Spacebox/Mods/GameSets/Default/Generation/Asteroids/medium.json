@@ -10,6 +10,7 @@
     "HasCavities": true,
     "HasOreDeposits": true,
     "UsePerlinWorms": true,
+    "Mobs": [ { "Mob": "mineral_parasite", "Chance": 100, "MaxPerEntity": 3 } ],
     "WormSettings": {
         "MinCount": 4,
         "MaxCount": 20,
@@ -85,7 +86,8 @@
                     "SpawnChance": 4000,
                     "MinVeinSize": 1,
                     "MaxVeinSize": 2,
-                    "CanSpawnNearVoid": true
+                    "CanSpawnNearVoid": true,
+                    "MinDepth": 0.3
                 }
             ]
         },

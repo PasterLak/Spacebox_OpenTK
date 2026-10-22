@@ -10,6 +10,7 @@
         "HasCavities": true,
         "HasOreDeposits": true,
         "UsePerlinWorms": true,
+        "Mobs": [ { "Mob": "mineral_parasite", "Chance": 100, "MaxPerEntity": 4, "MinDepth": 0.2 } ],
         "WormSettings": {
             "MinCount": 5,
             "MaxCount": 15,

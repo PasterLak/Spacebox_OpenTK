@@ -3,8 +3,10 @@
         "Name": "Dense Cluster",
         "Description": "Tightly packed asteroids rich in ores",
         "SpawnChance": 30,
-        "MinDistanceFromCenter": 200,
-        "MaxDistanceFromCenter": 600,
+        "MinDistanceFromCenter": 3000,
+        "MaxDistanceFromCenter": 0,
+        "Density": 130,
+        "OreMultiplier": 1.25,
         "DebugColor": {
             "r": 255,
             "g": 0,

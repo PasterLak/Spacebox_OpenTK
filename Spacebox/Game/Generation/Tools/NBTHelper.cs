@@ -93,6 +93,7 @@ namespace Spacebox.Game.Generation.Tools
 
             if (onlyChangedChunks && generationData?.asteroid != null && generationData.Id == id)
             {
+                AsteroidGenerationTags.Read(tag, generationData);
                 generationData.positionWorld = worldPos;
                 asteroid = new Asteroid(generationData, sector, true);
                 asteroid.OnGenerate();
@@ -242,6 +243,7 @@ namespace Spacebox.Game.Generation.Tools
             {
                 root.Add(new StringTag(NBTKey.ENTITY.asteroid_type, asteroidData.IdString));
                 root.Add(new IntTag(NBTKey.ENTITY.asteroid_radius, asteroid.NotGeneratedEntity.radiusBlocks));
+                AsteroidGenerationTags.Write(root, asteroid.NotGeneratedEntity);
             }
 
             if (entity.Ship != null && entity.Ship.Motion.IsMoving)

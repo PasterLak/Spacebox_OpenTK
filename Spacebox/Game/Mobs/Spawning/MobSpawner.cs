@@ -1,5 +1,6 @@
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Mobs.Navigation;
 
 namespace Spacebox.Game.Mobs.Spawning;
@@ -21,7 +22,10 @@ public sealed class MobSpawner
     private readonly Random _random = new Random();
     private readonly Dictionary<string, float> _timers = new Dictionary<string, float>();
     private readonly List<SpaceEntity> _entities = new List<SpaceEntity>();
+    private readonly List<AsteroidMobRule> _entityRules = new List<AsteroidMobRule>();
     private readonly MobNavigationGrid _probe = new MobNavigationGrid();
+    private MobSpawnRules _rules;
+    private WorldGenerator _rulesSource;
 
     public MobSpawner(MobSystem system)
     {
@@ -61,33 +65,39 @@ public sealed class MobSpawner
         position = default;
         var rules = definition.Spawn;
 
-        CollectEntities(anchor, rules.MaxPlayerDistance);
+        CollectEntities(definition, anchor, rules.MaxPlayerDistance);
         if (_entities.Count == 0) return false;
 
         for (int attempt = 0; attempt < ChunkAttempts; attempt++)
         {
-            var entity = _entities[_random.Next(_entities.Count)];
+            int index = _random.Next(_entities.Count);
+            var entity = _entities[index];
+            var rule = _entityRules[index];
+            var limits = MobSpawnRules.Limits(rules, rule);
             var chunks = entity.Chunks;
             if (chunks.Count == 0) continue;
+            if (rule != null && _random.Next(100) >= limits.Chance) continue;
+            if (limits.MaxPerEntity > 0 && CountOnEntity(definition, entity) >= limits.MaxPerEntity) continue;
 
             var chunk = chunks[_random.Next(chunks.Count)];
-            if (chunk.IsDisposed || CountInChunk(definition, entity, chunk) >= rules.MaxPerChunk) continue;
+            if (chunk.IsDisposed || CountInChunk(definition, entity, chunk) >= limits.MaxPerChunk) continue;
 
             _probe.Bind(entity);
-            if (TryFindCell(definition, chunk, out position)) return true;
+            if (TryFindCell(definition, entity, rule, limits, chunk, out position)) return true;
         }
 
         return false;
     }
 
-    private bool TryFindCell(MobDefinition definition, Chunk chunk, out Vector3 position)
+    private bool TryFindCell(MobDefinition definition, SpaceEntity entity, AsteroidMobRule rule, MobSpawnLimits limits, Chunk chunk, out Vector3 position)
     {
         var origin = ChunkOrigin(chunk);
 
         for (int i = 0; i < CellAttempts; i++)
         {
             var cell = origin + new Vector3i(_random.Next(Chunk.Size), _random.Next(Chunk.Size), _random.Next(Chunk.Size));
-            if (!IsValidCell(definition, cell)) continue;
+            if (!IsValidCell(definition, limits, cell)) continue;
+            if (rule != null && entity is Asteroid asteroid && !MobSpawnRules.AllowsCell(rule, asteroid.NotGeneratedEntity.asteroid, new Vector3(cell.X, cell.Y, cell.Z), asteroid.NotGeneratedEntity.radiusBlocks)) continue;
 
             position = _probe.CellToWorld(cell);
             if (IsPlayerDistanceValid(definition.Spawn, position)) return true;
@@ -97,11 +107,11 @@ public sealed class MobSpawner
         return false;
     }
 
-    private bool IsValidCell(MobDefinition definition, Vector3i cell)
+    private bool IsValidCell(MobDefinition definition, MobSpawnLimits limits, Vector3i cell)
     {
         var rules = definition.Spawn;
         if (!_probe.TryGetBlock(cell, out _, out _, out var block) || !block.IsAir) return false;
-        if (block.LightLevel > rules.MaxLightLevel + LightEpsilon) return false;
+        if (block.LightLevel > limits.MaxLightLevel + LightEpsilon) return false;
         if (!rules.RequiresNaturalBlocks) return true;
 
         for (int i = 0; i < Faces.Length; i++)
@@ -113,22 +123,60 @@ public sealed class MobSpawner
         return false;
     }
 
-    private void CollectEntities(Vector3 anchor, float radius)
+    private void CollectEntities(MobDefinition definition, Vector3 anchor, float radius)
     {
         _entities.Clear();
+        _entityRules.Clear();
 
         var sector = World.SectorAt(anchor);
         if (sector?.Entities == null) return;
 
+        bool listed = Rules().IsListed(definition.Id);
         var entities = sector.Entities;
         for (int i = 0; i < entities.Count; i++)
         {
             var entity = entities[i];
             if (entity.Chunks.Count == 0) continue;
+            if (DistanceToBox(entity.ToEntitySpace(anchor), entity.GeometryBoundingBox.Min, entity.GeometryBoundingBox.Max) > radius) continue;
 
-            if (DistanceToBox(entity.ToEntitySpace(anchor), entity.GeometryBoundingBox.Min, entity.GeometryBoundingBox.Max) <= radius)
-                _entities.Add(entity);
+            AsteroidMobRule rule = null;
+            if (listed)
+            {
+                if (entity is not Asteroid { NotGeneratedEntity.asteroid: { } asteroidData } asteroid) continue;
+                rule = MobSpawnRules.FindRule(asteroidData, definition.Id, asteroid.NotGeneratedEntity.biome?.IdString, entity.PositionWorld.Length);
+                if (rule == null) continue;
+            }
+
+            _entities.Add(entity);
+            _entityRules.Add(rule);
         }
+    }
+
+    private MobSpawnRules Rules()
+    {
+        var generator = World.WorldGenerator;
+        if (_rules == null || _rulesSource != generator)
+        {
+            _rules = new MobSpawnRules(generator?.loadedAsteroids.Values);
+            _rulesSource = generator;
+        }
+        return _rules;
+    }
+
+    private int CountOnEntity(MobDefinition definition, SpaceEntity entity)
+    {
+        var mobs = _system.Mobs;
+        var box = entity.GeometryBoundingBox;
+        int count = 0;
+
+        for (int i = 0; i < mobs.Count; i++)
+        {
+            var mob = mobs[i];
+            if (mob.Definition != definition || mob.IsDead) continue;
+            if (DistanceToBox(entity.ToEntitySpace(mob.Position), box.Min, box.Max) <= 0f) count++;
+        }
+
+        return count;
     }
 
     private int CountInChunk(MobDefinition definition, SpaceEntity entity, Chunk chunk)

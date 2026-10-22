@@ -7,6 +7,8 @@ namespace Spacebox.Generation
     {
         private readonly AsteroidData asteroidData;
         private readonly Random rng;
+        private readonly AsteroidGenerationContext context;
+        private readonly Vector3i chunkOrigin;
 
         private static readonly Vector3i[] neighborOffsets = new Vector3i[]
         {
@@ -18,10 +20,16 @@ namespace Spacebox.Generation
             new Vector3i(0, 0, -1)
         };
 
-        public AsteroidOreGenerator(AsteroidData asteroidData, int seed)
+        public AsteroidOreGenerator(AsteroidData asteroidData, int seed) : this(asteroidData, seed, AsteroidGenerationContext.Legacy, default)
+        {
+        }
+
+        public AsteroidOreGenerator(AsteroidData asteroidData, int seed, AsteroidGenerationContext context, Engine.Vector3SByte chunkIndex)
         {
             this.asteroidData = asteroidData;
+            this.context = context;
             rng = new Random(seed);
+            chunkOrigin = new Vector3i(chunkIndex.X * Spacebox.Game.Generation.Chunk.Size - 1, chunkIndex.Y * Spacebox.Game.Generation.Chunk.Size - 1, chunkIndex.Z * Spacebox.Game.Generation.Chunk.Size - 1);
         }
 
         public void ApplyOres(ref int[,,] voxelData)
@@ -55,6 +63,12 @@ namespace Spacebox.Generation
 
         private void ProcessVeinsForLayer(ref int[,,] voxelData, int x, int y, int z, AsteroidLayer layer)
         {
+            if (context.UsesRules)
+            {
+                ProcessVeinsWithRules(ref voxelData, x, y, z, layer);
+                return;
+            }
+
             foreach (var vein in layer.Veins)
             {
                 if (rng.Next(1_000_000) < vein.SpawnChance)
@@ -70,6 +84,39 @@ namespace Spacebox.Generation
                     break;
                 }
             }
+        }
+
+        private void ProcessVeinsWithRules(ref int[,,] voxelData, int x, int y, int z, AsteroidLayer layer)
+        {
+            float depth = AsteroidLayers.Depth((chunkOrigin + new Vector3i(x, y, z)).EuclideanLength, context.Radius);
+
+            foreach (var vein in layer.Veins)
+            {
+                if (!VeinRules.Allows(vein, depth, context.DistanceFromCenter)) continue;
+                if (rng.Next(1_000_000) >= VeinRules.Chance(vein, context.Biome)) continue;
+                if (!vein.CanSpawnNearVoid && HasVoidNeighbor(voxelData, x, y, z)) continue;
+                if (vein.NearCavesOnly && !HasVoidWithin(voxelData, x, y, z, 2)) continue;
+
+                int veinSize = rng.Next(vein.MinVeinSize, vein.MaxVeinSize + 1);
+                if (veinSize == 0) continue;
+
+                StartVein(ref voxelData, x, y, z, layer.FillBlockID, vein.BlockId, veinSize);
+                break;
+            }
+        }
+
+        private static bool HasVoidWithin(int[,,] voxelData, int x, int y, int z, int range)
+        {
+            int size = voxelData.GetLength(0);
+            for (int dx = -range; dx <= range; dx++)
+            for (int dy = -range; dy <= range; dy++)
+            for (int dz = -range; dz <= range; dz++)
+            {
+                int nx = x + dx, ny = y + dy, nz = z + dz;
+                if (nx < 0 || ny < 0 || nz < 0 || nx >= size || ny >= size || nz >= size) continue;
+                if (voxelData[nx, ny, nz] == 0) return true;
+            }
+            return false;
         }
 
         private bool HasVoidNeighbor(int[,,] voxelData, int x, int y, int z)

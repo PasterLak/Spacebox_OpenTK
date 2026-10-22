@@ -11,12 +11,16 @@ public class BiomesMap
     private Biome[,,] map;
     private BiomeGenerator generator;
 
-    public BiomesMap(Vector3i sectorIndex, BiomeGenerator generator)
+    public BiomesMap(Vector3i sectorIndex, BiomeGenerator generator) : this(sectorIndex, generator, GeneratorVersions.Legacy)
+    {
+    }
+
+    public BiomesMap(Vector3i sectorIndex, BiomeGenerator generator, int generatorVersion)
     {
         map = new Biome[Resolution, Resolution, Resolution];
         this.generator = generator;
 
-        PopulateMap(ref map, ref sectorIndex);
+        generator.GenerateMap(ref map, ref sectorIndex, generatorVersion);
 
         //SaveAsTexture("NOISE.png");
     }

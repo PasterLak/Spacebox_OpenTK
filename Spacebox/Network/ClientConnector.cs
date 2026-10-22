@@ -89,7 +89,8 @@ public static class ClientConnector
             GameSetFolder = message.GameSetFolder,
             Extensions = WorldExtensionList.Parse(message.Extensions),
             TexturePacks = WorldExtensionList.Parse(message.TexturePacks),
-            SpawnPoint = message.HasSpawnPoint ? new[] { message.SpawnPoint.X, message.SpawnPoint.Y, message.SpawnPoint.Z } : null
+            SpawnPoint = message.HasSpawnPoint ? new[] { message.SpawnPoint.X, message.SpawnPoint.Y, message.SpawnPoint.Z } : null,
+            GeneratorVersion = message.GeneratorVersion
         };
 
         GameSession.SetRemoteWorld(world);

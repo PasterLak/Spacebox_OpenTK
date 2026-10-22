@@ -20,6 +20,7 @@ public class WorldInfo
     public string FolderName { get; set; } = "";
     public bool ShowWelcomeWindow { get; set; } = true;
     public float[] SpawnPoint { get; set; }
+    public int GeneratorVersion { get; set; } = Spacebox.Game.Generation.GeneratorVersions.Legacy;
 
     public bool IsLocalWorld = true;
     public Texture2D? WorldPreview;

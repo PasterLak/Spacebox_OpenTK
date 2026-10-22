@@ -23,7 +23,7 @@ public sealed class BiomeMapPreview : IDisposable
     public bool HasMap => _result != null;
     public int AsteroidCount => _result?.Asteroids.Length ?? 0;
 
-    public void Build(string seedText, Vector3i sectorIndex)
+    public void Build(string seedText, Vector3i sectorIndex, int generatorVersion)
     {
         var generator = World.WorldGenerator;
         if (generator == null || _building) return;
@@ -35,30 +35,47 @@ public sealed class BiomeMapPreview : IDisposable
         {
             try
             {
-                var map = new BiomesMap(sectorIndex, new BiomeGenerator(worldSeed, generator));
+                var map = new BiomesMap(sectorIndex, new BiomeGenerator(worldSeed, generator), generatorVersion);
                 var origin = SpaceMath.Sector.GetSectorPosition(sectorIndex);
-                var points = SpaceMath.Sector.GenerateAsteroidPositions(SeedHelper.GetSectorId(worldSeed, sectorIndex), origin,
-                    generator.MinAsteroidsInSector, generator.MaxAsteroidsInSector, generator.RejectionSamples, generator.MinDistanceBetweenAsteroids, true);
+                long sectorSeed = SeedHelper.GetSectorId(worldSeed, sectorIndex);
+                var asteroids = GeneratorVersions.UsesRules(generatorVersion)
+                    ? PlannedAsteroids(generator, sectorSeed, origin, map)
+                    : LegacyAsteroids(generator, sectorSeed, origin, map);
 
-                var asteroids = new List<Vector3>(points.Length);
-                foreach (var point in points)
-                {
-                    var local = BiomeMapImage.ToSectorLocal(point, origin, Sector.SizeBlocks);
-                    var biome = map.GetFromSectorLocalCoord(local);
-                    if (biome != null && biome.AsteroidChances.Count > 0) asteroids.Add(local);
-                }
-
-                _pending = new BuildResult(map, asteroids.ToArray());
+                _pending = new BuildResult(map, asteroids.ToArray(), origin, generator.Biomes);
             }
             catch (Exception ex)
             {
                 Engine.Debug.Error($"[Editor] Biome map failed: {ex.Message}");
-                _pending = new BuildResult(null, Array.Empty<Vector3>());
+                _pending = new BuildResult(null, Array.Empty<Vector3>(), Vector3.Zero, Array.Empty<Biome>());
             }
         }, WorkerPoolManager.Priority.Medium);
     }
 
-    public void Draw(System.Numerics.Vector2 size, int slice)
+    private static List<Vector3> PlannedAsteroids(WorldGenerator generator, long sectorSeed, Vector3 origin, BiomesMap map)
+    {
+        var planned = SectorAsteroidPlanner.Plan(generator, sectorSeed, origin, map.GetFromSectorLocalCoord, point => SeedHelper.GetAsteroidId(sectorSeed, point) & 0x7FFFFFFFFFFFFFFF);
+        var asteroids = new List<Vector3>(planned.Count);
+        foreach (var data in planned) asteroids.Add(data.positionInSector);
+        return asteroids;
+    }
+
+    private static List<Vector3> LegacyAsteroids(WorldGenerator generator, long sectorSeed, Vector3 origin, BiomesMap map)
+    {
+        var points = SpaceMath.Sector.GenerateAsteroidPositions(sectorSeed, origin,
+            generator.MinAsteroidsInSector, generator.MaxAsteroidsInSector, generator.RejectionSamples, generator.MinDistanceBetweenAsteroids, true);
+
+        var asteroids = new List<Vector3>(points.Length);
+        foreach (var point in points)
+        {
+            var local = BiomeMapImage.ToSectorLocal(point, origin, Sector.SizeBlocks);
+            var biome = map.GetFromSectorLocalCoord(local);
+            if (biome != null && biome.AsteroidChances.Count > 0) asteroids.Add(local);
+        }
+        return asteroids;
+    }
+
+    public void Draw(System.Numerics.Vector2 size, int slice, bool showRings)
     {
         AcceptResult();
         if (_result?.Map == null)
@@ -74,6 +91,7 @@ public sealed class BiomeMapPreview : IDisposable
         ImGui.Image(_texture.Handle, imageSize);
 
         var drawList = ImGui.GetWindowDrawList();
+        if (showRings) DrawRings(drawList, origin, side, slice);
         foreach (var asteroid in _result.Asteroids)
         {
             bool inSlice = BiomeMapImage.IsInSlice(asteroid.Y, slice, BiomesMap.Resolution, Sector.SizeBlocks, SliceBand);
@@ -88,6 +106,29 @@ public sealed class BiomeMapPreview : IDisposable
         int z = Math.Clamp((int)(mouse.Y / side * BiomesMap.Resolution), 0, BiomesMap.Resolution - 1);
         var biome = _result.Map.GetValue((byte)x, (byte)slice, (byte)z);
         ImGui.SetTooltip(biome == null ? "No biome" : $"{biome.Name} ({biome.IdString})\nblocks x {x * BiomesMap.SmallestPoint}, z {z * BiomesMap.SmallestPoint}");
+    }
+
+    private void DrawRings(ImDrawListPtr drawList, System.Numerics.Vector2 imageOrigin, float side, int slice)
+    {
+        float scale = side / Sector.SizeBlocks;
+        float sliceY = _result.Origin.Y + (slice + 0.5f) * BiomesMap.SmallestPoint;
+        var center = imageOrigin + new System.Numerics.Vector2(-_result.Origin.X * scale, -_result.Origin.Z * scale);
+
+        drawList.PushClipRect(imageOrigin, imageOrigin + new System.Numerics.Vector2(side, side), true);
+        foreach (var biome in _result.Biomes)
+        {
+            if (biome == null || biome.Distance.IsUnlimited) continue;
+
+            uint color = ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(biome.DebugColor.R / 255f, biome.DebugColor.G / 255f, biome.DebugColor.B / 255f, 1f));
+            DrawRing(drawList, center, BiomeMapImage.RingRadius(biome.Distance.Min, sliceY) * scale, color);
+            DrawRing(drawList, center, BiomeMapImage.RingRadius(biome.Distance.Max, sliceY) * scale, color);
+        }
+        drawList.PopClipRect();
+    }
+
+    private static void DrawRing(ImDrawListPtr drawList, System.Numerics.Vector2 center, float radius, uint color)
+    {
+        if (radius > 0f) drawList.AddCircle(center, radius, color, 128, 2f);
     }
 
     public void Dispose()
@@ -128,5 +169,5 @@ public sealed class BiomeMapPreview : IDisposable
         _textureSlice = slice;
     }
 
-    private sealed record BuildResult(BiomesMap Map, Vector3[] Asteroids);
+    private sealed record BuildResult(BiomesMap Map, Vector3[] Asteroids, Vector3 Origin, Biome[] Biomes);
 }

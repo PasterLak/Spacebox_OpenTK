@@ -50,7 +50,8 @@ namespace Spacebox.Game.GUI
                     var biom = World.CurrentSector.BiomesMap.GetFromSectorLocalCoord(pos2);
 
                     ImGui.Text("Biome:"); ImGui.SameLine();
-                    ImGui.TextColored(biom.DebugColor.ToSystemVector4(), $"{biom.Name}");
+                    if (biom != null) ImGui.TextColored(biom.DebugColor.ToSystemVector4(), $"{biom.Name}");
+                    else ImGui.TextDisabled("empty space");
 
                 }
 

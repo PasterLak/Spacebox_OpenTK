@@ -26,6 +26,9 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- generation options for new worlds: biomes, asteroid types and ore veins by distance from the world center, biome density, spacing, size and ore multipliers, worm settings per biome, hollow asteroids, round caves, veins by depth or only near caves, fallback biome; old worlds keep generating exactly as before (generator version in world.json)
+- asteroids decide which mobs live in them (Mobs list: chance, max per chunk and per asteroid, layers, depth, light, biomes, distance); parasites now live in medium, heavy and icy asteroids, not in light ones
+- GameSet editor biome map: distance rings and a switch for old worlds
 - signs: Steel Sign (1x1), Wide Steel Sign (2x1) and Info Panel (2x1, glowing text) on any block side; wide signs are real multi-cell blocks; WYSIWYG text editor with bold, colours, alignment, text size slider, Fill (biggest text that fits) and Reset style; up to 60 characters per line on 1x1 signs and 120 on 2x1; saved and synced in multiplayer; new signs are blocks.json entries (Type sign + Sign settings)
 - picture frames: iron and plastic frames in 1x1, 2x1 and 2x2 (thin plate with a raised 3D rim), right click with a picture in hand hangs or swaps it, with anything else takes it out; picture tooltips show the artwork; 30 craftable pixel-art pictures (polymer fiber + dusts) in the new Decor crafting category; each frame lists the pictures it accepts; saved and synced in multiplayer
 - server keeps each player's game mode in the player's save file (GameMode, set with gm or on the dashboard, clients cannot change it) and gives it back on rejoin; dashboard shows and changes game modes of online and offline players
@@ -120,6 +123,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- new worlds: asteroids outside the first sector got the biome of the sector corner and their spacing was not checked
 - builds remove old files of the shipped mods from the output folder (moved files left duplicate blocks and old textures behind)
 - LAN: players who join a world opened to the network can use / commands (got "Only admins can use / commands"); commands they type act on themselves, not on the host
 - command descriptions and the server guide name no other games

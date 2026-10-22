@@ -16,6 +16,8 @@ public sealed class GenerationPanel : IEditorPanel, IDisposable
     private string _seed = "spacebox";
     private int[] _sector = new int[3];
     private int _slice = 64;
+    private bool _legacyGenerator;
+    private bool _showRings = true;
 
     public string Title => "Generation";
 
@@ -79,12 +81,15 @@ public sealed class GenerationPanel : IEditorPanel, IDisposable
             ImGui.InputInt3("##sector", ref _sector[0]);
 
             if (_map.IsBuilding) ImGui.BeginDisabled();
-            if (ImGui.Button("Build", new Vector2(-1f, 0f))) _map.Build(_seed, new OpenTK.Mathematics.Vector3i(_sector[0], _sector[1], _sector[2]));
+            ImGui.Checkbox("Old worlds (generator 1)", ref _legacyGenerator);
+            if (ImGui.Button("Build", new Vector2(-1f, 0f)))
+                _map.Build(_seed, new OpenTK.Mathematics.Vector3i(_sector[0], _sector[1], _sector[2]), _legacyGenerator ? Game.Generation.GeneratorVersions.Legacy : Game.Generation.GeneratorVersions.Current);
             if (_map.IsBuilding) ImGui.EndDisabled();
 
             ImGui.Text("Height slice");
             ImGui.SetNextItemWidth(-1f);
             ImGui.SliderInt("##slice", ref _slice, 0, Game.Generation.Structures.BiomesMap.Resolution - 1);
+            ImGui.Checkbox("Distance rings", ref _showRings);
             if (_map.HasMap) ImGui.TextDisabled($"{_map.AsteroidCount} asteroids in sector");
 
             ImGui.Separator();
@@ -94,7 +99,7 @@ public sealed class GenerationPanel : IEditorPanel, IDisposable
 
         ImGui.SameLine();
         if (ImGui.BeginChild("##map", Vector2.Zero, ImGuiChildFlags.Border))
-            _map.Draw(ImGui.GetContentRegionAvail(), _slice);
+            _map.Draw(ImGui.GetContentRegionAvail(), _slice, _showRings);
         ImGui.EndChild();
     }
 

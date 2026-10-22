@@ -372,7 +372,8 @@ namespace Spacebox.Game.GUI.Menu
                 GameVersion = Application.Version,
                 LastEditDate = WorldInfo.GetCurrentDate(),
                 FolderName = newWorldName,
-                ShowWelcomeWindow = true
+                ShowWelcomeWindow = true,
+                GeneratorVersion = Spacebox.Game.Generation.GeneratorVersions.Current
             };
 
             SaveNewWorld(newWorld);

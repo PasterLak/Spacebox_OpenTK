@@ -77,6 +77,46 @@ namespace Engine.Generation
             return points;
         }
 
+        public List<Vector3> GenerateLocal(in GeneratorSettings settings)
+        {
+            var size = new Vector3(Sector.SizeBlocks);
+            var rng = new Random(settings.Seed);
+            var points = new List<Vector3>(Math.Max(0, settings.Count));
+            float minDist2 = radius * radius;
+            if (settings.Count <= 0) return points;
+
+            points.Add(settings.Round ? IPointGenerator.RoundVector3(RandomPoint(rng, size)) : RandomPoint(rng, size));
+
+            while (points.Count < settings.Count)
+            {
+                bool placed = false;
+                for (int i = 0; i < settings.RejectionSamples; i++)
+                {
+                    var cand = RandomPoint(rng, size);
+                    if (settings.Round) cand = IPointGenerator.RoundVector3(cand);
+
+                    bool ok = true;
+                    for (int j = 0; j < points.Count; j++)
+                    {
+                        if ((points[j] - cand).LengthSquared < minDist2)
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+
+                    if (ok)
+                    {
+                        points.Add(cand);
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) break;
+            }
+            return points;
+        }
+
         private Vector3 RandomPoint(Random rng, Vector3 size)
         {
             return new Vector3(

@@ -430,7 +430,8 @@ public sealed class NetworkSession : IDisposable
             Extensions = WorldExtensionList.Format(GameSetLoader.Stack?.ExtensionIds),
             TexturePacks = WorldExtensionList.Format(GameSetPackage.TexturePackIds),
             HasSpawnPoint = Spacebox.Game.Player.Respawn.WorldSpawn.TryGet(out var spawnPoint),
-            SpawnPoint = spawnPoint
+            SpawnPoint = spawnPoint,
+            GeneratorVersion = Spacebox.Game.Generation.World.GeneratorVersion
         });
 
         Debug.Log($"[Server] {name} is joining (peer {sender})");

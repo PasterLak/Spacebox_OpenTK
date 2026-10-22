@@ -25,6 +25,7 @@ namespace Spacebox.Game.Generation
         private bool _savedWithoutGenerator;
 
         public NotGeneratedEntity NotGeneratedEntity;
+        private readonly AsteroidGenerationContext generationContext = AsteroidGenerationContext.Legacy;
         protected readonly int Seed;
 
         public Asteroid(NotGeneratedEntity data, Sector sector) : this(data, sector, true) { }
@@ -42,11 +43,13 @@ namespace Spacebox.Game.Generation
             diameterBlocks = data.radiusBlocks + data.radiusBlocks;
             Vector3 diameter = new Vector3(diameterBlocks);
 
+            generationContext = AsteroidGenerationContext.From(data);
             voxelGen = new AsteroidVoxelDataGenerator(
                 asteroidDimensions: diameter,
                 blockSize: 1f,
                 asteroidData,
-                seed: (int)Seed
+                seed: (int)Seed,
+                generationContext
             );
         }
 
@@ -303,7 +306,7 @@ namespace Spacebox.Game.Generation
 
         private (Chunk chunk, MeshData meshData) CreateChunk(Vector3SByte idx)
         {
-            var paddedBlocks = AsteroidChunkBuilder.BuildPaddedBlocks(voxelGen, NotGeneratedEntity.asteroid, Seed, EntityID, idx);
+            var paddedBlocks = AsteroidChunkBuilder.BuildPaddedBlocks(voxelGen, NotGeneratedEntity.asteroid, Seed, EntityID, idx, generationContext);
             var chunk = new Chunk(idx, this, c => new BlockGeneratorFromPadded(c, c.PositionWorld, paddedBlocks));
 
             var tempGenerator = new MeshGenerator(chunk.PositionIndex, paddedBlocks, Chunk.MeasureGenerationTime);

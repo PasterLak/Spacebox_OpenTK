@@ -178,6 +178,11 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 - New behaviour: build a `StateMachine<MobContext>` from states in `Game/Mobs/States/` (or new `State<MobContext>` classes) in an `IMobBrain`, register it in `MobBrainFactory` under the JSON `Behaviour` name.
 - AI, spawning and despawning run only on the server; replicas only animate. Mob changes visible to clients go through `IMobLink` (`MobNetwork`).
 - Spawner items: `MobSpawnerItem` (`Type: "mob_spawner"`), `InteractionSpawnMob`, `MobSpawnNetwork`.
+- Where mobs spawn: the mob JSON `Spawn` section holds the global rules; asteroid JSON `Mobs` entries (`AsteroidMobRule`, pure checks in `Spawning/MobSpawnRules`) restrict a listed mob to those asteroids, layers, depths, biomes and distances.
+
+## Generation options
+
+- New generation features only apply to worlds with `GeneratorVersion` 2 (`GeneratorVersions.UsesRules`); version 1 must stay bit-identical (`LegacyGenerationTests`). Sector planning: `SectorAsteroidPlanner`, biome choice: `BiomeSelector`, per-asteroid inputs: `AsteroidGenerationContext` (saved by `AsteroidGenerationTags`), vein checks: `VeinRules`, caves: `AsteroidCavities`. New options get a JSON field with a default, a runtime field in `WorldGenerator.cs`, loading in `GenerationLoader` and a line in modding-guide "Generation".
 
 ## Armor visuals
 

@@ -30,7 +30,8 @@ public static class WorldProvisioner
             GameVersion = Application.Version,
             LastEditDate = WorldInfo.GetCurrentDate(),
             FolderName = worldName,
-            ShowWelcomeWindow = false
+            ShowWelcomeWindow = false,
+            GeneratorVersion = Spacebox.Game.Generation.GeneratorVersions.Current
         };
 
         Directory.CreateDirectory(worldDirectory);

@@ -26,6 +26,12 @@ public static class BiomeMapImage
         return isLocal ? point : point - sectorOrigin;
     }
 
+    public static float RingRadius(float distanceFromCenter, float sliceWorldY)
+    {
+        float squared = distanceFromCenter * distanceFromCenter - sliceWorldY * sliceWorldY;
+        return squared > 0f ? MathF.Sqrt(squared) : 0f;
+    }
+
     public static bool IsInSlice(float localY, int slice, int resolution, float sectorSize, int bandCells)
     {
         float cell = localY / sectorSize * resolution;

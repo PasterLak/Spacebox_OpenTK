@@ -42,6 +42,7 @@ public struct JoinAcceptedMessage : INetMessage
     public string TexturePacks;
     public bool HasSpawnPoint;
     public OpenTK.Mathematics.Vector3 SpawnPoint;
+    public int GeneratorVersion;
 
     public void Serialize(NetWriter writer)
     {
@@ -59,6 +60,7 @@ public struct JoinAcceptedMessage : INetMessage
         writer.Write(TexturePacks ?? string.Empty);
         writer.Write(HasSpawnPoint);
         writer.Write(SpawnPoint);
+        writer.Write(GeneratorVersion);
     }
 
     public void Deserialize(NetReader reader)
@@ -77,6 +79,7 @@ public struct JoinAcceptedMessage : INetMessage
         TexturePacks = reader.ReadString();
         HasSpawnPoint = reader.ReadBool();
         SpawnPoint = reader.ReadVector3();
+        GeneratorVersion = reader.ReadInt();
     }
 }
 

@@ -25,6 +25,13 @@ public class BiomeGenerator
 
     public void GenerateMap(ref Biome[,,] map, ref Vector3i sectorIndex)
     {
+        GenerateMap(ref map, ref sectorIndex, GeneratorVersions.Legacy);
+    }
+
+    public void GenerateMap(ref Biome[,,] map, ref Vector3i sectorIndex, int generatorVersion)
+    {
+        bool usesRules = GeneratorVersions.UsesRules(generatorVersion);
+        float halfCell = BiomesMap.SmallestPoint * 0.5f;
         noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular);
         noise.SetFractalType(FastNoiseLite.FractalType.None);
         noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq);
@@ -50,7 +57,15 @@ public class BiomeGenerator
                     float worldZ = sectorOffset.Z + (z * BiomesMap.SmallestPoint);
 
                     var n = FloatToByte(noise.GetNoise(worldX, worldY, worldZ));
-                    map[x, y, z] = World.WorldGenerator.GetBiomeByRandomValue(n);
+                    if (usesRules)
+                    {
+                        float distance = new Vector3(worldX + halfCell, worldY + halfCell, worldZ + halfCell).Length;
+                        map[x, y, z] = BiomeSelector.Select(generator.Biomes, n, distance, generator.FallbackBiome);
+                    }
+                    else
+                    {
+                        map[x, y, z] = World.WorldGenerator.GetBiomeByRandomValue(n);
+                    }
                 }
             }
         }
