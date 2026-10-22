@@ -38,6 +38,15 @@ public class MultiplayerHardeningTests
     }
 
     [Fact]
+    public void OwnerRotation_RejectsNaNAndZeroQuaternions()
+    {
+        Assert.True(NetValidation.IsValidRotation(OpenTK.Mathematics.Quaternion.Identity));
+        Assert.False(NetValidation.IsValidRotation(new OpenTK.Mathematics.Quaternion(float.NaN, 0f, 0f, 1f)));
+        Assert.False(NetValidation.IsValidRotation(new OpenTK.Mathematics.Quaternion(0f, 0f, 0f, 0f)));
+        Assert.False(NetValidation.IsValidRotation(new OpenTK.Mathematics.Quaternion(0f, float.PositiveInfinity, 0f, 1f)));
+    }
+
+    [Fact]
     public void DrillBudget_LimitsDamagePerSecond()
     {
         var budget = new DrillDamageBudget();

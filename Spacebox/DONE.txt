@@ -207,6 +207,7 @@ Fixes
 - dashboard: changing Max players had no effect until a restart (the transport kept the old limit)
 - multiplayer: clients could take any item from any loaded container anywhere through the DNA take request; the server now only gives one DNA sample from a DNA reconstructor to a dead player
 - a claim beacon placed in empty space (first block of a new ship) had no owner, so it never protected anything, and skipped the claim limits (claims off, max claims, spawn distance); the server now checks them and makes the placer the owner
+- multiplayer: a player's NaN or zero rotation was accepted and relayed to everyone (broken model and hitboxes); the server rejects it
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

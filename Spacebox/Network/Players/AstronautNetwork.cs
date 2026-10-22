@@ -68,6 +68,7 @@ public sealed class AstronautNetwork : NetworkTransform
     protected override bool ValidateOwnerState(TransformState previous, TransformState next)
     {
         if (!IsServer || IsOwner) return true;
+        if (!NetValidation.IsValidRotation(next.Rotation)) return false;
         if (PlayerGameModeService.Of(PlayerName) != GameMode.Survival)
         {
             _movement.AllowJump(Time.Total, TeleportGraceSeconds);
