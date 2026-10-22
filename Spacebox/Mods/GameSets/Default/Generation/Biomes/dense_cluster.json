@@ -12,10 +12,10 @@
             "g": 0,
             "b": 0
         },
-        "Asteroids":
-        {
-             "asteroid_icy" : 50,
-             "medium" : 50
-        }
+  "Asteroids": {
+    "asteroid_icy": 50,
+    "medium": 50,
+    "cheese": 5
+  }
   
     }

@@ -13,8 +13,8 @@
         "Asteroids": {
            
             "asteroid_icy" : 10,
-            "light" : 40,
+            "light" : 25,
             "medium" : 70,
-            "heavy" : 25
+            "heavy" : 30
         }
     }
