@@ -388,9 +388,7 @@ namespace Spacebox.Game.GUI.Menu
             string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Worlds");
             string newWorldDirectory = Path.Combine(worldsDirectory, info.FolderName);
             if (!Directory.Exists(newWorldDirectory)) Directory.CreateDirectory(newWorldDirectory);
-            string worldJsonPath = Path.Combine(newWorldDirectory, "world.json");
-            string jsonContent = JsonSerializer.Serialize(info, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(worldJsonPath, jsonContent);
+            WorldInfoFiles.Write(newWorldDirectory, info);
         }
 
         public void SaveEditedWorld()

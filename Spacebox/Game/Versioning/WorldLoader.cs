@@ -23,10 +23,9 @@ public static class WorldLoader
 
             foreach (string worldFolder in worldFolders)
             {
-                string worldJsonPath = Path.Combine(worldFolder, "world.json");
-                if (File.Exists(worldJsonPath))
+                if (WorldInfoFiles.Exists(worldFolder))
                 {
-                    if (WorldInfoSaver.TryReadWorldInfo(worldJsonPath, out var worldInfo) && string.Equals(worldInfo.Name, worldName, StringComparison.OrdinalIgnoreCase))
+                    if (WorldInfoFiles.TryRead(worldFolder, out var worldInfo) && string.Equals(worldInfo.Name, worldName, StringComparison.OrdinalIgnoreCase))
                     {
                         LoadedWorld loadedWorld = new LoadedWorld
                         {

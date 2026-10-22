@@ -60,7 +60,7 @@ public static class DedicatedServer
         if (!WorldGameSetCheck.TryResolve(world, out var gameSetError))
         {
             Debug.Error($"[Server] {gameSetError}");
-            Debug.Error("[Server] Install the missing GameSets or edit \"Extensions\" in the world's world.json, the server stops");
+            Debug.Error("[Server] Install the missing GameSets or edit the \"Extensions\" list in the world's world.nbt (or world.json in worlds from older builds) with an NBT editor, the server stops");
             Application.Quit();
             return;
         }

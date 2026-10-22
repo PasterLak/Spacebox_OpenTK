@@ -1,3 +1,5 @@
+using Spacebox.Game.Generation.Tools.SaveData;
+using Spacebox.Game.Versioning;
 ﻿
 using Engine;
 using Engine.Utils;
@@ -16,15 +18,16 @@ namespace Spacebox.Game.GUI
                 return false;
             }
 
-            string tagsFilePath = Path.Combine(worldPath, "tags.json");
+            string tagsFilePath = Path.Combine(worldPath, WorldFileLayout.TagsFile);
+            string legacyTagsFilePath = Path.Combine(worldPath, WorldFileLayout.LegacyTagsFile);
 
-            if (!File.Exists(tagsFilePath))
+            if (!SaveDataFile.Exists(tagsFilePath, legacyTagsFilePath))
                 return true;
 
             try
             {
 
-                var tagsList = JsonFixer.LoadJsonSafe<List<TagJSON>>(tagsFilePath);
+                var tagsList = SaveDataFile.Read<List<TagJSON>>(tagsFilePath, legacyTagsFilePath, new JsonSerializerOptions { AllowTrailingCommas = true });
                 if (tagsList == null || tagsList.Count == 0)
                     return true;
 
@@ -82,9 +85,7 @@ namespace Spacebox.Game.GUI
                 var staticTags = TagManager.Instance.GetStaticTags();
                 if (staticTags.Count == 0)
                 {
-                    string tagsFilePath = Path.Combine(worldPath, "tags.json");
-                    if (File.Exists(tagsFilePath))
-                        File.Delete(tagsFilePath);
+                    SaveDataFile.Delete(Path.Combine(worldPath, WorldFileLayout.TagsFile), Path.Combine(worldPath, WorldFileLayout.LegacyTagsFile));
                     return true;
                 }
 
@@ -97,15 +98,8 @@ namespace Spacebox.Game.GUI
                     }
                 }
 
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                };
-
-                string json = JsonSerializer.Serialize(tagsJsonList, options);
-                string filePath = Path.Combine(worldPath, "tags.json");
-
-                AtomicFile.WriteAllText(filePath, json);
+                string filePath = Path.Combine(worldPath, WorldFileLayout.TagsFile);
+                SaveDataFile.Write(filePath, tagsJsonList, Path.Combine(worldPath, WorldFileLayout.LegacyTagsFile));
 
                 Debug.Log($"[TagLoader] Saved {tagsJsonList.Count} static tags to {filePath}");
                 return true;

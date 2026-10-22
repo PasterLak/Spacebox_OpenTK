@@ -11,12 +11,9 @@ public static class WorldProvisioner
     public static WorldInfo Ensure(string worldName, string author, GameMode gameMode, string seed, string modId, string logTag, IReadOnlyList<string> extensions = null)
     {
         string worldDirectory = Path.Combine(WorldsDirectory, worldName);
-        string worldJson = Path.Combine(worldDirectory, "world.json");
-
-        if (File.Exists(worldJson))
+        if (WorldInfoFiles.TryRead(worldDirectory, out var existing))
         {
-            var existing = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldJson));
-            if (existing != null) return UpgradeIfNeeded(existing, worldDirectory, worldJson, logTag) ? existing : null;
+            return UpgradeIfNeeded(existing, worldDirectory, logTag) ? existing : null;
         }
 
         var info = new WorldInfo
@@ -35,12 +32,12 @@ public static class WorldProvisioner
         };
 
         Directory.CreateDirectory(worldDirectory);
-        File.WriteAllText(worldJson, JsonSerializer.Serialize(info, new JsonSerializerOptions { WriteIndented = true }));
+        WorldInfoFiles.Write(worldDirectory, info);
         Debug.Warning($"[{logTag}] Created new world '{info.Name}'");
         return info;
     }
 
-    private static bool UpgradeIfNeeded(WorldInfo world, string worldDirectory, string worldJson, string logTag)
+    private static bool UpgradeIfNeeded(WorldInfo world, string worldDirectory, string logTag)
     {
         var status = VersionConverter.GetSupport(world, out var reason);
         if (status == Versioning.WorldUpgradeStatus.UpToDate) return true;
@@ -54,7 +51,7 @@ public static class WorldProvisioner
         var result = VersionConverter.Upgrade(world, worldDirectory, Application.Version);
         if (!result.Success) return false;
 
-        File.WriteAllText(worldJson, JsonSerializer.Serialize(world, new JsonSerializerOptions { WriteIndented = true }));
+        WorldInfoFiles.Write(worldDirectory, world);
         Debug.Success($"[{logTag}] World converted to {result.ToVersion} ({result.Summary}), backup: {result.BackupPath}");
         return true;
     }

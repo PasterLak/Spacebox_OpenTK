@@ -73,6 +73,7 @@ New
 - servers share texture packs: TexturePacks in serverconfig.json (a host shares its enabled packs), downloaded and checked with the GameSet like extensions, shown below the player's own packs
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 Small
+- all world save files are NBT: world.nbt, Players/<name>.player (folder renamed from players), localplayer.player, drop/tags/rules/claims/reconstructors/protected_entities .nbt; JSON files from earlier builds are read once and replaced on the next save
 - the developer (PasterLak) shows [DEVELOPER] in chat and the player list instead of [ADMIN]
 - server addresses accept pasted links: http(s)://, paths and :port are cleaned up (add server, join, --connect, saved servers)
 - new server configs use registration and Creative by default

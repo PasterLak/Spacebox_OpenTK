@@ -55,7 +55,7 @@ public sealed class WorldUpgradeContext
         return Directory.GetFiles(WorldFolder, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
     }
 
-    public IEnumerable<string> PlayerFiles() => HasFolder ? WorldFileLayout.PlayerFiles(WorldFolder) : Array.Empty<string>();
+    public IEnumerable<string> PlayerFiles() => HasFolder ? WorldFileLayout.LegacyPlayerFiles(WorldFolder) : Array.Empty<string>();
 
     public void RenameBlock(string from, string to) => RemapBlocks(new IdRemap().Rename(from, to));
 
@@ -119,7 +119,7 @@ public sealed class WorldUpgradeContext
     public bool EditDrops(Func<JsonArray, bool> edit)
     {
         if (!HasFolder) return false;
-        return EditJson(WorldFileLayout.DropsPath(WorldFolder), node => node is JsonArray drops && edit(drops));
+        return EditJson(WorldFileLayout.LegacyDropsPath(WorldFolder), node => node is JsonArray drops && edit(drops));
     }
 
     public int EditSectors(Func<CompoundTag, bool> edit)

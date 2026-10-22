@@ -1,3 +1,4 @@
+using Spacebox.Game.Generation.Tools.SaveData;
 using System.Text.Json;
 using Engine;
 using OpenTK.Mathematics;
@@ -7,7 +8,8 @@ namespace Spacebox.Game.Protection;
 
 public static class EntityProtection
 {
-    public const string FileName = "protected_entities.json";
+    public const string FileName = "protected_entities.nbt";
+    public const string LegacyFileName = "protected_entities.json";
     public const string DeniedMessage = "This place is protected: only admins can build, break or move it";
     public const float DeniedMessageInterval = 1.5f;
 
@@ -80,11 +82,11 @@ public static class EntityProtection
         LocalCanEdit = true;
 
         string path = PathFor(worldFolder);
-        if (path == null || !File.Exists(path)) return;
+        if (path == null || !SaveDataFile.Exists(path, LegacyPathFor(worldFolder))) return;
 
         try
         {
-            var ids = JsonSerializer.Deserialize<long[]>(File.ReadAllText(path));
+            var ids = SaveDataFile.Read<long[]>(path, LegacyPathFor(worldFolder));
             if (ids != null) foreach (var id in ids) _ids.Add(id);
         }
         catch (Exception ex)
@@ -110,7 +112,7 @@ public static class EntityProtection
         {
             var ids = new long[_ids.Count];
             _ids.CopyTo(ids);
-            File.WriteAllText(path, JsonSerializer.Serialize(ids));
+            SaveDataFile.Write(path, ids, LegacyPathFor(_folder));
         }
         catch (Exception ex)
         {
@@ -119,4 +121,6 @@ public static class EntityProtection
     }
 
     private static string PathFor(string folder) => string.IsNullOrEmpty(folder) ? null : Path.Combine(folder, FileName);
+
+    private static string LegacyPathFor(string folder) => string.IsNullOrEmpty(folder) ? null : Path.Combine(folder, LegacyFileName);
 }

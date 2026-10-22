@@ -1,3 +1,4 @@
+using Spacebox.Game.Generation.Tools.SaveData;
 using System.Text.Json;
 using Engine;
 using Spacebox.Game.Mobs;
@@ -6,7 +7,8 @@ namespace Spacebox.Game.Rules;
 
 public static class WorldRulesStore
 {
-    public const string FileName = "rules.json";
+    public const string FileName = "rules.nbt";
+    public const string LegacyFileName = "rules.json";
 
     private static string _worldFolder;
 
@@ -20,11 +22,11 @@ public static class WorldRulesStore
     {
         _worldFolder = worldFolder;
         var path = PathOf(worldFolder);
-        if (path == null || !File.Exists(path)) return;
+        if (path == null || !SaveDataFile.Exists(path, LegacyPathOf(worldFolder))) return;
 
         try
         {
-            var file = JsonSerializer.Deserialize<WorldRulesFile>(File.ReadAllText(path));
+            var file = SaveDataFile.Read<WorldRulesFile>(path, LegacyPathOf(worldFolder));
             if (file == null) return;
             file.Gameplay ??= new ServerRules();
             file.Gameplay.Validate();
@@ -45,7 +47,7 @@ public static class WorldRulesStore
         try
         {
             var file = new WorldRulesFile { Gameplay = ServerRules.Session, FriendlyMobs = MobRules.FriendlyMobs };
-            File.WriteAllText(path, JsonSerializer.Serialize(file, new JsonSerializerOptions { WriteIndented = true }));
+            SaveDataFile.Write(path, file, LegacyPathOf(_worldFolder));
         }
         catch (Exception ex)
         {
@@ -56,4 +58,6 @@ public static class WorldRulesStore
     public static void Reset() => _worldFolder = null;
 
     private static string PathOf(string worldFolder) => string.IsNullOrEmpty(worldFolder) ? null : Path.Combine(worldFolder, FileName);
+
+    private static string LegacyPathOf(string worldFolder) => string.IsNullOrEmpty(worldFolder) ? null : Path.Combine(worldFolder, LegacyFileName);
 }

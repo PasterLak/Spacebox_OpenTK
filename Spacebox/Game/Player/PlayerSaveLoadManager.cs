@@ -1,4 +1,5 @@
-﻿using Engine.Utils;
+using Spacebox.Game.Generation.Tools.SaveData;
+using Engine.Utils;
 using System.Text.Json;
 using OpenTK.Mathematics;
 
@@ -10,34 +11,30 @@ namespace Spacebox.Game.Player
 {
     public static class PlayerSaveLoadManager
     {
-        private const string PlayersFolder = "players";
-        private const string LegacyFileName = "player.json";
-        private const string LocalFileName = "localplayer.json";
-
         public static string GetPlayerFilePath(string worldFolder, string playerName)
         {
-            var safeName = new string((playerName ?? "Player").Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c).ToArray());
-            return Path.Combine(worldFolder, PlayersFolder, safeName + ".json");
+            return PlayerFiles.PlayerPath(worldFolder, playerName);
         }
 
         public static string ReadPlayerJson(string worldFolder, string playerName, bool allowLegacy)
         {
-            string path = GetPlayerFilePath(worldFolder, playerName);
-            if (File.Exists(path)) return File.ReadAllText(path);
+            PlayerFiles.MoveLegacyFolder(worldFolder);
+            string json = SaveDataFile.ReadJson(PlayerFiles.PlayerPath(worldFolder, playerName), PlayerFiles.LegacyPlayerPath(worldFolder, playerName));
+            if (json != null || !allowLegacy) return json;
 
-            string legacy = Path.Combine(worldFolder, LegacyFileName);
-            return allowLegacy && File.Exists(legacy) ? File.ReadAllText(legacy) : null;
+            string legacy = Path.Combine(worldFolder, Versioning.WorldFileLayout.LegacyPlayerFile);
+            return File.Exists(legacy) ? File.ReadAllText(legacy) : null;
         }
 
         public static string GetLocalPlayerFilePath(string worldFolder)
         {
-            return Path.Combine(worldFolder, LocalFileName);
+            return PlayerFiles.LocalPlayerPath(worldFolder);
         }
 
         public static string ReadLocalPlayerJson(string worldFolder, string playerName)
         {
-            string path = GetLocalPlayerFilePath(worldFolder);
-            return File.Exists(path) ? File.ReadAllText(path) : ReadPlayerJson(worldFolder, playerName, true);
+            return SaveDataFile.ReadJson(PlayerFiles.LocalPlayerPath(worldFolder), PlayerFiles.LegacyLocalPlayerPath(worldFolder))
+                ?? ReadPlayerJson(worldFolder, playerName, true);
         }
 
         public static void WriteLocalPlayerJson(string worldFolder, string json)
@@ -46,8 +43,7 @@ namespace Spacebox.Game.Player
 
             try
             {
-                Directory.CreateDirectory(worldFolder);
-                AtomicFile.WriteAllText(GetLocalPlayerFilePath(worldFolder), json);
+                SaveDataFile.WriteJson(PlayerFiles.LocalPlayerPath(worldFolder), json, PlayerFiles.LegacyLocalPlayerPath(worldFolder));
             }
             catch (Exception ex)
             {
@@ -59,9 +55,8 @@ namespace Spacebox.Game.Player
         {
             try
             {
-                string path = GetPlayerFilePath(worldFolder, playerName);
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-                AtomicFile.WriteAllText(path, json);
+                PlayerFiles.MoveLegacyFolder(worldFolder);
+                SaveDataFile.WriteJson(PlayerFiles.PlayerPath(worldFolder, playerName), json, PlayerFiles.LegacyPlayerPath(worldFolder, playerName));
             }
             catch (Exception ex)
             {

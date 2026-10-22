@@ -18,12 +18,7 @@ public class WorldInfoSaver
 
         foreach (string worldFolder in Directory.GetDirectories(worldsDirectory))
         {
-            string worldJsonPath = Path.Combine(worldFolder, "world.json");
-
-            if (!File.Exists(worldJsonPath))
-                continue;
-
-            if (!TryReadWorldInfo(worldJsonPath, out var worldInfo))
+            if (!WorldInfoFiles.TryRead(worldFolder, out var worldInfo))
                 continue;
 
             if (string.IsNullOrEmpty(worldInfo.FolderName))
@@ -66,21 +61,6 @@ public class WorldInfoSaver
         }
     }
 
-    public static bool TryReadWorldInfo(string worldJsonPath, out WorldInfo worldInfo)
-    {
-        worldInfo = null;
-        try
-        {
-            worldInfo = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldJsonPath));
-        }
-        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
-        {
-            Debug.Warning($"[Worlds] Skipping unreadable world file {worldJsonPath}: {ex.Message}");
-        }
-
-        return worldInfo != null;
-    }
-
     public static void Save(WorldInfo worldInfo)
     {
         string worldsDirectory = GetWorldsDirectory();
@@ -99,10 +79,7 @@ public class WorldInfoSaver
             return;
         }
         worldInfo.UpdateEditDate();
-        string worldJsonPath = Path.Combine(worldFolder, "world.json");
-        string jsonContent = JsonSerializer.Serialize(worldInfo, new JsonSerializerOptions { WriteIndented = true });
-
-        AtomicFile.WriteAllText(worldJsonPath, jsonContent);
+        WorldInfoFiles.Write(worldFolder, worldInfo);
     }
 
     public static string GetWorldFolder(WorldInfo worldInfo)

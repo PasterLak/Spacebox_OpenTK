@@ -135,7 +135,7 @@ public class World : Component, ISpaceStructure
         }
         TagsSaveLoader.SaveTags(WorldData.WorldFolderPath);
 
-        DropEffectManager.SaveDrops(Path.Combine(WorldData.WorldFolderPath, "drop.json"));
+        DropEffectManager.SaveDrops(Versioning.WorldFileLayout.DropsPath(WorldData.WorldFolderPath), Versioning.WorldFileLayout.LegacyDropsPath(WorldData.WorldFolderPath));
 
         if (Spacebox.Network.GameSession.HasLocalPlayer) WorldSaveState.MarkSaved(PlayerSaveLoadManager.Serialize(Player));
     }
@@ -165,7 +165,7 @@ public class World : Component, ISpaceStructure
         if (CurrentSector == null)
             Debug.Error("No current sector");
 
-        DropEffectManager.LoadDrops(Path.Combine(WorldData.WorldFolderPath, "drop.json"));
+        DropEffectManager.LoadDrops(Versioning.WorldFileLayout.DropsPath(WorldData.WorldFolderPath), Versioning.WorldFileLayout.LegacyDropsPath(WorldData.WorldFolderPath));
     }
 
     public void PreloadAroundPlayer()

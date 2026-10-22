@@ -857,15 +857,15 @@ namespace Spacebox.Game.Effects
             RegisterSpawn(drop, Vector3.Zero, false, default);
         }
 
-        public void SaveDrops(string filePath)
+        public void SaveDrops(string filePath, string legacyFilePath)
         {
             var dropData = DropSaveManager.SerializeDrops(_activeDrops);
-            DropSaveManager.SaveToFile(dropData, filePath);
+            DropSaveManager.SaveToFile(dropData, filePath, legacyFilePath);
         }
 
-        public void LoadDrops(string filePath)
+        public void LoadDrops(string filePath, string legacyFilePath)
         {
-            var dropData = DropSaveManager.LoadFromFile(filePath);
+            var dropData = DropSaveManager.LoadFromFile(filePath, legacyFilePath);
             foreach (var data in dropData)
             {
                 CreateLoadedDrop(data.ItemId, data.Quantity, data.Position, data.TimeLeft);

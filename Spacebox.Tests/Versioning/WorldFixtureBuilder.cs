@@ -102,7 +102,7 @@ public sealed class WorldFixtureBuilder
         return System.Version.TryParse(version, out var parsed) && parsed >= System.Version.Parse(EntityFolderVersion);
     }
 
-    public WorldFixtureBuilder Player(string item, int count = 1, string file = WorldFileLayout.LocalPlayerFile, string list = "InventorySlots")
+    public WorldFixtureBuilder Player(string item, int count = 1, string file = WorldFileLayout.LegacyLocalPlayerFile, string list = "InventorySlots")
     {
         if (!_players.TryGetValue(file, out var player))
         {
@@ -142,7 +142,7 @@ public sealed class WorldFixtureBuilder
             ["GameVersion"] = _version,
             ["FolderName"] = Path.GetFileName(_folder)
         };
-        File.WriteAllText(Path.Combine(_folder, WorldFileLayout.WorldFile), world.ToJsonString(options));
+        File.WriteAllText(Path.Combine(_folder, WorldFileLayout.LegacyWorldFile), world.ToJsonString(options));
 
         foreach (var (file, player) in _players)
         {
@@ -151,7 +151,7 @@ public sealed class WorldFixtureBuilder
             File.WriteAllText(path, player.ToJsonString(options));
         }
 
-        if (_drops.Count > 0) File.WriteAllText(WorldFileLayout.DropsPath(_folder), _drops.ToJsonString(options));
+        if (_drops.Count > 0) File.WriteAllText(WorldFileLayout.LegacyDropsPath(_folder), _drops.ToJsonString(options));
 
         string sector = Path.Combine(_folder, WorldFileLayout.SectorsFolder, SectorFolderName);
         Directory.CreateDirectory(sector);

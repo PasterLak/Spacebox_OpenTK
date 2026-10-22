@@ -1,3 +1,4 @@
+using Spacebox.Game.Generation.Tools.SaveData;
 using System.Text.Json;
 using Engine;
 using Engine.Utils;
@@ -7,7 +8,8 @@ namespace Spacebox.Game.Player.Respawn;
 
 public static class ReconstructorRecordsFile
 {
-    public const string FileName = "reconstructors.json";
+    public const string FileName = "reconstructors.nbt";
+    public const string LegacyFileName = "reconstructors.json";
 
     public sealed class Entry
     {
@@ -23,6 +25,8 @@ public static class ReconstructorRecordsFile
 
     public static string PathOf(string worldFolder) => Path.Combine(worldFolder, FileName);
 
+    public static string LegacyPathOf(string worldFolder) => Path.Combine(worldFolder, LegacyFileName);
+
     public static void Write(string worldFolder, IEnumerable<ReconstructorRecord> records)
     {
         var entries = new List<Entry>();
@@ -31,22 +35,22 @@ public static class ReconstructorRecordsFile
         string path = PathOf(worldFolder);
         if (entries.Count == 0)
         {
-            if (File.Exists(path)) File.Delete(path);
+            SaveDataFile.Delete(path, LegacyPathOf(worldFolder));
             return;
         }
 
-        AtomicFile.WriteAllText(path, JsonSerializer.Serialize(entries, Options));
+        SaveDataFile.Write(path, entries, LegacyPathOf(worldFolder), Options);
     }
 
     public static List<ReconstructorRecord> Read(string worldFolder)
     {
         var records = new List<ReconstructorRecord>();
         string path = PathOf(worldFolder);
-        if (!File.Exists(path)) return records;
+        if (!SaveDataFile.Exists(path, LegacyPathOf(worldFolder))) return records;
 
         try
         {
-            var entries = JsonSerializer.Deserialize<List<Entry>>(File.ReadAllText(path));
+            var entries = SaveDataFile.Read<List<Entry>>(path, LegacyPathOf(worldFolder), Options);
             if (entries == null) return records;
 
             foreach (var entry in entries)

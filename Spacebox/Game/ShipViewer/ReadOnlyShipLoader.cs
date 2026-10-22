@@ -48,10 +48,13 @@ public sealed class ReadOnlyShipLoader
             Directory.CreateDirectory(Path.GetDirectoryName(entityCopy));
             File.Copy(ship.FilePath, entityCopy);
 
-            string worldFile = Path.Combine(worldCopy, WorldFileLayout.WorldFile);
-            File.Copy(Path.Combine(world.FolderPath, WorldFileLayout.WorldFile), worldFile);
+            foreach (var name in new[] { WorldFileLayout.WorldFile, WorldFileLayout.LegacyWorldFile })
+            {
+                string source = Path.Combine(world.FolderPath, name);
+                if (File.Exists(source)) File.Copy(source, Path.Combine(worldCopy, name));
+            }
 
-            var info = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldFile)) ?? throw new InvalidDataException("world.json is empty");
+            if (!WorldInfoFiles.TryRead(worldCopy, out var info)) throw new InvalidDataException("The world file is empty or damaged");
             var result = new WorldUpgrader(_registry, Path.Combine(sandbox, SandboxBackupFolder)).Upgrade(info, worldCopy, _targetVersion);
             if (!result.Success) throw new InvalidDataException(result.Error ?? $"The world could not be converted from {result.FromVersion}");
 

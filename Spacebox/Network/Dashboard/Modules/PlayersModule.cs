@@ -123,17 +123,15 @@ public sealed class PlayersModule : IDashboardModule
 
         var saved = new List<object>();
         string folder = World.WorldData?.WorldFolderPath;
-        string playersFolder = folder == null ? null : Path.GetDirectoryName(PlayerSaveLoadManager.GetPlayerFilePath(folder, "x"));
-        if (playersFolder != null && Directory.Exists(playersFolder))
+        if (folder != null)
         {
-            foreach (var file in Directory.EnumerateFiles(playersFolder, "*.json"))
+            foreach (var name in PlayerFiles.SavedPlayerNames(folder))
             {
-                string name = Path.GetFileNameWithoutExtension(file);
                 saved.Add(new
                 {
                     name,
                     online = onlineNames.Contains(name),
-                    lastSeen = File.GetLastWriteTime(file).ToString("yyyy-MM-dd HH:mm"),
+                    lastSeen = PlayerFiles.LastSaved(folder, name).ToString("yyyy-MM-dd HH:mm"),
                     muted = ServerModeration.IsMuted(name),
                     gameMode = (int)PlayerGameModeService.Of(name)
                 });

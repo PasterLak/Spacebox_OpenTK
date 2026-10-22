@@ -26,10 +26,10 @@ public static class WorldValidator
             }
         }
 
-        foreach (var file in WorldFileLayout.PlayerFiles(worldFolder))
+        foreach (var file in WorldFileLayout.LegacyPlayerFiles(worldFolder))
             AddUnknown(ReadJsonIds(file, PlayerSlotLists, "ItemID"), ids.IsItem, unknownItems);
 
-        AddUnknown(ReadJsonIds(WorldFileLayout.DropsPath(worldFolder), null, "ItemId"), ids.IsItem, unknownItems);
+        AddUnknown(ReadJsonIds(WorldFileLayout.LegacyDropsPath(worldFolder), null, "ItemId"), ids.IsItem, unknownItems);
 
         AddWarning(warnings, "blocks", unknownBlocks);
         AddWarning(warnings, "items", unknownItems);

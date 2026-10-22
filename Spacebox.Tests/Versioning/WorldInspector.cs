@@ -9,7 +9,7 @@ public static class WorldInspector
 {
     public static string Version(string folder)
     {
-        return JsonNode.Parse(File.ReadAllText(Path.Combine(folder, WorldFileLayout.WorldFile)))?["GameVersion"]?.GetValue<string>();
+        return Spacebox.Game.GUI.WorldInfoFiles.TryRead(folder, out var info) ? info.GameVersion : null;
     }
 
     public static List<string> BlockPalettes(string folder) => Palettes(folder, true);
@@ -19,7 +19,7 @@ public static class WorldInspector
     public static List<string> PlayerItems(string folder)
     {
         var items = new List<string>();
-        foreach (var file in WorldFileLayout.PlayerFiles(folder))
+        foreach (var file in WorldFileLayout.LegacyPlayerFiles(folder))
         {
             var player = JsonNode.Parse(File.ReadAllText(file));
             foreach (var list in new[] { "InventorySlots", "PanelSlots", "EquipmentSlots" })
@@ -34,7 +34,7 @@ public static class WorldInspector
     public static List<string> DropItems(string folder)
     {
         var items = new List<string>();
-        string path = WorldFileLayout.DropsPath(folder);
+        string path = WorldFileLayout.LegacyDropsPath(folder);
         if (!File.Exists(path)) return items;
 
         foreach (var drop in (JsonArray)JsonNode.Parse(File.ReadAllText(path))) items.Add(drop?["ItemId"]?.GetValue<string>());

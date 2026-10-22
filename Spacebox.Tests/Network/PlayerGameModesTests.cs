@@ -30,7 +30,7 @@ public class PlayerGameModesTests : IDisposable
         modes.Set("Anna", GameMode.Creative);
 
         string saved = PlayerSaveLoadManager.ReadPlayerJson(_folder, "Anna", false);
-        Assert.Contains("\"Health\": 50", saved);
+        Assert.Equal(50, System.Text.Json.Nodes.JsonNode.Parse(saved)!["Health"]!.GetValue<int>());
         Assert.True(PlayerGameModes.TryRead(saved, out var mode));
         Assert.Equal(GameMode.Creative, mode);
 

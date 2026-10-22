@@ -1,3 +1,4 @@
+using Spacebox.Game.Generation.Tools.SaveData;
 using System.Text.Json;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Versioning;
@@ -21,8 +22,7 @@ public static class SavedWorldCatalog
         {
             if (string.Equals(Path.GetFileName(folder), WorldUpgrader.BackupFolderName, StringComparison.OrdinalIgnoreCase)) continue;
 
-            string worldFile = Path.Combine(folder, WorldFileLayout.WorldFile);
-            if (!File.Exists(worldFile)) continue;
+            if (!WorldInfoFiles.Exists(folder)) continue;
 
             worlds.Add(Read(folder, registry, currentVersion));
         }
@@ -36,14 +36,14 @@ public static class SavedWorldCatalog
         WorldInfo info;
         try
         {
-            info = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(Path.Combine(folder, WorldFileLayout.WorldFile)), ReadOptions);
+            info = SaveDataFile.Read<WorldInfo>(WorldInfoFiles.PathIn(folder), WorldInfoFiles.LegacyPathIn(folder), ReadOptions);
         }
         catch (Exception ex)
         {
-            return new SavedWorld(folder, null, SavedWorldStatus.Corrupt, $"world.json could not be read: {ex.Message}");
+            return new SavedWorld(folder, null, SavedWorldStatus.Corrupt, $"The world file could not be read: {ex.Message}");
         }
 
-        if (info == null) return new SavedWorld(folder, null, SavedWorldStatus.Corrupt, "world.json is empty");
+        if (info == null) return new SavedWorld(folder, null, SavedWorldStatus.Corrupt, "The world file is empty or damaged");
 
         var status = registry.Check(info.GameVersion ?? "", currentVersion, new List<IWorldUpgradeStep>(), out var error);
         return status switch

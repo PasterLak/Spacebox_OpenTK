@@ -1,3 +1,4 @@
+using Spacebox.Game.Generation.Tools.SaveData;
 using System.Text.Json;
 using Engine;
 
@@ -5,7 +6,8 @@ namespace Spacebox.Game.Protection;
 
 public sealed class ClaimIndex
 {
-    public const string FileName = "claims.json";
+    public const string FileName = "claims.nbt";
+    public const string LegacyFileName = "claims.json";
 
     public sealed class Entry
     {
@@ -59,11 +61,11 @@ public sealed class ClaimIndex
         _entries.Clear();
         _folder = worldFolder;
         string path = PathFor(worldFolder);
-        if (path == null || !File.Exists(path)) return;
+        if (path == null || !SaveDataFile.Exists(path, LegacyPathFor(worldFolder))) return;
 
         try
         {
-            var loaded = JsonSerializer.Deserialize<Dictionary<string, Entry>>(File.ReadAllText(path));
+            var loaded = SaveDataFile.Read<Dictionary<string, Entry>>(path, LegacyPathFor(worldFolder));
             if (loaded == null) return;
             foreach (var pair in loaded)
             {
@@ -99,7 +101,7 @@ public sealed class ClaimIndex
 
         try
         {
-            File.WriteAllText(path, JsonSerializer.Serialize(_entries));
+            SaveDataFile.Write(path, _entries, LegacyPathFor(_folder));
         }
         catch (Exception ex)
         {
@@ -108,4 +110,6 @@ public sealed class ClaimIndex
     }
 
     private static string PathFor(string folder) => string.IsNullOrEmpty(folder) ? null : Path.Combine(folder, FileName);
+
+    private static string LegacyPathFor(string folder) => string.IsNullOrEmpty(folder) ? null : Path.Combine(folder, LegacyFileName);
 }

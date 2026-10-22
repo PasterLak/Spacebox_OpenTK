@@ -1,4 +1,5 @@
-﻿using Engine.Utils;
+using Spacebox.Game.Generation.Tools.SaveData;
+using Engine.Utils;
 using Engine;
 using OpenTK.Mathematics;
 using Spacebox.Game.Effects;
@@ -53,13 +54,12 @@ public static class DropSaveManager
         return dropData;
     }
 
-    public static void SaveToFile(List<DropSaveData> dropData, string filePath)
+    public static void SaveToFile(List<DropSaveData> dropData, string filePath, string legacyFilePath = null)
     {
         dropData ??= new List<DropSaveData>();
         try
         {
-            var json = JsonSerializer.Serialize(dropData, JsonOptions);
-            AtomicFile.WriteAllText(filePath, json);
+            SaveDataFile.Write(filePath, dropData, legacyFilePath, JsonOptions);
             Debug.Log($"[DropSaveManager] Saved {dropData.Count} drops to {filePath}");
         }
         catch (Exception ex)
@@ -68,9 +68,9 @@ public static class DropSaveManager
         }
     }
 
-    public static List<DropSaveData> LoadFromFile(string filePath)
+    public static List<DropSaveData> LoadFromFile(string filePath, string legacyFilePath = null)
     {
-        if (!File.Exists(filePath))
+        if (!SaveDataFile.Exists(filePath, legacyFilePath))
         {
             // Debug.Log($"[DropSaveManager] Drop save file not found: {filePath}");
             return new List<DropSaveData>();
@@ -78,8 +78,7 @@ public static class DropSaveManager
 
         try
         {
-            var json = File.ReadAllText(filePath);
-            var dropData = JsonSerializer.Deserialize<List<DropSaveData>>(json, JsonOptions);
+            var dropData = SaveDataFile.Read<List<DropSaveData>>(filePath, legacyFilePath, JsonOptions);
 
             if (dropData == null)
             {
