@@ -46,4 +46,14 @@ public class ChatCommandRoutingTests
         Assert.Equal("gm 1 Anna", ServerCommandForwarder.BuildLine("gm", new[] { "1", "Anna" }));
         Assert.Equal("save", ServerCommandForwarder.BuildLine("save", System.Array.Empty<string>()));
     }
+
+    [Fact]
+    public void RemoteName_IsAnyoneButTheLocalPlayer()
+    {
+        Assert.True(ChatCommands.IsRemoteName("SomeoneElse"));
+        Assert.False(ChatCommands.IsRemoteName(Spacebox.Network.GameSession.PlayerName));
+        Assert.False(ChatCommands.IsRemoteName(" " + Spacebox.Network.GameSession.PlayerName.ToUpperInvariant() + " "));
+        Assert.False(ChatCommands.IsRemoteName(null));
+        Assert.Null(ChatCommands.RemoteSender);
+    }
 }

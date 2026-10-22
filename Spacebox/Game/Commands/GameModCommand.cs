@@ -39,7 +39,7 @@ namespace Spacebox.Game.Commands
 
             if (Spacebox.Network.Admin.ServerCommandForwarder.TryForward(Name, args)) return;
 
-            if (args.Length >= 2 && Engine.Networking.NetworkManager.Instance.IsServer)
+            if ((args.Length >= 2 || Spacebox.Network.Admin.ChatCommands.RemoteSender != null) && Engine.Networking.NetworkManager.Instance.IsServer)
             {
                 new Spacebox.Network.Dedicated.ServerGameModeCommand().Execute(args);
                 return;

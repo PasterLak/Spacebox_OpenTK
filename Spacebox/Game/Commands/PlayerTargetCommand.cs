@@ -39,7 +39,7 @@ public abstract class PlayerTargetCommand<TRequest> : CommandBase, IArgumentSugg
             return;
         }
 
-        if (target == null && !GameSession.HasLocalPlayer) target = ChatCommands.CurrentSender;
+        target ??= ChatCommands.RemoteSender;
 
         if (target == null || IsLocalName(target))
         {

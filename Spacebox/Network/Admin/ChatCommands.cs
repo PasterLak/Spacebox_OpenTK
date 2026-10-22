@@ -14,6 +14,14 @@ public static class ChatCommands
 
     public static string CurrentSender { get; private set; }
 
+    public static string RemoteSender => IsRemoteName(CurrentSender) ? CurrentSender : null;
+
+    public static bool IsRemoteName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return false;
+        return !GameSession.HasLocalPlayer || !string.Equals(name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase);
+    }
+
     public static bool IsCommand(string text) => !string.IsNullOrEmpty(text) && text.Length > 1 && text[0] == Prefix && !char.IsWhiteSpace(text[1]);
 
     public static bool IsCommandStart(string text) => !string.IsNullOrEmpty(text) && text[0] == Prefix && (text.Length == 1 || !char.IsWhiteSpace(text[1]));

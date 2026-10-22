@@ -90,7 +90,7 @@ internal sealed class SpawnMobCommand : CommandBase, Engine.Commands.IArgumentSu
     {
         position = OpenTK.Mathematics.Vector3.Zero;
 
-        string target = args.Length > 2 ? args[2] : Application.IsHeadless ? Spacebox.Network.Admin.ChatCommands.CurrentSender : null;
+        string target = args.Length > 2 ? args[2] : Spacebox.Network.Admin.ChatCommands.RemoteSender;
         if (target != null)
         {
             if (Spacebox.Network.Players.PlayerLocator.TryFind(target, out var player) &&

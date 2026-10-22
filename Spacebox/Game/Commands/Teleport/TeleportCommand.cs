@@ -19,7 +19,7 @@ public sealed class TeleportCommand : CommandBase, IArgumentSuggestions
 
     public override string Name => _name;
 
-    public override string Description => $"Teleport players like in Minecraft. Usage: {Usage}. Players: a name, @s (you) or @a (everyone); ~ is relative to the teleported player, e.g. tp ~ ~10 ~";
+    public override string Description => $"Teleport players. Usage: {Usage}. Players: a name, @s (you) or @a (everyone); ~ is relative to the teleported player, e.g. tp ~ ~10 ~";
 
     public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
     {

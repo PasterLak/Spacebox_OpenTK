@@ -118,6 +118,8 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- LAN: players who join a world opened to the network can use / commands (got "Only admins can use / commands"); commands they type act on themselves, not on the host
+- command descriptions and the server guide name no other games
 - nuclear power block glows again when active (its glow map still had the old 32x32 size); cable angles and hubs glow like straight cables
 - texture atlas warns when a glow map has a different size than its texture (it was dropped without a message)
 - host: "gm <mode> <player>" works for other players (was only the host's own mode)

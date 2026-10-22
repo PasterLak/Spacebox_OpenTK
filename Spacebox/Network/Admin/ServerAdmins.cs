@@ -51,7 +51,7 @@ public static class ServerAdmins
     {
         var network = NetworkManager.Instance;
         if (peer == network.LocalPeerId) return !GameSession.IsDedicated;
-        return GameSession.Mode == SessionMode.Host || IsAdmin(PlayerRegistry.GetName(peer));
+        return !GameSession.IsDedicated || IsAdmin(PlayerRegistry.GetName(peer));
     }
 
     public static bool ShowsBadge(ServerConfig config, string name) => config != null && config.ShowAdmins && IsAdmin(config, name);
