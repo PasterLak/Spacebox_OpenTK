@@ -12,7 +12,7 @@ public sealed class GameplayModule : IDashboardModule
 
         router.Map("GET", DashboardContext.Api("/gameplay"), guard.Admin(async (_, _) => HttpResponse.Json(await MainThread.Run(() => (object)new
         {
-            rules = ServerRulesService.Snapshot()
+            rules = ServerRulesService.Describe()
         }))));
 
         router.Map("POST", DashboardContext.Api("/gameplay"), guard.Admin(async (request, user) =>

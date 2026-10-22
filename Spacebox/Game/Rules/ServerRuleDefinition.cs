@@ -10,7 +10,9 @@ public abstract class ServerRuleDefinition
 
     public string Name { get; }
     public string Label { get; }
+    public string Description { get; init; } = "";
 
+    public abstract string Kind { get; }
     public abstract object Value { get; }
     public abstract string Text { get; }
     public abstract string Usage { get; }
@@ -33,6 +35,7 @@ public sealed class SwitchRuleDefinition : ServerRuleDefinition
         _set = set;
     }
 
+    public override string Kind => "switch";
     public override object Value => _get();
     public override string Text => _get() ? "on" : "off";
     public override string Usage => "on|off";
@@ -81,6 +84,11 @@ public sealed class NumberRuleDefinition : ServerRuleDefinition
         _unit = unit;
     }
 
+    public int Min => _min;
+    public int Max => _max;
+    public string Unit => _unit;
+
+    public override string Kind => "number";
     public override object Value => _get();
     public override string Text => $"{_get()} {_unit}";
     public override string Usage => $"{_min}-{_max} ({_unit})";

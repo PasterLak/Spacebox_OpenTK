@@ -27,7 +27,8 @@
     "ExplosionPlayerDamage": true,
     "ExplosionsRespectClaims": true,
     "KeepInventory": true,
-    "DeathDropMinutes": 10
+    "DeathDropMinutes": 10,
+    "MaxShipSpeed": 0
   },
   "Backups": {
     "Enabled": true,

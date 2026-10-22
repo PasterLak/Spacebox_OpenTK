@@ -6,6 +6,7 @@ public sealed class ServerRules
 {
     public const int MinDeathDropMinutes = 1;
     public const int MaxDeathDropMinutes = 1440;
+    public const int MaxShipSpeedLimit = 1000;
 
     private static readonly ServerRules SessionRules = new ServerRules();
     private static ServerRules _override;
@@ -17,6 +18,7 @@ public sealed class ServerRules
     public bool ExplosionsRespectClaims { get; set; } = true;
     public bool KeepInventory { get; set; } = true;
     public int DeathDropMinutes { get; set; } = 10;
+    public int MaxShipSpeed { get; set; } = 0;
 
     [System.Text.Json.Serialization.JsonIgnore]
     public float DeathDropSeconds => Math.Clamp(DeathDropMinutes, MinDeathDropMinutes, MaxDeathDropMinutes) * 60f;
@@ -36,8 +38,10 @@ public sealed class ServerRules
     public bool Validate()
     {
         int clamped = Math.Clamp(DeathDropMinutes, MinDeathDropMinutes, MaxDeathDropMinutes);
-        if (clamped == DeathDropMinutes) return false;
+        int speed = Math.Clamp(MaxShipSpeed, 0, MaxShipSpeedLimit);
+        if (clamped == DeathDropMinutes && speed == MaxShipSpeed) return false;
         DeathDropMinutes = clamped;
+        MaxShipSpeed = speed;
         return true;
     }
 
@@ -67,5 +71,6 @@ public sealed class ServerRules
         ExplosionsRespectClaims = other.ExplosionsRespectClaims;
         KeepInventory = other.KeepInventory;
         DeathDropMinutes = other.DeathDropMinutes;
+        MaxShipSpeed = other.MaxShipSpeed;
     }
 }

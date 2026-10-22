@@ -47,7 +47,7 @@ public sealed class ShipMotion
         return Advance(deltaTime, ref orientation);
     }
 
-    public void IntegrateVelocity(float deltaTime, Quaternion orientation, ShipPhysicsSettings settings)
+    public void IntegrateVelocity(float deltaTime, Quaternion orientation, ShipPhysicsSettings settings, float speedLimit = 0f)
     {
         if (_hasForce)
         {
@@ -60,7 +60,7 @@ public sealed class ShipMotion
             AngularVelocity = Damp(AngularVelocity, settings.AngularDamping * deltaTime, settings.AngularSnap);
         }
 
-        Velocity = Clamp(Velocity, settings.MaxSpeed);
+        Velocity = Clamp(Velocity, speedLimit > 0f ? Math.Min(settings.MaxSpeed, speedLimit) : settings.MaxSpeed);
         AngularVelocity = Clamp(AngularVelocity, settings.MaxAngularSpeed);
 
         _force = Vector3.Zero;

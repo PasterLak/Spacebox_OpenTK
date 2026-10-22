@@ -9,15 +9,17 @@ public static class ServerRulesService
 {
     public static readonly IReadOnlyList<ServerRuleDefinition> Rules = new ServerRuleDefinition[]
     {
-        new SwitchRuleDefinition("pvp", "PvP", () => ServerRules.Current.Pvp, v => ServerRules.Current.Pvp = v),
-        new SwitchRuleDefinition("explosions", "Explosions", () => ServerRules.Current.Explosions, v => ServerRules.Current.Explosions = v),
-        new SwitchRuleDefinition("explosion_blocks", "Explosions break blocks", () => ServerRules.Current.ExplosionBlockDamage, v => ServerRules.Current.ExplosionBlockDamage = v),
-        new SwitchRuleDefinition("explosion_players", "Explosions hurt players", () => ServerRules.Current.ExplosionPlayerDamage, v => ServerRules.Current.ExplosionPlayerDamage = v),
-        new SwitchRuleDefinition("explosion_claims", "Explosions respect claims", () => ServerRules.Current.ExplosionsRespectClaims, v => ServerRules.Current.ExplosionsRespectClaims = v),
-        new SwitchRuleDefinition("friendly_mobs", "Friendly mobs", () => MobRules.FriendlyMobs, SetFriendlyMobs),
-        new SwitchRuleDefinition("keep_inventory", "Keep inventory", () => ServerRules.Current.KeepInventory, v => ServerRules.Current.KeepInventory = v),
+        new SwitchRuleDefinition("pvp", "PvP", () => ServerRules.Current.Pvp, v => ServerRules.Current.Pvp = v) { Description = "Players can hurt other players with weapons, drills, ship cannons and their explosions" },
+        new SwitchRuleDefinition("explosions", "Explosions", () => ServerRules.Current.Explosions, v => ServerRules.Current.Explosions = v) { Description = "Off: bombs and reactors only fizzle" },
+        new SwitchRuleDefinition("explosion_blocks", "Explosions break blocks", () => ServerRules.Current.ExplosionBlockDamage, v => ServerRules.Current.ExplosionBlockDamage = v) { Description = "Explosions break blocks" },
+        new SwitchRuleDefinition("explosion_players", "Explosions hurt players", () => ServerRules.Current.ExplosionPlayerDamage, v => ServerRules.Current.ExplosionPlayerDamage = v) { Description = "Explosions hurt players" },
+        new SwitchRuleDefinition("explosion_claims", "Explosions respect claims", () => ServerRules.Current.ExplosionsRespectClaims, v => ServerRules.Current.ExplosionsRespectClaims = v) { Description = "No explosion block damage inside active claims" },
+        new SwitchRuleDefinition("friendly_mobs", "Friendly mobs", () => MobRules.FriendlyMobs, SetFriendlyMobs) { Description = "Mobs only fight back when attacked" },
+        new SwitchRuleDefinition("keep_inventory", "Keep inventory", () => ServerRules.Current.KeepInventory, v => ServerRules.Current.KeepInventory = v) { Description = "Off: survival players drop all their items where they die" },
         new NumberRuleDefinition("death_drop_minutes", "Death drops last", () => ServerRules.Current.DeathDropMinutes, v => ServerRules.Current.DeathDropMinutes = v,
-            ServerRules.MinDeathDropMinutes, ServerRules.MaxDeathDropMinutes, "min")
+            ServerRules.MinDeathDropMinutes, ServerRules.MaxDeathDropMinutes, "min") { Description = "How long dropped items of dead players stay" },
+        new NumberRuleDefinition("max_ship_speed", "Max ship speed", () => ServerRules.Current.MaxShipSpeed, v => ServerRules.Current.MaxShipSpeed = v,
+            0, ServerRules.MaxShipSpeedLimit, "m/s") { Description = "Caps the speed of every ship; 0 uses the GameSet's ship settings" }
     };
 
     public static bool TryFind(string name, out ServerRuleDefinition rule)
@@ -63,6 +65,17 @@ public static class ServerRulesService
             ChatService.Broadcast($"[Server] {string.Join(", ", changed)}", Color4.Orange);
         }
         return invalid ? -1 : changed.Count;
+    }
+
+    public static List<object> Describe()
+    {
+        var result = new List<object>(Rules.Count);
+        foreach (var rule in Rules)
+        {
+            var number = rule as NumberRuleDefinition;
+            result.Add(new { name = rule.Name, label = rule.Label, description = rule.Description, kind = rule.Kind, value = rule.Value, min = number?.Min, max = number?.Max, unit = number?.Unit });
+        }
+        return result;
     }
 
     public static Dictionary<string, object> Snapshot()

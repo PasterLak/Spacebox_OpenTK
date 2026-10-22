@@ -606,24 +606,59 @@ async function loadSettings() {
 async function loadGameplay() {
   const data = await run(() => api("/gameplay"));
   if (!data) return;
-  const form = $("#gameplay-form");
-  for (const [name, value] of Object.entries(data.rules)) {
-    const input = form[name];
-    if (!input) continue;
-    if (input.type === "checkbox") input.checked = value;
-    else input.value = value;
-  }
+  const list = $("#rule-list");
+  list.replaceChildren(...data.rules.map(ruleRow));
 }
 
-$("#gameplay-form").addEventListener("submit", async event => {
-  event.preventDefault();
-  const form = event.target;
-  const body = {};
-  for (const input of form.querySelectorAll("input[type=checkbox]")) body[input.name] = input.checked;
-  for (const input of form.querySelectorAll("input[type=number]")) body[input.name] = Number(input.value);
-  await run(() => api("/gameplay", body), "Gameplay rules saved");
-  loadGameplay();
-});
+function ruleRow(rule) {
+  const row = document.createElement("div");
+  row.className = "rule-row";
+  const text = document.createElement("div");
+  text.className = "rule-text";
+  const title = document.createElement("b");
+  title.textContent = rule.label;
+  const hint = document.createElement("span");
+  hint.className = "hint";
+  hint.textContent = rule.description || "";
+  text.append(title, hint);
+
+  const control = document.createElement("div");
+  control.className = "rule-control";
+  if (rule.kind === "switch") {
+    const label = document.createElement("label");
+    label.className = "switch";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = !!rule.value;
+    input.setAttribute("aria-label", rule.label);
+    input.addEventListener("change", () => saveRule(rule.name, input.checked, input));
+    label.append(input, document.createElement("span"));
+    control.append(label);
+  } else {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = rule.min;
+    input.max = rule.max;
+    input.step = 1;
+    input.value = rule.value;
+    input.setAttribute("aria-label", rule.label);
+    const unit = document.createElement("span");
+    unit.className = "hint";
+    unit.textContent = rule.unit || "";
+    input.addEventListener("change", () => saveRule(rule.name, Number(input.value), input));
+    control.append(input, unit);
+  }
+
+  row.append(text, control);
+  return row;
+}
+
+async function saveRule(name, value, input) {
+  input.disabled = true;
+  const ok = await run(() => api("/gameplay", { [name]: value }), "Rule saved");
+  input.disabled = false;
+  if (!ok) loadGameplay();
+}
 
 async function loadClaims() {
   const data = await run(() => api("/claims"));

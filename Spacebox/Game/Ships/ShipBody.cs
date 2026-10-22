@@ -83,7 +83,7 @@ public sealed class ShipBody
 
         var settings = ShipPhysicsSettings.Current;
         float step = Math.Min(deltaTime, settings.MaxStep);
-        Motion.IntegrateVelocity(step, _entity.Orientation, settings);
+        Motion.IntegrateVelocity(step, _entity.Orientation, settings, Spacebox.Game.Rules.ServerRules.Current.MaxShipSpeed);
 
         if (_collider.TryFindContact(_entity.EntityLocalToWorld(CenterOfMassLocal), out var overlap))
         {

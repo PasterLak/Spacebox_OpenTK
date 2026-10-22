@@ -90,6 +90,20 @@ public class ShipCollisionMathTests
     }
 
     [Fact]
+    public void ServerSpeedLimit_CapsButNeverRaisesTheGameSetSpeed()
+    {
+        var settings = new ShipPhysicsSettings { MaxSpeed = 20f };
+        var motion = new ShipMotion { Velocity = new Vector3(0, 0, 100f) };
+
+        motion.IntegrateVelocity(0.01f, Quaternion.Identity, settings, 8f);
+        Assert.Equal(8f, motion.Velocity.Length, 3);
+
+        motion.Velocity = new Vector3(0, 0, 100f);
+        motion.IntegrateVelocity(0.01f, Quaternion.Identity, settings, 500f);
+        Assert.Equal(20f, motion.Velocity.Length, 3);
+    }
+
+    [Fact]
     public void InverseMassAlong_IncludesRotation()
     {
         var motion = new ShipMotion();

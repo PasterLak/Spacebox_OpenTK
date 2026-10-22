@@ -323,3 +323,12 @@ table.list tr.clickable:hover td { background: #ffffff08; }
 .map-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; }
 
 .mode-select { display: inline-block; width: auto; margin-top: 0; padding: 4px 6px; font-size: 13px; }
+.rule-list { display: flex; flex-direction: column; }
+.rule-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 0; border-top: 1px solid rgba(90, 100, 120, 0.4); }
+.rule-row:first-child { border-top: none; }
+.rule-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rule-text .hint { margin: 0; }
+.rule-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.rule-control input[type=number] { width: 96px; }
+.rule-control .switch input { width: 20px; height: 20px; }
+@media (max-width: 520px) { .rule-row { flex-direction: column; align-items: stretch; } .rule-control { justify-content: flex-start; } }
