@@ -334,10 +334,10 @@ namespace Spacebox.Game.GUI.Menu
             gameSets.Clear();
             allGameSets.Clear();
             installedGameSets.Clear();
-            string gameSetsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GameSets");
-            if (!Directory.Exists(gameSetsDirectory)) Directory.CreateDirectory(gameSetsDirectory);
+            var modFolders = Spacebox.Game.Resource.Content.ModFolders.Local;
+            foreach (var folder in modFolders.ContentFolders) Directory.CreateDirectory(folder);
 
-            foreach (var installed in Spacebox.Game.Resource.Content.InstalledGameSets.Scan(gameSetsDirectory))
+            foreach (var installed in Spacebox.Game.Resource.Content.InstalledGameSets.Scan(modFolders))
             {
                 var gameSetInfo = installed.Config;
                 gameSetInfo.Icon = LoadIcon(installed.Folder);

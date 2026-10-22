@@ -82,17 +82,17 @@
     </ol>
   </div>
 </div>
-<p>On the first start the server creates <code>serverconfig.json</code> and a new world in <code>Worlds/ServerWorld</code>. When the log shows <code>World ready</code>, players can join.</p>
+<p>On the first start the server creates <code>Multiplayer/serverconfig.json</code> and a new world in <code>Worlds/ServerWorld</code>. When the log shows <code>World ready</code>, players can join.</p>
 <div class="box tip"><b>Stop the server safely</b>Type <code>stop</code> in the terminal (or use Stop in the dashboard). The world is saved first. Ctrl+C, closing the terminal window and a system stop signal (SIGTERM, for example from systemd or Docker) also save before the server stops (Windows waits only about 5 seconds when the window is closed). Killing the process loses changes since the last autosave.</div>
 <p>Without the scripts: <code>Spacebox.exe --server</code> (Windows) or <code>./Spacebox --server</code> (Linux).</p>
 
 <h2>2. The config file</h2>
-<p><code>serverconfig.json</code> lies next to the executable. Edit it while the server is stopped (most settings can also be changed live in the dashboard). Missing settings are added with their defaults on the next start.</p>
+<p><code>serverconfig.json</code> lies in the <code>Multiplayer</code> folder next to the executable (together with this guide). Edit it while the server is stopped (most settings can also be changed live in the dashboard). Missing settings are added with their defaults on the next start.</p>
 <table>
   <tr><th>Setting</th><th>Default</th><th>Meaning</th></tr>
   <tr><td>ServerName</td><td>Spacebox Server</td><td>Name in the server list</td></tr>
   <tr><td>Description</td><td>A Spacebox server</td><td>Text under the name (up to 600 characters)</td></tr>
-  <tr><td>IconFile</td><td>server-icon.png</td><td>PNG or JPEG next to the executable, up to 256 KB, square 64–128 px looks best</td></tr>
+  <tr><td>IconFile</td><td>server-icon.png</td><td>PNG or JPEG in the <code>Multiplayer</code> folder, up to 256 KB, square 64–128 px looks best</td></tr>
   <tr><td>LanDiscovery</td><td>true</td><td>Players in the same network find the server automatically</td></tr>
   <tr><td>WhitelistEnabled / Whitelist</td><td>false / []</td><td>Only listed names may join</td></tr>
   <tr><td>RegistrationEnabled</td><td>false</td><td>Players need a password (created on their first join)</td></tr>
@@ -101,6 +101,7 @@
   <tr><td>WorldName</td><td>ServerWorld</td><td>Folder in <code>Worlds/</code>; a missing world is created</td></tr>
   <tr><td>Seed</td><td>random</td><td>World seed for a new world</td></tr>
   <tr><td>ModId</td><td>default</td><td>GameSet (content pack) of the world</td></tr>
+  <tr><td>TexturePacks</td><td>[]</td><td>Texture pack ids from <code>Mods/TexturePacks/</code> sent to every player; they see them below their own packs while on this server</td></tr>
   <tr><td>Port</td><td>7777</td><td>UDP port of the game (the dashboard uses TCP on the same number)</td></tr>
   <tr><td>MaxPlayers</td><td>16</td><td>Player limit</td></tr>
   <tr><td>GameMode</td><td>0</td><td>0 Survival, 1 Creative, 2 Spectator (for a new world)</td></tr>
@@ -181,19 +182,19 @@
 
 <h3>Then</h3>
 <p>Start the server. After about a minute the log shows <code>HTTPS certificate for … saved</code>, and the dashboard overview shows the HTTPS state. Open <code>https://&lt;your address&gt;:7777/dashboard</code> from anywhere.</p>
-<div class="box tip"><b>What happens in the background</b>The certificate is stored in <code>dashboard/certificates/</code>, checked every 12 hours and renewed when a third of its time is left (30 days for normal certificates). Failures are written to the log with a hint and retried after an hour. Set <code>"LetsEncryptStaging": true</code> for a first test run: Let's Encrypt then issues test certificates (browsers warn about them) and failed attempts do not count against its limits.</div>
+<div class="box tip"><b>What happens in the background</b>The certificate is stored in <code>Multiplayer/Dashboard/certificates/</code>, checked every 12 hours and renewed when a third of its time is left (30 days for normal certificates). Failures are written to the log with a hint and retried after an hour. Set <code>"LetsEncryptStaging": true</code> for a first test run: Let's Encrypt then issues test certificates (browsers warn about them) and failed attempts do not count against its limits.</div>
 <div class="box danger"><b>Keep tokens secret</b>DuckDNS and Cloudflare tokens control your name. Do not share <code>serverconfig.json</code> or screenshots of it.</div>
 <p class="small">While HTTPS is active, plain <code>http://</code> still works inside your own network; from the internet it is redirected to <code>https://</code>. Using your own certificate instead: set <code>DashboardCertificateFile</code> and <code>DashboardCertificateKeyFile</code>.</p>
 
 <h2>6. The web dashboard</h2>
 <h3>First start: create the admin</h3>
 <ol class="steps">
-  <li>Start the server. The log says: <i>No admin yet. Register in the dashboard with the setup key from …/dashboard/setup-key.txt</i>.</li>
+  <li>Start the server. The log says: <i>No admin yet. Register in the dashboard with the setup key from …/Multiplayer/Dashboard/setup-key.txt</i>.</li>
   <li>Open the dashboard: on the server PC <code>http://localhost:7777/dashboard</code>, in your network <code>http://192.168.1.50:7777/dashboard</code> (the server log prints the exact local addresses at start; Windows Firewall on the server PC must allow the server, TCP port 7777 for the dashboard), from outside <code>https://&lt;your address&gt;:7777/dashboard</code>.</li>
-  <li>Open <code>dashboard/setup-key.txt</code> in the server folder and copy the key (like <code>ABCDE-FGHJK-LMNPQ-RSTUV</code>).</li>
+  <li>Open <code>Multiplayer/Dashboard/setup-key.txt</code> in the server folder and copy the key (like <code>ABCDE-FGHJK-LMNPQ-RSTUV</code>).</li>
   <li>Enter the key, an admin name and a password (at least 8 characters). The key file is deleted; only one admin exists.</li>
 </ol>
-<div class="box warn"><b>Forgot the password?</b>Stop the server, delete <code>dashboard/admin.json</code> and start again: a new setup key is written and you can register again.</div>
+<div class="box warn"><b>Forgot the password?</b>Stop the server, delete <code>Multiplayer/Dashboard/admin.json</code> and start again: a new setup key is written and you can register again.</div>
 <h3>Pages</h3>
 <table>
   <tr><th>Page</th><th>What you can do</th></tr>
@@ -237,13 +238,13 @@
 <h2>8. Files, saves and backups</h2>
 <table>
   <tr><th>Path</th><th>Content</th></tr>
-  <tr><td>serverconfig.json</td><td>Server settings</td></tr>
+  <tr><td>Multiplayer/serverconfig.json</td><td>Server settings (also the server icon and this guide are in <code>Multiplayer/</code>)</td></tr>
   <tr><td>Worlds/&lt;WorldName&gt;/</td><td>The world: sectors and asteroids, <code>players/</code> (one file per player), <code>moderation.json</code> (bans, mutes), <code>accounts.json</code> (passwords in registration mode)</td></tr>
   <tr><td>Worlds/_backups/</td><td>Zip backups made automatically before a world is converted to a new game version</td></tr>
-  <tr><td>dashboard/</td><td><code>admin.json</code> (dashboard login), <code>setup-key.txt</code> (only before the first registration), <code>certificates/</code> (automatic HTTPS)</td></tr>
-  <tr><td>GameSets/</td><td>Content packs (blocks, items, recipes)</td></tr>
+  <tr><td>Multiplayer/Dashboard/</td><td><code>admin.json</code> (dashboard login), <code>setup-key.txt</code> (only before the first registration), <code>certificates/</code> (automatic HTTPS)</td></tr>
+  <tr><td>Mods/</td><td><code>GameSets/</code> (content packs: blocks, items, recipes), <code>Extensions/</code> (extensions of a GameSet, chosen per world), <code>TexturePacks/</code> (texture packs; list ids in <code>TexturePacks</code> in serverconfig.json to send them to every player)</td></tr>
 </table>
-<div class="box tip"><b>Backups</b>Stop the server (or run <code>save</code>) and copy the world folder. Updating the game: copy the new game files over the old ones, keep <code>serverconfig.json</code>, <code>Worlds/</code> and <code>dashboard/</code>. Worlds from 0.1.2 are converted automatically on the first start (a backup is made first); older worlds cannot be converted.</div>
+<div class="box tip"><b>Backups</b>Stop the server (or run <code>save</code>) and copy the world folder. Updating the game: copy the new game files over the old ones, keep <code>Multiplayer/</code>, <code>Worlds/</code> and <code>Mods/</code>. Older installs with <code>serverconfig.json</code>, <code>dashboard/</code> and <code>GameSets/</code> next to the executable are moved into the new folders on the first start. Worlds from 0.1.2 are converted automatically on the first start (a backup is made first); older worlds cannot be converted.</div>
 
 <h2>9. Troubleshooting</h2>
 <table>

@@ -64,7 +64,8 @@ namespace Engine
         private static int _selectableCount = -1;
         private static MessageType _selectableFilter;
 
-        private static readonly string HistoryFilePath = "command_history.txt";
+        private const string DebugFolderPath = "Debug";
+        private static readonly string HistoryFilePath = Path.Combine(DebugFolderPath, "command_history.txt");
         private static int _autoCompleteIndex = 0;
         private static List<CommandBase> _autoCompleteMatches = new List<CommandBase>();
 
@@ -619,22 +620,21 @@ namespace Engine
 
         private static void SaveHistory()
         {
+            Directory.CreateDirectory(DebugFolderPath);
             File.WriteAllLines(HistoryFilePath, _commandHistory);
         }
 
         public static void SaveMessagesToFile(bool useDefaultFileName = false)
         {
-            const string debugFolderPath = "Debug";
-
             Write("Date: " + GetDateTimeNow());
 
-            if (!Directory.Exists(debugFolderPath))
+            if (!Directory.Exists(DebugFolderPath))
             {
-                Directory.CreateDirectory(debugFolderPath);
+                Directory.CreateDirectory(DebugFolderPath);
             }
 
             string filename = useDefaultFileName ? "last_console_log.txt" : $"console_log_{GetDateTimeNow()}.txt";
-            string filepath = Path.Combine(debugFolderPath, filename);
+            string filepath = Path.Combine(DebugFolderPath, filename);
 
             try
             {

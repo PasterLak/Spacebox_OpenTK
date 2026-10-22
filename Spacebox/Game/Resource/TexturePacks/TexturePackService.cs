@@ -4,11 +4,12 @@ namespace Spacebox.Game.Resource.TexturePacks;
 
 public static class TexturePackService
 {
-    public const string FolderName = "TexturePacks";
+    public static readonly string FolderName = Path.Combine(ModFolders.RootName, ModFolders.TexturePacksName);
 
     private static List<TexturePack> _available;
+    private static IReadOnlyList<TexturePack> _sessionPacks = Array.Empty<TexturePack>();
 
-    public static string Directory => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FolderName);
+    public static string Directory => ModFolders.Local.TexturePacks;
 
     public static IReadOnlyList<TexturePack> Available => _available ??= TexturePackCatalog.Scan(Directory);
 
@@ -20,9 +21,27 @@ public static class TexturePackService
         Spacebox.Game.GUI.UIAtlas.Invalidate();
     }
 
+    public static IReadOnlyList<TexturePack> SessionPacks => _sessionPacks;
+
     public static IReadOnlyList<TexturePack> Active()
     {
-        return TexturePackCatalog.Active(Available, Enabled);
+        return TexturePackCatalog.WithSessionPacks(TexturePackCatalog.Active(Available, Enabled), _sessionPacks);
+    }
+
+    public static void SetSessionPacks(IReadOnlyList<string> folders)
+    {
+        var packs = new List<TexturePack>();
+        if (folders != null)
+        {
+            foreach (var folder in folders)
+            {
+                var pack = TexturePack.Load(folder);
+                if (pack != null) packs.Add(pack);
+            }
+        }
+
+        _sessionPacks = packs;
+        Changed();
     }
 
     public static IReadOnlyList<ITextureOverrideSource> ActiveOverrides()

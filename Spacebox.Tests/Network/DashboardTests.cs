@@ -195,7 +195,7 @@ public class DashboardTests : IDisposable
     [Fact]
     public void ItemIcons_ReadTextureNamesFromTheDefaultGameSet()
     {
-        string folder = Path.Combine(Spacebox.Tests.Versioning.WorldToolkitTests.DefaultGameSet(), "Default");
+        string folder = Spacebox.Tests.Versioning.WorldToolkitTests.DefaultGameSet().DefaultGameSet;
         var names = DashboardItemIcons.ReadTextureNames(folder);
 
         Assert.True(names.ContainsKey("aluminium_drill"));

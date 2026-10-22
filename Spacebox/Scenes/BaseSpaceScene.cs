@@ -31,6 +31,7 @@ public struct SpaceSceneArgs
 
     public string modfolderName;
     public string[] extensions = Array.Empty<string>();
+    public string[] serverTexturePacks = Array.Empty<string>();
     public bool applyTexturePacks = true;
     public string key;
     public string hostIp;
@@ -392,6 +393,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     {
         _networkSession?.Dispose();
         _networkSession = null;
+        Spacebox.Game.Resource.TexturePacks.TexturePackService.SetSessionPacks(null);
         Time.OnTick -= UpdateTickTasks;
         MainThreadDispatcher.Instance.Clear();
         PerlinWorms.ClearCache();

@@ -15,7 +15,8 @@ public sealed class AssetAuditor
     public const string GameFolder = "Spacebox";
     public const string KeepListFile = "Spacebox/Build/asset-keep.txt";
     public const string ResourcesFolder = "Resources";
-    public const string GameSetsFolder = "GameSets";
+    public const string ModsFolder = "Mods";
+    public static readonly string[] GameSetFolders = { "Mods/GameSets", "Mods/Extensions" };
 
     private static readonly string[] CodeFolders = { "Spacebox", "Engine" };
     private static readonly string[] SkippedFolders = { "bin", "obj", ".vs", "Build" };
@@ -73,7 +74,7 @@ public sealed class AssetAuditor
     private static List<AssetFile> CollectAssets(string gameRoot)
     {
         var files = new List<AssetFile>();
-        foreach (var folder in new[] { ResourcesFolder, GameSetsFolder })
+        foreach (var folder in new[] { ResourcesFolder, ModsFolder })
         {
             string root = Path.Combine(gameRoot, folder);
             if (!Directory.Exists(root)) continue;
@@ -110,12 +111,17 @@ public sealed class AssetAuditor
 
     private static void IndexGameSets(string gameRoot, ReferenceIndex index, AssetAuditResult result)
     {
-        string root = Path.Combine(gameRoot, GameSetsFolder);
+        foreach (var folder in GameSetFolders) IndexGameSets(gameRoot, folder, index, result);
+    }
+
+    private static void IndexGameSets(string gameRoot, string folder, ReferenceIndex index, AssetAuditResult result)
+    {
+        string root = Path.Combine(gameRoot, folder);
         if (!Directory.Exists(root)) return;
 
         foreach (var gameSet in Directory.EnumerateDirectories(root))
         {
-            string prefix = GameSetsFolder + "/" + Path.GetFileName(gameSet) + "/";
+            string prefix = folder + "/" + Path.GetFileName(gameSet) + "/";
             foreach (var json in Directory.EnumerateFiles(gameSet, "*.json", SearchOption.AllDirectories))
             {
                 var values = JsonStringCollector.Collect(File.ReadAllText(json), out var error);

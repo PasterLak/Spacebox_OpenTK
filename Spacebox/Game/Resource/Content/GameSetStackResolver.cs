@@ -16,9 +16,9 @@ public sealed class GameSetStackResult
 
 public static class GameSetStackResolver
 {
-    public static GameSetStackResult Resolve(string modsDirectory, string modId, IReadOnlyList<string> extensionIds, string folderName = null)
+    public static GameSetStackResult Resolve(ModFolders folders, string modId, IReadOnlyList<string> extensionIds, string folderName = null)
     {
-        return Resolve(InstalledGameSets.Scan(modsDirectory), Path.Combine(modsDirectory ?? "", Globals.GameSet.Default), modId, extensionIds, folderName);
+        return Resolve(InstalledGameSets.Scan(folders), folders.DefaultGameSet, modId, extensionIds, folderName);
     }
 
     public static GameSetStackResult Resolve(IReadOnlyList<InstalledGameSet> installed, string defaultFolder, string modId, IReadOnlyList<string> extensionIds, string folderName = null)

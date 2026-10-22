@@ -1,5 +1,5 @@
 $source = Join-Path $PSScriptRoot "server-guide.html"
-$target = Join-Path $PSScriptRoot "..\..\Spacebox\Spacebox Server Guide.pdf"
+$target = Join-Path $PSScriptRoot "..\..\Spacebox\Multiplayer\Spacebox Server Guide.pdf"
 $edge = @(
     "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
     "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe",

@@ -104,7 +104,7 @@ public sealed class ExtensionResolverTests : IDisposable
         _sets.Config("Default", "default");
         _sets.Config("Lamps", "lamps", "default");
 
-        var result = GameSetStackResolver.Resolve(_sets.Root, "lamps", null);
+        var result = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "lamps", null);
 
         Assert.True(result.Success, result.ErrorText);
         Assert.Equal("default", result.Stack.Base.Id);
@@ -119,7 +119,7 @@ public sealed class ExtensionResolverTests : IDisposable
         _sets.Config("Default", "default");
         _sets.Config("Other", "other");
 
-        var result = GameSetStackResolver.Resolve(_sets.Root, "other", Array.Empty<string>());
+        var result = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "other", Array.Empty<string>());
 
         Assert.True(result.Success);
         Assert.NotNull(result.Stack.Fallback);
@@ -131,7 +131,7 @@ public sealed class ExtensionResolverTests : IDisposable
     {
         _sets.Config("Default", "default");
 
-        var result = GameSetStackResolver.Resolve(_sets.Root, "nope", null);
+        var result = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "nope", null);
 
         Assert.False(result.Success);
         Assert.Null(result.Stack);

@@ -177,7 +177,8 @@ public sealed class ServerModule : IDashboardModule
         if (current != null) File.Delete(current);
 
         string fileName = Path.ChangeExtension(string.IsNullOrWhiteSpace(config.IconFile) ? "server-icon" : config.IconFile, extension);
-        string path = Path.IsPathRooted(fileName) ? fileName : Path.Combine(AppContext.BaseDirectory, fileName);
+        string path = Path.IsPathRooted(fileName) ? fileName : MultiplayerFolders.File(fileName);
+        Directory.CreateDirectory(Path.GetDirectoryName(path));
         File.WriteAllBytes(path, data);
 
         config.IconFile = fileName;

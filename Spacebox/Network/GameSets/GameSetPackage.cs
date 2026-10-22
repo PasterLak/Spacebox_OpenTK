@@ -2,6 +2,7 @@ using Engine;
 using Engine.Networking;
 using Spacebox.Game.Resource;
 using Spacebox.Game.Resource.Content;
+using Spacebox.Game.Resource.TexturePacks;
 
 namespace Spacebox.Network;
 
@@ -12,6 +13,7 @@ public static class GameSetPackage
     private static string _stackKey;
     private static string _hash;
     private static byte[] _archive;
+    private static IReadOnlyList<TexturePack> _texturePacks = Array.Empty<TexturePack>();
 
     public static void Register(NetworkManager network)
     {
@@ -36,9 +38,18 @@ public static class GameSetPackage
         }
     }
 
+    public static string[] TexturePackIds
+    {
+        get
+        {
+            Refresh();
+            return ServerTexturePacks.IdsOf(_texturePacks);
+        }
+    }
+
     private static string CurrentModPath => GameSetLoader.ModInfo?.ModPath;
     private static IReadOnlyList<InstalledGameSet> Extensions => GameSetLoader.Stack?.Extensions ?? Array.Empty<InstalledGameSet>();
-    private static string StackKey => CurrentModPath + "|" + WorldExtensionList.Format(GameSetLoader.Stack?.ExtensionIds);
+    private static string StackKey => CurrentModPath + "|" + WorldExtensionList.Format(GameSetLoader.Stack?.ExtensionIds) + "|" + WorldExtensionList.Format(ServerTexturePacks.Ids);
 
     private static byte[] GetArchive()
     {
@@ -48,7 +59,7 @@ public static class GameSetPackage
         string modPath = CurrentModPath;
         if (string.IsNullOrEmpty(modPath) || !Directory.Exists(modPath)) throw new InvalidOperationException("No GameSet is loaded");
 
-        _archive = GameSetFolders.Pack(modPath, Extensions);
+        _archive = GameSetFolders.Pack(modPath, Extensions, _texturePacks);
         Debug.Log($"[Server] GameSet package ready ({_archive.Length / 1024} KB)");
         return _archive;
     }
@@ -61,6 +72,7 @@ public static class GameSetPackage
 
         _stackKey = key;
         _archive = null;
-        _hash = string.IsNullOrEmpty(modPath) || !Directory.Exists(modPath) ? null : GameSetFolders.ComputeHash(modPath, Extensions);
+        _texturePacks = ServerTexturePacks.Resolve();
+        _hash = string.IsNullOrEmpty(modPath) || !Directory.Exists(modPath) ? null : GameSetFolders.ComputeHash(modPath, Extensions, _texturePacks);
     }
 }

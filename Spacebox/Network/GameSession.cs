@@ -76,6 +76,8 @@ public sealed class RemoteWorldInfo
     public int Ticks;
     public string GameSetHash;
     public string[] Extensions = Array.Empty<string>();
+    public string[] TexturePacks = Array.Empty<string>();
+    public string[] TexturePackFolders = Array.Empty<string>();
     public string GameSetFolder;
     public string GameSetCacheName;
     public bool UseLocalGameSet = true;
@@ -88,6 +90,7 @@ public sealed class RemoteWorldInfo
             worldName = WorldName,
             modId = ModId,
             extensions = Extensions ?? Array.Empty<string>(),
+            serverTexturePacks = TexturePackFolders ?? Array.Empty<string>(),
             seed = Seed,
             modfolderName = string.IsNullOrEmpty(GameSetFolder) ? GameSetLocator.FindFolder(ModId) : GameSetFolder,
             SearchForGameSetInLocalFolder = UseLocalGameSet,

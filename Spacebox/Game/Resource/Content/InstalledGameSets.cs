@@ -5,6 +5,13 @@ namespace Spacebox.Game.Resource.Content;
 
 public static class InstalledGameSets
 {
+    public static List<InstalledGameSet> Scan(ModFolders folders)
+    {
+        var result = new List<InstalledGameSet>();
+        foreach (var folder in folders.ContentFolders) result.AddRange(Scan(folder));
+        return result;
+    }
+
     public static List<InstalledGameSet> Scan(string modsDirectory)
     {
         var result = new List<InstalledGameSet>();

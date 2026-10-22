@@ -27,7 +27,7 @@ public sealed class ShipViewerGameSet
     {
         Release();
 
-        bool found = GameSetLocator.TryFindFolderPath(GameSetLocator.LocalDirectory, modId, out var path);
+        bool found = GameSetLocator.TryFindFolderPath(GameSetLocator.Local, modId, out var path);
         string loadId = found ? modId : DefaultModId;
         string folder = found ? Path.GetFileName(path) : DefaultFolder;
         Notice = found ? "" : $"GameSet '{modId}' is not installed, showing with the Default GameSet";

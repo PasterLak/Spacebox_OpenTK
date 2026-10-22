@@ -10,7 +10,7 @@ public static class ClientConfigStore
 
     private static readonly JsonSerializerOptions Options = new JsonSerializerOptions { WriteIndented = true };
 
-    public static string FilePath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FileName);
+    public static string FilePath => Spacebox.Network.MultiplayerFolders.File(FileName);
 
     public static ClientConfig Load()
     {
@@ -49,6 +49,7 @@ public static class ClientConfigStore
     {
         try
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
             File.WriteAllText(path, JsonSerializer.Serialize(config, Options));
         }
         catch (Exception ex)

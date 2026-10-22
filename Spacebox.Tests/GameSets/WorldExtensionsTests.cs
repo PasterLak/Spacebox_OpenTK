@@ -51,15 +51,15 @@ public sealed class WorldExtensionsTests : IDisposable
         _sets.Write("Lamps/Blocks/lamp/block.json", "{ \"ID\": \"lamp\" }");
 
         string defaultFolder = Path.Combine(_sets.Root, "Default");
-        var plain = GameSetStackResolver.Resolve(_sets.Root, "default", null).Stack;
-        var extended = GameSetStackResolver.Resolve(_sets.Root, "default", new[] { "lamps" }).Stack;
+        var plain = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "default", null).Stack;
+        var extended = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "default", new[] { "lamps" }).Stack;
 
         Assert.Equal(GameSetFolders.ComputeHash(defaultFolder), GameSetFolders.ComputeHash(plain));
         Assert.NotEqual(GameSetFolders.ComputeHash(plain), GameSetFolders.ComputeHash(extended));
 
         string before = GameSetFolders.ComputeHash(extended);
         _sets.Write("Lamps/Blocks/lamp/block.json", "{ \"ID\": \"lamp\", \"Name\": \"Changed\" }");
-        Assert.NotEqual(before, GameSetFolders.ComputeHash(GameSetStackResolver.Resolve(_sets.Root, "default", new[] { "lamps" }).Stack));
+        Assert.NotEqual(before, GameSetFolders.ComputeHash(GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "default", new[] { "lamps" }).Stack));
     }
 
     [Fact]
@@ -69,11 +69,11 @@ public sealed class WorldExtensionsTests : IDisposable
         _sets.Config("Lamps", "lamps", "default");
         _sets.Write("Lamps/Items/bulb/item.json", "{ \"ID\": \"bulb\" }");
 
-        var stack = GameSetStackResolver.Resolve(_sets.Root, "default", new[] { "lamps" }).Stack;
+        var stack = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "default", new[] { "lamps" }).Stack;
         string target = Path.Combine(_sets.Root, "Download");
         Engine.Utils.DirectoryArchive.Extract(GameSetFolders.Pack(stack.Base.Folder, stack.Extensions), target);
 
-        var downloaded = GameSetStackResolver.Resolve(target, "default", new[] { "lamps" });
+        var downloaded = GameSetStackResolver.Resolve(new ModFolders(target), "default", new[] { "lamps" });
         Assert.True(downloaded.Success, downloaded.ErrorText);
         Assert.Equal(GameSetFolders.ComputeHash(stack), GameSetFolders.ComputeHash(downloaded.Stack));
     }
@@ -87,8 +87,8 @@ public sealed class WorldExtensionsTests : IDisposable
         _sets.Write("Lamps/Blocks/lamp/block.json", "{ \"ID\": \"lamp\" }");
         _sets.Write("Lamps/Items/bulb/item.json", "{ \"ID\": \"bulb\" }");
 
-        var plain = GameSetIdIndex.Load(_sets.Root, "default");
-        var extended = GameSetIdIndex.Load(_sets.Root, "default", new[] { "lamps" });
+        var plain = GameSetIdIndex.Load(ModFolders.Flat(_sets.Root), "default");
+        var extended = GameSetIdIndex.Load(ModFolders.Flat(_sets.Root), "default", new[] { "lamps" });
 
         Assert.True(plain.IsBlock("default:stone"));
         Assert.False(plain.IsBlock("default:lamp"));

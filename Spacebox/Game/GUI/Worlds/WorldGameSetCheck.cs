@@ -12,7 +12,7 @@ public static class WorldGameSetCheck
 
     public static GameSetStackResult Resolve(WorldInfo world)
     {
-        return GameSetStackResolver.Resolve(GameSetLocator.LocalDirectory, world.ModId, ExtensionsOf(world));
+        return GameSetStackResolver.Resolve(GameSetLocator.Local, world.ModId, ExtensionsOf(world));
     }
 
     public static bool TryResolve(WorldInfo world, out string error)

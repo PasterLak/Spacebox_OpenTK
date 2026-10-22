@@ -4,18 +4,18 @@ Spacebox content is data: JSON files plus PNG textures and OGG/WAV sounds. There
 
 | Kind | Folder | Picked | Saved with the world |
 |---|---|---|---|
-| Base GameSet | `GameSets/<Name>/` | per world (GameSet combo in Create World) | yes (`ModId`) |
-| Extension GameSet | `GameSets/<Name>/` with `"Extends"` in `config.json` | per world (Extensions list in Create World) | yes (`Extensions`) |
-| Texture pack | `TexturePacks/<Name>/` | globally in Mods -> Texture packs | no |
+| Base GameSet | `Mods/GameSets/<Name>/` | per world (GameSet combo in Create World) | yes (`ModId`) |
+| Extension GameSet | `Mods/Extensions/<Name>/` with `"Extends"` in `config.json` | per world (Extensions list in Create World) | yes (`Extensions`) |
+| Texture pack | `Mods/TexturePacks/<Name>/` | globally in Mods -> Texture packs | no |
 
-Examples shipped with the game: `GameSets/ExampleExtension` and `TexturePacks/ExamplePack`.
+Examples shipped with the game: `Mods/Extensions/ExampleExtension` and `Mods/TexturePacks/ExamplePack`. A `.zip` or `.rar` dropped into `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start (extensions always end up in `Mods/Extensions/`).
 
 ## GameSet layout (folder format)
 
 Every block and item has its own folder with its JSON, textures and sounds:
 
 ```
-GameSets/MyMod/
+Mods/GameSets/MyMod/
   config.json
   icon.png
   Blocks/
@@ -61,12 +61,12 @@ An extension adds content to a base GameSet (usually `Default`) without copying 
 - An entry with an id that already exists patches it: listed fields replace the old values, nested objects are merged, arrays are replaced. Example: `{ "ID": "light_white", "Description": "New text" }` only changes the description. A blueprint with the same product or a recipe with the same machine and ingredient replaces the old one.
 - Load order: base GameSet, then extensions (includes first, then the order chosen in Create World). Later extensions win.
 - The extension list is chosen when a world is created and saved in `world.json` (`"Extensions": [ "my_lamps" ]`). Blocks and items of a missing extension would be unknown to the world, so the list cannot be changed in the menu and a world whose extensions are not installed does not load.
-- Multiplayer: the server sends its GameSet hash including all extensions; clients without the same files download the server's GameSet and extensions automatically. Dedicated servers use the `Extensions` of their world's `world.json`.
+- Multiplayer: the server sends its GameSet hash including all extensions; clients without the same files download the server's GameSet and extensions automatically into `Multiplayer/Mods/<server>/`. Dedicated servers use the `Extensions` of their world's `world.json`.
 
 ## Texture packs
 
 ```
-TexturePacks/MyPack/
+Mods/TexturePacks/MyPack/
   pack.json        { "Id": "my_pack", "Name": "My Pack", "Description": "...", "Author": "...", "Version": "1.0" }
   icon.png
   Blocks/lightRock.png      replaces the block texture "lightRock" of every GameSet and extension
@@ -77,3 +77,4 @@ TexturePacks/MyPack/
 
 - Only names that exist are replaced; folders inside `Blocks/` and `Items/` are free.
 - Enable packs in Mods -> Texture packs. Several packs can be active; the top one wins. The list is stored in `Resources/Settings.json` (`texture_packs.enabled`) and applies when a world is loaded.
+- Multiplayer: a server can share texture packs. A dedicated server lists them in `Multiplayer/serverconfig.json` (`"TexturePacks": [ "my_pack" ]`), a host shares the packs it has enabled. Joining players download them with the GameSet and see them below their own enabled packs; they are used only while playing on that server.

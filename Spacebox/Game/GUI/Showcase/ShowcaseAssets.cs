@@ -13,7 +13,7 @@ public sealed class ShowcaseItem
 public sealed class ShowcaseAssets : IDisposable
 {
     public const string FontPath = "Resources/Fonts/FusionPixel/FusionPixel12pxMonospacedLatin.ttf";
-    private const string ItemsFolder = "GameSets/Default/Items";
+    private const string ItemsFolder = "Mods/GameSets/Default/Items";
     private const string EquipmentFolder = "Resources/Textures/UI/Equipment";
 
     public CanvasFont Font { get; }

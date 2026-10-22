@@ -69,7 +69,7 @@ public class PlayerSpawnRulesTests
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)
         {
-            var candidate = Path.Combine(dir.FullName, "Spacebox", "GameSets", "Default", "Generation");
+            var candidate = Path.Combine(dir.FullName, "Spacebox", "Mods", "GameSets", "Default", "Generation");
             if (Directory.Exists(candidate)) return candidate;
             dir = dir.Parent;
         }

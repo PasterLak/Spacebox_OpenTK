@@ -28,6 +28,8 @@ public static class Program
             Engine.Input.CursorCaptureEnabled = false;
         }
 
+        Game.Resource.GameFolderMigration.Run(AppContext.BaseDirectory);
+
        
         var monitor = Monitors.GetPrimaryMonitor();
         var _audioManager = AudioDevice.Instance; // move!!!!

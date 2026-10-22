@@ -5,12 +5,11 @@ namespace Spacebox.Tests.GameSets;
 
 public sealed class ExampleContentTests
 {
-    private static string GameFolder => Path.GetDirectoryName(Path.GetDirectoryName(DefaultGameSetContent.Folder))!;
-    private static string GameSetsFolder => Path.Combine(GameFolder, "GameSets");
+    private static ModFolders Mods => new ModFolders(Path.GetDirectoryName(Path.GetDirectoryName(DefaultGameSetContent.Folder))!);
 
     private static GameSetStack ExampleStack()
     {
-        var result = GameSetStackResolver.Resolve(GameSetsFolder, "default", new[] { "example_extension" });
+        var result = GameSetStackResolver.Resolve(Mods, "default", new[] { "example_extension" });
         Assert.True(result.Success, result.ErrorText);
         return result.Stack;
     }
@@ -55,7 +54,7 @@ public sealed class ExampleContentTests
     [Fact]
     public void ExampleExtension_IsListedForDefaultOnly()
     {
-        var installed = InstalledGameSets.Scan(GameSetsFolder);
+        var installed = InstalledGameSets.Scan(Mods);
         var extensions = InstalledGameSets.ExtensionsFor(installed, InstalledGameSets.Find(installed, "default"));
 
         Assert.Contains(extensions, e => e.Id == "example_extension");
@@ -65,7 +64,7 @@ public sealed class ExampleContentTests
     [Fact]
     public void ExamplePack_OverridesExistingDefaultTextures()
     {
-        var pack = Assert.Single(TexturePackCatalog.Scan(Path.Combine(GameFolder, TexturePackService.FolderName)), p => p.Id == "example_pack");
+        var pack = Assert.Single(TexturePackCatalog.Scan(Mods.TexturePacks), p => p.Id == "example_pack");
         var assets = GameSetAssetIndex.Build(new[] { new ContentLayer("default", DefaultGameSetContent.Folder) }, null, null, new ITextureOverrideSource[] { pack });
 
         Assert.StartsWith(pack.Folder, assets.BlockTextures["lightrock"]);

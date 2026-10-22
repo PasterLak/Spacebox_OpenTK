@@ -29,7 +29,7 @@ public static class ServerIconFile
     public static string ResolvePath(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return null;
-        if (!Path.IsPathRooted(path)) path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+        path = MultiplayerFolders.ResolveConfigPath(path);
         if (File.Exists(path)) return path;
 
         foreach (var extension in Extensions)

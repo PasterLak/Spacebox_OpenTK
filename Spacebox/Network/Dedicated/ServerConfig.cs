@@ -6,7 +6,7 @@ namespace Spacebox.Network.Dedicated;
 
 public sealed class ServerConfig
 {
-    private const string FileName = "serverconfig.json";
+    public const string FileName = "serverconfig.json";
 
     public string ServerName { get; set; } = "Spacebox Server";
     public string Description { get; set; } = "A Spacebox server";
@@ -20,6 +20,7 @@ public sealed class ServerConfig
     public string WorldName { get; set; } = "ServerWorld";
     public string Seed { get; set; } = "";
     public string ModId { get; set; } = "default";
+    public List<string> TexturePacks { get; set; } = new List<string>();
     public int Port { get; set; } = NetworkManager.DefaultPort;
     public int MaxPlayers { get; set; } = 16;
     public byte GameMode { get; set; } = 0;
@@ -53,7 +54,7 @@ public sealed class ServerConfig
 
     public static ServerConfig LoadOrCreate()
     {
-        string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FileName);
+        string path = FilePath;
         var options = new JsonSerializerOptions { WriteIndented = true };
 
         if (File.Exists(path))
@@ -64,6 +65,7 @@ public sealed class ServerConfig
                 if (loaded != null)
                 {
                     loaded.Claims ??= new Spacebox.Game.Protection.ClaimSettings();
+                    loaded.TexturePacks ??= new List<string>();
                     loaded.Gameplay ??= new Spacebox.Game.Rules.ServerRules();
                     loaded.Claims.Validate();
                     loaded.Gameplay.Validate();
@@ -85,13 +87,16 @@ public sealed class ServerConfig
 
     public bool Save()
     {
-        return Save(this, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FileName), new JsonSerializerOptions { WriteIndented = true });
+        return Save(this, FilePath, new JsonSerializerOptions { WriteIndented = true });
     }
+
+    public static string FilePath => MultiplayerFolders.File(FileName);
 
     private static bool Save(ServerConfig config, string path, JsonSerializerOptions options)
     {
         try
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllText(path, JsonSerializer.Serialize(config, options));
             return true;
         }

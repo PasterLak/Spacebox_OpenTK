@@ -61,6 +61,8 @@ New
 - GameSets in folder format: one folder per block/item with its JSON, textures, emission maps, sounds, blueprint and recipes; old flat blocks/items/crafting/recipes.json still load and can be mixed; Default converted (content identical), converter in the editor and Tools/Spacebox.GameSetTool
 - extension GameSets ("Extends", "Includes"): add or patch blocks, items, textures, sounds and recipes of a base GameSet, chosen per world in Create World and saved with it, synced and checked when joining a server; example GameSets/ExampleExtension
 - texture packs: Mods -> Texture packs, several active at once in an ordered stack, override block/item/emission/UI textures of any GameSet; example TexturePacks/ExamplePack
+- game folder: Mods/ holds GameSets/, Extensions/ and TexturePacks/; Multiplayer/ holds client.json, serverconfig.json, the server guide, server icons, Dashboard/, cached server worlds (Worlds/) and downloaded server content (Mods/); old folders are moved on the first start
+- servers share texture packs: TexturePacks in serverconfig.json (a host shares its enabled packs), downloaded and checked with the GameSet like extensions, shown below the player's own packs
 Small
 - own worlds: Final builds save automatically when leaving (menu, exit, closing the window) and autosave by default; Debug/Release only save with the Save button and ask Save / Don't Save / Cancel when leaving with changes; saves are announced in chat
 - Options > Game: Autosave and Autosave Interval (1-60 min; off by default, on by default in Final builds)
@@ -246,6 +248,7 @@ Fixes
 - unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
 - entering a sector while it was still loading in the background could drop its unsaved changes (mined-out asteroids came back)
 Engine
+- console command history is saved in Debug/command_history.txt
 - TrackballViewCamera (free orbit on all axes), shared TargetViewCamera base with OrbitViewCamera
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

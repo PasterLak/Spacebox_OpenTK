@@ -89,12 +89,12 @@
 		<Content Include="Resources\Shaders\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<None Update="serverconfig.json">
+		<None Update="Multiplayer\serverconfig.json">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 		</None>
-		<None Update="Spacebox Server Guide.pdf">
+		<None Update="Multiplayer\Spacebox Server Guide.pdf">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -105,10 +105,7 @@
 		<None Update="start-server.sh;start.sh" Condition="'$(LaunchScripts)' == 'unix'">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<Content Include="TexturePacks\**\*.*">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="GameSets\**\*.*">
+		<Content Include="Mods\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
@@ -126,9 +123,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="GameSets\Default\Generation\Loot\" />
-	  <Folder Include="GameSets\Default\AI\" />
-	  <Folder Include="GameSets\Default\Models\" />
+	  <Folder Include="Mods\GameSets\Default\Generation\Loot\" />
+	  <Folder Include="Mods\GameSets\Default\AI\" />
+	  <Folder Include="Mods\GameSets\Default\Models\" />
 	</ItemGroup>
 
 

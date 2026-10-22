@@ -51,7 +51,7 @@ public static class DashboardService
             Guard = new DashboardGuard(sessions),
             Log = _log,
             Metrics = _metrics,
-            Icons = new DashboardItemIcons(GameSetLocator.LocalDirectory)
+            Icons = new DashboardItemIcons(GameSetLocator.Local)
         };
 
         var router = new HttpRouter();

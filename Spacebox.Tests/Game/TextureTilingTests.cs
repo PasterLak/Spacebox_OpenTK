@@ -202,8 +202,8 @@ public class TextureTilingTests
     private static string GameSetFolder()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "Spacebox", "GameSets", "Default"))) dir = dir.Parent;
+        while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "Spacebox", "Mods", "GameSets", "Default"))) dir = dir.Parent;
         Assert.NotNull(dir);
-        return Path.Combine(dir!.FullName, "Spacebox", "GameSets", "Default");
+        return Path.Combine(dir!.FullName, "Spacebox", "Mods", "GameSets", "Default");
     }
 }

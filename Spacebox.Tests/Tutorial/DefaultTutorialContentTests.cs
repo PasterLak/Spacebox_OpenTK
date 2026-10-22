@@ -46,7 +46,7 @@ public class DefaultTutorialContentTests
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)
         {
-            var candidate = Path.Combine(dir.FullName, "Spacebox", "GameSets", "Default", relative);
+            var candidate = Path.Combine(dir.FullName, "Spacebox", "Mods", "GameSets", "Default", relative);
             if (File.Exists(candidate) || Directory.Exists(candidate)) return candidate;
             dir = dir.Parent;
         }
@@ -56,7 +56,7 @@ public class DefaultTutorialContentTests
     private static HashSet<string> InputActions()
     {
         var dir = new DirectoryInfo(Path.GetDirectoryName(GameSetFile("config.json")));
-        string path = Path.Combine(dir.Parent.Parent.FullName, "Resources", "default_input.json");
+        string path = Path.Combine(dir.Parent.Parent.Parent.FullName, "Resources", "default_input.json");
         var root = JsonDocument.Parse(File.ReadAllText(path)).RootElement;
         var actions = new HashSet<string>(StringComparer.Ordinal);
         Collect(root, actions);

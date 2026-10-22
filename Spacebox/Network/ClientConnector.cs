@@ -88,6 +88,7 @@ public static class ClientConnector
             GameSetHash = message.GameSetHash,
             GameSetFolder = message.GameSetFolder,
             Extensions = WorldExtensionList.Parse(message.Extensions),
+            TexturePacks = WorldExtensionList.Parse(message.TexturePacks),
             SpawnPoint = message.HasSpawnPoint ? new[] { message.SpawnPoint.X, message.SpawnPoint.Y, message.SpawnPoint.Z } : null
         };
 

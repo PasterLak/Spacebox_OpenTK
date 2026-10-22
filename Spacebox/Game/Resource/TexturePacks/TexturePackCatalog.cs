@@ -36,4 +36,15 @@ public static class TexturePackCatalog
         }
         return result;
     }
+
+    public static List<TexturePack> WithSessionPacks(List<TexturePack> active, IReadOnlyList<TexturePack> sessionPacks)
+    {
+        if (sessionPacks == null) return active;
+
+        foreach (var pack in sessionPacks)
+        {
+            if (!active.Exists(existing => existing.Matches(pack.Id))) active.Add(pack);
+        }
+        return active;
+    }
 }

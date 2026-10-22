@@ -166,7 +166,7 @@ public class BlockShapeTests
     [Fact]
     public void DefaultTorchModel_Is04By08By04()
     {
-        var path = FindRepoFile(Path.Combine("Spacebox", "GameSets", "Default", "Models", "Blocks", "torch.obj"));
+        var path = FindRepoFile(Path.Combine("Spacebox", "Mods", "GameSets", "Default", "Models", "Blocks", "torch.obj"));
         var geometry = ObjBlockGeometry.Load(path);
 
         AssertVector(new Vector3(0.4f, 0.8f, 0.4f), geometry.Size);

@@ -4,6 +4,7 @@ using Engine;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Common;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Resource;
 
@@ -11,14 +12,21 @@ internal static class GameSetsUnpacker
 {
     public static void UnpackMods(bool useModNameAsFolder)
     {
-        string gameSetsPath = Path.Combine(Globals.GameFolder, Globals.GameSet.LocalFolder);
-
-        if (!Directory.Exists(gameSetsPath))
+        var folders = ModFolders.Local;
+        foreach (var folder in folders.ContentFolders)
         {
-            Directory.CreateDirectory(gameSetsPath);
-            return;
-        }
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+                continue;
+            }
 
+            UnpackArchives(folder, folders, useModNameAsFolder);
+        }
+    }
+
+    private static void UnpackArchives(string gameSetsPath, ModFolders folders, bool useModNameAsFolder)
+    {
         var archiveFiles = Directory.GetFiles(gameSetsPath)
             .Where(f =>
             {
@@ -81,7 +89,10 @@ internal static class GameSetsUnpacker
 
                 string modName = useModNameAsFolder ? GetModNameFromConfig(modFolder) : null;
                 string targetFolderName = !string.IsNullOrEmpty(modName) ? modName : Path.GetFileNameWithoutExtension(archivePath);
-                string targetFolder = Path.Combine(gameSetsPath, targetFolderName);
+                bool isExtension = !string.IsNullOrWhiteSpace(InstalledGameSets.ReadConfig(modFolder)?.Extends);
+                string targetRoot = folders.FolderFor(isExtension);
+                Directory.CreateDirectory(targetRoot);
+                string targetFolder = Path.Combine(targetRoot, targetFolderName);
 
                 Debug.Log($"[GameSetsUnpacker] Mod folder found: {modFolder}");
                 Debug.Log($"[GameSetsUnpacker] Target folder: {targetFolder}");

@@ -29,7 +29,7 @@ public static class DefaultGameSetContent
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)
         {
-            var candidate = Path.Combine(dir.FullName, "Spacebox", "GameSets", "Default");
+            var candidate = Path.Combine(dir.FullName, "Spacebox", "Mods", "GameSets", "Default");
             if (Directory.Exists(candidate)) return candidate;
             dir = dir.Parent;
         }

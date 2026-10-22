@@ -4,7 +4,7 @@ namespace Spacebox.Tests;
 
 public class DnaReconstructorSoundsTests
 {
-    private static readonly string DefaultSounds = Path.Combine(AppContext.BaseDirectory, "GameSets", "Default", "Sounds");
+    private static readonly string DefaultSounds = Path.Combine(AppContext.BaseDirectory, "Mods", "GameSets", "Default", "Sounds");
 
     [Fact]
     public void MissingSettingsUseDefaultSounds()

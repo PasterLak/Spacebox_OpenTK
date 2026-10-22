@@ -1,3 +1,4 @@
+using Spacebox.Game.Resource.Content;
 using SharpNBT;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Generation.Tools;
@@ -24,16 +25,16 @@ public class WorldToolkitTests : IDisposable
 
     private static WorldUpgradeContext Context(string folder) => new WorldUpgradeContext(new WorldInfo { Name = "W", GameVersion = "0.1.5" }, folder);
 
-    internal static string DefaultGameSet()
+    internal static ModFolders DefaultGameSet()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)
         {
-            var candidate = Path.Combine(dir.FullName, "Spacebox", "GameSets");
-            if (Directory.Exists(Path.Combine(candidate, "Default"))) return candidate;
+            var candidate = new ModFolders(Path.Combine(dir.FullName, "Spacebox", ModFolders.RootName));
+            if (Directory.Exists(candidate.DefaultGameSet)) return candidate;
             dir = dir.Parent;
         }
-        throw new DirectoryNotFoundException("GameSets");
+        throw new DirectoryNotFoundException(ModFolders.RootName);
     }
 
     [Fact]

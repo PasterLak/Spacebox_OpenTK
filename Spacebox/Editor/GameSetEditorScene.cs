@@ -39,8 +39,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
 
         LoadGameSet();
 
-        var modsFolder = ModPath.GetModsPath(true, "");
-        var project = new GameSetProject(Path.Combine(modsFolder, _args.ModFolderName), _args.ModId);
+        var project = new GameSetProject(Spacebox.Network.GameSetLocator.FolderPath(_args.ModFolderName), _args.ModId);
         _context = new EditorContext(project);
         _context.Assets.Refresh();
         _shell = new EditorShell(_context, EditorPanelFactory.CreateDefault(project), _args.StartPanel);

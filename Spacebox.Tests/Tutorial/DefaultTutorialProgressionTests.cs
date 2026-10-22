@@ -10,7 +10,7 @@ public class DefaultTutorialProgressionTests
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)
         {
-            var candidate = Path.Combine(dir.FullName, "Spacebox", "GameSets", "Default", relative);
+            var candidate = Path.Combine(dir.FullName, "Spacebox", "Mods", "GameSets", "Default", relative);
             if (File.Exists(candidate) || Directory.Exists(candidate)) return candidate;
             dir = dir.Parent;
         }

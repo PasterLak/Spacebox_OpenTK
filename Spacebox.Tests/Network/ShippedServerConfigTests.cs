@@ -8,7 +8,7 @@ public class ShippedServerConfigTests
     [Fact]
     public void ShippedConfig_ContainsEverySetting()
     {
-        using var document = JsonDocument.Parse(File.ReadAllText(FindRepoFile(Path.Combine("Spacebox", "serverconfig.json"))));
+        using var document = JsonDocument.Parse(File.ReadAllText(FindRepoFile(Path.Combine("Spacebox", "Multiplayer", "serverconfig.json"))));
         var root = document.RootElement;
 
         foreach (var property in typeof(ServerConfig).GetProperties())
@@ -21,7 +21,7 @@ public class ShippedServerConfigTests
     [Fact]
     public void ShippedConfig_UsesTheDefaults()
     {
-        var shipped = JsonSerializer.Deserialize<ServerConfig>(File.ReadAllText(FindRepoFile(Path.Combine("Spacebox", "serverconfig.json"))))!;
+        var shipped = JsonSerializer.Deserialize<ServerConfig>(File.ReadAllText(FindRepoFile(Path.Combine("Spacebox", "Multiplayer", "serverconfig.json"))))!;
         var defaults = new ServerConfig();
 
         Assert.False(shipped.FriendlyMobs);

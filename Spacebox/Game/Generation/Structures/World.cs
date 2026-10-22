@@ -190,7 +190,7 @@ public class World : Component, ISpaceStructure
 
     public static void LoadRemoteWorldInfo(Spacebox.Network.RemoteWorldInfo remote)
     {
-        string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Multiplayer", Spacebox.Network.ServerFolderName.Current, MakeSafeFolderName(remote.WorldName));
+        string folder = Spacebox.Network.MultiplayerFolders.WorldCache(Spacebox.Network.ServerFolderName.Current, remote.WorldName);
         Directory.CreateDirectory(folder);
 
         WorldData = new WorldLoader.LoadedWorld

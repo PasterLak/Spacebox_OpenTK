@@ -57,7 +57,7 @@ Multiplayer joiners never see the welcome screen. A new player without saved tut
 | Piece | Responsibility |
 |---|---|
 | `TutorialJSON` DTOs (`TutorialJSON`, `ChapterJSON`, `StepJSON`, `TaskJSON`, `RewardJSON`) | file format, every field has a default (old or partial files load) |
-| `TutorialLoader` | loads `GameSets/<set>/Tutorials/*.json` (falls back to Default like the other loaders); validates ids and item/block references with `Debug.Warning`; called from `GameSetLoader.Load` after items and crafting |
+| `TutorialLoader` | loads `Mods/GameSets/<set>/Tutorials/*.json` (falls back to Default like the other loaders); validates ids and item/block references with `Debug.Warning`; called from `GameSetLoader.Load` after items and crafting |
 | `TutorialDefinition` / `TutorialChapter` / `TutorialStep` / `TutorialTaskDefinition` | resolved, immutable model (item ids → `Item`) |
 | `ITutorialTask` + `TutorialTaskFactory` | task runtime: `Start(ctx)`, `Update(ctx, dt)`, `OnActivity(in PlayerActivityEvent)`, `Current`/`Target`, `IsDone`, `Label`. The factory maps the JSON `Type` string → constructor (same pattern as `BlockFactory` / `MobBrainFactory`); a new task type is a new class + one registration line |
 | `PlayerActivity` (`Game/Player/`) | static hub `event Action<PlayerActivityEvent>`; the struct holds `Kind`, `Id`, `Count`. Raised at the call sites that already record statistics. Reusable later for achievements |
@@ -114,7 +114,7 @@ Multiplayer joiners never see the welcome screen. A new player without saved tut
 
 Adding a type: a class implementing `ITutorialTask` + `TutorialTaskFactory.Register("name", json => new X(json))`.
 
-### JSON format (`GameSets/Default/Tutorials/basics.json`)
+### JSON format (`Mods/GameSets/Default/Tutorials/basics.json`)
 ```json
 {
   "Id": "basics",
@@ -187,7 +187,7 @@ Task options:
 
 The plan is balanced to the real progression: the aluminium drill (tier 1) mines aluminium, cobaltite, ice and light rock; the furnace needs no power; the cobalt drill needs a drill bit, 2 cobalt ingots and 2 energy cells.
 
-The actual steps are in `GameSets/Default/Tutorials/basics.json`. Rewards build an aluminium armor set, so they never replace something a task asks for.
+The actual steps are in `Mods/GameSets/Default/Tutorials/basics.json`. Rewards build an aluminium armor set, so they never replace something a task asks for.
 
 | # | Chapter | Steps | Reward |
 |---|---|---|---|
@@ -212,13 +212,13 @@ The actual steps are in `GameSets/Default/Tutorials/basics.json`. Rewards build 
 | Part | Files |
 |---|---|
 | Format and model | `Game/Tutorial/TutorialJSON.cs`, `TutorialModel.cs`, `TutorialParser.cs` (pure, warnings list), `TutorialTaskLabels.cs` (default labels) |
-| Loading | `TutorialLoader.cs` (`GameSets/<set>/Tutorials/*.json`, falls back to Default, skipped on headless; warns about unknown input actions and stats), `TutorialLibrary.cs` |
+| Loading | `TutorialLoader.cs` (`Mods/GameSets/<set>/Tutorials/*.json`, falls back to Default, skipped on headless; warns about unknown input actions and stats), `TutorialLibrary.cs` |
 | Tasks | `Game/Tutorial/Tasks/` (`ITutorialTask`, `TutorialTask` base with latching progress, `TutorialTasks.cs`, `TutorialTaskFactory.cs`) |
 | Runtime | `TutorialRunner.cs` (steps, game-mode filter, rewards once per step/chapter even after restart, skip/stop/resume/restart), `TutorialProgress.cs` (saved in `PlayerData.Tutorial`), `TutorialService.cs` (player glue, rewards, `PlayerActivity` subscription) |
 | Game queries | `ITutorialContext.cs`, `LocalTutorialContext.cs` (also resolves `{key:}`/`{item:}`), `PlayerStatReader.cs`, `TutorialKeyNames.cs`, `TutorialText.cs` |
 | Events | `Game/Player/PlayerActivity.cs` (block events are converted to the block's item id) |
 | UI | `Game/Tutorial/UI/` (`TutorialUI` panel and sounds, `TutorialToasts`, `TutorialMenuUI` in the pause menu, `TutorialPromptUI` for multiplayer joiners, `TutorialDraw` helpers) |
-| Content | `GameSets/Default/Tutorials/basics.json` (survival, 11 chapters), `creative.json` |
+| Content | `Mods/GameSets/Default/Tutorials/basics.json` (survival, 11 chapters), `creative.json` |
 | Tests | `Spacebox.Tests/Tutorial/` |
 
 ### Content rules (checked by tests)
@@ -228,7 +228,7 @@ The actual steps are in `GameSets/Default/Tutorials/basics.json`. Rewards build 
 - Restarting or starting the tutorial again never gives a reward twice (`TutorialProgress.Rewarded` survives restart and `StartOver`).
 
 ### Writing a tutorial
-1. Add `GameSets/<set>/Tutorials/<name>.json` (format above). Item and block ids are GameSet ids (`aluminium_ore`) or full ids (`default:aluminium_ore`).
+1. Add `Mods/GameSets/<set>/Tutorials/<name>.json` (format above). Item and block ids are GameSet ids (`aluminium_ore`) or full ids (`default:aluminium_ore`).
 2. Keep texts short (2 lines). Use `{key:action}` instead of key names, so remapped keys stay correct.
 3. Start the game: warnings about unknown ids, actions or task types are written to the console (`[Tutorial] ...`).
 

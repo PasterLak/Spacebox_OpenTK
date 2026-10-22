@@ -12,7 +12,7 @@ description: Add a new block type to Spacebox — a data-only block (JSON + text
 
 ## 2. JSON entry
 
-Default uses the folder format (see `modding-guide.md`): create `Spacebox/GameSets/Default/Blocks/<Group>/<id>/block.json` with one object (fields come from `Spacebox/Game/Resource/Json/BlockJSON.cs`) and add the id to `Blocks/order.json` where it should appear (unlisted entries come after the listed ones). Old GameSets may still use a flat `blocks.json` array; both formats can be mixed.
+Default uses the folder format (see `modding-guide.md`): create `Spacebox/Mods/GameSets/Default/Blocks/<Group>/<id>/block.json` with one object (fields come from `Spacebox/Game/Resource/Json/BlockJSON.cs`) and add the id to `Blocks/order.json` where it should appear (unlisted entries come after the listed ones). Old GameSets may still use a flat `blocks.json` array; both formats can be mixed.
 
 ```json
 {

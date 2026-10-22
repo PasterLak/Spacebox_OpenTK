@@ -358,6 +358,7 @@ public sealed class NetworkSession : IDisposable
             GameSetHash = GameSetPackage.Hash,
             GameSetFolder = GameSetPackage.FolderName,
             Extensions = WorldExtensionList.Format(GameSetLoader.Stack?.ExtensionIds),
+            TexturePacks = WorldExtensionList.Format(GameSetPackage.TexturePackIds),
             HasSpawnPoint = Spacebox.Game.Player.Respawn.WorldSpawn.TryGet(out var spawnPoint),
             SpawnPoint = spawnPoint
         });

@@ -34,12 +34,13 @@ namespace Spacebox.Scenes
             bool isMultiplayer = !param.SearchForGameSetInLocalFolder;
             var modFolderName = string.IsNullOrEmpty(param.modfolderName) ? GameSetLocator.FindFolder(param.modId) : param.modfolderName;
             string serverName = isMultiplayer ? param.gameSetServerFolder ?? "" : "";
-            string modsFolder = ModPath.GetModsPath(param.SearchForGameSetInLocalFolder, serverName);
+            var modFolders = ModPath.GetModFolders(param.SearchForGameSetInLocalFolder, serverName);
 
-            var result = GameSetStackResolver.Resolve(modsFolder, param.modId, param.extensions, modFolderName);
+            var result = GameSetStackResolver.Resolve(modFolders, param.modId, param.extensions, modFolderName);
             foreach (var error in result.Errors) Debug.Error($"[GameSetLoader] {error}");
 
             if (GameAssets.IsInitialized) GameAssets.DisposeAll();
+            Spacebox.Game.Resource.TexturePacks.TexturePackService.SetSessionPacks(param.applyTexturePacks ? param.serverTexturePacks : null);
             InitializeGamesetData(result.Stack, param.applyTexturePacks);
         }
     }

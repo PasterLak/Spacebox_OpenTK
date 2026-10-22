@@ -13,11 +13,11 @@ public sealed class DashboardItemIcons
         public GameSetAssetIndex Assets;
     }
 
-    private readonly string _gameSetsDirectory;
+    private readonly ModFolders _gameSetsDirectory;
     private readonly ConcurrentDictionary<string, byte[]> _icons = new ConcurrentDictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, IconSource> _sources = new ConcurrentDictionary<string, IconSource>(StringComparer.OrdinalIgnoreCase);
 
-    public DashboardItemIcons(string gameSetsDirectory)
+    public DashboardItemIcons(ModFolders gameSetsDirectory)
     {
         _gameSetsDirectory = gameSetsDirectory;
     }

@@ -20,7 +20,7 @@ public sealed class GameSetIdIndex
         ModId = modId;
     }
 
-    public static GameSetIdIndex Load(string gameSetsDirectory, string modId, IReadOnlyList<string> extensions = null)
+    public static GameSetIdIndex Load(ModFolders gameSetsDirectory, string modId, IReadOnlyList<string> extensions = null)
     {
         string id = string.IsNullOrWhiteSpace(modId) ? "default" : modId;
         var result = GameSetStackResolver.Resolve(gameSetsDirectory, id, extensions);

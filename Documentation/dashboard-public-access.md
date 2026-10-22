@@ -21,7 +21,7 @@ Without HTTPS the password and the login cookie travel unencrypted.
 
 ### Automatic (recommended)
 
-Set `PublicAddress` (the name or public IP people use) in `serverconfig.json`. The server picks the way to prove the address to Let's Encrypt:
+Set `PublicAddress` (the name or public IP people use) in `Multiplayer/serverconfig.json`. The server picks the way to prove the address to Let's Encrypt:
 
 | Address | Also set | How it is checked | Extra port |
 |---|---|---|---|
@@ -36,7 +36,7 @@ Set `PublicAddress` (the name or public IP people use) in `serverconfig.json`. T
 "LetsEncryptEmail": "you@example.com"
 ```
 
-If port 80 is blocked or needs root (Linux), forward external 80 to another internal port and set `HttpsChallengePort`. `HttpsAutomatic: false` turns the automatic mode off. The certificate is stored in `dashboard/certificates/<address>/`, checked every 12 hours and renewed when a third of its lifetime is left (30 days for 90-day certificates, about 2 days for IP certificates). Failures are logged and retried after an hour. `LetsEncryptStaging: true` uses the Let's Encrypt test system (certificates not trusted by browsers) for trying the setup without hitting rate limits. The guide `Spacebox Server Guide.pdf` in the game folder explains the same steps.
+If port 80 is blocked or needs root (Linux), forward external 80 to another internal port and set `HttpsChallengePort`. `HttpsAutomatic: false` turns the automatic mode off. The certificate is stored in `Multiplayer/Dashboard/certificates/<address>/`, checked every 12 hours and renewed when a third of its lifetime is left (30 days for 90-day certificates, about 2 days for IP certificates). Failures are logged and retried after an hour. `LetsEncryptStaging: true` uses the Let's Encrypt test system (certificates not trusted by browsers) for trying the setup without hitting rate limits. The guide `Spacebox Server Guide.pdf` in the game folder explains the same steps.
 
 ### Manual (your own certificate)
 
@@ -70,7 +70,7 @@ Renew with `Submit-Renewal` in a scheduled task (for example daily). Point the c
 
 ### Server config
 
-In `serverconfig.json` next to the server executable:
+In `Multiplayer/serverconfig.json` in the game folder:
 
 ```json
 "DashboardCertificateFile": "certs/fullchain.pem",
@@ -96,5 +96,5 @@ On start the server logs `HTTPS certificate loaded: ..., valid until ...` and th
 ## Security checklist
 
 - Use a strong dashboard password; the dashboard locks an address for 5 minutes after 5 wrong attempts.
-- Keep `dashboard/admin.json` and the certificate key private. Delete `dashboard/admin.json` to register a new admin (a new setup key is written on the next start).
+- Keep `Multiplayer/Dashboard/admin.json` and the certificate key private. Delete `Multiplayer/Dashboard/admin.json` to register a new admin (a new setup key is written on the next start).
 - If you do not need the dashboard from outside, do not forward TCP 7777, or set `"DashboardEnabled": false`.

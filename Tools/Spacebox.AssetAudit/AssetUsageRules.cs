@@ -28,7 +28,8 @@ public sealed class AlwaysKeepRule : IAssetUsageRule
         "Resources/Textures/UI/",
         "Resources/Audio/Mood/",
         "Resources/Dashboard/",
-        "Resources/Fonts/"
+        "Resources/Fonts/",
+        "Mods/TexturePacks/"
     };
 
     public AssetVerdict Evaluate(AssetFile file)
@@ -46,14 +47,17 @@ public sealed class AlwaysKeepRule : IAssetUsageRule
 
 public sealed class IgnoredFolderRule : IAssetUsageRule
 {
-    private const string GameSetsFolder = "GameSets/";
-
     public AssetVerdict Evaluate(AssetFile file)
     {
-        if (!file.RelativePath.StartsWith(GameSetsFolder, StringComparison.OrdinalIgnoreCase)) return AssetVerdict.Undecided;
+        foreach (var folder in AssetAuditor.GameSetFolders)
+        {
+            string prefix = folder + "/";
+            if (!file.RelativePath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) continue;
 
-        string insideGameSet = file.RelativePath.Substring(GameSetsFolder.Length);
-        return AssetPath.HasSegmentStartingWith(insideGameSet, '_') ? AssetVerdict.Drop : AssetVerdict.Undecided;
+            string insideGameSet = file.RelativePath.Substring(prefix.Length);
+            return AssetPath.HasSegmentStartingWith(insideGameSet, '_') ? AssetVerdict.Drop : AssetVerdict.Undecided;
+        }
+        return AssetVerdict.Undecided;
     }
 }
 
@@ -99,8 +103,8 @@ public sealed class ReferenceRule : IAssetUsageRule
     private static string GameSetOverridePath(string relativePath)
     {
         var segments = relativePath.Split('/');
-        if (segments.Length < 4 || !segments[0].Equals("GameSets", StringComparison.OrdinalIgnoreCase)) return null;
-        if (!segments[2].Equals("Resources", StringComparison.OrdinalIgnoreCase)) return null;
-        return string.Join('/', segments, 2, segments.Length - 2);
+        if (segments.Length < 5 || !segments[0].Equals(AssetAuditor.ModsFolder, StringComparison.OrdinalIgnoreCase)) return null;
+        if (!segments[3].Equals("Resources", StringComparison.OrdinalIgnoreCase)) return null;
+        return string.Join('/', segments, 3, segments.Length - 3);
     }
 }

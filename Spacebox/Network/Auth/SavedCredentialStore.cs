@@ -23,7 +23,7 @@ public sealed class SavedCredentialStore
     private readonly string _path;
     private readonly List<Entry> _entries = new List<Entry>();
 
-    public static string DefaultPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Multiplayer", "credentials.json");
+    public static string DefaultPath => MultiplayerFolders.File("credentials.json");
 
     public SavedCredentialStore(string path = null)
     {

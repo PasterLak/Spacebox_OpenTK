@@ -2,7 +2,6 @@ using Engine;
 using Engine.SceneManagement;
 using Engine.Utils;
 using Spacebox.Game.Resource;
-using Spacebox.Scenes;
 
 namespace Spacebox.Editor;
 
@@ -10,7 +9,7 @@ public static class GameSetEditorLauncher
 {
     public static bool TryOpen(string gameSetFolder, string startPanel)
     {
-        var configPath = Path.Combine(ModPath.GetModsPath(true, ""), gameSetFolder, "config.json");
+        var configPath = Path.Combine(Spacebox.Network.GameSetLocator.FolderPath(gameSetFolder), "config.json");
         if (!File.Exists(configPath))
         {
             Debug.Error($"[Editor] GameSet folder '{gameSetFolder}' has no config.json");

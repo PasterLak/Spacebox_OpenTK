@@ -32,40 +32,40 @@ public sealed class AssetAuditTests : IDisposable
     [Fact]
     public void BlockTexture_IsUsedOnlyWhenJsonReferencesIt()
     {
-        Write("Spacebox/GameSets/Default/blocks.json", "[{ \"Textures\": { \"Active\": { \"All\": \"stoneWall\" } } }]");
-        Write("Spacebox/GameSets/Default/Blocks/Walls/stoneWall.png");
-        Write("Spacebox/GameSets/Default/Blocks/oldWall.png");
+        Write("Spacebox/Mods/GameSets/Default/blocks.json", "[{ \"Textures\": { \"Active\": { \"All\": \"stoneWall\" } } }]");
+        Write("Spacebox/Mods/GameSets/Default/Blocks/Walls/stoneWall.png");
+        Write("Spacebox/Mods/GameSets/Default/Blocks/oldWall.png");
 
         var result = Audit();
 
-        Assert.Contains(result.Used, file => file.RelativePath == "GameSets/Default/Blocks/Walls/stoneWall.png");
-        Assert.True(IsUnused(result, "GameSets/Default/Blocks/oldWall.png"));
+        Assert.Contains(result.Used, file => file.RelativePath == "Mods/GameSets/Default/Blocks/Walls/stoneWall.png");
+        Assert.True(IsUnused(result, "Mods/GameSets/Default/Blocks/oldWall.png"));
     }
 
     [Fact]
     public void Emission_FollowsItsTextureName()
     {
-        Write("Spacebox/GameSets/Default/items.json", "[{ \"Sprite\": \"lamp\" }]");
-        Write("Spacebox/GameSets/Default/Emissions/lamp.png");
-        Write("Spacebox/GameSets/Default/Emissions/oldLamp.png");
+        Write("Spacebox/Mods/GameSets/Default/items.json", "[{ \"Sprite\": \"lamp\" }]");
+        Write("Spacebox/Mods/GameSets/Default/Emissions/lamp.png");
+        Write("Spacebox/Mods/GameSets/Default/Emissions/oldLamp.png");
 
         var result = Audit();
 
-        Assert.False(IsUnused(result, "GameSets/Default/Emissions/lamp.png"));
-        Assert.True(IsUnused(result, "GameSets/Default/Emissions/oldLamp.png"));
+        Assert.False(IsUnused(result, "Mods/GameSets/Default/Emissions/lamp.png"));
+        Assert.True(IsUnused(result, "Mods/GameSets/Default/Emissions/oldLamp.png"));
     }
 
     [Fact]
     public void SoundUsedByShortNameInCode_IsKept()
     {
         Write("Spacebox/Game/Sounds.cs", "class Sounds { void Play() { Resources.Load<AudioClip>(\"ricochet\"); } }");
-        Write("Spacebox/GameSets/Default/Sounds/Weapons/ricochet.ogg");
-        Write("Spacebox/GameSets/Default/Sounds/Weapons/oldShot.ogg");
+        Write("Spacebox/Mods/GameSets/Default/Sounds/Weapons/ricochet.ogg");
+        Write("Spacebox/Mods/GameSets/Default/Sounds/Weapons/oldShot.ogg");
 
         var result = Audit();
 
-        Assert.False(IsUnused(result, "GameSets/Default/Sounds/Weapons/ricochet.ogg"));
-        Assert.True(IsUnused(result, "GameSets/Default/Sounds/Weapons/oldShot.ogg"));
+        Assert.False(IsUnused(result, "Mods/GameSets/Default/Sounds/Weapons/ricochet.ogg"));
+        Assert.True(IsUnused(result, "Mods/GameSets/Default/Sounds/Weapons/oldShot.ogg"));
     }
 
     [Fact]
@@ -84,12 +84,12 @@ public sealed class AssetAuditTests : IDisposable
     [Fact]
     public void IgnoredFolders_AreUnusedEvenWhenTheNameIsReferenced()
     {
-        Write("Spacebox/GameSets/Default/blocks.json", "[{ \"Textures\": { \"Active\": { \"All\": \"wall\" } } }]");
-        Write("Spacebox/GameSets/Default/Blocks/_Ignored/wall.png");
+        Write("Spacebox/Mods/GameSets/Default/blocks.json", "[{ \"Textures\": { \"Active\": { \"All\": \"wall\" } } }]");
+        Write("Spacebox/Mods/GameSets/Default/Blocks/_Ignored/wall.png");
 
         var result = Audit();
 
-        Assert.True(IsUnused(result, "GameSets/Default/Blocks/_Ignored/wall.png"));
+        Assert.True(IsUnused(result, "Mods/GameSets/Default/Blocks/_Ignored/wall.png"));
     }
 
     [Fact]
@@ -127,14 +127,14 @@ public sealed class AssetAuditTests : IDisposable
     [Fact]
     public void GameSetRelativeJsonPath_IsUsed()
     {
-        Write("Spacebox/GameSets/Default/items.json", "[{ \"ArmorModel\": \"Models/Armor/armor_arms.obj\" }]");
-        Write("Spacebox/GameSets/Default/Models/Armor/armor_arms.obj");
-        Write("Spacebox/GameSets/Default/Models/Armor/armor_old.obj");
+        Write("Spacebox/Mods/GameSets/Default/items.json", "[{ \"ArmorModel\": \"Models/Armor/armor_arms.obj\" }]");
+        Write("Spacebox/Mods/GameSets/Default/Models/Armor/armor_arms.obj");
+        Write("Spacebox/Mods/GameSets/Default/Models/Armor/armor_old.obj");
 
         var result = Audit();
 
-        Assert.False(IsUnused(result, "GameSets/Default/Models/Armor/armor_arms.obj"));
-        Assert.True(IsUnused(result, "GameSets/Default/Models/Armor/armor_old.obj"));
+        Assert.False(IsUnused(result, "Mods/GameSets/Default/Models/Armor/armor_arms.obj"));
+        Assert.True(IsUnused(result, "Mods/GameSets/Default/Models/Armor/armor_old.obj"));
     }
 
     [Fact]
@@ -144,8 +144,8 @@ public sealed class AssetAuditTests : IDisposable
         Write("Spacebox/Resources/Models/Keep/statue.obj");
         Write("Spacebox/Resources/Textures/UI/slot.png");
         Write("Spacebox/Resources/Audio/Mood/effect1.ogg");
-        Write("Spacebox/GameSets/Default/Generation/data.json", "{}");
-        Write("Spacebox/GameSets/Default/icon.png");
+        Write("Spacebox/Mods/GameSets/Default/Generation/data.json", "{}");
+        Write("Spacebox/Mods/GameSets/Default/icon.png");
 
         var result = Audit();
 
@@ -166,7 +166,7 @@ public sealed class AssetAuditTests : IDisposable
     public void RealRepository_KeepsCriticalAssets()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "Spacebox", "GameSets"))) dir = dir.Parent;
+        while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "Spacebox", "Mods", "GameSets"))) dir = dir.Parent;
         Assert.NotNull(dir);
 
         var result = new AssetAuditor(dir!.FullName).Analyze();
@@ -180,7 +180,7 @@ public sealed class AssetAuditTests : IDisposable
         Assert.DoesNotContain("Resources/Audio/Music/menu.ogg", unused);
         Assert.DoesNotContain("Resources/Models/Player/Astronaut_Body_Fly.obj", unused);
         Assert.DoesNotContain("Resources/Textures/Blocks/LOD.png", unused);
-        Assert.DoesNotContain("GameSets/Default/Sounds/Weapons/ar.ogg", unused);
-        Assert.DoesNotContain("GameSets/Default/Sounds/Weapons/ricochet.ogg", unused);
+        Assert.DoesNotContain("Mods/GameSets/Default/Sounds/Weapons/ar.ogg", unused);
+        Assert.DoesNotContain("Mods/GameSets/Default/Sounds/Weapons/ricochet.ogg", unused);
     }
 }

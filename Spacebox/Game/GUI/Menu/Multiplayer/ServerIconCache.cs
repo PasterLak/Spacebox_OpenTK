@@ -14,7 +14,7 @@ public sealed class ServerIconCache
 
     public ServerIconCache(string folder = null)
     {
-        _folder = folder ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Multiplayer", "ServerIcons");
+        _folder = folder ?? Spacebox.Network.MultiplayerFolders.ServerIcons;
     }
 
     public Texture2D DefaultIcon => _defaultIcon ??= CreateTexture(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DefaultIconPath), "default");

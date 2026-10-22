@@ -154,6 +154,6 @@ public sealed class DashboardCertificate
     private static string Resolve(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return "";
-        return Path.IsPathRooted(path) ? path : Path.Combine(AppContext.BaseDirectory, path);
+        return MultiplayerFolders.ResolveConfigPath(path);
     }
 }
