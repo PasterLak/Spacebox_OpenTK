@@ -300,7 +300,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if (WorldLoadingScreen.IsActive)
         {
             RenderSkybox();
-            DisposalManager.ProcessDisposals();
             return;
         }
 
@@ -313,8 +312,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             DebugGizmos.Draw(this);
             Engine.GUI.GizmoIcons.Add(Spacebox.Game.Player.Respawn.WorldSpawn.For(localPlayer), Engine.GUI.GizmoIcon.SpawnPoint, Color4.LightGreen);
         }
-
-        DisposalManager.ProcessDisposals();
 
         OnRenderCenter?.Invoke();
 

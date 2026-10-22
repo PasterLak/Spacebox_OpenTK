@@ -42,8 +42,10 @@ namespace Engine
 
             var r = LoadFromPath(_shaderPath);
             Load(ref r.vertexSrc, ref r.fragmentSrc, ref r.geometrySrc);
-            _hotReloader = new ShaderHotReloader(_shaderPath, OnShaderFileChanged);
+            if (HotReloadEnabled) _hotReloader = ShaderHotReloader.TryCreate(_shaderPath, OnShaderFileChanged);
         }
+
+        public static bool HotReloadEnabled { get; set; } = true;
 
         public Shader(string[] code)
         {
@@ -65,7 +67,7 @@ namespace Engine
             if (_isProcessingChange)
                 return;
             _isProcessingChange = true;
-            _hotReloader.Disable();
+            _hotReloader?.Disable();
 
             Task.Run(async () =>
             {
@@ -79,13 +81,24 @@ namespace Engine
                             break;
                         }
                     }
+                    catch (FileNotFoundException)
+                    {
+                        _isProcessingChange = false;
+                        _hotReloader?.Enable();
+                        return;
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        _isProcessingChange = false;
+                        return;
+                    }
                     catch (IOException) { await Task.Delay(100); }
                 }
                 EngineWindow._mainThreadActions.Enqueue(() =>
                 {
                     ReloadShader();
                     _isProcessingChange = false;
-                    _hotReloader.Enable();
+                    _hotReloader?.Enable();
                 });
             });
         }

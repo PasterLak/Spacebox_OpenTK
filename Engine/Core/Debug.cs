@@ -38,6 +38,9 @@ namespace Engine
 
         private static string _inputBuffer = "";
         private static List<ConsoleMessage> _messages = new List<ConsoleMessage>();
+        private const int MaxStoredMessages = 5000;
+        private const int TrimBatch = 500;
+        private const int MaxRenderedMessages = 400;
         private static List<string> _commandHistory = new List<string>();
         private static int _historyPos = -1;
         private static bool _focusInput = false;
@@ -146,12 +149,18 @@ namespace Engine
                     break;
             }
             MirrorMessage(message, msg.Type);
+            Store(msg);
+            MessageLogged?.Invoke(message, msg.Type);
+        }
+
+        private static void Store(ConsoleMessage msg)
+        {
             lock (_lock)
             {
                 _messages.Add(msg);
                 messageCount++;
+                if (_messages.Count > MaxStoredMessages + TrimBatch) _messages.RemoveRange(0, _messages.Count - MaxStoredMessages);
             }
-            MessageLogged?.Invoke(message, msg.Type);
         }
 
         private static void AddMessage(string message, OpenTK.Mathematics.Color4 color)
@@ -173,8 +182,7 @@ namespace Engine
                     break;
             }
             MirrorMessage(message, msg.Type);
-            _messages.Add(msg);
-            messageCount++;
+            Store(msg);
             MessageLogged?.Invoke(message, msg.Type);
         }
 
@@ -366,7 +374,7 @@ namespace Engine
 
             lock (_lock)
             {
-                messagesToRender = new List<ConsoleMessage>(_messages);
+                messagesToRender = CollectRendered();
             }
 
             foreach (var msg in messagesToRender)
@@ -449,12 +457,23 @@ namespace Engine
             ImGui.PopStyleVar();
         }
 
+        private static List<ConsoleMessage> CollectRendered()
+        {
+            var result = new List<ConsoleMessage>(Math.Min(_messages.Count, MaxRenderedMessages));
+            for (int i = _messages.Count - 1; i >= 0 && result.Count < MaxRenderedMessages; i--)
+            {
+                if (showType == MessageType.Info || _messages[i].Type == showType) result.Add(_messages[i]);
+            }
+            result.Reverse();
+            return result;
+        }
+
         private static void DrawSelectableText()
         {
             int count;
             lock (_lock)
             {
-                count = _messages.Count;
+                count = (int)messageCount;
             }
 
             if (count != _selectableCount || showType != _selectableFilter)

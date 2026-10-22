@@ -9,7 +9,7 @@ namespace Engine.Audio
     {
         public static (byte[] data, int channels, int bitsPerSample, int sampleRate) LoadWave(string filename)
         {
-            using (var reader = new BinaryReader(File.Open(filename, FileMode.Open)))
+            using (var reader = new BinaryReader(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read)))
             {
                 string signature = new string(reader.ReadChars(4));
                 if (signature != "RIFF")
@@ -88,6 +88,7 @@ namespace Engine.Audio
             catch (Exception ex)
             {
                 AL.DeleteBuffer(buffer);
+                buffer = 0;
                 Debug.Error($"[SoundLoader] Failed to load sound {path}: {ex.Message}");
                 //throw new InvalidOperationException($"[SoundLoader] Failed to load sound {path}: {ex.Message}");
                 
@@ -98,6 +99,7 @@ namespace Engine.Audio
 
             }
 
+            if (buffer == 0) return 0;
             CheckALError($"Loading sound {path}");
 
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;

@@ -34,10 +34,6 @@ namespace Engine
                     Debug.Error($"[DisposalManager] error dispose: {ex.Message}");
                  
                 }
-                finally
-                {
-                    Debug.Success("Was disposed by DisposalManager!");
-                }
             }
         }
     }

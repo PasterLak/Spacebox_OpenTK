@@ -75,12 +75,7 @@ namespace Engine.Multithreading
                     }
                 }
             };
-            switch (priority)
-            {
-                case Priority.High: highQueue.Add(item); break;
-                case Priority.Medium: medQueue.Add(item); break;
-                default: lowQueue.Add(item); break;
-            }
+            if (!TryAdd(QueueFor(priority), item)) tcs.TrySetCanceled();
             return tcs.Task;
         }
 
@@ -116,12 +111,7 @@ namespace Engine.Multithreading
                     }
                 }
             };
-            switch (priority)
-            {
-                case Priority.High: highQueue.Add(item); break;
-                case Priority.Medium: medQueue.Add(item); break;
-                default: lowQueue.Add(item); break;
-            }
+            if (!TryAdd(QueueFor(priority), item)) tcs.TrySetCanceled();
             return tcs.Task;
         }
 
@@ -169,8 +159,33 @@ namespace Engine.Multithreading
                     }
                 }
             };
-            queue.Add(item);
+            if (!TryAdd(queue, item))
+            {
+                Interlocked.Decrement(ref namedPendingCount);
+                tcs.TrySetCanceled();
+            }
             return tcs.Task;
+        }
+
+        static BlockingCollection<WorkItem> QueueFor(Priority priority) => priority switch
+        {
+            Priority.High => highQueue,
+            Priority.Medium => medQueue,
+            _ => lowQueue
+        };
+
+        static bool TryAdd(BlockingCollection<WorkItem> queue, WorkItem item)
+        {
+            if (queue.IsAddingCompleted) return false;
+            try
+            {
+                queue.Add(item);
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
 
         public static void Shutdown()

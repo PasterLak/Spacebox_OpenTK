@@ -44,23 +44,41 @@ public static class DirectoryArchive
         return Convert.ToHexString(hash.GetHashAndReset());
     }
 
-    public static void Extract(byte[] data, string targetDirectory)
+    public const long DefaultMaxExtractedBytes = 2L * 1024 * 1024 * 1024;
+    public const int DefaultMaxEntries = 100000;
+
+    private static StringComparison PathComparison => OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+    public static void Extract(byte[] data, string targetDirectory, long maxExtractedBytes = DefaultMaxExtractedBytes, int maxEntries = DefaultMaxEntries)
     {
         string root = Path.GetFullPath(targetDirectory);
         string rootWithSeparator = root.EndsWith(Path.DirectorySeparatorChar) ? root : root + Path.DirectorySeparatorChar;
-        Directory.CreateDirectory(root);
 
         using var stream = new MemoryStream(data);
         using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
 
+        if (archive.Entries.Count > maxEntries)
+            throw new InvalidDataException($"The archive has {archive.Entries.Count} entries, more than the allowed {maxEntries}");
+
+        long total = 0;
+        foreach (var entry in archive.Entries)
+        {
+            total += entry.Length;
+            if (entry.Length < 0 || total > maxExtractedBytes)
+                throw new InvalidDataException($"The archive unpacks to more than {maxExtractedBytes / (1024 * 1024)} MB");
+
+            if (string.IsNullOrEmpty(entry.Name)) continue;
+            string destination = Path.GetFullPath(Path.Combine(root, entry.FullName));
+            if (!destination.StartsWith(rootWithSeparator, PathComparison))
+                throw new InvalidDataException($"Archive entry '{entry.FullName}' is outside the target folder");
+        }
+
+        Directory.CreateDirectory(root);
         foreach (var entry in archive.Entries)
         {
             if (string.IsNullOrEmpty(entry.Name)) continue;
 
             string destination = Path.GetFullPath(Path.Combine(root, entry.FullName));
-            if (!destination.StartsWith(rootWithSeparator, StringComparison.OrdinalIgnoreCase))
-                throw new InvalidDataException($"Archive entry '{entry.FullName}' is outside the target folder");
-
             Directory.CreateDirectory(Path.GetDirectoryName(destination));
             entry.ExtractToFile(destination, true);
         }

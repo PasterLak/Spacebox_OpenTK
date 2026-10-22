@@ -253,6 +253,14 @@ Fixes
 - unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
 - entering a sector while it was still loading in the background could drop its unsaved changes (mined-out asteroids came back)
 Engine
+- WAV sounds load from read-only installs (files opened read-only and shared)
+- console log keeps the last 5000 messages, draws the last 400, thread-safe for every log call; no log line per disposed GL object
+- archives from servers are checked before extraction (2 GB, 100000 entries, path traversal also on case-sensitive systems)
+- shader hot reload can't break shader loading (watcher errors, deleted files) and is off in Final builds
+- GL objects queued for disposal are freed every frame and on quit, in every scene
+- Resources: short names only match when a bare name is asked for (no more same-file-name mix-ups), failed loads are not retried and logged every frame, global loads promote existing entries
+- agent API answers only local tools (no browser pages, no other host names)
+- worker pool: work queued after shutdown is cancelled instead of throwing
 - console command history is saved in Debug/command_history.txt
 - TrackballViewCamera (free orbit on all axes), shared TargetViewCamera base with OrbitViewCamera
 - InputManager.SerializeConfiguration

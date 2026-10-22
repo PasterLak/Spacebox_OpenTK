@@ -14,6 +14,19 @@ namespace Engine.Utils
             };
             _watcher.Changed += onChanged;
         }
+        public static ShaderHotReloader TryCreate(string shaderPath, FileSystemEventHandler onChanged)
+        {
+            try
+            {
+                return new ShaderHotReloader(shaderPath, onChanged);
+            }
+            catch (Exception ex) when (ex is IOException || ex is ArgumentException || ex is UnauthorizedAccessException || ex is PlatformNotSupportedException)
+            {
+                Debug.Warning($"[Shader] Hot reload is off for {shaderPath}: {ex.Message}");
+                return null;
+            }
+        }
+
         public void Disable()
         {
             if (_watcher != null)

@@ -29,6 +29,7 @@ namespace Engine
 
         private static List<IResource> _loadedResources = new List<IResource>();
         private static HashSet<IResource> _controlledResoruces = new HashSet<IResource>(ReferenceEqualityComparer.Instance);
+        private static readonly HashSet<(Type, string)> _failedLoads = new HashSet<(Type, string)>();
 
         public static T Load<T>(string pathOrName, bool global = false) where T : IResource, new()
         {
@@ -38,13 +39,15 @@ namespace Engine
             if (_resourcesByType.TryGetValue(typeof(T), out var dict))
             {
                 if (dict.TryGetValue(canonicalKey, out var entry))
-                    return (T)entry.Resource;
-                if (_aliasMap.TryGetValue(typeof(T), out var aliasDict) && aliasDict.TryGetValue(shortKey, out var actualKey))
+                    return (T)Promote(dict, canonicalKey, entry, global);
+                if (canonicalKey == shortKey && _aliasMap.TryGetValue(typeof(T), out var aliasDict) && aliasDict.TryGetValue(shortKey, out var actualKey))
                 {
                     if (dict.TryGetValue(actualKey, out var existingEntry))
-                        return (T)existingEntry.Resource;
+                        return (T)Promote(dict, actualKey, existingEntry, global);
                 }
             }
+
+            if (_failedLoads.Contains((typeof(T), canonicalKey))) return ResourceFallbacks.Get<T>();
 
             T resource = new T();
             try
@@ -53,6 +56,7 @@ namespace Engine
 
                 if (resource == null)
                 {
+                    _failedLoads.Add((typeof(T), canonicalKey));
                     Debug.Error($"[Resources][Load] Resource was null {typeof(T).Name} {pathOrName}");
                     return ResourceFallbacks.Get<T>();
                 }
@@ -62,12 +66,24 @@ namespace Engine
                 // resource = (T)resource.Default();
                 // return resource;
                 // Debug.Log($"Resource error {typeof(T)} {pathOrName}");
+                _failedLoads.Add((typeof(T), canonicalKey));
                 Debug.Error($"[Resources][Load] Error loading {typeof(T).Name} from {pathOrName}. Default one will be used. Error: {ex}");
                 return ResourceFallbacks.Get<T>();
                 // resource = (T)Get<T>(pathOrName);
             }
             AddResource<T>(pathOrName, resource, global);
             return resource;
+        }
+
+        private static IResource Promote(Dictionary<string, ResourceEntry> dict, string key, ResourceEntry entry, bool global)
+        {
+            if (global && !entry.Global)
+            {
+                entry.Global = true;
+                dict[key] = entry;
+                RemoveResourceFromControll(entry.Resource);
+            }
+            return entry.Resource;
         }
 
         public static void LoadAll<T>(string[] paths) where T : IResource, new()
@@ -278,6 +294,7 @@ namespace Engine
 
         public static void UnloadAll(bool clearGlobal = false)
         {
+            _failedLoads.Clear();
             foreach (var kvp in _resourcesByType)
             {
                 var dict = kvp.Value;

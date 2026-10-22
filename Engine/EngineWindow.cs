@@ -233,6 +233,7 @@ namespace Engine
                     catch (Exception ex) { Debug.Error($"Exception in main thread action: {ex}"); }
                     if (IsQuitting) return;
                 }
+                DisposalManager.ProcessDisposals();
 
                 UpdateDefaultInputs();
                 OnUpdateInput();
@@ -505,6 +506,7 @@ namespace Engine
             Occlusion.Dispose();
             ParticleSystem.DestroyAll();
             Resources.UnloadAll(true);
+            DisposalManager.ProcessDisposals();
             _sceneRenderer?.Dispose();
             Debug.SaveMessagesToFile(true);
             Close();

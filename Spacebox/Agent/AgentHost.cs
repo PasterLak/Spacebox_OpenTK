@@ -34,7 +34,7 @@ public static class AgentHost
             if (module is IAgentTicker ticker) _tickers.Add(ticker);
         }
 
-        _server = new MiniHttpServer(http.Handle);
+        _server = new MiniHttpServer(LocalRequestGuard.Wrap(http.Handle));
         try
         {
             _server.Start(Options.Port, IPAddress.Loopback);

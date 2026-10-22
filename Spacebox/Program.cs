@@ -29,6 +29,9 @@ public static class Program
         }
 
         Game.Resource.GameFolderMigration.Run(AppContext.BaseDirectory);
+#if FINAL
+        Engine.Shader.HotReloadEnabled = false;
+#endif
 
        
         var monitor = Monitors.GetPrimaryMonitor();

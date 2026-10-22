@@ -5,7 +5,7 @@ namespace Engine.Audio
     {
         public  (byte[] data, int channels, int bitsPerSample, int sampleRate) Load(string filename)
         {
-            using var reader = new BinaryReader(File.Open(filename, FileMode.Open));
+            using var reader = new BinaryReader(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read));
             var sig = new string(reader.ReadChars(4));
             if (sig != "RIFF") throw new NotSupportedException("Not a valid WAV file.");
             reader.ReadInt32();
