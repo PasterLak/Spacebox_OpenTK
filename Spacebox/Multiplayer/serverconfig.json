@@ -49,6 +49,7 @@
   "DashboardEnabled": true,
   "DashboardPort": 0,
   "PublicAddress": "",
+  "DashboardAllowPublicHttp": false,
   "HttpsAutomatic": true,
   "HttpsChallengePort": 80,
   "DuckDnsDomain": "",

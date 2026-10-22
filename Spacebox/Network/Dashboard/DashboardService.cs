@@ -16,6 +16,7 @@ public static class DashboardService
     private static DashboardCertificate _certificate;
     private static AutoCertificateService _autoCertificate;
     private static ServerConfig _config;
+    private static DashboardAccessPolicy _access;
 
     public static string HttpsStatus
     {
@@ -74,6 +75,7 @@ public static class DashboardService
 
         int port = config.GetDashboardPort();
         _certificate = CreateCertificate(config, port);
+        _access = new DashboardAccessPolicy(HttpsMethodSelector.PublicAddress(config), config.DashboardAllowPublicHttp, () => _certificate?.DnsNames() ?? Array.Empty<string>());
         _server = new MiniHttpServer(request => Handle(router, request), MaxBodyBytes);
         if (_certificate.IsConfigured) _server.CertificateProvider = () => _certificate.Current;
         try
@@ -92,7 +94,7 @@ public static class DashboardService
         AppDomain.CurrentDomain.ProcessExit += (_, _) => Stop();
 
         if (AutoCertificateService.IsConfigured(config) && _certificate.Current == null)
-            Debug.Log($"[Dashboard] HTTPS for https://{_autoCertificate.Domain}:{port}{DashboardPaths.Route} is being set up automatically ({HttpsMethodSelector.Describe(_autoCertificate.Method, config)}), until then use http://<server address>:{port}{DashboardPaths.Route}");
+            Debug.Log($"[Dashboard] HTTPS for https://{_autoCertificate.Domain}:{port}{DashboardPaths.Route} is being set up automatically ({HttpsMethodSelector.Describe(_autoCertificate.Method, config)}), until then use http://<server address>:{port}{DashboardPaths.Route} from the local network");
         else if (_certificate.Current != null)
             Debug.Success($"[Dashboard] Open https://{string.Join(" or https://", _certificate.DnsNames())}:{port}{DashboardPaths.Route} (plain http only from the local network)");
         else
@@ -137,9 +139,8 @@ public static class DashboardService
         HttpResponse response;
         try
         {
-            response = DashboardHttpsPolicy.MustUseHttps(request, _certificate?.Current != null) && !Engine.Web.Acme.HttpChallengeSolver.IsChallengePath(request.Path)
-                ? DashboardHttpsPolicy.Redirect(request)
-                : await router.Handle(request);
+            response = (Engine.Web.Acme.HttpChallengeSolver.IsChallengePath(request.Path) ? null : _access.Check(request, _certificate?.Current != null))
+                       ?? await router.Handle(request);
         }
         catch (Exception ex)
         {

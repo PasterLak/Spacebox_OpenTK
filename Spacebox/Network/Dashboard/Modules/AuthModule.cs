@@ -35,7 +35,7 @@ public sealed class AuthModule : IDashboardModule
                 loggedIn,
                 user = loggedIn ? user : null,
                 serverName = context.Config.ServerName,
-                version = Application.Version
+                version = loggedIn ? Application.Version : null
             });
         });
 
@@ -53,7 +53,10 @@ public sealed class AuthModule : IDashboardModule
         {
             var body = DashboardGuard.Read<PasswordRequest>(request);
             if (body == null) return HttpResponse.Error("Bad request", 400);
+            if (!context.Throttle.TryBeginAttempt(request.RemoteAddress)) return HttpResponse.Error("Too many attempts, wait a few minutes", 429);
             if (!context.Admins.TryChangePassword(body.OldPassword, body.NewPassword, out var error)) return HttpResponse.Error(error, 400);
+
+            context.Throttle.Reset(request.RemoteAddress);
 
             context.Sessions.Clear();
             DashboardContext.Audit(user, "changed the dashboard password");
@@ -65,16 +68,11 @@ public sealed class AuthModule : IDashboardModule
     {
         if (!DashboardGuard.HasRequestHeader(request)) return HttpResponse.Error("Missing request header", 403);
         if (context.Admins.HasAdmin) return HttpResponse.Error("An admin is already registered", 409);
-        if (context.Throttle.IsLocked(request.RemoteAddress)) return HttpResponse.Error("Too many attempts, wait a few minutes", 429);
-
         var body = DashboardGuard.Read<SetupRequest>(request);
         if (body == null) return HttpResponse.Error("Bad request", 400);
+        if (!context.Throttle.TryBeginAttempt(request.RemoteAddress)) return HttpResponse.Error("Too many attempts, wait a few minutes", 429);
 
-        if (!context.Admins.TryRegister(body.Key, body.Name, body.Password, out var error))
-        {
-            context.Throttle.RecordFailure(request.RemoteAddress);
-            return HttpResponse.Error(error, 400);
-        }
+        if (!context.Admins.TryRegister(body.Key, body.Name, body.Password, out var error)) return HttpResponse.Error(error, 400);
 
         context.Throttle.Reset(request.RemoteAddress);
         Debug.Success($"[Dashboard] Admin '{context.Admins.AdminName}' registered from {request.RemoteAddress}");
@@ -84,12 +82,11 @@ public sealed class AuthModule : IDashboardModule
     private static HttpResponse Login(HttpRequest request, DashboardContext context)
     {
         if (!DashboardGuard.HasRequestHeader(request)) return HttpResponse.Error("Missing request header", 403);
-        if (context.Throttle.IsLocked(request.RemoteAddress)) return HttpResponse.Error("Too many attempts, wait a few minutes", 429);
+        if (!context.Throttle.TryBeginAttempt(request.RemoteAddress)) return HttpResponse.Error("Too many attempts, wait a few minutes", 429);
 
         var body = DashboardGuard.Read<LoginRequest>(request);
         if (body == null || !context.Admins.Verify(body.Name, body.Password))
         {
-            context.Throttle.RecordFailure(request.RemoteAddress);
             Debug.Warning($"[Dashboard] Failed login from {request.RemoteAddress}");
             return HttpResponse.Error("Wrong name or password", 401);
         }

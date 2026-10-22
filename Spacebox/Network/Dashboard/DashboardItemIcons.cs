@@ -13,6 +13,9 @@ public sealed class DashboardItemIcons
         public GameSetAssetIndex Assets;
     }
 
+    public const int MaxCachedIcons = 4096;
+    public const int MaxCachedSources = 32;
+
     private readonly ModFolders _gameSetsDirectory;
     private readonly ConcurrentDictionary<string, byte[]> _icons = new ConcurrentDictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, IconSource> _sources = new ConcurrentDictionary<string, IconSource>(StringComparer.OrdinalIgnoreCase);
@@ -25,7 +28,11 @@ public sealed class DashboardItemIcons
     public byte[] Get(string fullId)
     {
         if (string.IsNullOrWhiteSpace(fullId) || !fullId.Contains(':')) return null;
-        return _icons.GetOrAdd(fullId, Find);
+        if (_icons.TryGetValue(fullId, out var cached)) return cached;
+
+        var icon = Find(fullId);
+        if (icon != null && _icons.Count < MaxCachedIcons) _icons.TryAdd(fullId, icon);
+        return icon;
     }
 
     private byte[] Find(string fullId)
@@ -34,7 +41,11 @@ public sealed class DashboardItemIcons
         string modId = fullId.Substring(0, colon);
         string id = fullId.Substring(colon + 1);
 
-        var source = _sources.GetOrAdd(modId, CreateSource);
+        if (!_sources.TryGetValue(modId, out var source))
+        {
+            source = CreateSource(modId);
+            if (source != null && _sources.Count < MaxCachedSources) _sources.TryAdd(modId, source);
+        }
         if (source == null || !source.Textures.TryGetValue(id, out var texture)) return null;
 
         string name = Path.GetFileName(texture).ToLowerInvariant();

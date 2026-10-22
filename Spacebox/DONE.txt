@@ -308,6 +308,7 @@ Fixes
 - deleted waypoints came back after reload when only unnamed static tags were left
 - unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
 - entering a sector while it was still loading in the background could drop its unsaved changes (mined-out asteroids came back)
+- dashboard security: atomic login throttle (IPv6 by /64, global limit), sessions end after 7 days, unknown Host names refused, no plain HTTP from the internet without DashboardAllowPublicHttp, stronger admin password hash, private key files on Linux
 Engine
 - OpenTK 4.9.4 (GLFW 3.4); Linux picks the window system: native Wayland on Wayland desktops, X11 otherwise, each with the other as fallback, --window-system x11|wayland|auto or SPACEBOX_WINDOW_SYSTEM to force one; GLFW errors are logged instead of crashing
 - dedicated servers run without a window or GPU on every OS (Linux servers no longer need X11, Wayland or xvfb)

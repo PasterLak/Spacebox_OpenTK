@@ -35,6 +35,7 @@ public sealed class ServerConfig
     public string DashboardCertificateKeyFile { get; set; } = "";
     public string DashboardCertificatePassword { get; set; } = "";
     public string PublicAddress { get; set; } = "";
+    public bool DashboardAllowPublicHttp { get; set; } = false;
     public bool HttpsAutomatic { get; set; } = true;
     public int HttpsChallengePort { get; set; } = 80;
     public string DuckDnsDomain { get; set; } = "";

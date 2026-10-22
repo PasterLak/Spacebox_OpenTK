@@ -113,6 +113,7 @@
   <tr><td>DashboardEnabled</td><td>true</td><td>Web dashboard on or off</td></tr>
   <tr><td>DashboardPort</td><td>0</td><td>TCP port of the dashboard, 0 = same number as <code>Port</code></td></tr>
   <tr><td>PublicAddress</td><td>empty</td><td>The address people use from the internet: a DuckDNS name, any domain or your public IP. Turns on automatic HTTPS (chapter 5)</td></tr>
+  <tr><td>DashboardAllowPublicHttp</td><td>false</td><td>Without HTTPS the dashboard only answers the local network. <code>true</code> also allows plain <code>http://</code> from the internet (passwords travel unencrypted, not recommended)</td></tr>
   <tr><td>HttpsAutomatic</td><td>true</td><td>Get and renew the HTTPS certificate automatically when <code>PublicAddress</code> is set</td></tr>
   <tr><td>HttpsChallengePort</td><td>80</td><td>Port for the Let's Encrypt check when no DNS token is set</td></tr>
   <tr><td>DuckDnsToken</td><td>empty</td><td>For <code>*.duckdns.org</code> addresses: no port 80 needed, and the server keeps the name on your current IP</td></tr>
@@ -185,7 +186,7 @@
 <p>Start the server. After about a minute the log shows <code>HTTPS certificate for … saved</code>, and the dashboard overview shows the HTTPS state. Open <code>https://&lt;your address&gt;:7777/dashboard</code> from anywhere.</p>
 <div class="box tip"><b>What happens in the background</b>The certificate is stored in <code>Multiplayer/Dashboard/certificates/</code>, checked every 12 hours and renewed when a third of its time is left (30 days for normal certificates). Failures are written to the log with a hint and retried after an hour. Set <code>"LetsEncryptStaging": true</code> for a first test run: Let's Encrypt then issues test certificates (browsers warn about them) and failed attempts do not count against its limits.</div>
 <div class="box danger"><b>Keep tokens secret</b>DuckDNS and Cloudflare tokens control your name. Do not share <code>serverconfig.json</code> or screenshots of it.</div>
-<p class="small">While HTTPS is active, plain <code>http://</code> still works inside your own network; from the internet it is redirected to <code>https://</code>. Using your own certificate instead: set <code>DashboardCertificateFile</code> and <code>DashboardCertificateKeyFile</code>.</p>
+<p class="small">While HTTPS is active, plain <code>http://</code> still works inside your own network; from the internet it is redirected to <code>https://</code>. Without HTTPS the dashboard refuses plain <code>http://</code> from the internet unless <code>DashboardAllowPublicHttp</code> is true. The dashboard only answers addresses it knows (IP addresses, local names, <code>PublicAddress</code> and the certificate names); for another domain name set it as <code>PublicAddress</code>. Using your own certificate instead: set <code>DashboardCertificateFile</code> and <code>DashboardCertificateKeyFile</code>.</p>
 
 <h2>6. The web dashboard</h2>
 <h3>First start: create the admin</h3>
@@ -206,7 +207,7 @@
   <tr><td>Console</td><td>Live server log; type any console command (Tab completes, arrow keys browse the history)</td></tr>
   <tr><td>Settings</td><td>Name, description, max players, LAN visibility, autosave interval, frame rate (applied at once); gameplay rules (PvP, explosions, friendly mobs, keep inventory, death drop time); upload the server icon; change the dashboard password</td></tr>
 </table>
-<div class="box tip"><b>Security built in</b>Login sessions last 12 hours; 5 wrong passwords lock that address for 5 minutes; every admin action is written to the server log as <code>[Dashboard] admin: …</code>. If you never need the dashboard from outside, simply do not forward TCP 7777, or set <code>"DashboardEnabled": false</code>.</div>
+<div class="box tip"><b>Security built in</b>Login sessions last 12 hours after the last use and at most 7 days; 5 wrong passwords lock that address (IPv6: its /64 network) for 5 minutes, and at most 30 login attempts per minute are accepted from the internet; every admin action is written to the server log as <code>[Dashboard] admin: …</code>. If you never need the dashboard from outside, simply do not forward TCP 7777, or set <code>"DashboardEnabled": false</code>.</div>
 
 <h2>7. Console commands</h2>
 <p>Type them in the server terminal or the dashboard console. <code>help</code> lists all of them. Admins (see <code>Admins</code> in chapter 2) type them in the game chat with a leading <code>/</code>; the answer appears only in their own chat. Other players cannot run server commands and cannot change their own game mode. Pressing <code>/</code> in the game opens the chat with <code>/</code> already typed; <code>/help</code> lists the commands of the game client. While typing, the chat suggests commands, player names, item and mob ids: <b>Tab</b> completes, <b>Up/Down</b> picks a suggestion or browses earlier messages. In chat the player name is optional for <code>give</code>, <code>heal</code>, <code>health</code>, <code>power</code>, <code>air</code>, <code>gm</code> and <code>mob</code>: without it the command applies to yourself.</p>

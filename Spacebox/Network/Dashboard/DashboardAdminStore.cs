@@ -19,6 +19,7 @@ public sealed class DashboardAdminStore
     public const int MinPasswordLength = 8;
     public const int MaxPasswordLength = 128;
     public const int MaxNameLength = 32;
+    public const int HashIterations = 600_000;
 
     private const string KeyAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     private const int KeyGroups = 4;
@@ -67,8 +68,7 @@ public sealed class DashboardAdminStore
             }
 
             string key = NewSetupKey();
-            Directory.CreateDirectory(Path.GetDirectoryName(_setupKeyFile));
-            File.WriteAllText(_setupKeyFile, key);
+            PrivateFile.WriteAllText(_setupKeyFile, key);
             return key;
         }
     }
@@ -106,7 +106,21 @@ public sealed class DashboardAdminStore
 
         byte[] key = PasswordCrypto.DeriveKey(password, Convert.FromBase64String(admin.Salt), admin.Iterations);
         bool nameMatches = string.Equals(admin.Name, name.Trim(), StringComparison.OrdinalIgnoreCase);
-        return CryptographicOperations.FixedTimeEquals(key, Convert.FromBase64String(admin.Key)) && nameMatches;
+        bool valid = CryptographicOperations.FixedTimeEquals(key, Convert.FromBase64String(admin.Key)) && nameMatches;
+        if (valid && admin.Iterations < HashIterations) Rehash(admin, password);
+        return valid;
+    }
+
+    private void Rehash(DashboardAdmin admin, string password)
+    {
+        lock (_lock)
+        {
+            if (_admin != admin) return;
+            var upgraded = Create(admin.Name, password);
+            upgraded.Created = admin.Created;
+            _admin = upgraded;
+            Save(upgraded);
+        }
     }
 
     public bool TryChangePassword(string oldPassword, string newPassword, out string error)
@@ -174,16 +188,15 @@ public sealed class DashboardAdminStore
         {
             Name = name,
             Salt = Convert.ToBase64String(salt),
-            Key = Convert.ToBase64String(PasswordCrypto.DeriveKey(password, salt, PasswordCrypto.DefaultIterations)),
-            Iterations = PasswordCrypto.DefaultIterations,
+            Key = Convert.ToBase64String(PasswordCrypto.DeriveKey(password, salt, HashIterations)),
+            Iterations = HashIterations,
             Created = DateTime.UtcNow.ToString("O")
         };
     }
 
     private void Save(DashboardAdmin admin)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(_adminFile));
-        File.WriteAllText(_adminFile, JsonSerializer.Serialize(admin, new JsonSerializerOptions { WriteIndented = true }));
+        PrivateFile.WriteAllText(_adminFile, JsonSerializer.Serialize(admin, new JsonSerializerOptions { WriteIndented = true }));
     }
 
     private static DashboardAdmin Load(string path)

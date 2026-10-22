@@ -116,7 +116,7 @@ function every(ms, fn) {
 async function start() {
   try {
     const info = await api("/state");
-    $("#auth-server").textContent = info.serverName + " · v" + info.version;
+    $("#auth-server").textContent = info.version ? info.serverName + " · v" + info.version : info.serverName;
     if (info.loggedIn) showApp(info.user);
     else showAuth(info.setupRequired);
   } catch (error) {

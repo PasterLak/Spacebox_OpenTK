@@ -79,6 +79,23 @@ public class DashboardTests : IDisposable
     }
 
     [Fact]
+    public void Sessions_EndAfterMaxLifetimeEvenWhenUsed()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var sessions = new DashboardSessions(() => now);
+        string token = sessions.Create("admin");
+
+        while (now + TimeSpan.FromHours(6) < new DateTime(2026, 1, 1) + DashboardSessions.MaxLifetime)
+        {
+            now += TimeSpan.FromHours(6);
+            Assert.True(sessions.TryGet(token, out _));
+        }
+
+        now += TimeSpan.FromHours(6);
+        Assert.False(sessions.TryGet(token, out _));
+    }
+
+    [Fact]
     public void Sessions_CookieIsHttpOnlyAndStrict()
     {
         string cookie = DashboardSessions.CookieHeader("abc");
@@ -100,6 +117,40 @@ public class DashboardTests : IDisposable
 
         now += LoginThrottle.Window + TimeSpan.FromSeconds(1);
         Assert.False(throttle.IsLocked("1.1.1.1"));
+    }
+
+    [Fact]
+    public void Throttle_CountsAttemptsBeforeTheyAreChecked()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var throttle = new LoginThrottle(() => now);
+
+        for (int i = 0; i < LoginThrottle.MaxFailures; i++) Assert.True(throttle.TryBeginAttempt("1.1.1.1"));
+        Assert.False(throttle.TryBeginAttempt("1.1.1.1"));
+
+        throttle.Reset("1.1.1.1");
+        Assert.True(throttle.TryBeginAttempt("1.1.1.1"));
+    }
+
+    [Fact]
+    public void Throttle_GroupsIpv6ByPrefixAndLimitsAllAddresses()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var throttle = new LoginThrottle(() => now);
+
+        for (int i = 0; i < LoginThrottle.MaxFailures; i++) throttle.RecordFailure($"2001:db8:1:2::{i + 1:x}");
+        Assert.True(throttle.IsLocked("2001:db8:1:2:ffff::9"));
+        Assert.False(throttle.IsLocked("2001:db8:1:3::1"));
+        Assert.Equal("1.2.3.4", LoginThrottle.KeyOf("::ffff:1.2.3.4"));
+
+        int allowed = 0;
+        for (int i = 0; i < 100; i++)
+            if (throttle.TryBeginAttempt($"85.0.{i / 250}.{i % 250}")) allowed++;
+        Assert.Equal(LoginThrottle.MaxAttemptsPerMinute, allowed);
+
+        now += TimeSpan.FromMinutes(2);
+        Assert.True(throttle.TryBeginAttempt("85.9.9.9"));
+        Assert.True(throttle.TryBeginAttempt("192.168.1.2"));
     }
 
     [Fact]
@@ -273,7 +324,7 @@ public class DashboardTests : IDisposable
         Assert.Contains("new.duckdns.org", certificate.DnsNames());
     }
 
-    private static HttpRequest Request(string address, bool secure, string method = "GET")
+    private static HttpRequest Request(string address, bool secure, string method = "GET", string host = "me.duckdns.org:7777")
     {
         return new HttpRequest
         {
@@ -281,22 +332,49 @@ public class DashboardTests : IDisposable
             Path = "/dashboard/",
             RemoteAddress = address,
             IsSecure = secure,
-            Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["Host"] = "me.duckdns.org:7777" }
+            Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["Host"] = host }
         };
     }
 
     [Fact]
-    public void HttpsPolicy_RedirectsOnlyPublicPlainHttp()
+    public void AccessPolicy_RedirectsOrBlocksPublicPlainHttp()
     {
-        Assert.True(DashboardHttpsPolicy.MustUseHttps(Request("85.1.2.3", false), true));
-        Assert.False(DashboardHttpsPolicy.MustUseHttps(Request("85.1.2.3", true), true));
-        Assert.False(DashboardHttpsPolicy.MustUseHttps(Request("192.168.1.10", false), true));
-        Assert.False(DashboardHttpsPolicy.MustUseHttps(Request("85.1.2.3", false), false));
+        var policy = new DashboardAccessPolicy("me.duckdns.org", allowPublicHttp: false);
 
-        var redirect = DashboardHttpsPolicy.Redirect(Request("85.1.2.3", false));
-        Assert.Equal(301, redirect.Status);
+        Assert.Null(policy.Check(Request("85.1.2.3", true), true));
+        Assert.Null(policy.Check(Request("192.168.1.10", false), true));
+        Assert.Null(policy.Check(Request("192.168.1.10", false), false));
+        Assert.Equal(403, policy.Check(Request("85.1.2.3", false), false).Status);
+        Assert.Null(new DashboardAccessPolicy("me.duckdns.org", allowPublicHttp: true).Check(Request("85.1.2.3", false), false));
+
+        var redirect = policy.Check(Request("85.1.2.3", false), true);
+        Assert.Equal(307, redirect.Status);
         Assert.Equal("https://me.duckdns.org:7777/dashboard/", redirect.Headers["Location"]);
-        Assert.Equal(403, DashboardHttpsPolicy.Redirect(Request("85.1.2.3", false, "POST")).Status);
+        Assert.Equal(403, policy.Check(Request("85.1.2.3", false, "POST"), true).Status);
+    }
+
+    [Theory]
+    [InlineData("192.168.1.5:7777", true)]
+    [InlineData("[::1]:7777", true)]
+    [InlineData("localhost", true)]
+    [InlineData("myserver", true)]
+    [InlineData("box.lan", true)]
+    [InlineData("ME.duckdns.org:7777", true)]
+    [InlineData("game.example.com", true)]
+    [InlineData("a.example.com", false)]
+    [InlineData("evil.attacker.com", false)]
+    [InlineData("me.duckdns.org.attacker.com", false)]
+    public void AccessPolicy_AllowsOnlyKnownHostNames(string host, bool allowed)
+    {
+        var policy = new DashboardAccessPolicy("me.duckdns.org", false, () => new[] { "game.example.com" });
+        Assert.Equal(allowed, policy.IsAllowedHost(host));
+    }
+
+    [Fact]
+    public void AccessPolicy_RejectsForeignHostWith421()
+    {
+        var request = Request("192.168.1.10", false, host: "rebind.attacker.com");
+        Assert.Equal(421, new DashboardAccessPolicy("", false).Check(request, false).Status);
     }
 
     [Fact]

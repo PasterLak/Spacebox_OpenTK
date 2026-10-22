@@ -307,6 +307,11 @@ table.list tr.clickable:hover td { background: #ffffff08; }
 .map-filters input { display: inline-block; width: auto; margin: 0 4px 0 0; }
 .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .map-legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.map-legend .dot-unloaded { background: #545c6e; }
+.map-legend .dot-loaded { background: #d4dae6; }
+.map-legend .dot-saved { background: #6ed2e6; }
+.map-legend .dot-unsaved { background: #ff9b3d; }
+.map-legend .dot-player { background: #6edc6e; }
 .map-legend .dot.ring { background: transparent; border: 2px solid var(--box); }
 .map-legend .dot.ring.gold { border-color: var(--gold); }
 .map-legend .dot.ring.dashed { border-style: dashed; }

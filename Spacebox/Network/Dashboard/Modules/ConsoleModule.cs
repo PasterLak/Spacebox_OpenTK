@@ -32,7 +32,7 @@ public sealed class ConsoleModule : IDashboardModule
 
         router.Map("POST", DashboardContext.Api("/console"), guard.Admin(async (request, user) =>
         {
-            string command = DashboardGuard.Read<CommandRequest>(request)?.Command?.Trim();
+            string command = StripControlCharacters(DashboardGuard.Read<CommandRequest>(request)?.Command)?.Trim();
             if (string.IsNullOrEmpty(command)) return HttpResponse.Error("Enter a command", 400);
             if (command.Length > MaxCommandLength) return HttpResponse.Error("The command is too long", 400);
 
@@ -43,5 +43,15 @@ public sealed class ConsoleModule : IDashboardModule
             });
             return HttpResponse.Json(new { ok = true, last = context.Log.LastId });
         }));
+    }
+
+    public static string StripControlCharacters(string text)
+    {
+        if (text == null) return null;
+
+        var builder = new System.Text.StringBuilder(text.Length);
+        foreach (char c in text)
+            builder.Append(char.IsControl(c) ? ' ' : c);
+        return builder.ToString();
     }
 }
