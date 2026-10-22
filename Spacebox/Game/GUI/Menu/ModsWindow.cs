@@ -50,7 +50,7 @@ public class ModsWindow : MenuWindow
         ImGui.BeginDisabled();
         _menu.ButtonWithBackground("Download mods", new Vector2(buttonWidth, buttonHeight), new Vector2(padding, y), () => { });
         ImGui.EndDisabled();
-        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Mod shop - coming soon");
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Mod hub - coming soon: a place to find and download mods, texture packs and ships from other players");
 
         _menu.ButtonWithBackground("GameSet editor", new Vector2(buttonWidth, buttonHeight), new Vector2(padding * 2f + buttonWidth, y), () =>
         {
