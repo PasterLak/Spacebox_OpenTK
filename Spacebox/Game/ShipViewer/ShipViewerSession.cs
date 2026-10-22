@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Engine.Light;
-using Engine.Multithreading;
 using Spacebox.Editor.Preview;
 using Spacebox.Game.Versioning;
 using Spacebox.Game.GUI;
@@ -18,14 +17,15 @@ public sealed class ShipViewerSession : IDisposable
     private readonly ReadOnlyShipLoader _loader;
     private readonly ShipViewerGameSet _gameSet = new ShipViewerGameSet();
     private readonly List<ShipPreviewContent> _contents = new List<ShipPreviewContent>();
-    private List<SavedWorld> _worlds = new List<SavedWorld>();
+    private readonly List<SavedWorld> _worlds = new List<SavedWorld>();
+    private readonly Dictionary<SavedWorld, ShipScanResult> _shipsByWorld = new Dictionary<SavedWorld, ShipScanResult>();
+    private readonly ShipWorldScanner _scanner = new ShipWorldScanner();
     private PreviewViewport _viewport;
-    private Task<ShipScanResult> _scan;
-    private CancellationTokenSource _scanCancel;
     private SavedShip _requestedShip;
     private bool _gameSetLoadAnnounced;
     private bool _powered = true;
     private bool _enginesOn;
+    private bool _autoFire = true;
 
     public ShipViewerSession(string worldsDirectory, WorldUpgradeRegistry registry, string version)
     {
@@ -39,7 +39,7 @@ public sealed class ShipViewerSession : IDisposable
     public SavedWorld SelectedWorld { get; private set; }
     public SavedShip SelectedShip { get; private set; }
     public ShipScanResult Ships { get; private set; }
-    public bool IsScanning => _scan != null;
+    public bool IsScanning => _scanner.IsRunning;
     public string Status { get; private set; } = "";
     public string GameSetNotice => _gameSet.Notice;
     public ShipPreviewContent Content => _viewport?.Content as ShipPreviewContent;
@@ -65,6 +65,16 @@ public sealed class ShipViewerSession : IDisposable
         }
     }
 
+    public bool AutoFire
+    {
+        get => _autoFire;
+        set
+        {
+            _autoFire = value;
+            if (Content != null) Content.AutoFire = value;
+        }
+    }
+
     public void FireWeapons()
     {
         Content?.FireWeapons();
@@ -84,24 +94,23 @@ public sealed class ShipViewerSession : IDisposable
     public void Refresh()
     {
         SelectWorld(null);
-        _worlds = SavedWorldCatalog.Scan(_worldsDirectory, _registry, _version);
+        _worlds.Clear();
+        _shipsByWorld.Clear();
+        _scanner.Start(SavedWorldCatalog.Scan(_worldsDirectory, _registry, _version));
     }
 
     public void SelectWorld(SavedWorld world)
     {
         if (ReferenceEquals(world, SelectedWorld)) return;
 
-        CancelScan();
         ClearShip();
         SelectedWorld = world;
         Ships = null;
         Status = "";
-        if (world == null || !world.CanBeViewed) return;
+        if (world == null || !_shipsByWorld.TryGetValue(world, out var ships)) return;
 
-        _scanCancel = new CancellationTokenSource();
-        var token = _scanCancel.Token;
-        string folder = world.FolderPath;
-        _scan = WorkerPoolManager.Enqueue(_ => ShipScanner.Scan(folder, token), WorkerPoolManager.Priority.Medium);
+        Ships = ships;
+        if (ships.Ships.Count > 0) SelectShip(ships.Ships[0]);
     }
 
     public void SelectShip(SavedShip ship)
@@ -115,7 +124,7 @@ public sealed class ShipViewerSession : IDisposable
 
     public void Update(float deltaTime)
     {
-        PollScan();
+        CollectScannedWorlds();
         StartRequestedShip();
         _viewport?.Update(deltaTime);
         ForgetIdleContents();
@@ -147,7 +156,7 @@ public sealed class ShipViewerSession : IDisposable
 
     public void Close()
     {
-        CancelScan();
+        _scanner.Cancel();
         ClearShip();
         SelectedWorld = null;
         Ships = null;
@@ -159,17 +168,19 @@ public sealed class ShipViewerSession : IDisposable
     public void Dispose()
     {
         Close();
+        _scanner.Dispose();
         _viewport?.Dispose();
         _viewport = null;
     }
 
-    private void PollScan()
+    private void CollectScannedWorlds()
     {
-        if (_scan == null || !_scan.IsCompleted) return;
-
-        if (_scan.IsCompletedSuccessfully) Ships = _scan.Result;
-        else Status = "Ships could not be read: " + (_scan.Exception?.GetBaseException().Message ?? "cancelled");
-        _scan = null;
+        while (_scanner.TryTake(out var world, out var ships))
+        {
+            _worlds.Add(world);
+            _shipsByWorld[world] = ships;
+            if (SelectedWorld == null) SelectWorld(world);
+        }
     }
 
     private void StartRequestedShip()
@@ -204,7 +215,7 @@ public sealed class ShipViewerSession : IDisposable
 
     private ShipPreviewContent CreateContent(SavedWorld world, SavedShip ship)
     {
-        var content = new ShipPreviewContent(() => _loader.Load(world, ship), ShipFraming.FromStats(ship.Stats)) { EnginesOn = _enginesOn };
+        var content = new ShipPreviewContent(() => _loader.Load(world, ship), ShipFraming.FromStats(ship.Stats)) { EnginesOn = _enginesOn, AutoFire = _autoFire };
         content.SetPowered(_powered);
         return content;
     }
@@ -229,14 +240,6 @@ public sealed class ShipViewerSession : IDisposable
         SelectedShip = null;
         _requestedShip = null;
         _viewport?.Clear();
-    }
-
-    private void CancelScan()
-    {
-        _scanCancel?.Cancel();
-        _scanCancel?.Dispose();
-        _scanCancel = null;
-        _scan = null;
     }
 
     private void WaitForWorkers()

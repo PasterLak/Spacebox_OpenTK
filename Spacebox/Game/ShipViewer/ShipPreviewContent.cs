@@ -55,6 +55,7 @@ public sealed class ShipPreviewContent : IPreviewContent
     public int MeshedChunks => Volatile.Read(ref _meshedChunks);
     public bool Powered => _powered;
     public bool EnginesOn { get; set; }
+    public bool AutoFire { get; set; }
     public bool HasEngines => _effectsReady && _effects.HasEngines;
     public bool HasCannons => _effectsReady && _effects.HasCannons;
 
@@ -79,7 +80,7 @@ public sealed class ShipPreviewContent : IPreviewContent
     {
         ConfigureEffects();
         UploadMeshes();
-        _effects.Update(deltaTime, EnginesOn);
+        _effects.Update(deltaTime, EnginesOn, AutoFire);
     }
 
     public void Render()
@@ -155,6 +156,7 @@ public sealed class ShipPreviewContent : IPreviewContent
                 chunks[index] = blocks;
             }
 
+            if (LightManager.EnableLighting) ShipLightFlood.Propagate(chunks);
             var parts = ShipViewerParts.Scan(chunks);
             _view = BuildView(parts.Orientation.Resolve(parts.Extent));
             _parts = parts;

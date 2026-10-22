@@ -14,6 +14,7 @@ public sealed class ShipViewerEffects : IDisposable
     private readonly CannonShotEmitter _shots = new CannonShotEmitter();
     private readonly List<ViewerThruster> _engines = new List<ViewerThruster>();
     private readonly List<ViewerCannon> _cannons = new List<ViewerCannon>();
+    private readonly List<float> _reloads = new List<float>();
     private readonly Dictionary<string, AudioSource> _sounds = new Dictionary<string, AudioSource>();
     private float _range = 50f;
 
@@ -24,6 +25,7 @@ public sealed class ShipViewerEffects : IDisposable
     {
         _engines.Clear();
         _cannons.Clear();
+        _reloads.Clear();
         _range = radius * RangeInRadii;
 
         AddEngines(parts.Thrusters, view, true);
@@ -33,11 +35,14 @@ public sealed class ShipViewerEffects : IDisposable
         {
             var cannon = parts.Cannons[i];
             _cannons.Add(new ViewerCannon(Vector3.TransformPosition(cannon.Muzzle, view), Vector3.TransformVector(cannon.Direction, view), cannon.Data));
+            _reloads.Add(0f);
         }
     }
 
-    public void Update(float deltaTime, bool enginesOn)
+    public void Update(float deltaTime, bool enginesOn, bool autoFire)
     {
+        if (autoFire) AutoFire(deltaTime);
+
         if (enginesOn)
         {
             for (int i = 0; i < _engines.Count; i++)
@@ -50,15 +55,7 @@ public sealed class ShipViewerEffects : IDisposable
 
     public void FireAll()
     {
-        for (int i = 0; i < _cannons.Count; i++)
-        {
-            var cannon = _cannons[i];
-            if (!GameAssets.TryGetProjectileByName(cannon.Data.ProjectileName, out var projectile)) continue;
-
-            float range = projectile.MaxTravelDistance > 0 ? MathF.Min(projectile.MaxTravelDistance, _range) : _range;
-            _shots.Fire(cannon.Muzzle, cannon.Direction, projectile, range);
-            PlaySound(cannon.Data.ShotSound);
-        }
+        for (int i = 0; i < _cannons.Count; i++) Fire(i);
     }
 
     public void Render()
@@ -73,6 +70,26 @@ public sealed class ShipViewerEffects : IDisposable
         _shots.Dispose();
         foreach (var source in _sounds.Values) source.Dispose();
         _sounds.Clear();
+    }
+
+    private void AutoFire(float deltaTime)
+    {
+        for (int i = 0; i < _cannons.Count; i++)
+        {
+            _reloads[i] -= deltaTime;
+            if (_reloads[i] <= 0f) Fire(i);
+        }
+    }
+
+    private void Fire(int index)
+    {
+        var cannon = _cannons[index];
+        _reloads[index] = cannon.Data.ReloadSeconds;
+        if (!GameAssets.TryGetProjectileByName(cannon.Data.ProjectileName, out var projectile)) return;
+
+        float range = projectile.MaxTravelDistance > 0 ? MathF.Min(projectile.MaxTravelDistance, _range) : _range;
+        _shots.Fire(cannon.Muzzle, cannon.Direction, projectile, range);
+        PlaySound(cannon.Data.ShotSound);
     }
 
     private void AddEngines(List<ViewerThruster> thrusters, Matrix4 view, bool mainOnly)

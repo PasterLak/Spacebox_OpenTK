@@ -86,7 +86,8 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         if (BeginList("##shipViewerWorlds", new Vector2(0f, listHeight)))
         {
             var worlds = _session.Worlds;
-            if (worlds.Count == 0) ImGui.TextDisabled("No saved worlds");
+            if (_session.IsScanning) ImGui.TextDisabled("Searching worlds for ships...");
+            else if (worlds.Count == 0) ImGui.TextDisabled("No worlds with ships");
 
             for (int i = 0; i < worlds.Count; i++)
                 DrawWorld(worlds[i], i);
@@ -133,11 +134,8 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
             var world = _session.SelectedWorld;
             var result = _session.Ships;
             if (world == null) ImGui.TextDisabled("Select a world");
-            else if (!world.CanBeViewed) ImGui.TextWrapped(world.Message);
-            else if (_session.IsScanning) ImGui.TextDisabled("Reading ships...");
             else if (result != null)
             {
-                if (result.Ships.Count == 0) ImGui.TextDisabled("No player-built ships in this world");
                 for (int i = 0; i < result.Ships.Count; i++)
                     DrawShip(result.Ships[i], i);
                 if (result.UnreadableFiles > 0) ImGui.TextColored(WarningColor, $"{result.UnreadableFiles} damaged entity files skipped");
@@ -197,6 +195,9 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         ImGui.SameLine(0f, 16f);
         ImGui.BeginDisabled(!ready || !content.HasCannons);
         if (ImGui.Button("Fire")) _session.FireWeapons();
+        ImGui.SameLine(0f, 16f);
+        bool autoFire = _session.AutoFire;
+        if (ImGui.Checkbox("Autofire", ref autoFire)) _session.AutoFire = autoFire;
         ImGui.EndDisabled();
 
         ImGui.SameLine(0f, 16f);

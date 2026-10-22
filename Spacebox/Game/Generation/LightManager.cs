@@ -8,8 +8,6 @@ namespace Spacebox.Game.Generation
     public class LightManager
     {
         private const byte Size = Chunk.Size;
-        private const int MinChannel = 3;
-        private const float MaxPropagatedLevel = 14.9f;
         private static readonly int Reach = ComputeReach();
         public static bool EnableLighting = true;
         private readonly Chunk _chunk;
@@ -172,13 +170,7 @@ namespace Spacebox.Game.Generation
 
                 Chunk chunk = indexToChunk[cIndex];
                 var block = chunk.Blocks[x, y, z];
-                var sourceColor = block.LightColor;
-
-                int r = sourceColor.R * 8 / 10;
-                int g = sourceColor.G * 8 / 10;
-                int b_clr = sourceColor.B * 8 / 10;
-
-                if (Math.Max(r, Math.Max(g, b_clr)) < MinChannel) continue;
+                if (!LightFalloff.TryDecay(block.LightColor, out int r, out int g, out int b_clr)) continue;
 
                 for (int i = 0; i < 6; i++)
                 {
@@ -196,19 +188,7 @@ namespace Spacebox.Game.Generation
 
                     if (nChunk == null) continue;
 
-                    var nb = nChunk.Blocks[bx, by, bz];
-                    if (!(nb.IsAir || nb.IsTransparent || nb.HasCustomShape)) continue;
-                    if (nb.LightLevel >= 15f) continue;
-
-                    var current = nb.LightColor;
-                    int nr = Math.Max(current.R, r);
-                    int ng = Math.Max(current.G, g);
-                    int nbl = Math.Max(current.B, b_clr);
-
-                    if (nr == current.R && ng == current.G && nbl == current.B) continue;
-
-                    nb.LightColor = new Color3Byte((byte)nr, (byte)ng, (byte)nbl);
-                    nb.LightLevel = MathF.Min(MaxPropagatedLevel, Math.Max(nr, Math.Max(ng, nbl)) / 255f * 15f);
+                    if (!LightFalloff.TrySpreadInto(nChunk.Blocks[bx, by, bz], r, g, b_clr)) continue;
                     changedChunks.Add(nChunk);
 
                     lightQueue.Enqueue(Pack(GetChunkIndex(scratch, nChunk), bx, by, bz));
@@ -278,7 +258,7 @@ namespace Spacebox.Game.Generation
             int value = byte.MaxValue;
             int distance = 0;
 
-            while (value * 8 / 10 >= MinChannel)
+            while (value * 8 / 10 >= LightFalloff.MinChannel)
             {
                 value = value * 8 / 10;
                 distance++;
