@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "med_kit",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "compressed_oxygen",
+      "Quantity": 1
+    },
+    {
+      "Item": "water",
+      "Quantity": 1
+    }
+  ]
+}

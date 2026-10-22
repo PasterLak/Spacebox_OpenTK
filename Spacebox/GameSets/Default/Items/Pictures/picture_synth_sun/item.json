@@ -1,0 +1,13 @@
+{
+  "ID": "picture_synth_sun",
+  "Name": "Synth Sun",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_synth_sun",
+  "Picture": "Pictures/synth_sun.png",
+  "Width": 1,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

@@ -1,0 +1,8 @@
+{
+  "ID": "iron_dust",
+  "Name": "Iron Dust",
+  "Description": "Smelts into an iron ingot",
+  "Sprite": "ironDust",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

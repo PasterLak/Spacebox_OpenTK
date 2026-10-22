@@ -1,0 +1,13 @@
+{
+  "ID": "picture_star_whale",
+  "Name": "Star Whale",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_star_whale",
+  "Picture": "Pictures/star_whale.png",
+  "Width": 2,
+  "Height": 2,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

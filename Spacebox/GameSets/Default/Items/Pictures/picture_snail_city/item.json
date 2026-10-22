@@ -1,0 +1,13 @@
+{
+  "ID": "picture_snail_city",
+  "Name": "Snail City",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_snail_city",
+  "Picture": "Pictures/snail_city.png",
+  "Width": 2,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

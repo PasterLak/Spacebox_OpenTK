@@ -1,0 +1,16 @@
+{
+  "ID": "medium_rock",
+  "Name": "Medium Rock",
+  "Description": "Common rock of bigger asteroids",
+  "Type": "mineral",
+  "PowerToDrill": 3,
+  "Mass": 4,
+  "Durability": 10,
+  "Textures": {
+    "Active": {
+      "All": "mediumRock"
+    }
+  },
+  "Drop": "medium_rock",
+  "DropQuantity": 1
+}

@@ -1,0 +1,13 @@
+{
+  "ID": "picture_twin_moons",
+  "Name": "Twin Moons",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_twin_moons",
+  "Picture": "Pictures/twin_moons.png",
+  "Width": 2,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

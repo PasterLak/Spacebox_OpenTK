@@ -1,0 +1,8 @@
+{
+  "ID": "aluminium_dust",
+  "Name": "Aluminium Dust",
+  "Description": "Smelts into an aluminium ingot",
+  "Sprite": "aluDust",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

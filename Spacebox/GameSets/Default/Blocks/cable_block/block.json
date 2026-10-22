@@ -1,0 +1,30 @@
+{
+  "ID": "cable_block",
+  "Name": "Cable Block",
+  "Description": "Carries power between blocks",
+  "Type": "cable",
+  "Category": "electricity",
+  "Durability": 3,
+  "Textures": {
+    "Active": {
+      "All": "wire",
+      "Up": "wireTop",
+      "Down": "wireTop"
+    },
+    "Inactive": {
+      "All": "wireOff",
+      "Up": "wireTopOff",
+      "Down": "wireTopOff"
+    }
+  },
+  "Cable": {
+    "Port": "wireTop",
+    "PortOff": "wireTopOff",
+    "Straight": "wire",
+    "StraightOff": "wireOff",
+    "Angle": "wireAngle",
+    "AngleOff": "wireAngleOff",
+    "Hub": "wireHub",
+    "HubOff": "wireHubOff"
+  }
+}

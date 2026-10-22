@@ -1,0 +1,33 @@
+{
+  "ID": "oxygen_generator",
+  "Name": "Oxygen Generator",
+  "Description": "Fills a closed room with air. Needs power and water",
+  "Type": "oxygengenerator",
+  "Category": "other",
+  "OxygenGenerator": {
+    "WaterItem": "water",
+    "TankCapacity": 50,
+    "WaterConsumeInterval": 120,
+    "WaterFillInterval": 1
+  },
+  "PowerToDrill": 1,
+  "Mass": 4,
+  "Durability": 8,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "oxygenGeneratorSides",
+      "Up": "oxygenGenerator",
+      "Down": "generatorDown"
+    },
+    "Inactive": {
+      "All": "oxygenGeneratorSidesOff",
+      "Up": "oxygenGeneratorOff",
+      "Down": "generatorDownOff"
+    }
+  }
+}

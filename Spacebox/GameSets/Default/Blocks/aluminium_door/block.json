@@ -1,0 +1,38 @@
+{
+  "ID": "aluminium_door",
+  "Name": "Aluminium Door",
+  "Description": "Sliding door, opens with a click",
+  "Type": "door",
+  "Category": "building",
+  "PowerToDrill": 1,
+  "Mass": 2,
+  "Durability": 6,
+  "Door": {
+    "MoveDirection": "Right",
+    "Speed": 2,
+    "OpenTime": 3,
+    "AutoClose": true,
+    "OpenSound": "aluminiumDoorOpen1",
+    "CloseSound": "aluminiumDoorClose1"
+  },
+  "Size": {
+    "x": 2,
+    "y": 2,
+    "z": 1
+  },
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "aluMedium",
+      "Forward": "doorAluminium",
+      "Back": "doorAluminium"
+    }
+  },
+  "Sounds": {
+    "Place": "placeMetal"
+  }
+}

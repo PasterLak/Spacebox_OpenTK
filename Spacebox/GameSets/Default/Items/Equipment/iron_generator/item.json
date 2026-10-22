@@ -1,0 +1,12 @@
+{
+  "ID": "iron_generator",
+  "Type": "equipment",
+  "Slot": "PowerGenerator",
+  "Name": "Iron Power Generator",
+  "Description": "Raises your maximum power more",
+  "Category": "equipment",
+  "Sprite": "iron_generator",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Power": 20
+}

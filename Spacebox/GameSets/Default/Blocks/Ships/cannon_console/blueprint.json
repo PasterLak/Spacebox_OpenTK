@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "cannon_console",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "basic_machine",
+      "Quantity": 1
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 3
+    },
+    {
+      "Item": "cobalt_lens",
+      "Quantity": 2
+    }
+  ]
+}

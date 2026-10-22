@@ -1,0 +1,13 @@
+{
+  "ID": "picture_retro_rocket",
+  "Name": "Retro Rocket",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_retro_rocket",
+  "Picture": "Pictures/retro_rocket.png",
+  "Width": 1,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

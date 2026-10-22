@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "iron_drill_bit",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_drill_bit",
+      "Quantity": 1
+    },
+    {
+      "Item": "iron_ingot",
+      "Quantity": 1
+    }
+  ]
+}

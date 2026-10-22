@@ -1,0 +1,8 @@
+{
+  "ID": "aluminium_ingot",
+  "Name": "Aluminium Ingot",
+  "Description": "Light metal for panels and early tools",
+  "Sprite": "aluIngot",
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

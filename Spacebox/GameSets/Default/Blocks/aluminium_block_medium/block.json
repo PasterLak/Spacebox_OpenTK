@@ -1,0 +1,14 @@
+{
+  "ID": "aluminium_block_medium",
+  "Name": "Aluminium Medium Block",
+  "Description": "Hull block",
+  "Category": "building",
+  "PowerToDrill": 2,
+  "Mass": 4,
+  "Durability": 20,
+  "Textures": {
+    "Active": {
+      "All": "aluMedium"
+    }
+  }
+}

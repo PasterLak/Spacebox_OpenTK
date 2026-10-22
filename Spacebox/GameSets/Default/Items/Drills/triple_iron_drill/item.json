@@ -1,0 +1,19 @@
+{
+  "ID": "triple_iron_drill",
+  "Name": "Triple Iron Drill",
+  "Description": "Three drill bits. Mines hard blocks",
+  "Type": "drill",
+  "Category": "drills",
+  "Sprite": "drill4",
+  "MaxStack": 1,
+  "PowerUsage": 12,
+  "ModelDepth": 5,
+  "Range": 4,
+  "Tier": 4,
+  "Damage": 40,
+  "DrillColor": {
+    "r": 38,
+    "g": 180,
+    "b": 212
+  }
+}

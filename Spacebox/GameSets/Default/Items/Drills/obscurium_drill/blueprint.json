@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "obscurium_drill",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_drill",
+      "Quantity": 1
+    },
+    {
+      "Item": "uranium_rods",
+      "Quantity": 4
+    },
+    {
+      "Item": "obscurium_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "liquid_hydrogen",
+      "Quantity": 16
+    }
+  ]
+}

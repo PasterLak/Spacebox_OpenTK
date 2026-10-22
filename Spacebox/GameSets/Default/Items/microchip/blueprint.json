@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "microchip",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_ingot",
+      "Quantity": 2
+    },
+    {
+      "Item": "cobalt_ingot",
+      "Quantity": 1
+    }
+  ]
+}

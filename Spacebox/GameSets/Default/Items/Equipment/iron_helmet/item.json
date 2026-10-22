@@ -1,0 +1,15 @@
+{
+  "ID": "iron_helmet",
+  "Type": "equipment",
+  "Slot": "Helmet",
+  "Health": 3,
+  "ExplosionProtection": 3,
+  "Name": "Iron Helmet",
+  "Description": "Sturdy iron armor",
+  "Category": "equipment",
+  "Sprite": "iron_helmet",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_helmet.obj",
+  "ArmorTexture": "Models/Armor/armor_iron.png"
+}

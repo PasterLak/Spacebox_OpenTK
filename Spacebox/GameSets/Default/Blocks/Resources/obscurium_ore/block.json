@@ -1,0 +1,14 @@
+{
+  "ID": "obscurium_ore",
+  "Name": "Obscurium Ore",
+  "Description": "Extremely rare ore with strange properties",
+  "Type": "mineral",
+  "PowerToDrill": 5,
+  "Mass": 10,
+  "Durability": 50,
+  "Textures": {
+    "Active": {
+      "All": "pinkOre"
+    }
+  }
+}

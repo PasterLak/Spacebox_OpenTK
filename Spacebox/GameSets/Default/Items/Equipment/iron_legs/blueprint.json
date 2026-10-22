@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "iron_legs",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_ingot",
+      "Quantity": 8
+    },
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 4
+    }
+  ]
+}

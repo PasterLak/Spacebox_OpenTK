@@ -1,0 +1,13 @@
+{
+  "ID": "picture_astronaut_portrait",
+  "Name": "Astronaut",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_astronaut_portrait",
+  "Picture": "Pictures/astronaut_portrait.png",
+  "Width": 1,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

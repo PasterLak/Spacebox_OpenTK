@@ -1,0 +1,14 @@
+{
+  "ID": "uranium_rods",
+  "Name": "Uranium Rods",
+  "Description": "Radioactive fuel rods",
+  "Category": "items",
+  "Sprite": "uranRods",
+  "MaxStack": 64,
+  "ModelDepth": 2.0,
+  "GlowColor": {
+    "r": 50,
+    "g": 255,
+    "b": 50
+  }
+}

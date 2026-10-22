@@ -1,0 +1,27 @@
+{
+  "ID": "dna_reconstructor",
+  "Name": "DNA Reconstructor",
+  "Description": "Revives you here after death. Needs power and DNA samples",
+  "Type": "dnareconstructor",
+  "DnaReconstructor": {
+    "DnaItem": "dna_sample",
+    "Power": 50,
+    "ReconstructionTime": 5
+  },
+  "Category": "other",
+  "PowerToDrill": 1,
+  "Mass": 6,
+  "Durability": 6,
+  "Textures": {
+    "Active": {
+      "All": "spawnerSide",
+      "Up": "spawnerTop",
+      "Down": "bottom"
+    },
+    "Inactive": {
+      "All": "spawnerSideOff",
+      "Up": "spawnerTopOff",
+      "Down": "bottom"
+    }
+  }
+}

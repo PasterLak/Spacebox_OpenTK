@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "cable_block",
+    "Quantity": 2
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_ingot",
+      "Quantity": 1
+    }
+  ]
+}

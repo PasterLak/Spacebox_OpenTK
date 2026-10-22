@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "cannon_light_assault",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 6
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 4
+    },
+    {
+      "Item": "cobalt_lens",
+      "Quantity": 2
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 1
+    }
+  ]
+}

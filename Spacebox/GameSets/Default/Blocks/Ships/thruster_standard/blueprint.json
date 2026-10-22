@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "thruster_standard",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "liquid_hydrogen",
+      "Quantity": 4
+    },
+    {
+      "Item": "thruster_weak",
+      "Quantity": 1
+    },
+    {
+      "Item": "iron_panels",
+      "Quantity": 6
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 2
+    }
+  ]
+}

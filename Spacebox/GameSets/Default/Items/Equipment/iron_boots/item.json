@@ -1,0 +1,15 @@
+{
+  "ID": "iron_boots",
+  "Type": "equipment",
+  "Slot": "Boots",
+  "Health": 3,
+  "ExplosionProtection": 3,
+  "Name": "Iron Boots",
+  "Description": "Sturdy iron armor",
+  "Category": "equipment",
+  "Sprite": "iron_boots",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_boots.obj",
+  "ArmorTexture": "Models/Armor/armor_iron.png"
+}

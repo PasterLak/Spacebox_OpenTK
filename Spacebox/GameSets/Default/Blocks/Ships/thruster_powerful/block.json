@@ -1,0 +1,41 @@
+{
+  "ID": "thruster_powerful",
+  "Name": "Powerful Hydrogen Thruster",
+  "Description": "Pushes the ship hard away from its nozzle side",
+  "Type": "thruster",
+  "Thruster": {
+    "Force": 160,
+    "Power": 30,
+    "NozzleLength": 2
+  },
+  "Size": {
+    "x": 2,
+    "y": 1,
+    "z": 2
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 20,
+  "Durability": 40,
+  "FrontDirection": {
+    "x": 0,
+    "y": 1,
+    "z": 0
+  },
+  "Textures": {
+    "Active": {
+      "All": "thrusterPowerfulWalls",
+      "Up": "thrusterPowerfulTop",
+      "Down": "thrusterPowerfulBottom"
+    },
+    "Inactive": {
+      "All": "thrusterPowerfulWallsOff",
+      "Up": "thrusterPowerfulTopOff",
+      "Down": "thrusterPowerfulBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

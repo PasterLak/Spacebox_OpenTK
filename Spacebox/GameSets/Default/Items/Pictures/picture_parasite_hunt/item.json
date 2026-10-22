@@ -1,0 +1,13 @@
+{
+  "ID": "picture_parasite_hunt",
+  "Name": "Parasite Hunt",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_parasite_hunt",
+  "Picture": "Pictures/parasite_hunt.png",
+  "Width": 2,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

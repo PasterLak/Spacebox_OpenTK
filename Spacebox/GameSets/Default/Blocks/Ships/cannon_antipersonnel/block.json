@@ -1,0 +1,40 @@
+{
+  "ID": "cannon_antipersonnel",
+  "Name": "Anti-Personnel Gun",
+  "Description": "Fast ship gun against small targets. Bind it to a console",
+  "Type": "cannon",
+  "Cannon": {
+    "Projectile": "p_cannon_antipersonnel",
+    "ReloadTime": 200,
+    "ShotSound": "smg",
+    "BarrelLength": 1.5,
+    "AimCone": 60,
+    "TurnSpeed": 180,
+    "Power": 15
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 3,
+  "Durability": 20,
+  "FrontDirection": {
+    "x": 0,
+    "y": 1,
+    "z": 0
+  },
+  "Textures": {
+    "Active": {
+      "All": "cannonAntiPersonnelWalls",
+      "Up": "cannonAntiPersonnelTop",
+      "Down": "cannonAntiPersonnelBottom"
+    },
+    "Inactive": {
+      "All": "cannonAntiPersonnelWallsOff",
+      "Up": "cannonAntiPersonnelTopOff",
+      "Down": "cannonAntiPersonnelBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

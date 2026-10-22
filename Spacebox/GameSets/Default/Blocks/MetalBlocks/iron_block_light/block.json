@@ -1,0 +1,17 @@
+{
+  "ID": "iron_block_light",
+  "Name": "Iron Light Block",
+  "Description": "Light iron armor block",
+  "Category": "building",
+  "PowerToDrill": 2,
+  "Mass": 4,
+  "Durability": 40,
+  "Textures": {
+    "Active": {
+      "All": "ironLight"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceLight"
+  }
+}

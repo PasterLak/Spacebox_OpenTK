@@ -1,0 +1,19 @@
+{
+  "ID": "pistol",
+  "Name": "Pistol",
+  "Description": "A basic sidearm",
+  "Type": "weapon",
+  "Category": "weapons",
+  "Sprite": "weapon1",
+  "MaxStack": 1,
+  "ModelDepth": 1.5,
+  "ReloadTime": 12,
+  "Spread": 50,
+  "AnimationPushback": 18,
+  "Recoil": 1,
+  "AnimationSpeed": 0.5,
+  "PowerUsage": 3,
+  "Projectile": "p_pistole",
+  "ShotSound": "pistole3",
+  "Ammo": ""
+}

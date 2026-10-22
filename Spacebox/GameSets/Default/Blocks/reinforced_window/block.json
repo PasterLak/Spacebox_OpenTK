@@ -1,0 +1,24 @@
+{
+  "ID": "reinforced_window",
+  "Name": "Reinforced Window",
+  "Description": "A tougher window",
+  "Category": "building",
+  "Mass": 2,
+  "Durability": 10,
+  "IsTransparent": true,
+  "Textures": {
+    "Active": {
+      "All": "window2"
+    }
+  },
+  "Sounds": {
+    "Place": "placeMetal",
+    "Destroy": "blockDestroyGlass",
+    "Footsteps": [
+      "footstepGlass1",
+      "footstepGlass2",
+      "footstepGlass3",
+      "footstepGlass4"
+    ]
+  }
+}

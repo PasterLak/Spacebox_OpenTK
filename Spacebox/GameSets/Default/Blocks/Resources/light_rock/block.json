@@ -1,0 +1,19 @@
+{
+  "ID": "light_rock",
+  "Name": "Light Rock",
+  "Description": "Soft rock, easy to mine",
+  "Type": "mineral",
+  "PowerToDrill": 1,
+  "Mass": 2,
+  "Durability": 5,
+  "Textures": {
+    "Active": {
+      "All": "lightRock"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceLight"
+  },
+  "Drop": "$self",
+  "DropQuantity": 1
+}

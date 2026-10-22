@@ -1,0 +1,38 @@
+{
+  "ID": "item_pipe_merger",
+  "Name": "Merging Item Pipe",
+  "Description": "Collects items from three sides and sends them up. Put an item into the Filter slot to move only that item",
+  "Type": "pipe",
+  "Pipe": {
+    "TransferInterval": 1,
+    "Power": 5,
+    "InputSides": [
+      "Down",
+      "Left",
+      "Right"
+    ],
+    "OutputSides": [
+      "Up"
+    ]
+  },
+  "Category": "logistics",
+  "PowerToDrill": 1,
+  "Mass": 3,
+  "Durability": 5,
+  "Textures": {
+    "Active": {
+      "All": "pipeStraightSide",
+      "Up": "pipeOutput",
+      "Down": "pipeInput",
+      "Left": "pipeInput",
+      "Right": "pipeInput"
+    },
+    "Inactive": {
+      "All": "pipeStraightSideOff",
+      "Up": "pipeOutputOff",
+      "Down": "pipeInputOff",
+      "Left": "pipeInputOff",
+      "Right": "pipeInputOff"
+    }
+  }
+}

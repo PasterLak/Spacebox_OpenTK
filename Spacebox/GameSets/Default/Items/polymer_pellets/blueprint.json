@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "polymer_pellets",
+    "Quantity": 6
+  },
+  "Ingredients": [
+    {
+      "Item": "compressed_methane",
+      "Quantity": 1
+    },
+    {
+      "Item": "water",
+      "Quantity": 2
+    }
+  ]
+}

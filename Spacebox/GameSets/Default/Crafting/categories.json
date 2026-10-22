@@ -1,0 +1,82 @@
+{
+  "Categories": [
+    {
+      "Id": "building",
+      "Name": "Building",
+      "Icon": "iron_block_heavy",
+      "Row": 1
+    },
+    {
+      "Id": "production",
+      "Name": "Production",
+      "Icon": "crusher",
+      "Row": 1
+    },
+    {
+      "Id": "electricity",
+      "Name": "Electricity",
+      "Icon": "cobalt_power_block",
+      "Row": 1
+    },
+    {
+      "Id": "logistics",
+      "Name": "Logistics",
+      "Icon": "basic_aluminium_crate",
+      "Row": 1
+    },
+    {
+      "Id": "ships",
+      "Name": "Ships",
+      "Icon": "ship_console",
+      "Row": 1
+    },
+    {
+      "Id": "other",
+      "Name": "Other",
+      "Icon": "oxygen_generator",
+      "Row": 1
+    },
+    {
+      "Id": "drills",
+      "Name": "Drills",
+      "Icon": "aluminium_drill",
+      "Row": 2
+    },
+    {
+      "Id": "tools",
+      "Name": "Tools",
+      "Icon": "aluminium_flashlight",
+      "Row": 2
+    },
+    {
+      "Id": "weapons",
+      "Name": "Weapons",
+      "Icon": "pistol",
+      "Row": 2
+    },
+    {
+      "Id": "equipment",
+      "Name": "Equipment",
+      "Icon": "aluminium_helmet",
+      "Row": 2
+    },
+    {
+      "Id": "items",
+      "Name": "Items",
+      "Icon": "microchip",
+      "Row": 2
+    },
+    {
+      "Id": "consumables",
+      "Name": "Consumables",
+      "Icon": "med_kit",
+      "Row": 2
+    },
+    {
+      "Id": "decor",
+      "Name": "Decor",
+      "Icon": "picture_retro_cactus",
+      "Row": 1
+    }
+  ]
+}

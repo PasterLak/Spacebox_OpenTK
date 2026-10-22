@@ -1,0 +1,9 @@
+{
+  "ID": "aluminium_panels",
+  "Name": "Aluminium Panels",
+  "Description": "Building material for blocks and parts",
+  "Category": "items",
+  "Sprite": "aluPanels",
+  "MaxStack": 64,
+  "ModelDepth": 1.0
+}

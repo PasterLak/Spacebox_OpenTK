@@ -1,0 +1,17 @@
+{
+  "ID": "titanium_flashlight",
+  "Type": "equipment",
+  "Slot": "Flashlight",
+  "Name": "Titanium Flashlight",
+  "Description": "Bright flashlight with a long, wide beam",
+  "Category": "tools",
+  "Sprite": "titanium_flashlight",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Flashlight": {
+    "Intensity": 1.2,
+    "Range": 64,
+    "InnerAngle": 17,
+    "OuterAngle": 28
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "ID": "cannon_anticorvette",
+  "Name": "Anti-Corvette Gun",
+  "Description": "Strong ship gun against ships. Bind it to a console",
+  "Type": "cannon",
+  "Cannon": {
+    "Projectile": "p_cannon_antipersonnel_heavy",
+    "ReloadTime": 600,
+    "ShotSound": "ar",
+    "BarrelLength": 2,
+    "AimCone": 60,
+    "TurnSpeed": 180,
+    "Power": 150
+  },
+  "Size": {
+    "x": 2,
+    "y": 3,
+    "z": 1
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 25,
+  "Durability": 60,
+  "FrontDirection": {
+    "x": 0,
+    "y": 1,
+    "z": 0
+  },
+  "Textures": {
+    "Active": {
+      "All": "cannonAntiCorvetteWalls",
+      "Up": "cannonAntiCorvetteTop",
+      "Down": "cannonAntiCorvetteBottom"
+    },
+    "Inactive": {
+      "All": "cannonAntiCorvetteWallsOff",
+      "Up": "cannonAntiCorvetteTopOff",
+      "Down": "cannonAntiCorvetteBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

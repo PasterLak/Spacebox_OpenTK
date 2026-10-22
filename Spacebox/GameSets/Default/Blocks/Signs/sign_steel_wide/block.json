@@ -1,0 +1,24 @@
+{
+  "ID": "sign_steel_wide",
+  "Name": "Wide Steel Sign",
+  "Description": "Two blocks wide plate for longer labels",
+  "Type": "sign",
+  "Category": "building",
+  "CellPixels": 32,
+  "Textures": {
+    "Active": {
+      "All": "signSteelEdge",
+      "Up": "signSteelWide",
+      "Down": "signSteelEdge"
+    }
+  },
+  "Sign": {
+    "Width": 2,
+    "MaxLines": 4,
+    "MaxLineLength": 120,
+    "TextColor": "#22262c"
+  },
+  "Sounds": {
+    "Place": "placeMetal2"
+  }
+}

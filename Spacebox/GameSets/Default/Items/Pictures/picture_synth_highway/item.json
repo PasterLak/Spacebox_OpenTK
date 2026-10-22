@@ -1,0 +1,13 @@
+{
+  "ID": "picture_synth_highway",
+  "Name": "Neon Highway",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_synth_highway",
+  "Picture": "Pictures/synth_highway.png",
+  "Width": 2,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

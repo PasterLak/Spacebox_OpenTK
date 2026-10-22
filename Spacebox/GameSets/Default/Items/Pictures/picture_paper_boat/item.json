@@ -1,0 +1,13 @@
+{
+  "ID": "picture_paper_boat",
+  "Name": "Paper Boat",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_paper_boat",
+  "Picture": "Pictures/paper_boat.png",
+  "Width": 2,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

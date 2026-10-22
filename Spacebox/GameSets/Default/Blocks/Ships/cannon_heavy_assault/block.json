@@ -1,0 +1,45 @@
+{
+  "ID": "cannon_heavy_assault",
+  "Name": "Heavy Assault Gun",
+  "Description": "Heavy ship gun. Bind it to a console to aim and fire",
+  "Type": "cannon",
+  "Cannon": {
+    "Projectile": "p_cannon_heavy",
+    "ReloadTime": 300,
+    "ShotSound": "ar",
+    "BarrelLength": 2.5,
+    "AimCone": 60,
+    "TurnSpeed": 180,
+    "Power": 60
+  },
+  "Size": {
+    "x": 1,
+    "y": 2,
+    "z": 1
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 10,
+  "Durability": 40,
+  "FrontDirection": {
+    "x": 0,
+    "y": 1,
+    "z": 0
+  },
+  "Textures": {
+    "Active": {
+      "All": "cannonHeavyAssaultWalls",
+      "Up": "cannonHeavyAssaultTop",
+      "Down": "cannonHeavyAssaultBottom"
+    },
+    "Inactive": {
+      "All": "cannonHeavyAssaultWallsOff",
+      "Up": "cannonHeavyAssaultTopOff",
+      "Down": "cannonHeavyAssaultBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

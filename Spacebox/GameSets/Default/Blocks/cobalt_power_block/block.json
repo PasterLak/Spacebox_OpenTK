@@ -1,0 +1,32 @@
+{
+  "ID": "cobalt_power_block",
+  "Name": "Standard Cobalt Power Block",
+  "Description": "Makes power for machines and lights through cables",
+  "Type": "generator",
+  "Size": {
+    "x": 1,
+    "y": 2,
+    "z": 1
+  },
+  "Category": "electricity",
+  "PowerToDrill": 1,
+  "Mass": 6,
+  "Durability": 14,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "cobaltGeneratorSideTall",
+      "Up": "cobaltGeneratorTop",
+      "Down": "cobaltGeneratorTop"
+    },
+    "Inactive": {
+      "All": "cobaltGeneratorSideTallOff",
+      "Up": "cobaltGeneratorTopOff",
+      "Down": "cobaltGeneratorTopOff"
+    }
+  }
+}

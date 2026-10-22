@@ -1,0 +1,8 @@
+{
+  "ID": "plastic",
+  "Name": "Plastic",
+  "Description": "Light and tough material",
+  "Sprite": "plastic",
+  "MaxStack": 64,
+  "ModelDepth": 3.0
+}

@@ -1,0 +1,15 @@
+{
+  "ID": "titanium_chest",
+  "Type": "equipment",
+  "Slot": "Chest",
+  "Health": 10,
+  "ExplosionProtection": 15,
+  "Name": "Titanium Chest Armor",
+  "Description": "Light and very strong titanium armor",
+  "Category": "equipment",
+  "Sprite": "titanium_chest",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_chest.obj",
+  "ArmorTexture": "Models/Armor/armor_titanium.png"
+}

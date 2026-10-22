@@ -1,0 +1,17 @@
+{
+  "ID": "claim_beacon",
+  "Name": "Claim Beacon",
+  "Description": "Protects your ship or base from other players while it is paid with ingots",
+  "Type": "claim",
+  "Category": "other",
+  "PowerToDrill": 2,
+  "Mass": 4,
+  "Durability": 20,
+  "Textures": {
+    "Active": {
+      "All": "claimBeaconSide",
+      "Up": "claimBeaconTop",
+      "Down": "claimBeaconTop"
+    }
+  }
+}

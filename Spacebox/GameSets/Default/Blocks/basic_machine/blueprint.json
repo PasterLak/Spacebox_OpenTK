@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "basic_machine",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_ingot",
+      "Quantity": 2
+    },
+    {
+      "Item": "iron_ingot",
+      "Quantity": 2
+    }
+  ]
+}

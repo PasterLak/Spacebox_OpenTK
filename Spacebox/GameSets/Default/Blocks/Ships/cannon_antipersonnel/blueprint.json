@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "cannon_antipersonnel",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 4
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 2
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 1
+    }
+  ]
+}

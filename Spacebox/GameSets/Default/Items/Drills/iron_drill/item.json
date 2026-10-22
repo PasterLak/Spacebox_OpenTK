@@ -1,0 +1,19 @@
+{
+  "ID": "iron_drill",
+  "Name": "Iron Drill",
+  "Description": "Mines medium blocks",
+  "Type": "drill",
+  "Category": "drills",
+  "Sprite": "drill3",
+  "MaxStack": 1,
+  "PowerUsage": 9,
+  "ModelDepth": 2,
+  "Range": 3,
+  "Tier": 3,
+  "Damage": 15,
+  "DrillColor": {
+    "r": 38,
+    "g": 192,
+    "b": 212
+  }
+}

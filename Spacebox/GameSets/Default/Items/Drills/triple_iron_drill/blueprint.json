@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "triple_iron_drill",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_drill",
+      "Quantity": 3
+    },
+    {
+      "Item": "iron_drill_bit",
+      "Quantity": 3
+    },
+    {
+      "Item": "thulium_energy_cell",
+      "Quantity": 6
+    }
+  ]
+}

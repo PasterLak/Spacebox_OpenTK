@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "light_yellow",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "light_white",
+      "Quantity": 1
+    },
+    {
+      "Item": "thulium_dust",
+      "Quantity": 1
+    }
+  ]
+}

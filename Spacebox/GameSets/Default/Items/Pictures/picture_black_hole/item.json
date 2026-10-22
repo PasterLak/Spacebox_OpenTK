@@ -1,0 +1,13 @@
+{
+  "ID": "picture_black_hole",
+  "Name": "Black Hole",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_black_hole",
+  "Picture": "Pictures/black_hole.png",
+  "Width": 1,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

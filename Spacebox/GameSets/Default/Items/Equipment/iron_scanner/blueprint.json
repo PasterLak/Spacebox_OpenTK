@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "iron_scanner",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 1
+    }
+  ]
+}

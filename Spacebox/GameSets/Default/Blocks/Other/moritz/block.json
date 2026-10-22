@@ -1,0 +1,22 @@
+{
+  "ID": "moritz",
+  "Name": "Moritz",
+  "Description": "A friendly face in space",
+  "PowerToDrill": 5,
+  "Mass": 1,
+  "Durability": 15,
+  "LightColor": {
+    "r": 255,
+    "g": 245,
+    "b": 68
+  },
+  "Textures": {
+    "Active": {
+      "All": "moritz"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceMoritz",
+    "Destroy": "blockDestroyMoritz"
+  }
+}

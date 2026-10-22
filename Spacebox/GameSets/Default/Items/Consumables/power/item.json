@@ -1,0 +1,13 @@
+{
+  "ID": "power",
+  "Name": "Cobalt Power Overcharge",
+  "Description": "Refills your power",
+  "Sprite": "power",
+  "Type": "consumable",
+  "Category": "consumables",
+  "Sound": "use",
+  "UseCooldown": 1,
+  "PowerAmount": 100,
+  "MaxStack": 64,
+  "ModelDepth": 3.0
+}

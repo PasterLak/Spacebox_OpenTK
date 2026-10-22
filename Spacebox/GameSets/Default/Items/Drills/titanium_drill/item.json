@@ -1,0 +1,19 @@
+{
+  "ID": "titanium_drill",
+  "Name": "Titanium Drill",
+  "Description": "A high-end drill",
+  "Type": "drill",
+  "Category": "drills",
+  "Sprite": "drill5",
+  "MaxStack": 1,
+  "PowerUsage": 3,
+  "ModelDepth": 3,
+  "Tier": 5,
+  "Damage": 15,
+  "Range": 6,
+  "DrillColor": {
+    "r": 57,
+    "g": 76,
+    "b": 219
+  }
+}

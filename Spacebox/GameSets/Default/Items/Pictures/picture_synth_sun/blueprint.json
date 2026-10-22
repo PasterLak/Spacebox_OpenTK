@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "picture_synth_sun",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 1
+    },
+    {
+      "Item": "cobalt_dust",
+      "Quantity": 1
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "ID": "light_pink",
+  "Name": "Violet Wall Torch",
+  "Description": "Wall light with a violet glow",
+  "Category": "building",
+  "Model": "torch",
+  "LightColor": {
+    "r": 178,
+    "g": 0,
+    "b": 255
+  },
+  "Textures": {
+    "Active": {
+      "All": "torchPink",
+      "Up": "torchMetal",
+      "Down": "torchMetal"
+    }
+  },
+  "Sounds": {
+    "Place": "placeMetal2",
+    "Destroy": "blockDestroyGlass"
+  }
+}

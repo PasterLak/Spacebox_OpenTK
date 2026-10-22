@@ -1,0 +1,8 @@
+{
+  "ID": "titanium_dust",
+  "Name": "Titanium Dust",
+  "Description": "Smelts into a titanium ingot",
+  "Sprite": "titDust",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

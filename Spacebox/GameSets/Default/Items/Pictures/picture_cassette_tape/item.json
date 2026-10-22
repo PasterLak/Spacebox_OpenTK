@@ -1,0 +1,13 @@
+{
+  "ID": "picture_cassette_tape",
+  "Name": "Cassette Tape",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_cassette_tape",
+  "Picture": "Pictures/cassette_tape.png",
+  "Width": 1,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

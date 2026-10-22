@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "picture_retro_terminal",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 2
+    },
+    {
+      "Item": "cobalt_dust",
+      "Quantity": 1
+    },
+    {
+      "Item": "iron_dust",
+      "Quantity": 1
+    }
+  ]
+}

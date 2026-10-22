@@ -1,0 +1,15 @@
+{
+  "ID": "iron_chest",
+  "Type": "equipment",
+  "Slot": "Chest",
+  "Health": 8,
+  "ExplosionProtection": 9,
+  "Name": "Iron Chest Armor",
+  "Description": "Sturdy iron armor",
+  "Category": "equipment",
+  "Sprite": "iron_chest",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_chest.obj",
+  "ArmorTexture": "Models/Armor/armor_iron.png"
+}

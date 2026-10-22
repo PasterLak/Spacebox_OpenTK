@@ -1,0 +1,9 @@
+{
+  "ID": "cobalt_lens",
+  "Name": "Cobalt Lens",
+  "Description": "A lens made of cobalt glass",
+  "Category": "items",
+  "Sprite": "cobaltLens",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

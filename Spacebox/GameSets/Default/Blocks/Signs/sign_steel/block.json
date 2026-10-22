@@ -1,0 +1,23 @@
+{
+  "ID": "sign_steel",
+  "Name": "Steel Sign",
+  "Description": "Plate for a short label, attach it to any block side",
+  "Type": "sign",
+  "Category": "building",
+  "Textures": {
+    "Active": {
+      "All": "signSteelEdge",
+      "Up": "signSteel",
+      "Down": "signSteelEdge"
+    }
+  },
+  "Sign": {
+    "Width": 1,
+    "MaxLines": 4,
+    "MaxLineLength": 60,
+    "TextColor": "#22262c"
+  },
+  "Sounds": {
+    "Place": "placeMetal2"
+  }
+}

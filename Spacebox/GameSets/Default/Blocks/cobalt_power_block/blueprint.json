@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "cobalt_power_block",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_panels",
+      "Quantity": 4
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 6
+    }
+  ]
+}

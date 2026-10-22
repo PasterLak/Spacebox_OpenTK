@@ -1,0 +1,15 @@
+{
+  "ID": "titanium_legs",
+  "Type": "equipment",
+  "Slot": "Legs",
+  "Health": 8,
+  "ExplosionProtection": 10,
+  "Name": "Titanium Legs Armor",
+  "Description": "Light and very strong titanium armor",
+  "Category": "equipment",
+  "Sprite": "titanium_legs",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_legs.obj",
+  "ArmorTexture": "Models/Armor/armor_titanium.png"
+}

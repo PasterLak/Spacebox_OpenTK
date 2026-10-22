@@ -1,0 +1,20 @@
+{
+  "ID": "analyzer",
+  "Name": "Ore scanner",
+  "Type": "analyzer",
+  "Description": "Scans the asteroid it stands on and shows what it is made of",
+  "Category": "production",
+  "Durability": 5,
+  "Textures": {
+    "Active": {
+      "All": "electricalSide",
+      "Up": "analyzer",
+      "Down": "generatorDown"
+    },
+    "Inactive": {
+      "All": "electricalSideOff",
+      "Up": "analyzerOff",
+      "Down": "generatorDownOff"
+    }
+  }
+}

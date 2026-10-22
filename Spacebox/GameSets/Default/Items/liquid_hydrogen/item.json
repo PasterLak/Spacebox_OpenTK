@@ -1,0 +1,9 @@
+{
+  "ID": "liquid_hydrogen",
+  "Name": "Liquid Hydrogen",
+  "Description": "Highly flammable fuel",
+  "Category": "items",
+  "Sprite": "hydrogen",
+  "MaxStack": 64,
+  "ModelDepth": 3.0
+}

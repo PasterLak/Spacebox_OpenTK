@@ -1,0 +1,31 @@
+{
+  "ID": "cobalt_bomb",
+  "Name": "Cobalt Bomb",
+  "Description": "Explodes when shot",
+  "Type": "explosive",
+  "Explosive": {
+    "Radius": 3,
+    "Penetration": 10,
+    "Damage": 30,
+    "DamageFalloff": true,
+    "PushStrength": 15,
+    "PushRadiusMultiplier": 2,
+    "ChainDelay": 0.15,
+    "DropBlocks": false,
+    "DestroyStorageItems": false
+  },
+  "Category": "weapons",
+  "Mass": 8,
+  "Durability": 10,
+  "Textures": {
+    "Active": {
+      "All": "cobaltBombSide",
+      "Up": "bottom",
+      "Down": "bottom"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

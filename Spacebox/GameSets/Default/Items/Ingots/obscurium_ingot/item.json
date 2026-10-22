@@ -1,0 +1,8 @@
+{
+  "ID": "obscurium_ingot",
+  "Name": "Obscurium Ingot",
+  "Description": "Mysterious and powerful material",
+  "Sprite": "poniumIngot",
+  "MaxStack": 64,
+  "ModelDepth": 1.0
+}

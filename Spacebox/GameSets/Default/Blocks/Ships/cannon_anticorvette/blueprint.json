@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "cannon_anticorvette",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_panels",
+      "Quantity": 12
+    },
+    {
+      "Item": "thulium_energy_cell",
+      "Quantity": 6
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 3
+    },
+    {
+      "Item": "uranium_rods",
+      "Quantity": 2
+    }
+  ]
+}

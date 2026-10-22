@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "moritz",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "light_yellow",
+      "Quantity": 4
+    },
+    {
+      "Item": "titanium_ingot",
+      "Quantity": 16
+    },
+    {
+      "Item": "titanium_drill",
+      "Quantity": 1
+    },
+    {
+      "Item": "assault_rifle",
+      "Quantity": 1
+    }
+  ]
+}

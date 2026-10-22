@@ -1,0 +1,13 @@
+{
+  "ID": "repair_tool",
+  "Name": "Repair Tool",
+  "Description": "Repairs damaged blocks. Aim at a block and hold the left mouse button",
+  "Type": "repair_tool",
+  "Category": "tools",
+  "Sprite": "repairTool",
+  "MaxStack": 1,
+  "ModelDepth": 2.0,
+  "RepairTime": 1,
+  "PowerPerSecond": 2,
+  "Range": 5
+}

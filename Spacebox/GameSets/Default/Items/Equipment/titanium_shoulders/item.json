@@ -1,0 +1,15 @@
+{
+  "ID": "titanium_shoulders",
+  "Type": "equipment",
+  "Slot": "Shoulders",
+  "Health": 6,
+  "ExplosionProtection": 10,
+  "Name": "Titanium Shoulders Armor",
+  "Description": "Light and very strong titanium armor",
+  "Category": "equipment",
+  "Sprite": "titanium_shoulders",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_shoulders.obj",
+  "ArmorTexture": "Models/Armor/armor_titanium.png"
+}

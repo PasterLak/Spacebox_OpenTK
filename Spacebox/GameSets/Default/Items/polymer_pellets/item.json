@@ -1,0 +1,9 @@
+{
+  "ID": "polymer_pellets",
+  "Name": "Polymer Pellets",
+  "Description": "Raw material for plastic and fiber",
+  "Category": "items",
+  "Sprite": "polymer_pellets",
+  "MaxStack": 64,
+  "ModelDepth": 3.0
+}

@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "disassembler",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "basic_machine",
+      "Quantity": 1
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 2
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 1
+    }
+  ]
+}

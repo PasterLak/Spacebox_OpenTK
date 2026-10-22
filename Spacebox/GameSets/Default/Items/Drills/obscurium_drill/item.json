@@ -1,0 +1,19 @@
+{
+  "ID": "obscurium_drill",
+  "Name": "Obscurium Drill",
+  "Description": "The ultimate drill. Mines anything",
+  "Type": "drill",
+  "Category": "drills",
+  "Sprite": "drill6",
+  "MaxStack": 1,
+  "PowerUsage": 4,
+  "ModelDepth": 3,
+  "Range": 5,
+  "Tier": 6,
+  "Damage": 15,
+  "DrillColor": {
+    "r": 201,
+    "g": 48,
+    "b": 178
+  }
+}

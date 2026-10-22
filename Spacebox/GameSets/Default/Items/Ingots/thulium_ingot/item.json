@@ -1,0 +1,8 @@
+{
+  "ID": "thulium_ingot",
+  "Name": "Thulium Ingot",
+  "Description": "Rare metal for thulium lenses",
+  "Sprite": "thuliumIngot",
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

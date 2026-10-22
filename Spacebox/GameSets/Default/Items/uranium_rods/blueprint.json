@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "uranium_rods",
+    "Quantity": 2
+  },
+  "Ingredients": [
+    {
+      "Item": "uranium_ingot",
+      "Quantity": 1
+    }
+  ]
+}

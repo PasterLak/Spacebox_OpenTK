@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "aluminium_boots",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_ingot",
+      "Quantity": 3
+    },
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 2
+    }
+  ]
+}

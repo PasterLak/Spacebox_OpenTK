@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "cobalt_drill",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_drill",
+      "Quantity": 1
+    },
+    {
+      "Item": "aluminium_drill_bit",
+      "Quantity": 1
+    },
+    {
+      "Item": "cobalt_ingot",
+      "Quantity": 2
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 2
+    }
+  ]
+}

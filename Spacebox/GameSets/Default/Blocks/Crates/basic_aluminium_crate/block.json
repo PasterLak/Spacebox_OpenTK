@@ -1,0 +1,21 @@
+{
+  "ID": "basic_aluminium_crate",
+  "Name": "Basic Aluminium Crate",
+  "Description": "Stores items",
+  "Type": "storage",
+  "Category": "logistics",
+  "PowerToDrill": 1,
+  "Mass": 4,
+  "Durability": 10,
+  "StorageSize": {
+    "x": 8,
+    "y": 3
+  },
+  "Textures": {
+    "Active": {
+      "All": "aluChestSide",
+      "Forward": "aluChestFront",
+      "Up": "aluChestTop"
+    }
+  }
+}

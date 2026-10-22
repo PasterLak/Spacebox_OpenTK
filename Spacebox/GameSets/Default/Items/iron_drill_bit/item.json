@@ -1,0 +1,9 @@
+{
+  "ID": "iron_drill_bit",
+  "Name": "Iron Drill Bit",
+  "Description": "Part for iron drills",
+  "Sprite": "ironDrillBit",
+  "Category": "items",
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

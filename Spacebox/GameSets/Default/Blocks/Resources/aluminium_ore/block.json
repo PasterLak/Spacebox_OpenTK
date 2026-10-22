@@ -1,0 +1,14 @@
+{
+  "ID": "aluminium_ore",
+  "Name": "Aluminium Ore",
+  "Description": "Light metal ore for the first tools and blocks",
+  "Type": "mineral",
+  "PowerToDrill": 1,
+  "Mass": 1,
+  "Durability": 6,
+  "Textures": {
+    "Active": {
+      "All": "aluOre"
+    }
+  }
+}

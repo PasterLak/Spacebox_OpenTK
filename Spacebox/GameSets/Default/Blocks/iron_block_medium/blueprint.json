@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "iron_block_medium",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 2
+    }
+  ]
+}

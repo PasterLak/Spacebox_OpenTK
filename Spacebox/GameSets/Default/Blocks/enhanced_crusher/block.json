@@ -1,0 +1,27 @@
+{
+  "ID": "enhanced_crusher",
+  "Name": "Enhanced Crusher",
+  "Description": "A faster crusher",
+  "Type": "crusher",
+  "Category": "production",
+  "Durability": 10,
+  "Efficiency": 1.2,
+  "PowerToDrill": 3,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "crusherSide2",
+      "Up": "crusherTop2",
+      "Down": "bottom"
+    },
+    "Inactive": {
+      "All": "crusherSide2Off",
+      "Up": "crusherTop2",
+      "Down": "bottom"
+    }
+  }
+}

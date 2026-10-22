@@ -1,0 +1,15 @@
+{
+  "ID": "aluminium_shoulders",
+  "Type": "equipment",
+  "Slot": "Shoulders",
+  "Health": 3,
+  "ExplosionProtection": 2,
+  "Name": "Aluminium Shoulders Armor",
+  "Description": "Light armor",
+  "Category": "equipment",
+  "Sprite": "aluminium_shoulders",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_shoulders.obj",
+  "ArmorTexture": "Models/Armor/armor_aluminium.png"
+}

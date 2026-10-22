@@ -1,0 +1,8 @@
+{
+  "ID": "titanium_ingot",
+  "Name": "Titanium Ingot",
+  "Description": "Strong metal for the best armor and ship parts",
+  "Sprite": "titIngot",
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

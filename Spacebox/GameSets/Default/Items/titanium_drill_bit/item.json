@@ -1,0 +1,9 @@
+{
+  "ID": "titanium_drill_bit",
+  "Name": "Titanium Drill Bit",
+  "Description": "Part for titanium drills",
+  "Sprite": "titDrillBit",
+  "Category": "items",
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

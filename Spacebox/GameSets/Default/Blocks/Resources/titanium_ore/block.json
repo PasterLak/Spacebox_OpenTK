@@ -1,0 +1,14 @@
+{
+  "ID": "titanium_ore",
+  "Name": "Titanium Ore",
+  "Description": "Strong and light metal ore",
+  "Type": "mineral",
+  "PowerToDrill": 4,
+  "Mass": 4,
+  "Durability": 20,
+  "Textures": {
+    "Active": {
+      "All": "titaniumOre"
+    }
+  }
+}

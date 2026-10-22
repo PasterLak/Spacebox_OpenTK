@@ -1,0 +1,13 @@
+{
+  "ID": "picture_ship_flyby",
+  "Name": "Flyby",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_ship_flyby",
+  "Picture": "Pictures/ship_flyby.png",
+  "Width": 2,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

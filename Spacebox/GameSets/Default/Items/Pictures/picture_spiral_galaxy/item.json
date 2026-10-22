@@ -1,0 +1,13 @@
+{
+  "ID": "picture_spiral_galaxy",
+  "Name": "Spiral Galaxy",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_spiral_galaxy",
+  "Picture": "Pictures/spiral_galaxy.png",
+  "Width": 2,
+  "Height": 2,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

@@ -1,0 +1,9 @@
+{
+  "ID": "polymer_fiber",
+  "Name": "Polymer Fiber",
+  "Description": "For clothes and equipment",
+  "Category": "items",
+  "Sprite": "polymer_fiber",
+  "MaxStack": 64,
+  "ModelDepth": 3.0
+}

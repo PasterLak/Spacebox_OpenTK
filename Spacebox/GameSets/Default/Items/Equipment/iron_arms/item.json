@@ -1,0 +1,15 @@
+{
+  "ID": "iron_arms",
+  "Type": "equipment",
+  "Slot": "Arms",
+  "Health": 3,
+  "ExplosionProtection": 3,
+  "Name": "Iron Arms Armor",
+  "Description": "Sturdy iron armor",
+  "Category": "equipment",
+  "Sprite": "iron_arms",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_arms.obj",
+  "ArmorTexture": "Models/Armor/armor_iron.png"
+}

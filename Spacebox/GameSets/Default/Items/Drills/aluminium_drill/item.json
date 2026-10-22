@@ -1,0 +1,20 @@
+{
+  "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
+  "ID": "aluminium_drill",
+  "Name": "Aluminium Drill",
+  "Description": "Your first drill. Mines soft blocks",
+  "Type": "drill",
+  "Category": "drills",
+  "Sprite": "drill1",
+  "MaxStack": 1,
+  "PowerUsage": 7,
+  "ModelDepth": 2,
+  "Range": 2,
+  "Tier": 1,
+  "Damage": 10,
+  "DrillColor": {
+    "r": 118,
+    "g": 135,
+    "b": 214
+  }
+}

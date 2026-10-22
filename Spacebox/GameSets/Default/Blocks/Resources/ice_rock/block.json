@@ -1,0 +1,14 @@
+{
+  "ID": "ice_rock",
+  "Name": "Icy Rock",
+  "Description": "Frozen rock with water ice inside",
+  "Type": "mineral",
+  "PowerToDrill": 1,
+  "Mass": 1,
+  "Durability": 4,
+  "Textures": {
+    "Active": {
+      "All": "iceBlock"
+    }
+  }
+}

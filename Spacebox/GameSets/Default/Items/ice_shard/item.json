@@ -1,0 +1,8 @@
+{
+  "ID": "ice_shard",
+  "Name": "Ice Shard",
+  "Description": "Melts into water",
+  "Sprite": "ice",
+  "MaxStack": 64,
+  "ModelDepth": 1.5
+}

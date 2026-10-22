@@ -1,0 +1,13 @@
+{
+  "ID": "picture_bauhaus",
+  "Name": "Composition I",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_bauhaus",
+  "Picture": "Pictures/bauhaus.png",
+  "Width": 1,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

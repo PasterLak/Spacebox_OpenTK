@@ -1,0 +1,46 @@
+{
+  "ID": "nuclear_power_block",
+  "Name": "Powerful Nuclear Power Block",
+  "Description": "Very strong power source. Explodes when destroyed, protect it with armor",
+  "Type": "generator",
+  "Generator": {
+    "Power": 300
+  },
+  "Explosive": {
+    "Radius": 3,
+    "Penetration": 45,
+    "Damage": 200,
+    "DamageFalloff": true,
+    "PushStrength": 14,
+    "PushRadiusMultiplier": 1.5,
+    "ChainDelay": 0.2,
+    "DropBlocks": false,
+    "DestroyStorageItems": false
+  },
+  "Size": {
+    "x": 2,
+    "y": 3,
+    "z": 2
+  },
+  "Category": "electricity",
+  "PowerToDrill": 3,
+  "Mass": 25,
+  "Durability": 65,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "nuclear_generator",
+      "Up": "wireTop",
+      "Down": "wireTop"
+    },
+    "Inactive": {
+      "All": "nuclear_generatorOff",
+      "Up": "wireTopOff",
+      "Down": "wireTopOff"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "ID": "impulse_rifle",
+  "Name": "Impulse Rifle",
+  "Description": "A high-powered energy rifle",
+  "Type": "weapon",
+  "Category": "weapons",
+  "Sprite": "weapon4",
+  "MaxStack": 1,
+  "ModelDepth": 3,
+  "ReloadTime": 45,
+  "Spread": 7,
+  "AnimationPushback": 30,
+  "Recoil": 200,
+  "AnimationSpeed": 0.25,
+  "PowerUsage": 30,
+  "Projectile": "p_ar",
+  "ShotSound": "ar",
+  "Ammo": "",
+  "GlowColor": {
+    "r": 163,
+    "g": 84,
+    "b": 211
+  }
+}

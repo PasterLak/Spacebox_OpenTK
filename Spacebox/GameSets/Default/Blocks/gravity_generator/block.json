@@ -1,0 +1,75 @@
+{
+  "ID": "gravity_generator",
+  "Name": "Gravity Generator",
+  "Description": "Creates artificial gravity toward its bottom side. Set radius and strength in its window",
+  "Type": "gravity",
+  "Gravity": {
+    "Radius": 32,
+    "MinRadius": 4,
+    "MaxRadius": 512,
+    "Strength": 9.81,
+    "MinStrength": 0.5,
+    "MaxStrength": 30,
+    "Power": 200,
+    "StrengthPowerFactor": 0.25,
+    "MaxRoomCells": 200000,
+    "FallDamage": {
+      "SafeHeight": 5,
+      "DamagePerBlock": 4
+    },
+    "Presets": [
+      {
+        "Name": "Moon",
+        "Strength": 1.62,
+        "FallDamage": {
+          "SafeHeight": 8,
+          "DamagePerBlock": 2
+        }
+      },
+      {
+        "Name": "Mars",
+        "Strength": 3.71,
+        "FallDamage": {
+          "SafeHeight": 6,
+          "DamagePerBlock": 3
+        }
+      },
+      {
+        "Name": "Earth",
+        "Strength": 9.81,
+        "FallDamage": {
+          "SafeHeight": 5,
+          "DamagePerBlock": 4
+        }
+      },
+      {
+        "Name": "Jupiter",
+        "Strength": 24.79,
+        "FallDamage": {
+          "SafeHeight": 3,
+          "DamagePerBlock": 6
+        }
+      }
+    ]
+  },
+  "Category": "other",
+  "PowerToDrill": 1,
+  "Mass": 255,
+  "Durability": 100,
+  "Textures": {
+    "Active": {
+      "All": "gravitySide",
+      "Up": "gravityTop",
+      "Down": "gravityBottom"
+    },
+    "Inactive": {
+      "All": "gravitySideOff",
+      "Up": "gravityTopOff",
+      "Down": "gravityBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

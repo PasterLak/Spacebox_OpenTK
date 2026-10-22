@@ -1,0 +1,15 @@
+{
+  "ID": "iron_shoulders",
+  "Type": "equipment",
+  "Slot": "Shoulders",
+  "Health": 4,
+  "ExplosionProtection": 6,
+  "Name": "Iron Shoulders Armor",
+  "Description": "Sturdy iron armor",
+  "Category": "equipment",
+  "Sprite": "iron_shoulders",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_shoulders.obj",
+  "ArmorTexture": "Models/Armor/armor_iron.png"
+}

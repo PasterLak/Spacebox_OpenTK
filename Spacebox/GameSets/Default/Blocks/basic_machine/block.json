@@ -1,0 +1,13 @@
+{
+  "ID": "basic_machine",
+  "Name": "Basic Machine",
+  "Description": "Machine frame, a part for building machines",
+  "Category": "production",
+  "Mass": 2,
+  "Durability": 5,
+  "Textures": {
+    "Active": {
+      "All": "basicMachine"
+    }
+  }
+}

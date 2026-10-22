@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "sign_steel_wide",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 2
+    }
+  ]
+}

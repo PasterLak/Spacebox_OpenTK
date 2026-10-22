@@ -1,0 +1,9 @@
+{
+  "ID": "titanium_panels",
+  "Name": "Titanium Panels",
+  "Description": "The strongest building material",
+  "Category": "items",
+  "Sprite": "titPanels",
+  "MaxStack": 64,
+  "ModelDepth": 1.0
+}

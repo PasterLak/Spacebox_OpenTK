@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "thruster_weak",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "liquid_hydrogen",
+      "Quantity": 2
+    },
+    {
+      "Item": "aluminium_panels",
+      "Quantity": 4
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 2
+    }
+  ]
+}

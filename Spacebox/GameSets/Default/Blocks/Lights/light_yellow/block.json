@@ -1,0 +1,23 @@
+{
+  "ID": "light_yellow",
+  "Name": "Amber Wall Torch",
+  "Description": "Wall light with an amber glow",
+  "Category": "building",
+  "Model": "torch",
+  "LightColor": {
+    "r": 255,
+    "g": 216,
+    "b": 0
+  },
+  "Textures": {
+    "Active": {
+      "All": "torchYellow",
+      "Up": "torchMetal",
+      "Down": "torchMetal"
+    }
+  },
+  "Sounds": {
+    "Place": "placeMetal2",
+    "Destroy": "blockDestroyGlass"
+  }
+}

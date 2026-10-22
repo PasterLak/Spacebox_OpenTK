@@ -1,0 +1,17 @@
+{
+  "ID": "aluminium_block_light",
+  "Name": "Aluminium Light Block",
+  "Description": "Light hull block",
+  "Category": "building",
+  "PowerToDrill": 1,
+  "Mass": 2,
+  "Durability": 10,
+  "Textures": {
+    "Active": {
+      "All": "aluLight"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceLight"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "titanium_drill",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_drill_bit",
+      "Quantity": 4
+    },
+    {
+      "Item": "titanium_ingot",
+      "Quantity": 6
+    },
+    {
+      "Item": "liquid_hydrogen",
+      "Quantity": 4
+    },
+    {
+      "Item": "uranium_rods",
+      "Quantity": 2
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "titanium_shoulders",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 1
+    }
+  ]
+}

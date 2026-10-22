@@ -1,0 +1,26 @@
+{
+  "ID": "crusher",
+  "Name": "Crusher",
+  "Description": "Crushes ores into dust for more metal",
+  "Type": "crusher",
+  "Category": "production",
+  "Durability": 5,
+  "Efficiency": 0.7,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "crusherSide",
+      "Up": "crusherTop",
+      "Down": "bottom"
+    },
+    "Inactive": {
+      "All": "crusherSideOff",
+      "Up": "crusherTop",
+      "Down": "bottom"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "ID": "aluminium_flashlight",
+  "Type": "equipment",
+  "Slot": "Flashlight",
+  "Name": "Aluminium Flashlight",
+  "Description": "Weak flashlight with a short beam",
+  "Category": "tools",
+  "Sprite": "flashlight2",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Flashlight": {
+    "Intensity": 0.8,
+    "Range": 38,
+    "InnerAngle": 13,
+    "OuterAngle": 22
+  }
+}

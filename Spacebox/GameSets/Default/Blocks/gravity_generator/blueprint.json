@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "gravity_generator",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_panels",
+      "Quantity": 4
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 2
+    },
+    {
+      "Item": "cobalt_lens",
+      "Quantity": 2
+    },
+    {
+      "Item": "obscurium_ingot",
+      "Quantity": 2
+    }
+  ]
+}

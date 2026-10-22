@@ -1,0 +1,14 @@
+{
+  "ID": "iron_block_medium",
+  "Name": "Iron Medium Block",
+  "Description": "Iron armor block",
+  "Category": "building",
+  "PowerToDrill": 3,
+  "Mass": 6,
+  "Durability": 60,
+  "Textures": {
+    "Active": {
+      "All": "ironMedium"
+    }
+  }
+}

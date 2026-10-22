@@ -1,0 +1,19 @@
+{
+  "ID": "cobalt_drill",
+  "Name": "Cobalt Drill",
+  "Description": "A sturdy drill. Mines soft blocks faster",
+  "Type": "drill",
+  "Category": "drills",
+  "Sprite": "drill2",
+  "MaxStack": 1,
+  "PowerUsage": 8,
+  "ModelDepth": 2,
+  "Range": 2.5,
+  "Tier": 2,
+  "Damage": 12,
+  "DrillColor": {
+    "r": 38,
+    "g": 212,
+    "b": 194
+  }
+}

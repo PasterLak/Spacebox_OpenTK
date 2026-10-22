@@ -1,0 +1,17 @@
+{
+  "ID": "titanium_block_light",
+  "Name": "Titanium Light Block",
+  "Description": "Light titanium armor block",
+  "Category": "building",
+  "PowerToDrill": 3,
+  "Mass": 5,
+  "Durability": 80,
+  "Textures": {
+    "Active": {
+      "All": "titLight"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceLight"
+  }
+}

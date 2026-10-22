@@ -1,0 +1,15 @@
+{
+  "ID": "aluminium_boots",
+  "Type": "equipment",
+  "Slot": "Boots",
+  "Health": 2,
+  "ExplosionProtection": 1,
+  "Name": "Aluminium Boots",
+  "Description": "Light armor",
+  "Category": "equipment",
+  "Sprite": "aluminium_boots",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_boots.obj",
+  "ArmorTexture": "Models/Armor/armor_aluminium.png"
+}

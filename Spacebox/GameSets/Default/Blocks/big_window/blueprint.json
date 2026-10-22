@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "big_window",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "glass",
+      "Quantity": 24
+    }
+  ]
+}

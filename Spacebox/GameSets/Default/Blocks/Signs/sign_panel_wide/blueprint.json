@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "sign_panel_wide",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 2
+    },
+    {
+      "Item": "glass",
+      "Quantity": 1
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 1
+    }
+  ]
+}

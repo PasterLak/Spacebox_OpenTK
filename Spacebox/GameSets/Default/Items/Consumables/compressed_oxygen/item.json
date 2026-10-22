@@ -1,0 +1,13 @@
+{
+  "ID": "compressed_oxygen",
+  "Name": "Compressed Oxygen",
+  "Description": "Refills your oxygen",
+  "Category": "consumables",
+  "Type": "consumable",
+  "Sound": "beer",
+  "UseCooldown": 1,
+  "OxygenAmount": 50,
+  "Sprite": "oxygen",
+  "MaxStack": 64,
+  "ModelDepth": 3.0
+}

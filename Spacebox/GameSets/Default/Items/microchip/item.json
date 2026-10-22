@@ -1,0 +1,9 @@
+{
+  "ID": "microchip",
+  "Name": "Microchip",
+  "Description": "Small electronic part for devices",
+  "Category": "items",
+  "Sprite": "microchip",
+  "MaxStack": 64,
+  "ModelDepth": 1.0
+}

@@ -1,0 +1,12 @@
+{
+  "ID": "beer",
+  "Name": "Beer",
+  "Description": "Was added accidentally",
+  "Sprite": "beer",
+  "Type": "consumable",
+  "Sound": "beer",
+  "UseCooldown": 0.7,
+  "HealAmount": 10,
+  "MaxStack": 20,
+  "ModelDepth": 3.0
+}

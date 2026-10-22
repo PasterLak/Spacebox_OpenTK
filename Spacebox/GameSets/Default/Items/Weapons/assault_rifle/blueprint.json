@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "assault_rifle",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "uranium_ingot",
+      "Quantity": 3
+    },
+    {
+      "Item": "thulium_energy_cell",
+      "Quantity": 8
+    }
+  ]
+}

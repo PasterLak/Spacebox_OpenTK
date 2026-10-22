@@ -1,0 +1,32 @@
+{
+  "ID": "ship_console",
+  "Name": "Ship Console",
+  "Description": "Pilot seat. Flies the ship and fires bound blocks",
+  "Type": "shipconsole",
+  "Console": {
+    "Buttons": 8,
+    "Power": 15,
+    "Weapons": false,
+    "Flight": true
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 1,
+  "Durability": 6,
+  "Textures": {
+    "Active": {
+      "All": "shipConsoleWalls",
+      "Up": "shipConsoleTop",
+      "Down": "shipConsoleBottom"
+    },
+    "Inactive": {
+      "All": "shipConsoleWallsOff",
+      "Up": "shipConsoleTopOff",
+      "Down": "shipConsoleBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "ID": "dense_ice_rock",
+  "Name": "Dense Ice Rock",
+  "Description": "Frozen rock with methane ice inside",
+  "Type": "mineral",
+  "PowerToDrill": 2,
+  "Mass": 2,
+  "Durability": 6,
+  "Textures": {
+    "Active": {
+      "All": "iceBlock2"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "claim_beacon",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 8
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 2
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 1
+    }
+  ]
+}

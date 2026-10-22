@@ -1,0 +1,9 @@
+{
+  "ID": "thulium_energy_cell",
+  "Name": "Thulium Energy Cell",
+  "Description": "Stores a lot of energy for advanced devices",
+  "Category": "items",
+  "Sprite": "ThuliumEnergyCells",
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

@@ -1,0 +1,8 @@
+{
+  "ID": "compressed_methane",
+  "Name": "Compressed Methane",
+  "Description": "Raw material for polymer pellets",
+  "Sprite": "methane",
+  "MaxStack": 64,
+  "ModelDepth": 3.0
+}

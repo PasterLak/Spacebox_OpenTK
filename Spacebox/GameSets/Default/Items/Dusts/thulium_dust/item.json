@@ -1,0 +1,8 @@
+{
+  "ID": "thulium_dust",
+  "Name": "Thulium Dust",
+  "Description": "Smelts into a thulium ingot",
+  "Sprite": "thuliumDust",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

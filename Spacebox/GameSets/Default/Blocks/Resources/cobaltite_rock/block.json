@@ -1,0 +1,14 @@
+{
+  "ID": "cobaltite_rock",
+  "Name": "Cobaltite Rock",
+  "Description": "Rock that contains cobalt",
+  "Type": "mineral",
+  "PowerToDrill": 1,
+  "Mass": 1,
+  "Durability": 7,
+  "Textures": {
+    "Active": {
+      "All": "cobaltite"
+    }
+  }
+}

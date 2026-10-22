@@ -1,0 +1,29 @@
+{
+  "ID": "item_pipe_straight",
+  "Name": "Straight Item Pipe",
+  "Description": "Moves items from bottom to top. Put an item into the Filter slot to move only that item",
+  "Type": "pipe",
+  "Pipe": {
+    "TransferInterval": 1,
+    "Power": 5,
+    "OutputSides": [
+      "Up"
+    ]
+  },
+  "Category": "logistics",
+  "PowerToDrill": 1,
+  "Mass": 3,
+  "Durability": 5,
+  "Textures": {
+    "Active": {
+      "All": "pipeStraightSide",
+      "Up": "pipeOutput",
+      "Down": "pipeInput"
+    },
+    "Inactive": {
+      "All": "pipeStraightSideOff",
+      "Up": "pipeOutputOff",
+      "Down": "pipeInputOff"
+    }
+  }
+}

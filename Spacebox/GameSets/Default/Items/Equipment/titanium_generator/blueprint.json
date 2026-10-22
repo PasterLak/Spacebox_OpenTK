@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "titanium_generator",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "thulium_energy_cell",
+      "Quantity": 2
+    }
+  ]
+}

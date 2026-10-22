@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "basic_generator",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 2
+    }
+  ]
+}

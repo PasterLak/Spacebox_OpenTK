@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "iron_drill",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "cobalt_drill",
+      "Quantity": 1
+    },
+    {
+      "Item": "iron_drill_bit",
+      "Quantity": 1
+    },
+    {
+      "Item": "iron_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 4
+    }
+  ]
+}

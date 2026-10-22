@@ -1,0 +1,17 @@
+{
+  "ID": "cobalt_flashlight",
+  "Type": "equipment",
+  "Slot": "Flashlight",
+  "Name": "Iron Flashlight",
+  "Description": "Standard flashlight",
+  "Category": "tools",
+  "Sprite": "iron_flashlight",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Flashlight": {
+    "Intensity": 1.0,
+    "Range": 50,
+    "InnerAngle": 15,
+    "OuterAngle": 25
+  }
+}

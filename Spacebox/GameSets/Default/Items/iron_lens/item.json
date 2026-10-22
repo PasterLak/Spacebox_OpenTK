@@ -1,0 +1,9 @@
+{
+  "ID": "iron_lens",
+  "Name": "Iron Lens",
+  "Description": "A sturdy iron lens",
+  "Category": "items",
+  "Sprite": "ironLens",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

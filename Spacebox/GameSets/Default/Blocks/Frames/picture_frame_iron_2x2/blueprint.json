@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "picture_frame_iron_2x2",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 3
+    }
+  ]
+}

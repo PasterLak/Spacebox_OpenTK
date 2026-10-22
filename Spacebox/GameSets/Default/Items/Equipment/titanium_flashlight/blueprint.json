@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "titanium_flashlight",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_ingot",
+      "Quantity": 3
+    },
+    {
+      "Item": "thulium_lens",
+      "Quantity": 1
+    }
+  ]
+}

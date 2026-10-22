@@ -1,0 +1,32 @@
+{
+  "ID": "cannon_console",
+  "Name": "Cannon Console",
+  "Description": "Gunner seat. Aims and fires bound cannons",
+  "Type": "shipconsole",
+  "Console": {
+    "Buttons": 1,
+    "Power": 15,
+    "Weapons": true,
+    "Flight": false
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 1,
+  "Durability": 6,
+  "Textures": {
+    "Active": {
+      "All": "cannonConsoleWalls",
+      "Up": "cannonConsoleTop",
+      "Down": "cannonConsoleBottom"
+    },
+    "Inactive": {
+      "All": "cannonConsoleWallsOff",
+      "Up": "cannonConsoleTopOff",
+      "Down": "cannonConsoleBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

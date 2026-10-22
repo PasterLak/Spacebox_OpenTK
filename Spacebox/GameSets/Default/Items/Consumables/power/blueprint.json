@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "power",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "energy_cell",
+      "Quantity": 1
+    },
+    {
+      "Item": "liquid_hydrogen",
+      "Quantity": 1
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "ID": "picture_composition",
+  "Name": "Composition II",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_composition",
+  "Picture": "Pictures/composition.png",
+  "Width": 2,
+  "Height": 2,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

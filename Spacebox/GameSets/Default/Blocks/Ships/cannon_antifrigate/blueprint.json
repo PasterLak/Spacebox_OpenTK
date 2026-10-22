@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "cannon_antifrigate",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_panels",
+      "Quantity": 24
+    },
+    {
+      "Item": "uranium_rods",
+      "Quantity": 6
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 6
+    },
+    {
+      "Item": "obscurium_ingot",
+      "Quantity": 2
+    }
+  ]
+}

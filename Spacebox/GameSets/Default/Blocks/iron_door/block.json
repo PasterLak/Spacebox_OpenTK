@@ -1,0 +1,38 @@
+{
+  "ID": "iron_door",
+  "Name": "Iron Door",
+  "Description": "Sturdy sliding door",
+  "Type": "door",
+  "Category": "building",
+  "PowerToDrill": 1,
+  "Mass": 3,
+  "Durability": 12,
+  "Door": {
+    "MoveDirection": "Right",
+    "Speed": 1.6,
+    "OpenTime": 3,
+    "AutoClose": true,
+    "OpenSound": "ironDoorOpen2",
+    "CloseSound": "ironDoorClose2"
+  },
+  "Size": {
+    "x": 2,
+    "y": 2,
+    "z": 1
+  },
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "ironMedium",
+      "Forward": "doorIron",
+      "Back": "doorIron"
+    }
+  },
+  "Sounds": {
+    "Place": "placeMetal"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "ID": "item_pipe",
+  "Name": "Item Pipe",
+  "Description": "Moves items from the bottom side to all other sides. Put an item into the Filter slot to move only that item",
+  "Type": "pipe",
+  "Pipe": {
+    "TransferInterval": 1,
+    "Power": 5,
+    "OutputSides": [
+      "Up",
+      "Left",
+      "Right",
+      "Forward",
+      "Back"
+    ]
+  },
+  "Category": "logistics",
+  "PowerToDrill": 1,
+  "Mass": 3,
+  "Durability": 5,
+  "Textures": {
+    "Active": {
+      "All": "pipeOutput",
+      "Down": "pipeInput"
+    },
+    "Inactive": {
+      "All": "pipeOutputOff",
+      "Down": "pipeInputOff"
+    }
+  }
+}

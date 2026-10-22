@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "standard_nuclear_power_block",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 3
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 1
+    },
+    {
+      "Item": "uranium_rods",
+      "Quantity": 3
+    }
+  ]
+}

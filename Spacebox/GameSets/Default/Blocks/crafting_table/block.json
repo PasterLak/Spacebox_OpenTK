@@ -1,0 +1,21 @@
+{
+  "ID": "crafting_table",
+  "Name": "Crafting Table",
+  "Description": "Crafts tools, items and blocks",
+  "Category": "production",
+  "Type": "craftingtable",
+  "Mass": 1,
+  "Durability": 5,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "craftSide",
+      "Up": "craftTop",
+      "Down": "bottom"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "crusher",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "basic_machine",
+      "Quantity": 1
+    },
+    {
+      "Item": "iron_drill_bit",
+      "Quantity": 4
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 2
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "ID": "aluminium_drill_bit",
+  "Name": "Aluminium Drill Bit",
+  "Description": "Part for aluminium drills",
+  "Sprite": "aluDrillBit",
+  "Category": "items",
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

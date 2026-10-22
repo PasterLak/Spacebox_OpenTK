@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "dna_reconstructor",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "microchip",
+      "Quantity": 4
+    },
+    {
+      "Item": "thulium_lens",
+      "Quantity": 4
+    },
+    {
+      "Item": "aluminium_panels",
+      "Quantity": 8
+    },
+    {
+      "Item": "med_kit",
+      "Quantity": 2
+    }
+  ]
+}

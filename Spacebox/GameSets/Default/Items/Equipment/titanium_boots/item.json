@@ -1,0 +1,15 @@
+{
+  "ID": "titanium_boots",
+  "Type": "equipment",
+  "Slot": "Boots",
+  "Health": 4,
+  "ExplosionProtection": 5,
+  "Name": "Titanium Boots",
+  "Description": "Light and very strong titanium armor",
+  "Category": "equipment",
+  "Sprite": "titanium_boots",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_boots.obj",
+  "ArmorTexture": "Models/Armor/armor_titanium.png"
+}

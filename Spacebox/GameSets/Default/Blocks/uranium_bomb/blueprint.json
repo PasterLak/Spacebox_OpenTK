@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "uranium_bomb",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "uranium_rods",
+      "Quantity": 2
+    },
+    {
+      "Item": "cobalt_bomb",
+      "Quantity": 2
+    },
+    {
+      "Item": "titanium_panels",
+      "Quantity": 2
+    }
+  ]
+}

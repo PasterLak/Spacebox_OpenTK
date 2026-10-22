@@ -1,0 +1,13 @@
+{
+  "ID": "picture_asteroid_belt",
+  "Name": "Asteroid Belt",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_asteroid_belt",
+  "Picture": "Pictures/asteroid_belt.png",
+  "Width": 2,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

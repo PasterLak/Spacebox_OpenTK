@@ -1,0 +1,32 @@
+{
+  "ID": "picture_frame_plastic_2x2",
+  "Name": "Large Plastic Picture Frame",
+  "Description": "Hang a picture in it, open it to change the picture",
+  "Type": "frame",
+  "Category": "decor",
+  "CellPixels": 32,
+  "Textures": {
+    "Active": {
+      "All": "framePlasticEdge",
+      "Up": "framePlastic2x2",
+      "Down": "framePlasticEdge"
+    }
+  },
+  "Frame": {
+    "Width": 2,
+    "Height": 2,
+    "Pictures": [
+      "picture_spiral_galaxy",
+      "picture_composition",
+      "picture_lone_beacon",
+      "picture_hypnosis",
+      "picture_star_whale",
+      "picture_moon_phases",
+      "picture_lone_door",
+      "picture_book_tree"
+    ]
+  },
+  "Sounds": {
+    "Place": "blockPlaceLight"
+  }
+}

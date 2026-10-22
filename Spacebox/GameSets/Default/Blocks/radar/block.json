@@ -1,0 +1,25 @@
+{
+  "ID": "radar",
+  "Name": "Radar",
+  "Description": "Shows asteroids and ships around it",
+  "Type": "radar",
+  "Category": "other",
+  "Durability": 5,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "electricalSide",
+      "Up": "radar",
+      "Down": "generatorDown"
+    },
+    "Inactive": {
+      "All": "electricalSideOff",
+      "Up": "radarOff",
+      "Down": "generatorDownOff"
+    }
+  }
+}

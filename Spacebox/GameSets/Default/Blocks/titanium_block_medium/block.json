@@ -1,0 +1,14 @@
+{
+  "ID": "titanium_block_medium",
+  "Name": "Titanium Medium Block",
+  "Description": "Titanium armor block",
+  "Category": "building",
+  "PowerToDrill": 4,
+  "Mass": 8,
+  "Durability": 100,
+  "Textures": {
+    "Active": {
+      "All": "titMedium"
+    }
+  }
+}

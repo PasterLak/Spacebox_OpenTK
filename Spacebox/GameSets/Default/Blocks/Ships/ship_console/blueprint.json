@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "ship_console",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "basic_machine",
+      "Quantity": 1
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 2
+    },
+    {
+      "Item": "glass",
+      "Quantity": 2
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "picture_book_tree",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 3
+    },
+    {
+      "Item": "cobalt_dust",
+      "Quantity": 2
+    },
+    {
+      "Item": "titanium_dust",
+      "Quantity": 1
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "enhanced_furnace",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "furnace",
+      "Quantity": 1
+    },
+    {
+      "Item": "iron_panels",
+      "Quantity": 4
+    },
+    {
+      "Item": "thulium_energy_cell",
+      "Quantity": 6
+    }
+  ]
+}

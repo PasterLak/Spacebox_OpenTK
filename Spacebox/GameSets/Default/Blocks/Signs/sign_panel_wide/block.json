@@ -1,0 +1,26 @@
+{
+  "ID": "sign_panel_wide",
+  "Name": "Info Panel",
+  "Description": "Dark wide panel with glowing text, good for spawn and base information",
+  "Type": "sign",
+  "Category": "building",
+  "CellPixels": 32,
+  "Textures": {
+    "Active": {
+      "All": "signPanelEdge",
+      "Up": "signPanelWide",
+      "Down": "signPanelEdge"
+    }
+  },
+  "Sign": {
+    "Width": 2,
+    "MaxLines": 5,
+    "MaxLineLength": 120,
+    "TextColor": "#6ed2e6",
+    "Glow": true,
+    "ViewDistance": 64
+  },
+  "Sounds": {
+    "Place": "placeMetal2"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "ID": "aluminium_arms",
+  "Type": "equipment",
+  "Slot": "Arms",
+  "Health": 2,
+  "ExplosionProtection": 1,
+  "Name": "Aluminium Arms Armor",
+  "Description": "Light armor",
+  "Category": "equipment",
+  "Sprite": "aluminium_arms",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_arms.obj",
+  "ArmorTexture": "Models/Armor/armor_aluminium.png"
+}

@@ -1,0 +1,15 @@
+{
+  "ID": "aluminium_legs",
+  "Type": "equipment",
+  "Slot": "Legs",
+  "Health": 4,
+  "ExplosionProtection": 2,
+  "Name": "Aluminium Legs Armor",
+  "Description": "Light armor",
+  "Category": "equipment",
+  "Sprite": "aluminium_legs",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_legs.obj",
+  "ArmorTexture": "Models/Armor/armor_aluminium.png"
+}

@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "enhanced_crusher",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "crusher",
+      "Quantity": 1
+    },
+    {
+      "Item": "titanium_drill_bit",
+      "Quantity": 4
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 2
+    },
+    {
+      "Item": "thulium_energy_cell",
+      "Quantity": 2
+    }
+  ]
+}

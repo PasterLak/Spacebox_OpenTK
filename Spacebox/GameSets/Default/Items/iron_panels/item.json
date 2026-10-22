@@ -1,0 +1,9 @@
+{
+  "ID": "iron_panels",
+  "Name": "Iron Panels",
+  "Description": "Strong building material",
+  "Category": "items",
+  "Sprite": "ironPanels",
+  "MaxStack": 64,
+  "ModelDepth": 1.0
+}

@@ -1,0 +1,15 @@
+{
+  "ID": "iron_scanner",
+  "Type": "equipment",
+  "Slot": "Scanner",
+  "Name": "Iron Radar",
+  "Description": "Shows asteroids and your markers, also their mass",
+  "Category": "tools",
+  "Sprite": "iron_scanner",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Radar": {
+    "Range": 1000,
+    "ShowMass": true
+  }
+}

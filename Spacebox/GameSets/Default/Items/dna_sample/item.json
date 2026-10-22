@@ -1,0 +1,9 @@
+{
+  "ID": "dna_sample",
+  "Name": "DNA Sample",
+  "Description": "Lets a DNA reconstructor revive you",
+  "Category": "items",
+  "Sprite": "dna",
+  "MaxStack": 8,
+  "ModelDepth": 2.0
+}

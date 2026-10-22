@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "smg",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "cobalt_lens",
+      "Quantity": 2
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 6
+    }
+  ]
+}

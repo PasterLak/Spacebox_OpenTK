@@ -1,0 +1,23 @@
+{
+  "ID": "light_green",
+  "Name": "Emerald Wall Torch",
+  "Description": "Wall light with a green glow",
+  "Category": "building",
+  "Model": "torch",
+  "LightColor": {
+    "r": 5,
+    "g": 255,
+    "b": 5
+  },
+  "Textures": {
+    "Active": {
+      "All": "torchGreen",
+      "Up": "torchMetal",
+      "Down": "torchMetal"
+    }
+  },
+  "Sounds": {
+    "Place": "placeMetal2",
+    "Destroy": "blockDestroyGlass"
+  }
+}

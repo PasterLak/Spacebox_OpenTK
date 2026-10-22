@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "radar",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "basic_machine",
+      "Quantity": 1
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 2
+    },
+    {
+      "Item": "thulium_lens",
+      "Quantity": 6
+    }
+  ]
+}

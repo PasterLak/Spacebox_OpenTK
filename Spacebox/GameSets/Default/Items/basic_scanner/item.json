@@ -1,0 +1,15 @@
+{
+  "ID": "basic_scanner",
+  "Type": "equipment",
+  "Slot": "Scanner",
+  "Name": "Aluminium Radar",
+  "Description": "Shows asteroids and your markers",
+  "Category": "tools",
+  "Sprite": "scanner1",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Radar": {
+    "Range": 1000,
+    "ShowMass": false
+  }
+}

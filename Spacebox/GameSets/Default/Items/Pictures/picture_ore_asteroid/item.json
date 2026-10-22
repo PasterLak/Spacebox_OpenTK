@@ -1,0 +1,13 @@
+{
+  "ID": "picture_ore_asteroid",
+  "Name": "Ore Asteroid",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_ore_asteroid",
+  "Picture": "Pictures/ore_asteroid.png",
+  "Width": 1,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

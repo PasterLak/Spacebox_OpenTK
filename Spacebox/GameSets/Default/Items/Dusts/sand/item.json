@@ -1,0 +1,8 @@
+{
+  "ID": "sand",
+  "Name": "Sand",
+  "Description": "Melts into glass",
+  "Sprite": "sand",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

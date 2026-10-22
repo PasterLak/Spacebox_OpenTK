@@ -1,0 +1,45 @@
+{
+  "ID": "cannon_antifrigate",
+  "Name": "Anti-Frigate Gun",
+  "Description": "Plasma cannon against big ships. Bind it to a console",
+  "Type": "cannon",
+  "Cannon": {
+    "Projectile": "p_cannon_plasma",
+    "ReloadTime": 1000,
+    "ShotSound": "ar",
+    "BarrelLength": 2.5,
+    "AimCone": 60,
+    "TurnSpeed": 180,
+    "Power": 300
+  },
+  "Size": {
+    "x": 2,
+    "y": 4,
+    "z": 2
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 50,
+  "Durability": 120,
+  "FrontDirection": {
+    "x": 0,
+    "y": 1,
+    "z": 0
+  },
+  "Textures": {
+    "Active": {
+      "All": "cannonAntiFrigateWalls",
+      "Up": "cannonAntiFrigateTop",
+      "Down": "cannonAntiFrigateBottom"
+    },
+    "Inactive": {
+      "All": "cannonAntiFrigateWallsOff",
+      "Up": "cannonAntiFrigateTopOff",
+      "Down": "cannonAntiFrigateBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

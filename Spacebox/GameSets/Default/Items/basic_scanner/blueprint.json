@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "basic_scanner",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_ingot",
+      "Quantity": 3
+    },
+    {
+      "Item": "glass",
+      "Quantity": 1
+    }
+  ]
+}

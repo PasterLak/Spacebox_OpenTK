@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "basic_iron_crate",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 3
+    }
+  ]
+}

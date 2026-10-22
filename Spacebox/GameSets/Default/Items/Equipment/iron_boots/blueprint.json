@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "iron_boots",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_ingot",
+      "Quantity": 3
+    },
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 2
+    }
+  ]
+}

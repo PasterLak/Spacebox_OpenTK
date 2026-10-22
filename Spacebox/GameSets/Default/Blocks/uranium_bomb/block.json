@@ -1,0 +1,31 @@
+{
+  "ID": "uranium_bomb",
+  "Name": "Uranium Bomb",
+  "Description": "Huge explosion when shot. Keep your distance",
+  "Type": "explosive",
+  "Explosive": {
+    "Radius": 12,
+    "Penetration": 180,
+    "Damage": 200,
+    "DamageFalloff": false,
+    "PushStrength": 35,
+    "PushRadiusMultiplier": 2,
+    "ChainDelay": 0.15,
+    "DropBlocks": false,
+    "DestroyStorageItems": false
+  },
+  "Category": "weapons",
+  "Mass": 12,
+  "Durability": 10,
+  "Textures": {
+    "Active": {
+      "All": "uraniumBombSide",
+      "Up": "bottom",
+      "Down": "bottom"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

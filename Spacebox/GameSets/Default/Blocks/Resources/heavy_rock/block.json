@@ -1,0 +1,17 @@
+{
+  "ID": "heavy_rock",
+  "Name": "Heavy Rock",
+  "Description": "Dense rock, needs a strong drill",
+  "Type": "mineral",
+  "PowerToDrill": 5,
+  "Mass": 10,
+  "Durability": 15,
+  "Textures": {
+    "Active": {
+      "All": "heavyRock"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy"
+  }
+}

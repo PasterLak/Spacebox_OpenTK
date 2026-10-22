@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "iron_door",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 8
+    }
+  ]
+}

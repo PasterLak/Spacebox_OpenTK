@@ -1,0 +1,9 @@
+{
+  "ID": "energy_cell",
+  "Name": "Cobalt Energy Cell",
+  "Description": "Stores energy for devices and machines",
+  "Category": "items",
+  "Sprite": "energyCells",
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

@@ -1,0 +1,14 @@
+{
+  "ID": "uranium_ore",
+  "Name": "Uranium Ore",
+  "Description": "Radioactive ore for nuclear power",
+  "Type": "mineral",
+  "PowerToDrill": 4,
+  "Mass": 1,
+  "Durability": 14,
+  "Textures": {
+    "Active": {
+      "All": "greenOre"
+    }
+  }
+}

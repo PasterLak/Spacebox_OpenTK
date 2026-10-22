@@ -1,0 +1,14 @@
+{
+  "ID": "thulium_ore",
+  "Name": "Thulium Ore",
+  "Description": "Rare ore for advanced technology. Crush it before smelting",
+  "Type": "mineral",
+  "PowerToDrill": 3,
+  "Mass": 4,
+  "Durability": 12,
+  "Textures": {
+    "Active": {
+      "All": "yellowOre"
+    }
+  }
+}

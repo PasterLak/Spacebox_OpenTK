@@ -1,0 +1,21 @@
+{
+  "ID": "basic_iron_crate",
+  "Name": "Basic Iron Crate",
+  "Description": "Stores items, tougher than aluminium",
+  "Type": "storage",
+  "Category": "logistics",
+  "PowerToDrill": 2,
+  "Mass": 8,
+  "Durability": 20,
+  "StorageSize": {
+    "x": 8,
+    "y": 3
+  },
+  "Textures": {
+    "Active": {
+      "All": "ironChestSide",
+      "Forward": "ironChestFront",
+      "Up": "ironChestTop"
+    }
+  }
+}

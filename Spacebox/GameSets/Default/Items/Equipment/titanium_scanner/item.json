@@ -1,0 +1,15 @@
+{
+  "ID": "titanium_scanner",
+  "Type": "equipment",
+  "Slot": "Scanner",
+  "Name": "Titanium Radar",
+  "Description": "Shows asteroids, markers and mass at a longer range",
+  "Category": "tools",
+  "Sprite": "titanium_scanner",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Radar": {
+    "Range": 1200,
+    "ShowMass": true
+  }
+}

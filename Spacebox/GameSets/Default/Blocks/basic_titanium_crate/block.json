@@ -1,0 +1,21 @@
+{
+  "ID": "basic_titanium_crate",
+  "Name": "Basic Titanium Crate",
+  "Description": "Stores items, very tough",
+  "Type": "storage",
+  "Category": "logistics",
+  "PowerToDrill": 3,
+  "Mass": 6,
+  "Durability": 30,
+  "StorageSize": {
+    "x": 8,
+    "y": 3
+  },
+  "Textures": {
+    "Active": {
+      "All": "aluChestSide",
+      "Up": "aluChestTop",
+      "Down": "aluChestTop"
+    }
+  }
+}

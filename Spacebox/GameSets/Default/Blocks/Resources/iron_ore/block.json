@@ -1,0 +1,14 @@
+{
+  "ID": "iron_ore",
+  "Name": "Iron Ore",
+  "Description": "Common metal ore for building",
+  "Type": "mineral",
+  "PowerToDrill": 2,
+  "Mass": 2,
+  "Durability": 8,
+  "Textures": {
+    "Active": {
+      "All": "ironOre"
+    }
+  }
+}

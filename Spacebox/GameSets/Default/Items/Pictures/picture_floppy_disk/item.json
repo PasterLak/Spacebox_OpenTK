@@ -1,0 +1,13 @@
+{
+  "ID": "picture_floppy_disk",
+  "Name": "Floppy Disk",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_floppy_disk",
+  "Picture": "Pictures/floppy_disk.png",
+  "Width": 1,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

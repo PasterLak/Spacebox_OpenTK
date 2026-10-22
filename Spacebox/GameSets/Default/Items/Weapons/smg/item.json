@@ -1,0 +1,19 @@
+{
+  "ID": "smg",
+  "Name": "SMG",
+  "Description": "A rapid-fire submachine gun",
+  "Type": "weapon",
+  "Category": "weapons",
+  "Sprite": "weapon2",
+  "MaxStack": 1,
+  "ModelDepth": 2,
+  "ReloadTime": 7,
+  "Spread": 35,
+  "AnimationPushback": 20,
+  "Recoil": 5,
+  "AnimationSpeed": 0.5,
+  "PowerUsage": 5,
+  "Projectile": "p_smg",
+  "ShotSound": "pistole3",
+  "Ammo": ""
+}

@@ -1,0 +1,15 @@
+{
+  "ID": "titanium_arms",
+  "Type": "equipment",
+  "Slot": "Arms",
+  "Health": 4,
+  "ExplosionProtection": 5,
+  "Name": "Titanium Arms Armor",
+  "Description": "Light and very strong titanium armor",
+  "Category": "equipment",
+  "Sprite": "titanium_arms",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_arms.obj",
+  "ArmorTexture": "Models/Armor/armor_titanium.png"
+}

@@ -1,0 +1,15 @@
+{
+  "ID": "aluminium_chest",
+  "Type": "equipment",
+  "Slot": "Chest",
+  "Health": 5,
+  "ExplosionProtection": 3,
+  "Name": "Aluminium Chest Armor",
+  "Description": "Light armor",
+  "Category": "equipment",
+  "Sprite": "aluminium_chest",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_chest.obj",
+  "ArmorTexture": "Models/Armor/armor_aluminium.png"
+}

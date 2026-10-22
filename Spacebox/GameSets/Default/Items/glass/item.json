@@ -1,0 +1,8 @@
+{
+  "ID": "glass",
+  "Name": "Glass",
+  "Description": "Transparent material for windows and lenses",
+  "Sprite": "glass",
+  "MaxStack": 64,
+  "ModelDepth": 1.5
+}

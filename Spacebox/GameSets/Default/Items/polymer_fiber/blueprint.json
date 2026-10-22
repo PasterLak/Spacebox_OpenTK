@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "polymer_fiber",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "polymer_pellets",
+      "Quantity": 4
+    }
+  ]
+}

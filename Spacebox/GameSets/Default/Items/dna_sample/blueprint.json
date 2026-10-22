@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "dna_sample",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "med_kit",
+      "Quantity": 1
+    },
+    {
+      "Item": "water",
+      "Quantity": 1
+    },
+    {
+      "Item": "glass",
+      "Quantity": 1
+    },
+    {
+      "Item": "$health",
+      "Quantity": 15
+    }
+  ]
+}

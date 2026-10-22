@@ -1,0 +1,9 @@
+{
+  "ID": "thulium_lens",
+  "Name": "Thulium Lens",
+  "Description": "A precise lens for advanced devices",
+  "Category": "items",
+  "Sprite": "thuliumLens",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

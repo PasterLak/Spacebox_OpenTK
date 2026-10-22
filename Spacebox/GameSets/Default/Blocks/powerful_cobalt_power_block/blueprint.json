@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "powerful_cobalt_power_block",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "cobalt_power_block",
+      "Quantity": 3
+    }
+  ]
+}

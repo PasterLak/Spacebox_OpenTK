@@ -1,0 +1,24 @@
+{
+  "ID": "furnace",
+  "Name": "Furnace",
+  "Description": "Smelts ores and dust into ingots",
+  "Type": "furnace",
+  "Category": "production",
+  "Mass": 2,
+  "Durability": 7,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "bottom",
+      "Forward": "furnace"
+    },
+    "Inactive": {
+      "All": "bottom",
+      "Forward": "furnaceOff"
+    }
+  }
+}

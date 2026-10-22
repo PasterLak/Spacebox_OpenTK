@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "aluminium_chest",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "aluminium_ingot",
+      "Quantity": 12
+    },
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 6
+    }
+  ]
+}

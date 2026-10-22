@@ -1,0 +1,13 @@
+{
+  "ID": "med_kit",
+  "Name": "Med Kit",
+  "Description": "Heals you",
+  "Sprite": "health3",
+  "Type": "consumable",
+  "Category": "consumables",
+  "Sound": "heal",
+  "UseCooldown": 1.5,
+  "HealAmount": 50,
+  "MaxStack": 64,
+  "ModelDepth": 2.0
+}

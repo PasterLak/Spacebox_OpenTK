@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "cobalt_flashlight",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_ingot",
+      "Quantity": 3
+    },
+    {
+      "Item": "cobalt_lens",
+      "Quantity": 1
+    }
+  ]
+}

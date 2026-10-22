@@ -1,0 +1,41 @@
+{
+  "ID": "thruster_ion",
+  "Name": "Standard Ion Thruster",
+  "Description": "Very strong thruster for big ships",
+  "Type": "thruster",
+  "Thruster": {
+    "Force": 1200,
+    "Power": 75,
+    "NozzleLength": 2
+  },
+  "Size": {
+    "x": 2,
+    "y": 2,
+    "z": 2
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 40,
+  "Durability": 80,
+  "FrontDirection": {
+    "x": 0,
+    "y": 1,
+    "z": 0
+  },
+  "Textures": {
+    "Active": {
+      "All": "thrusterIonWalls",
+      "Up": "thrusterIonTop",
+      "Down": "thrusterIonBottom"
+    },
+    "Inactive": {
+      "All": "thrusterIonWallsOff",
+      "Up": "thrusterIonTopOff",
+      "Down": "thrusterIonBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

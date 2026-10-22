@@ -1,0 +1,13 @@
+{
+  "ID": "picture_book_tree",
+  "Name": "Book Tree",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_book_tree",
+  "Picture": "Pictures/book_tree.png",
+  "Width": 2,
+  "Height": 2,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

@@ -1,0 +1,15 @@
+{
+  "ID": "iron_legs",
+  "Type": "equipment",
+  "Slot": "Legs",
+  "Health": 6,
+  "ExplosionProtection": 6,
+  "Name": "Iron Legs Armor",
+  "Description": "Sturdy iron armor",
+  "Category": "equipment",
+  "Sprite": "iron_legs",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "ArmorModel": "Models/Armor/armor_legs.obj",
+  "ArmorTexture": "Models/Armor/armor_iron.png"
+}

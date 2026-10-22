@@ -1,0 +1,8 @@
+{
+  "ID": "methane_ice_shard",
+  "Name": "Methane Ice",
+  "Description": "Smelts into compressed methane",
+  "Sprite": "methane_ice",
+  "MaxStack": 64,
+  "ModelDepth": 1.5
+}

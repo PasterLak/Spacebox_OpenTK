@@ -1,0 +1,20 @@
+{
+  "Product": {
+    "Item": "picture_lone_beacon",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "polymer_fiber",
+      "Quantity": 3
+    },
+    {
+      "Item": "cobalt_dust",
+      "Quantity": 2
+    },
+    {
+      "Item": "titanium_dust",
+      "Quantity": 1
+    }
+  ]
+}

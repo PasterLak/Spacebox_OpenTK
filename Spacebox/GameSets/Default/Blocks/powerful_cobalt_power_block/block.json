@@ -1,0 +1,35 @@
+{
+  "ID": "powerful_cobalt_power_block",
+  "Name": "Powerful Cobalt Power Block",
+  "Description": "Makes more power in less space",
+  "Type": "generator",
+  "Generator": {
+    "Power": 125
+  },
+  "Size": {
+    "x": 1,
+    "y": 2,
+    "z": 1
+  },
+  "Category": "electricity",
+  "PowerToDrill": 1,
+  "Mass": 8,
+  "Durability": 20,
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "powerfulCobaltGenerator",
+      "Up": "generatorDown",
+      "Down": "generatorDown"
+    },
+    "Inactive": {
+      "All": "powerfulCobaltGeneratorOff",
+      "Up": "generatorDownOff",
+      "Down": "generatorDownOff"
+    }
+  }
+}

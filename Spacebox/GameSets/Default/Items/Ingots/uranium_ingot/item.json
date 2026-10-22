@@ -1,0 +1,13 @@
+{
+  "ID": "uranium_ingot",
+  "Name": "Uranium Ingot",
+  "Description": "Radioactive metal for fuel rods",
+  "Sprite": "uranIngot",
+  "MaxStack": 64,
+  "ModelDepth": 1.0,
+  "GlowColor": {
+    "r": 50,
+    "g": 255,
+    "b": 50
+  }
+}

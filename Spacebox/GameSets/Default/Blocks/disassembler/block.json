@@ -1,0 +1,29 @@
+{
+  "ID": "disassembler",
+  "Name": "Disassembler",
+  "Description": "Takes items apart into their materials",
+  "Type": "disassembler",
+  "Category": "production",
+  "Durability": 5,
+  "Efficiency": 1.0,
+  "Disassembler": {
+    "Power": 40
+  },
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "Textures": {
+    "Active": {
+      "All": "disassemblerSide",
+      "Up": "disassemblerTop2",
+      "Down": "bottom"
+    },
+    "Inactive": {
+      "All": "disassemblerSideOff",
+      "Up": "disassemblerTop2",
+      "Down": "bottom"
+    }
+  }
+}

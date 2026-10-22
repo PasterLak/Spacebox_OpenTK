@@ -1,0 +1,12 @@
+{
+  "ID": "basic_generator",
+  "Type": "equipment",
+  "Slot": "PowerGenerator",
+  "Name": "Aluminium Power Generator",
+  "Description": "Raises your maximum power",
+  "Category": "equipment",
+  "Sprite": "generator1",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Power": 10
+}

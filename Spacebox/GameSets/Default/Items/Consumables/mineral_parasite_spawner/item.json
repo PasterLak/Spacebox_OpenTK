@@ -1,0 +1,11 @@
+{
+  "ID": "mineral_parasite_spawner",
+  "Name": "Mineral Parasite Larva",
+  "Description": "Use it to release a mineral parasite",
+  "Type": "mob_spawner",
+  "Sprite": "mineralParasiteSpawner",
+  "Mob": "mineral_parasite",
+  "UseCooldown": 0.5,
+  "MaxStack": 16,
+  "ModelDepth": 2.0
+}

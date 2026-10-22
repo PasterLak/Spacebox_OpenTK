@@ -1,0 +1,29 @@
+{
+  "ID": "ship_camera",
+  "Name": "Ship Camera",
+  "Description": "Bind it to a console to look through it while piloting",
+  "Type": "shipcamera",
+  "ShipCamera": {
+    "Power": 15
+  },
+  "Category": "ships",
+  "PowerToDrill": 2,
+  "Mass": 1,
+  "Durability": 40,
+  "Textures": {
+    "Active": {
+      "All": "shipCameraWalls",
+      "Up": "shipCameraTop",
+      "Down": "shipCameraBottom"
+    },
+    "Inactive": {
+      "All": "shipCameraWallsOff",
+      "Up": "shipCameraTopOff",
+      "Down": "shipCameraBottomOff"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy",
+    "Destroy": "blockPlaceHeavy"
+  }
+}

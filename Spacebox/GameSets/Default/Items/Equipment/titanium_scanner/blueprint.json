@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "titanium_scanner",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_ingot",
+      "Quantity": 4
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 2
+    }
+  ]
+}

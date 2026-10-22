@@ -1,0 +1,8 @@
+{
+  "ID": "paint",
+  "Name": "Paint",
+  "Description": "Decorative paint",
+  "Sprite": "paint",
+  "MaxStack": 1,
+  "ModelDepth": 3.0
+}

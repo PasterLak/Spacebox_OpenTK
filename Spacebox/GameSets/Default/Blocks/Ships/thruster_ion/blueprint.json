@@ -1,0 +1,24 @@
+{
+  "Product": {
+    "Item": "thruster_ion",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "titanium_panels",
+      "Quantity": 16
+    },
+    {
+      "Item": "thulium_energy_cell",
+      "Quantity": 8
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 4
+    },
+    {
+      "Item": "uranium_rods",
+      "Quantity": 2
+    }
+  ]
+}

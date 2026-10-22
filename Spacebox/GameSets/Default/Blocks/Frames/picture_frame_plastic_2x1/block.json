@@ -1,0 +1,34 @@
+{
+  "ID": "picture_frame_plastic_2x1",
+  "Name": "Wide Plastic Picture Frame",
+  "Description": "Hang a picture in it, open it to change the picture",
+  "Type": "frame",
+  "Category": "decor",
+  "CellPixels": 32,
+  "Textures": {
+    "Active": {
+      "All": "framePlasticEdge",
+      "Up": "framePlastic2x1",
+      "Down": "framePlasticEdge"
+    }
+  },
+  "Frame": {
+    "Width": 2,
+    "Height": 1,
+    "Pictures": [
+      "picture_asteroid_belt",
+      "picture_synth_highway",
+      "picture_space_station",
+      "picture_retro_terminal",
+      "picture_parasite_hunt",
+      "picture_ship_flyby",
+      "picture_twin_moons",
+      "picture_cosmic_wave",
+      "picture_paper_boat",
+      "picture_snail_city"
+    ]
+  },
+  "Sounds": {
+    "Place": "blockPlaceLight"
+  }
+}

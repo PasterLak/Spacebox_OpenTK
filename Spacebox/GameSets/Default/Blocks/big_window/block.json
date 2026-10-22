@@ -1,0 +1,37 @@
+{
+  "ID": "big_window",
+  "Name": "Big Window",
+  "Description": "A large window",
+  "Category": "building",
+  "Mass": 4,
+  "Durability": 4,
+  "IsTransparent": true,
+  "Size": {
+    "x": 2,
+    "y": 2,
+    "z": 1
+  },
+  "FrontDirection": {
+    "x": 0,
+    "y": 0,
+    "z": 1
+  },
+  "TextureFit": true,
+  "Textures": {
+    "Active": {
+      "All": "big_window",
+      "Forward": "big_window",
+      "Back": "big_window"
+    }
+  },
+  "Sounds": {
+    "Place": "placeGlass",
+    "Destroy": "blockDestroyGlass",
+    "Footsteps": [
+      "footstepGlass1",
+      "footstepGlass2",
+      "footstepGlass3",
+      "footstepGlass4"
+    ]
+  }
+}

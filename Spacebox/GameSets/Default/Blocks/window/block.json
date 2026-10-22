@@ -1,0 +1,24 @@
+{
+  "ID": "window",
+  "Name": "Window",
+  "Description": "Lets light through",
+  "Category": "building",
+  "Mass": 1,
+  "Durability": 1,
+  "IsTransparent": true,
+  "Textures": {
+    "Active": {
+      "All": "window"
+    }
+  },
+  "Sounds": {
+    "Place": "placeGlass",
+    "Destroy": "blockDestroyGlass",
+    "Footsteps": [
+      "footstepGlass1",
+      "footstepGlass2",
+      "footstepGlass3",
+      "footstepGlass4"
+    ]
+  }
+}

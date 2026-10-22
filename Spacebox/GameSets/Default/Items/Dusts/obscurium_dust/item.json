@@ -1,0 +1,8 @@
+{
+  "ID": "obscurium_dust",
+  "Name": "Obscurium Dust",
+  "Description": "Smelts into an obscurium ingot",
+  "Sprite": "obscuriumDust",
+  "MaxStack": 64,
+  "ModelDepth": 2
+}

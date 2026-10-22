@@ -1,0 +1,36 @@
+{
+  "ID": "picture_frame_iron_1x1",
+  "Name": "Iron Picture Frame",
+  "Description": "Hang a picture in it, open it to change the picture",
+  "Type": "frame",
+  "Category": "decor",
+  "CellPixels": 32,
+  "Textures": {
+    "Active": {
+      "All": "frameIronEdge",
+      "Up": "frameIron1x1",
+      "Down": "frameIronEdge"
+    }
+  },
+  "Frame": {
+    "Width": 1,
+    "Height": 1,
+    "Pictures": [
+      "picture_retro_cactus",
+      "picture_ringed_planet",
+      "picture_synth_sun",
+      "picture_mystic_eye",
+      "picture_retro_rocket",
+      "picture_astronaut_portrait",
+      "picture_ore_asteroid",
+      "picture_bauhaus",
+      "picture_floppy_disk",
+      "picture_black_hole",
+      "picture_cassette_tape",
+      "picture_moon_ladder"
+    ]
+  },
+  "Sounds": {
+    "Place": "placeMetal2"
+  }
+}

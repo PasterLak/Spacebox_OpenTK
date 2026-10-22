@@ -1,0 +1,19 @@
+{
+  "ID": "laser_gun",
+  "Name": "Laser",
+  "Description": "An experimental laser",
+  "Type": "weapon",
+  "Category": "",
+  "Sprite": "scanner1",
+  "MaxStack": 1,
+  "ModelDepth": 3,
+  "ReloadTime": 1,
+  "Spread": 0,
+  "AnimationPushback": 0,
+  "Recoil": 0,
+  "AnimationSpeed": 0.25,
+  "PowerUsage": 0,
+  "Projectile": "p_laser",
+  "ShotSound": "pistole2",
+  "Ammo": ""
+}

@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "liquid_hydrogen",
+    "Quantity": 2
+  },
+  "Ingredients": [
+    {
+      "Item": "water",
+      "Quantity": 1
+    }
+  ]
+}

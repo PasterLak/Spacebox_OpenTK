@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "item_pipe",
+    "Quantity": 2
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_panels",
+      "Quantity": 2
+    },
+    {
+      "Item": "microchip",
+      "Quantity": 1
+    }
+  ]
+}

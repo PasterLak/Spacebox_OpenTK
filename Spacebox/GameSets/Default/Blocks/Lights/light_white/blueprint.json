@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "light_white",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "glass",
+      "Quantity": 6
+    },
+    {
+      "Item": "energy_cell",
+      "Quantity": 1
+    }
+  ]
+}

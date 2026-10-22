@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "thulium_lens",
+    "Quantity": 2
+  },
+  "Ingredients": [
+    {
+      "Item": "thulium_ingot",
+      "Quantity": 1
+    },
+    {
+      "Item": "glass",
+      "Quantity": 1
+    }
+  ]
+}

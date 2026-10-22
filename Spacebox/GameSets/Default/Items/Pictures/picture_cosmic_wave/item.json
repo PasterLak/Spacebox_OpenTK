@@ -1,0 +1,13 @@
+{
+  "ID": "picture_cosmic_wave",
+  "Name": "Cosmic Wave",
+  "Description": "A picture to hang in a picture frame",
+  "Type": "picture",
+  "Category": "decor",
+  "Sprite": "picture_cosmic_wave",
+  "Picture": "Pictures/cosmic_wave.png",
+  "Width": 2,
+  "Height": 1,
+  "MaxStack": 1,
+  "ModelDepth": 1.0
+}

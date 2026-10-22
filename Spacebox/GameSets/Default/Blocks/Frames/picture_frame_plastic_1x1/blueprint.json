@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "picture_frame_plastic_1x1",
+    "Quantity": 1
+  },
+  "Ingredients": [
+    {
+      "Item": "plastic",
+      "Quantity": 1
+    }
+  ]
+}

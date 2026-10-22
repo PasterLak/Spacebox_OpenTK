@@ -1,0 +1,12 @@
+{
+  "ID": "titanium_generator",
+  "Type": "equipment",
+  "Slot": "PowerGenerator",
+  "Name": "Titanium Power Generator",
+  "Description": "Raises your maximum power the most",
+  "Category": "equipment",
+  "Sprite": "titanium_generator",
+  "MaxStack": 1,
+  "ModelDepth": 3.0,
+  "Power": 30
+}

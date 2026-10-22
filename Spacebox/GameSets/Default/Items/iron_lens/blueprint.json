@@ -1,0 +1,12 @@
+{
+  "Product": {
+    "Item": "iron_lens",
+    "Quantity": 2
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_ingot",
+      "Quantity": 1
+    }
+  ]
+}
