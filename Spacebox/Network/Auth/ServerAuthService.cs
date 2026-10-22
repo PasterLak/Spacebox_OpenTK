@@ -57,6 +57,8 @@ public sealed class ServerAuthService
 
     public void Begin(int peer, JoinRequestMessage request)
     {
+        if (_pending.ContainsKey(peer)) return;
+
         if (_throttle.IsLocked(NameKey(request.Name)) || _throttle.IsLocked(AddressKey(peer)))
         {
             _reject(peer, LockedOut);

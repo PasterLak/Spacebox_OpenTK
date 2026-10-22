@@ -148,6 +148,25 @@ public class AuthTests : IDisposable
     }
 
     [Fact]
+    public void Server_RepeatedJoinRequestDoesNotResetAttempts()
+    {
+        var server = new FakeServer(AccountsPath);
+        server.Service.Begin(2, Join("Alice"));
+        server.Service.OnResponse(2, Login(server.Last, "password1", true));
+
+        server.Service.Begin(3, Join("Alice"));
+        for (int i = 0; i < ServerAuthService.MaxAttempts - 1; i++)
+            server.Service.OnResponse(3, Login(server.Last, "wrong", false));
+
+        int challenges = server.Challenges.Count;
+        server.Service.Begin(3, Join("Bob"));
+        Assert.Equal(challenges, server.Challenges.Count);
+
+        server.Service.OnResponse(3, Login(server.Last, "wrong", false));
+        Assert.Equal(new[] { ServerAuthService.TooManyAttempts }, server.Rejections);
+    }
+
+    [Fact]
     public void Server_WrongPasswordRetriesThenRejects()
     {
         var server = new FakeServer(AccountsPath);
