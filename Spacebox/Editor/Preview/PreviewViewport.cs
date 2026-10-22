@@ -21,6 +21,7 @@ public sealed class PreviewViewport : IDisposable
 
     public IPreviewContent Content => _content;
     public bool AutoRotate { get => _autoRotate; set => _autoRotate = value; }
+    public Action Background { get; set; }
 
     public void SetContent(object key, int assetsVersion, Func<IPreviewContent> factory)
     {
@@ -102,8 +103,10 @@ public sealed class PreviewViewport : IDisposable
         _visible = false;
 
         var content = _content;
+        var background = Background;
         _target.Render(_camera, () =>
         {
+            background?.Invoke();
             if (content != null && content.IsReady) content.Render();
         });
     }

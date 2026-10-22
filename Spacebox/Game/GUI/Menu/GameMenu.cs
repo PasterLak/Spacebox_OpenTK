@@ -57,6 +57,7 @@ namespace Spacebox.Game.GUI.Menu
             Reg(new SettingsControlsWindow(this));
             Reg(new OptionsHostWindow(this));
             Reg(new ModsWindow(this));
+            Reg(new ShipViewerWindow(this));
 
             deleteWindow = new DeleteWindow(this);
             updateVersionWindow = new UpdateVersionWindow(this);
@@ -75,6 +76,8 @@ namespace Spacebox.Game.GUI.Menu
             var t = typeof(T);
             if (windows.ContainsKey(t))
             {
+                if (currentWindowType != null && currentWindowType != t && windows.TryGetValue(currentWindowType, out var previous))
+                    previous.OnWindowClosed();
                 currentWindowType = t;
                 windows[t].OnWindowChanged();
 
@@ -571,7 +574,14 @@ namespace Spacebox.Game.GUI.Menu
         {
                    
             Get<MultiplayerWindow>()?.Dispose();
+            Get<ShipViewerWindow>()?.Dispose();
             Click1.Dispose();
+        }
+
+        public void RenderOffscreen()
+        {
+            if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var window))
+                window.OnSceneRender();
         }
 
         public List<WorldInfo> GetWorlds() => worlds;

@@ -22,8 +22,16 @@ public class WorldInfoSaver
             if (!File.Exists(worldJsonPath))
                 continue;
 
-            string jsonContent = File.ReadAllText(worldJsonPath);
-            WorldInfo? worldInfo = JsonSerializer.Deserialize<WorldInfo>(jsonContent);
+            WorldInfo? worldInfo;
+            try
+            {
+                worldInfo = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(worldJsonPath));
+            }
+            catch (Exception ex)
+            {
+                Debug.Warning($"Skipped world with an unreadable world.json: {worldFolder} ({ex.Message})");
+                continue;
+            }
 
             if (worldInfo == null)
                 continue;

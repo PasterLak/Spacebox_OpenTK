@@ -208,6 +208,7 @@ namespace Spacebox.Scenes
         {
 
             base.Render();
+            menu.RenderOffscreen();
 
             if(Input.IsKeyDown(Keys.J))
             {

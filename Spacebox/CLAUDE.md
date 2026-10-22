@@ -32,7 +32,8 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/GUI/Machines/` | Block windows: analyzer, disassembler, DNA reconstructor, generators, oxygen generator, processing machines, radar, ship console |
 | `Game/GUI/Screens/` | Full screens and dialogs: pause, death, loading, connection, welcome, chat, statistics, player list, auth, update |
 | `Game/GUI/Tags/`, `Game/GUI/Worlds/` | Waypoint tags (save/load); world info and the world list |
-| `Game/GUI/Menu/` | Main menu (`GameMenu`, windows); `Options/` options screens shared with the pause menu, `Multiplayer/` server list and join |
+| `Game/GUI/Menu/` | Main menu (`GameMenu`, windows); `Options/` options screens shared with the pause menu, `Multiplayer/` server list and join. `MenuWindow` hooks: `OnWindowChanged` (opened), `OnWindowClosed`, `OnSceneRender` (offscreen GL work, called from `MenuScene.Render` for the current window) |
+| `Game/ShipViewer/` | Mods → Ship viewer: read-only world catalog, ship scan, sandboxed in-memory upgrade (`ReadOnlyShipLoader`), worker meshing (`ShipPreviewContent`), session (`ShipViewerSession`); see spec.md §6.2 |
 | `Game/Commands/` | Debug-console commands |
 | `Game/Protection/` | `EntityProtection` (admin-protected entities) and claim beacons (`ClaimRegistry`, `ClaimSettings` from `ServerConfig.Claims`, `ClaimVisuals`); every edit/use/damage check goes through `ProtectionRules` (cell-based), synced by `Network/ProtectionNetwork` and `ClaimNetwork` |
 | `Game/Tutorial/` | JSON tutorials: parser, task types (`Tasks/`), runner, progress, service, UI (`UI/`); see `tutorial-design.md` |

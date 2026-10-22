@@ -56,6 +56,7 @@ New
 - single player and hosted worlds save their gamerules in the world folder (rules.json); clients get the server's rules
 - cable blocks connect automatically: they turn along the line, the middle block of an L becomes an angle and a block with 3 or more connections a hub (only the cable block is crafted); new angle and hub textures
 - Minecraft-like tp: tp <x y z> | <target> | <player> <target> | <player> <x y z>, ~ relative coordinates, @s and @a; also teleport; tphere <player> brings a player to you; same command in single player, host, dedicated server and chat
+- Mods -> Ship viewer: browse the player-built ships of every saved world and look at them in a 3D preview (rotate, zoom, skybox); older worlds are converted in memory only
 Small
 - own worlds: Final builds save automatically when leaving (menu, exit, closing the window) and autosave by default; Debug/Release only save with the Save button and ask Save / Don't Save / Cancel when leaving with changes; saves are announced in chat
 - Options > Game: Autosave and Autosave Interval (1-60 min; off by default, on by default in Final builds)
@@ -104,6 +105,7 @@ Small
 - build scripts read the version from Application.cs, keep other platform builds, zip without a root folder
 - Linux build zip marks Spacebox, start.sh and start-server.sh as executable
 Fixes
+- a world with a broken world.json no longer crashes the menu or the loading of other worlds
 - multiplayer: mobs no longer play the alert sound when they first appear for a joining client
 - multiplayer: explosions that broke blocks were dropped by every client (cell count limit too small), so clients never saw the blast
 - multiplayer: the server checks reach (16 m) for block removal, block damage, doors, gravity generator settings, ship console bindings and new entities (refused new entities are refunded); edits of entities the server has not loaded are undone and refunded instead of being relayed and lost; gravity strength NaN is ignored; entity file requests cannot leave the sector folder

@@ -11,6 +11,14 @@ public abstract class MenuWindow
     {
 
     }
+
+    public virtual void OnWindowClosed()
+    {
+    }
+
+    public virtual void OnSceneRender()
+    {
+    }
 }
 
 public class MainMenuWindow : MenuWindow

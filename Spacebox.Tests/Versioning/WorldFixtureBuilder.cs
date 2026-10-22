@@ -22,6 +22,7 @@ public sealed class WorldFixtureBuilder
     private readonly List<(string Name, List<ChunkSpec> Chunks)> _entities = new List<(string, List<ChunkSpec>)>();
     private readonly Dictionary<string, JsonObject> _players = new Dictionary<string, JsonObject>();
     private readonly JsonArray _drops = new JsonArray();
+    private readonly Dictionary<string, long> _entityIds = new Dictionary<string, long>();
     private string _version = Engine.Application.Version;
     private string _modId = "default";
     private string _name = "Fixture";
@@ -61,6 +62,12 @@ public sealed class WorldFixtureBuilder
         }
 
         _entities[index].Chunks.Add(new ChunkSpec { Blocks = blocks ?? new[] { "default:air" }, Items = items ?? Array.Empty<string>() });
+        return this;
+    }
+
+    public WorldFixtureBuilder EntityId(string entity, long id)
+    {
+        _entityIds[entity] = id;
         return this;
     }
 
@@ -120,7 +127,7 @@ public sealed class WorldFixtureBuilder
         NbtFileEditor.Write(Path.Combine(sector, SectorFolderName + WorldFileLayout.SectorExtension), CreateSector());
 
         foreach (var (name, chunks) in _entities)
-            NbtFileEditor.Write(EntityFiles.PathOf(sector, name), CreateEntity(name, chunks));
+            NbtFileEditor.Write(EntityFiles.PathOf(sector, name), CreateEntity(name, chunks, _entityIds.TryGetValue(name, out long id) ? id : -1));
 
         return _folder;
     }
@@ -135,10 +142,10 @@ public sealed class WorldFixtureBuilder
         return root;
     }
 
-    private static CompoundTag CreateEntity(string name, List<ChunkSpec> chunks)
+    private static CompoundTag CreateEntity(string name, List<ChunkSpec> chunks, long id)
     {
         var root = new CompoundTag("SpaceEntity");
-        root.Add(new LongTag(NBTKey.ENTITY.id, -1));
+        root.Add(new LongTag(NBTKey.ENTITY.id, id));
         root.Add(new StringTag(NBTKey.ENTITY.name, name));
         root.Add(new FloatTag(NBTKey.ENTITY.local_x, 10f));
         root.Add(new FloatTag(NBTKey.ENTITY.local_y, 20f));
