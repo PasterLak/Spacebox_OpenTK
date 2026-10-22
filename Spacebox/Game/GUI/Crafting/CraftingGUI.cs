@@ -247,6 +247,7 @@ public class CraftingGUI
         }
 
         var bp = blueprint;
+        int times = 1;
 
         if (Input.IsKey(OpenTK.Windowing.GraphicsLibraryFramework.Keys.LeftShift))
         {
@@ -257,6 +258,7 @@ public class CraftingGUI
             if (possibleCount >= 5)
             {
                 Blueprint.ScaleBlueprint(bp, 5);
+                times = 5;
             }
             else
             {
@@ -264,6 +266,7 @@ public class CraftingGUI
                 if (possibleCount > 1)
                 {
                     Blueprint.ScaleBlueprint(bp, possibleCount);
+                    times = possibleCount;
                 }
             }
 
@@ -273,6 +276,7 @@ public class CraftingGUI
         {
             var item = bp.Product.Item;
             var total = bp.Product.Quantity;
+            Spacebox.Network.Items.ItemSync.ClaimCraft(blueprint.Product.Item, times);
             var isGear = item.Is<WeaponItem>() || item.Is<DrillItem>();
 
             var (primary, secondary) = isGear ? (Panel, Inventory) : (Inventory, Panel);

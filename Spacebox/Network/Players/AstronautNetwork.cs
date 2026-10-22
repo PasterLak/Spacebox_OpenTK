@@ -350,7 +350,8 @@ public sealed class AstronautNetwork : NetworkTransform
 
     public void GiveItemByServer(string fullItemId, int count)
     {
-        SendRpc(nameof(ApplyServerGiveItem), fullItemId, count);
+        int seq = GameAssets.ItemsStr.TryGetValue(fullItemId ?? "", out var item) ? Items.ItemAuthority.Grant(OwnerPeer, item.Id, count) : 0;
+        SendRpc(nameof(ApplyServerGiveItem), fullItemId, count, seq);
     }
 
     [Rpc(RpcTarget.Owner)]
@@ -364,12 +365,14 @@ public sealed class AstronautNetwork : NetworkTransform
     }
 
     [Rpc(RpcTarget.Owner)]
-    private void ApplyServerGiveItem(string fullItemId, int count)
+    private void ApplyServerGiveItem(string fullItemId, int count, int seq)
     {
-        if (Owner is not LocalAstronaut local || count <= 0 || !GameAssets.ItemsStr.TryGetValue(fullItemId ?? "", out var item)) return;
-
-        PlayerItemGiver.Give(local, item, count);
-        Spacebox.Game.GUI.Chat.Write($"The server gave you {count} x {item.Name}", Color4.Orange);
+        if (Owner is LocalAstronaut local && count > 0 && GameAssets.ItemsStr.TryGetValue(fullItemId ?? "", out var item))
+        {
+            PlayerItemGiver.Give(local, item, count);
+            Spacebox.Game.GUI.Chat.Write($"The server gave you {count} x {item.Name}", Color4.Orange);
+        }
+        Items.ItemSync.Applied(seq);
     }
 
     [Rpc(RpcTarget.Owner)]
@@ -400,7 +403,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _finishedGifts.Clear();
         _gifts.TakeExpired(Time.Total, _finishedGifts);
         foreach (var gift in _finishedGifts)
-            Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, true, "");
+            Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, true, "", 0);
     }
 
     public static void ForgetGiftsOf(int peer)
@@ -409,7 +412,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _gifts.TakeForPeer(peer, _finishedGifts);
         foreach (var gift in _finishedGifts)
         {
-            if (gift.GiverPeer != peer) Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, false, "The player left");
+            if (gift.GiverPeer != peer) Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, false, "The player left", RefundGift(gift.GiverPeer, gift.ItemId));
         }
     }
 
@@ -427,14 +430,20 @@ public sealed class AstronautNetwork : NetworkTransform
         var giver = Find(giverPeer);
         if (giver == null) return;
 
-        string failure = ValidateGift(giverPeer, itemId);
-        if (failure != null)
+        if (!Items.ItemAuthority.TryLose(giverPeer, itemId, 1))
         {
-            giver.SendRpc(nameof(GiftResult), requestId, false, failure);
+            giver.SendRpc(nameof(GiftResult), requestId, false, "You don't have this item", 0);
             return;
         }
 
-        int giftId = _gifts.Begin(giverPeer, OwnerPeer, requestId, Time.Total + ItemGiftNetwork.Timeout);
+        string failure = ValidateGift(giverPeer, itemId);
+        if (failure != null)
+        {
+            giver.SendRpc(nameof(GiftResult), requestId, false, failure, RefundGift(giverPeer, itemId));
+            return;
+        }
+
+        int giftId = _gifts.Begin(giverPeer, OwnerPeer, requestId, Time.Total + ItemGiftNetwork.Timeout, itemId);
         SendRpc(nameof(ReceiveGift), itemId, giftId, giverPeer);
     }
 
@@ -467,14 +476,19 @@ public sealed class AstronautNetwork : NetworkTransform
     private void ReportGiftResult(int giftId, bool success, string failure)
     {
         if (!_gifts.TryComplete(giftId, RpcContext.SenderPeer, out var gift)) return;
-        Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, success, ItemGiftNetwork.Clamp(failure));
+        if (success) Items.ItemAuthority.Gain(gift.TargetPeer, gift.ItemId, 1);
+        int seq = success ? 0 : RefundGift(gift.GiverPeer, gift.ItemId);
+        Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, success, ItemGiftNetwork.Clamp(failure), seq);
     }
 
     [Rpc(RpcTarget.Owner)]
-    private void GiftResult(int requestId, bool success, string failure)
+    private void GiftResult(int requestId, bool success, string failure, int seq)
     {
         ItemGiftNetwork.OnResult(requestId, success, failure);
+        Items.ItemSync.Applied(seq);
     }
+
+    private static int RefundGift(int giverPeer, short itemId) => Items.ItemAuthority.Grant(giverPeer, itemId, 1);
 
     private void OnLocalItemUsed(Item item)
     {

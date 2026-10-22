@@ -40,6 +40,8 @@ public sealed class NetworkSession : IDisposable
     {
         Current = this;
         _localPlayer = GameSession.HasLocalPlayer ? localPlayer : null;
+        Items.ItemSync.Reset();
+        Items.ItemAuthority.Clear();
 
         var network = NetworkManager.Instance;
         network.ConnectionKey = "Spacebox:" + Application.Version;
@@ -301,7 +303,7 @@ public sealed class NetworkSession : IDisposable
         if (_localPlayer == null || !NetworkManager.Instance.IsRemoteClient) return;
 
         var json = PlayerSaveLoadManager.Serialize(_localPlayer);
-        if (json != null) NetworkManager.Instance.SendToServer(new PlayerDataMessage { Json = json });
+        if (json != null) NetworkManager.Instance.SendToServer(new PlayerDataMessage { Json = json, AppliedSeq = Items.ItemSync.AppliedSeq });
     }
 
     public void Dispose()
@@ -330,6 +332,8 @@ public sealed class NetworkSession : IDisposable
         Combat.CombatNetwork.Reset();
         WorldEditNetwork.Reset();
         RemoteEntityBacklog.Clear();
+        Items.ItemAuthority.Clear();
+        Items.ItemSync.Reset();
         Players.ItemGiftNetwork.Reset();
         Players.ReconstructionNetwork.Reset();
         Players.AstronautNetwork.ClearGifts();
@@ -409,6 +413,8 @@ public sealed class NetworkSession : IDisposable
         network.AdmitPeer(sender);
 
         var info = World.WorldData.Info;
+        string playerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false);
+        Items.ItemAuthority.OnJoin(sender, name, playerJson);
         network.Send(sender, new JoinAcceptedMessage
         {
             ServerName = Discovery.ServerAdvertiser.ServerName,
@@ -418,7 +424,7 @@ public sealed class NetworkSession : IDisposable
             GameMode = (byte)Players.PlayerGameModes.Current.Get(name, info.GameMode),
             Day = GameTime.Day,
             Ticks = GameTime.DayTick,
-            PlayerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false),
+            PlayerJson = playerJson,
             GameSetHash = GameSetPackage.Hash,
             GameSetFolder = GameSetPackage.FolderName,
             Extensions = WorldExtensionList.Format(GameSetLoader.Stack?.ExtensionIds),
@@ -468,7 +474,10 @@ public sealed class NetworkSession : IDisposable
         _playerDataFlush.Received(sender);
         if (!NetworkManager.Instance.IsServer || !PlayerRegistry.TryGet(sender, out var player) || string.IsNullOrEmpty(message.Json)) return;
 
-        player.LastPlayerJson = Players.PlayerGameModes.Current.ApplyTo(player.Name, message.Json);
+        string json = Items.ItemAuthority.AcceptSnapshot(sender, message.Json, message.AppliedSeq);
+        if (json == null) return;
+
+        player.LastPlayerJson = Players.PlayerGameModes.Current.ApplyTo(player.Name, json);
         if (World.WorldData != null)
             PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, player.LastPlayerJson);
         NetworkManager.Instance.Send(sender, new PlayerDataAckMessage(), DeliveryMode.Reliable);
@@ -499,6 +508,7 @@ public sealed class NetworkSession : IDisposable
         Players.AstronautNetwork.ForgetGiftsOf(peer);
 
         _playerDataFlush.Received(peer);
+        Items.ItemAuthority.OnLeave(peer);
         if (!PlayerRegistry.Remove(peer, out var player)) return;
 
         if (!string.IsNullOrEmpty(player.LastPlayerJson) && World.WorldData != null)

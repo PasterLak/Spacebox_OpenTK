@@ -39,6 +39,12 @@ namespace Spacebox.Game.Commands
 
             if (Spacebox.Network.Admin.ServerCommandForwarder.TryForward(Name, args)) return;
 
+            if (args.Length >= 2 && Engine.Networking.NetworkManager.Instance.IsServer)
+            {
+                new Spacebox.Network.Dedicated.ServerGameModeCommand().Execute(args);
+                return;
+            }
+
             if (ValidateArgs(args, 1) == false) return;
 
 

@@ -66,11 +66,12 @@ public static class EntityCreationNetwork
     {
         var network = NetworkManager.Instance;
         if (!network.IsServer || !GameAssets.Blocks.ContainsKey(message.BlockId)) return;
+        if (!WorldEditNetwork.ChargePlacement(sender, message.BlockId)) return;
 
         var sector = World.SectorAt(message.PositionWorld);
         if (sector == null || !sector.BoundingBox.Contains(message.PositionWorld) || !IsInReach(sender, message.PositionWorld))
         {
-            network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            WorldEditNetwork.SendRefund(sender, message.BlockId);
             return;
         }
 
@@ -79,7 +80,7 @@ public static class EntityCreationNetwork
         string error = Spacebox.Game.Protection.ClaimPlacement.CheckNewEntity(block, message.PositionWorld, owner);
         if (error != null)
         {
-            network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            WorldEditNetwork.SendRefund(sender, message.BlockId);
             ChatService.SendToPlayer(owner, error, Color4.Red);
             return;
         }

@@ -97,8 +97,9 @@ public sealed class DropNetwork : IDropReplicator
         {
             if (!GameAssets.TryGetItemById(amount.ItemId, out var item)) continue;
             int limit = Math.Max(1, (int)item.StackSize) * MaxDeathDropStacks;
-            if (amount.Amount <= 0 || amount.Amount > limit) continue;
-            stacks.Add(new ItemStack(item, amount.Amount));
+            int allowed = Math.Min(amount.Amount, Items.ItemAuthority.Available(sender, item.Id));
+            if (amount.Amount <= 0 || amount.Amount > limit || allowed <= 0 || !Items.ItemAuthority.TryLose(sender, item.Id, allowed)) continue;
+            stacks.Add(new ItemStack(item, allowed));
         }
 
         drops.DropDeathItems(message.Position, stacks);
@@ -141,6 +142,7 @@ public sealed class DropNetwork : IDropReplicator
     {
         if (!NetworkManager.Instance.IsServer || !GameAssets.TryGetItemById(message.ItemId, out var item)) return;
         if (!IsSpawnRequestAllowed(sender, item, message)) return;
+        if (!Items.ItemAuthority.TryLose(sender, item.Id, message.Quantity)) return;
 
         float speed = Math.Min(message.Velocity.Length, MaxSpawnSpeed);
         World.DropEffectManager?.DropItem(message.Position, message.Velocity, speed, item, message.Quantity,
@@ -172,13 +174,15 @@ public sealed class DropNetwork : IDropReplicator
 
         if (!drops.TryClaim(message.NetId, claimer, MaxPickupDistance, out var item, out int quantity, out var position)) return;
 
-        network.Send(sender, new DropPickupGrantedMessage { ItemId = item.Id, Quantity = quantity, Position = position });
+        int seq = Items.ItemAuthority.Grant(sender, item.Id, quantity);
+        network.Send(sender, new DropPickupGrantedMessage { ItemId = item.Id, Quantity = quantity, Position = position, Seq = seq });
     }
 
     private static void OnPickupGranted(int sender, DropPickupGrantedMessage message)
     {
-        if (NetworkManager.Instance.IsServer || !GameAssets.TryGetItemById(message.ItemId, out var item)) return;
-        World.DropEffectManager?.GrantPickup(item, message.Quantity, message.Position);
+        if (NetworkManager.Instance.IsServer) return;
+        if (GameAssets.TryGetItemById(message.ItemId, out var item)) World.DropEffectManager?.GrantPickup(item, message.Quantity, message.Position);
+        Items.ItemSync.Applied(message.Seq);
     }
 
     private static void OnRemovedMessage(int sender, DropRemovedMessage message)

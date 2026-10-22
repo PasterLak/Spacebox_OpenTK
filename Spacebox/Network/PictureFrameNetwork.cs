@@ -32,12 +32,14 @@ public struct PictureFrameSwapResultMessage : INetMessage
     public int RequestId;
     public bool Granted;
     public short RemovedId;
+    public int Seq;
 
     public void Serialize(NetWriter writer)
     {
         writer.Write(RequestId);
         writer.Write(Granted);
         writer.Write(RemovedId);
+        writer.Write(Seq);
     }
 
     public void Deserialize(NetReader reader)
@@ -45,6 +47,7 @@ public struct PictureFrameSwapResultMessage : INetMessage
         RequestId = reader.ReadInt();
         Granted = reader.ReadBool();
         RemovedId = reader.ReadShort();
+        Seq = reader.ReadInt();
     }
 }
 
@@ -91,12 +94,22 @@ public static class PictureFrameNetwork
         if (!network.IsServer) return;
 
         bool granted = TrySwap(sender, message, out var removed);
+        int seq = granted ? Items.ItemAuthority.Change(sender, SwapDeltas(message.PictureId, removed)) : 0;
         network.Send(sender, new PictureFrameSwapResultMessage
         {
             RequestId = message.RequestId,
             Granted = granted,
-            RemovedId = removed?.Id ?? PictureFrameBlock.NoPicture
+            RemovedId = removed?.Id ?? PictureFrameBlock.NoPicture,
+            Seq = seq
         });
+    }
+
+    private static List<ItemAmount> SwapDeltas(short insertedId, PictureItem removed)
+    {
+        var deltas = new List<ItemAmount>(2);
+        if (insertedId != PictureFrameBlock.NoPicture) deltas.Add(new ItemAmount { ItemId = insertedId, Amount = -1 });
+        if (removed != null) deltas.Add(new ItemAmount { ItemId = removed.Id, Amount = 1 });
+        return deltas;
     }
 
     private static bool TrySwap(int sender, PictureFrameSwapMessage message, out PictureItem removed)
@@ -115,6 +128,7 @@ public static class PictureFrameNetwork
         {
             if (!GameAssets.Items.TryGetValue(message.PictureId, out var item) || item is not PictureItem requested) return false;
             picture = requested;
+            if (Items.ItemAuthority.Available(sender, picture.Id) < 1) return false;
         }
 
         return frame.TrySwap(picture, out removed);
@@ -122,9 +136,14 @@ public static class PictureFrameNetwork
 
     private static void OnResult(int sender, PictureFrameSwapResultMessage message)
     {
-        if (NetworkManager.Instance.IsServer || !_callbacks.Remove(message.RequestId, out var callback)) return;
+        if (NetworkManager.Instance.IsServer) return;
 
-        var removed = message.RemovedId != PictureFrameBlock.NoPicture && GameAssets.Items.TryGetValue(message.RemovedId, out var item) ? item as PictureItem : null;
-        callback(message.Granted, removed);
+        if (_callbacks.Remove(message.RequestId, out var callback))
+        {
+            var removed = message.RemovedId != PictureFrameBlock.NoPicture && GameAssets.Items.TryGetValue(message.RemovedId, out var item) ? item as PictureItem : null;
+            callback(message.Granted, removed);
+        }
+        Items.ItemSync.Applied(message.Seq);
     }
+
 }

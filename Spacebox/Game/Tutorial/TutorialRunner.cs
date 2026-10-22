@@ -6,7 +6,7 @@ namespace Spacebox.Game.Tutorial;
 
 public sealed class TutorialRunner
 {
-    private const string ChapterRewardPrefix = "chapter:";
+    private const string ChapterRewardPrefix = TutorialRewardKeys.ChapterPrefix;
 
     private static readonly IReadOnlyList<TutorialReward> NoRewards = Array.Empty<TutorialReward>();
 

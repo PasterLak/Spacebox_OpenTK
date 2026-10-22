@@ -40,5 +40,7 @@ public static class SpaceboxNetwork
         ServerRulesNetwork.Register(network);
         Mobs.MobSpawnNetwork.Register(network);
         Players.ReconstructionNetwork.Register(network);
+        Items.ItemAuthority.Register(network);
+        Items.ItemSync.Register(network);
     }
 }

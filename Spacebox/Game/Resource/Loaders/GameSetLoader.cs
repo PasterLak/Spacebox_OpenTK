@@ -98,7 +98,7 @@ public static class GameSetLoader
         LoadLoot(modPath, defaultModPath);
         MobsLoader.Load(modPath, defaultModPath);
         MobIconRenderer.ApplyToSpawners();
-        if (!Engine.Application.IsHeadless) Spacebox.Game.Tutorial.TutorialLoader.Load(modPath, defaultModPath, ModInfo.ModId);
+        Spacebox.Game.Tutorial.TutorialLoader.Load(modPath, defaultModPath, ModInfo.ModId);
         LoadSettings(modPath);
         LoadOptionalFiles(modPath);
 

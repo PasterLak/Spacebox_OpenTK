@@ -16,8 +16,8 @@ public static class TutorialService
 
     static TutorialService()
     {
-        _runner.StepCompleted += (_, rewards, _) => GiveRewards(rewards);
-        _runner.ChapterCompleted += (_, rewards) => GiveRewards(rewards);
+        _runner.StepCompleted += (step, rewards, _) => GiveRewards(TutorialRewardKeys.ForStep(step.Id), rewards);
+        _runner.ChapterCompleted += (chapter, rewards) => GiveRewards(TutorialRewardKeys.ForChapter(chapter.Id), rewards);
     }
 
     public static TutorialRunner Runner => _runner;
@@ -133,9 +133,11 @@ public static class TutorialService
         _runner.OnActivity(activity);
     }
 
-    private static void GiveRewards(IReadOnlyList<TutorialReward> rewards)
+    private static void GiveRewards(string rewardKey, IReadOnlyList<TutorialReward> rewards)
     {
-        if (_player == null) return;
+        if (_player == null || rewards.Count == 0) return;
+
+        Spacebox.Network.Items.ItemSync.ClaimTutorialReward(_runner.Definition?.Id, rewardKey);
 
         for (int i = 0; i < rewards.Count; i++)
         {

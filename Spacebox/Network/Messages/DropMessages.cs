@@ -97,12 +97,14 @@ public struct DropPickupGrantedMessage : INetMessage
     public short ItemId;
     public int Quantity;
     public Vector3 Position;
+    public int Seq;
 
     public void Serialize(NetWriter writer)
     {
         writer.Write(ItemId);
         writer.Write(Quantity);
         writer.Write(Position);
+        writer.Write(Seq);
     }
 
     public void Deserialize(NetReader reader)
@@ -110,6 +112,7 @@ public struct DropPickupGrantedMessage : INetMessage
         ItemId = reader.ReadShort();
         Quantity = reader.ReadInt();
         Position = reader.ReadVector3();
+        Seq = reader.ReadInt();
     }
 }
 

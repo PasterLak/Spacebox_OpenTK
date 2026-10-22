@@ -124,7 +124,17 @@ public struct PlayerDataRequestMessage : INetMessage
 public struct PlayerDataMessage : INetMessage
 {
     public string Json;
+    public int AppliedSeq;
 
-    public void Serialize(NetWriter writer) => writer.Write(Json);
-    public void Deserialize(NetReader reader) => Json = reader.ReadString();
+    public void Serialize(NetWriter writer)
+    {
+        writer.Write(Json);
+        writer.Write(AppliedSeq);
+    }
+
+    public void Deserialize(NetReader reader)
+    {
+        Json = reader.ReadString();
+        AppliedSeq = reader.ReadInt();
+    }
 }

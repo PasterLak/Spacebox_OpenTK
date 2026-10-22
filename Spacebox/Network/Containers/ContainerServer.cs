@@ -96,7 +96,7 @@ public sealed class ContainerServer
         var rejected = new List<ItemAmount>();
 
         if (!_entries.TryGetValue(message.Key, out var entry) || !entry.Viewers.Contains(peer) || !IsStillValid(entry) ||
-            !IsInReach(peer, message.Key, MaxChangeDistance) || !_deposits.TryConsume(peer, Time.Total, AddedAmount(message.Deltas)))
+            !IsInReach(peer, message.Key, MaxChangeDistance) || !HasDeposits(peer, message.Deltas) || !_deposits.TryConsume(peer, Time.Total, AddedAmount(message.Deltas)))
         {
             RejectAll(message.Deltas, denied, rejected);
             NetworkManager.Instance.Send(peer, new ContainerChangeResultMessage { Key = message.Key, NewVersion = entry?.Version ?? 0, DeniedRemovals = denied, RejectedAdditions = rejected });
@@ -115,8 +115,48 @@ public sealed class ContainerServer
         entry.Version++;
         entry.IsDirty = true;
 
+        ApplyToPlayer(peer, message.Deltas, denied, rejected);
         NetworkManager.Instance.Send(peer, new ContainerChangeResultMessage { Key = message.Key, NewVersion = entry.Version, DeniedRemovals = denied, RejectedAdditions = rejected });
         entry.Block.OnContainerChangedByNetwork();
+    }
+
+    private static bool HasDeposits(int peer, List<ItemAmount> deltas)
+    {
+        if (deltas == null || !Items.ItemAuthority.IsTracked(peer)) return true;
+
+        var deposits = new List<ItemAmount>(deltas.Count);
+        for (int i = 0; i < deltas.Count; i++)
+        {
+            if (deltas[i].Amount > 0) deposits.Add(deltas[i]);
+        }
+
+        for (int i = 0; i < deposits.Count; i++)
+        {
+            if (Items.ItemAuthority.Available(peer, deposits[i].ItemId) < deposits[i].Amount) return false;
+        }
+        return true;
+    }
+
+    private static void ApplyToPlayer(int peer, List<ItemAmount> deltas, List<ItemAmount> denied, List<ItemAmount> rejected)
+    {
+        if (deltas == null || !Items.ItemAuthority.IsTracked(peer)) return;
+
+        for (int i = 0; i < deltas.Count; i++)
+        {
+            var delta = deltas[i];
+            if (delta.Amount < 0) Items.ItemAuthority.Gain(peer, delta.ItemId, -delta.Amount - AmountOf(denied, delta.ItemId));
+            else if (delta.Amount > 0) Items.ItemAuthority.TryLose(peer, delta.ItemId, delta.Amount - AmountOf(rejected, delta.ItemId));
+        }
+    }
+
+    private static int AmountOf(List<ItemAmount> amounts, short itemId)
+    {
+        int total = 0;
+        for (int i = 0; i < amounts.Count; i++)
+        {
+            if (amounts[i].ItemId == itemId) total += amounts[i].Amount;
+        }
+        return total;
     }
 
     public bool TryTake(ContainerKey key, short itemId, int amount)

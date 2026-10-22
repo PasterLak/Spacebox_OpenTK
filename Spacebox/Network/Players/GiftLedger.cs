@@ -9,10 +9,12 @@ public sealed class GiftLedger
         public readonly int TargetPeer;
         public readonly int RequestId;
         public readonly double Deadline;
+        public readonly short ItemId;
 
-        public Gift(int id, int giverPeer, int targetPeer, int requestId, double deadline)
+        public Gift(int id, int giverPeer, int targetPeer, int requestId, double deadline, short itemId = 0)
         {
             Id = id;
+            ItemId = itemId;
             GiverPeer = giverPeer;
             TargetPeer = targetPeer;
             RequestId = requestId;
@@ -26,11 +28,11 @@ public sealed class GiftLedger
 
     public int Count => _gifts.Count;
 
-    public int Begin(int giverPeer, int targetPeer, int requestId, double deadline)
+    public int Begin(int giverPeer, int targetPeer, int requestId, double deadline, short itemId = 0)
     {
         int id = _nextId++;
         if (_nextId == int.MaxValue) _nextId = 1;
-        _gifts[id] = new Gift(id, giverPeer, targetPeer, requestId, deadline);
+        _gifts[id] = new Gift(id, giverPeer, targetPeer, requestId, deadline, itemId);
         return id;
     }
 

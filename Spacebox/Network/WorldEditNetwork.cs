@@ -72,6 +72,7 @@ public static class WorldEditNetwork
     {
         if (NetworkManager.Instance.IsServer) return;
         PlacementRefund.Refund(PanelUI.Player, message.BlockId);
+        Items.ItemSync.Applied(message.Seq);
     }
 
     public static void NotifyDamaged(Chunk chunk, Vector3Byte index, short blockId, byte damage)
@@ -159,7 +160,7 @@ public static class WorldEditNetwork
     public static void Update()
     {
         if (!NetworkManager.Instance.IsServer) return;
-        PendingEdits.Update(Time.Delta, IsEntityLoaded, OnBlockEdit, ExpirePending);
+        PendingEdits.Update(Time.Delta, IsEntityLoaded, ProcessBlockEdit, ExpirePending);
     }
 
     private static bool IsEntityLoaded(long entityId)
@@ -227,6 +228,29 @@ public static class WorldEditNetwork
             return;
         }
 
+        if (!message.IsRemoval && !ChargePlacement(sender, message.BlockId))
+        {
+            network.Send(sender, new BlockEditMessage { EntityId = message.EntityId, Cell = message.Cell, IsRemoval = true });
+            return;
+        }
+
+        ProcessBlockEdit(sender, message);
+    }
+
+    internal static bool ChargePlacement(int sender, short blockId)
+    {
+        return !GameAssets.TryGetItemByBlockID(blockId, out var item) || Items.ItemAuthority.TryLose(sender, item.Id, 1);
+    }
+
+    internal static void SendRefund(int peer, short blockId)
+    {
+        int seq = GameAssets.TryGetItemByBlockID(blockId, out var item) ? Items.ItemAuthority.Grant(peer, item.Id, 1) : 0;
+        NetworkManager.Instance.Send(peer, new BlockPlaceRefundMessage { BlockId = blockId, Seq = seq });
+    }
+
+    private static void ProcessBlockEdit(int sender, BlockEditMessage message)
+    {
+        var network = NetworkManager.Instance;
         var world = World.Instance;
         SpaceEntity entity = null;
         bool known = world != null && world.TryFindEntity(message.EntityId, out entity);
@@ -240,7 +264,7 @@ public static class WorldEditNetwork
         if (known && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell))
         {
             SendCorrection(sender, entity, message.Cell);
-            if (!message.IsRemoval) network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            if (!message.IsRemoval) SendRefund(sender, message.BlockId);
             ProtectionNetwork.Deny(sender);
             return;
         }
@@ -253,7 +277,7 @@ public static class WorldEditNetwork
             if (error != null)
             {
                 SendCorrection(sender, entity, message.Cell);
-                network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+                SendRefund(sender, message.BlockId);
                 ChatService.SendToPlayer(senderName, error, OpenTK.Mathematics.Color4.Red);
                 return;
             }
@@ -265,7 +289,7 @@ public static class WorldEditNetwork
         if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || !IsInReach(sender, entity, message.Cell)))
         {
             SendCorrection(sender, entity, message.Cell);
-            network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            if (!message.IsRemoval) SendRefund(sender, message.BlockId);
             return;
         }
 
@@ -275,7 +299,7 @@ public static class WorldEditNetwork
 
         if (known && NeedsCorrection(entity, message, previousId)) SendCorrection(sender, entity, message.Cell);
         if (!message.IsRemoval && (!known || GetBlockId(entity, message.Cell) != message.BlockId))
-            network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            SendRefund(sender, message.BlockId);
     }
 
     public const float MaxEditDistance = 16f;
@@ -285,7 +309,7 @@ public static class WorldEditNetwork
         if (message.IsRemoval) return;
         var network = NetworkManager.Instance;
         network.Send(sender, new BlockEditMessage { EntityId = message.EntityId, Cell = message.Cell, IsRemoval = true });
-        network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+        SendRefund(sender, message.BlockId);
     }
 
     public static bool IsInReach(int peer, SpaceEntity entity, Vector3i cell)

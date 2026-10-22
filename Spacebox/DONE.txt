@@ -63,6 +63,7 @@ New
 - texture packs: Mods -> Texture packs, several active at once in an ordered stack, override block/item/emission/UI textures of any GameSet; example TexturePacks/ExamplePack
 - game folder: Mods/ holds GameSets/, Extensions/ and TexturePacks/; Multiplayer/ holds client.json, serverconfig.json, the server guide, server icons, Dashboard/, cached server worlds (Worlds/) and downloaded server content (Mods/); old folders are moved on the first start
 - servers share texture packs: TexturePacks in serverconfig.json (a host shares its enabled packs), downloaded and checked with the GameSet like extensions, shown below the player's own packs
+- multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 Small
 - own worlds: Final builds save automatically when leaving (menu, exit, closing the window) and autosave by default; Debug/Release only save with the Save button and ask Save / Don't Save / Cancel when leaving with changes; saves are announced in chat
 - Options > Game: Autosave and Autosave Interval (1-60 min; off by default, on by default in Final builds)
@@ -116,6 +117,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- host: "gm <mode> <player>" works for other players (was only the host's own mode)
 - dedicated server: closing its window (or taskkill) now saves the world and asks players for their data like the stop command; before, nothing was saved
 - host: leaving a hosted world asks connected players for their latest data before saving them
 - pause menu on a remote client shows "Connected to server" instead of "Open to network"
