@@ -222,6 +222,7 @@ Fixes
 - dying and going to the menu showed the death screen and hid the held item in the next loaded world; a world saved while dead loaded the player with 0 health
 - furnaces and crushers kept processing after being removed by explosions, bulk erase, mobs or collisions, and stopped forever when a recipe rounded to 0 ticks; their window crashed for block types without recipes
 - a thrown drop could merge into a drop that expired in the same frame and vanish with it
+- creative players took crash and in-wall damage (and could die); short separate wall contacts added up to suffocation
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

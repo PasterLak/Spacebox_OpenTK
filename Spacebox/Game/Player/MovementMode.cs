@@ -288,9 +288,13 @@ public class MovementMode : GameModeBase
 
                 if(timeInWall > 1f)
                 {
-                    player.TakeDamage(5, new DeathCase("Suffocated in a wall"));
+                    if (GetGameMode() == GameMode.Survival) player.TakeDamage(5, new DeathCase("Suffocated in a wall"));
                     timeInWall = 0;
                 }
+            }
+            else
+            {
+                timeInWall = 0;
             }
         }
     }
@@ -460,7 +464,7 @@ public class MovementMode : GameModeBase
                 }
             }
 
-            int dmg = CalculateDamage(speed);
+            int dmg = GetGameMode() == GameMode.Survival ? CalculateDamage(speed) : 0;
 
             if (dmg > 0)
             {
