@@ -41,7 +41,9 @@ public sealed class TexturePacksWindow : MenuWindow
         ImGui.SetCursorPos(new Vector2(padding, padding));
         ImGui.TextColored(TitleColor, "Texture packs");
         ImGui.SetCursorPosX(padding);
+        ImGui.PushTextWrapPos(width - padding);
         ImGui.TextDisabled($"Put packs into {TexturePackService.FolderName}/. Enabled packs override textures of every GameSet; the top one wins. Applied when a world loads.");
+        ImGui.PopTextWrapPos();
 
         ImGui.SetCursorPosX(padding);
         if (ImGui.BeginChild("##packs", new Vector2(width - padding * 2f, listHeight), ImGuiChildFlags.Border))

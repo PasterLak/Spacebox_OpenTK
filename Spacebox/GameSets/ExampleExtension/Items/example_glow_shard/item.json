@@ -1,0 +1,14 @@
+{
+  "ID": "example_glow_shard",
+  "Name": "Glow Shard",
+  "Description": "Example extension crystal, crafted from cobalt",
+  "Category": "items",
+  "Sprite": "exampleGlowShard",
+  "MaxStack": 64,
+  "ModelDepth": 2.0,
+  "GlowColor": {
+    "r": 40,
+    "g": 255,
+    "b": 230
+  }
+}

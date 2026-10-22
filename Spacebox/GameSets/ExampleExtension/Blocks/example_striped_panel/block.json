@@ -1,0 +1,18 @@
+{
+  "ID": "example_striped_panel",
+  "Name": "Striped Panel",
+  "Description": "Example extension hazard panel",
+  "Type": "block",
+  "Category": "building",
+  "Mass": 4,
+  "Durability": 12,
+  "PowerToDrill": 2,
+  "Textures": {
+    "Active": {
+      "All": "exampleStripedPanel"
+    }
+  },
+  "Sounds": {
+    "Place": "blockPlaceHeavy"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "ModId": "example_extension",
+  "ModName": "Example Extension",
+  "Description": "Example extension: a glowing block, a striped panel and glow shards",
+  "Author": "PasterLak",
+  "Version": "1.0",
+  "Extends": "default",
+  "Includes": [],
+  "ItemsOnStart": []
+}

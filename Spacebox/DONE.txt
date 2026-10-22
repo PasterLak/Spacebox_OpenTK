@@ -58,6 +58,9 @@ New
 - Minecraft-like tp: tp <x y z> | <target> | <player> <target> | <player> <x y z>, ~ relative coordinates, @s and @a; also teleport; tphere <player> brings a player to you; same command in single player, host, dedicated server and chat
 - Mods -> Ship viewer: browse the player-built ships of every saved world and look at them in a 3D preview (rotate, zoom, skybox); older worlds are converted in memory only
 - DNA reconstructors work from anywhere: they are remembered while unloaded (reconstructors.json), the server loads only the reconstructor's entity by id and revives remote players too; entity saves moved from the sector folders to Entities/ with an entities.index (older worlds are converted)
+- GameSets in folder format: one folder per block/item with its JSON, textures, emission maps, sounds, blueprint and recipes; old flat blocks/items/crafting/recipes.json still load and can be mixed; Default converted (content identical), converter in the editor and Tools/Spacebox.GameSetTool
+- extension GameSets ("Extends", "Includes"): add or patch blocks, items, textures, sounds and recipes of a base GameSet, chosen per world in Create World and saved with it, synced and checked when joining a server; example GameSets/ExampleExtension
+- texture packs: Mods -> Texture packs, several active at once in an ordered stack, override block/item/emission/UI textures of any GameSet; example TexturePacks/ExamplePack
 Small
 - own worlds: Final builds save automatically when leaving (menu, exit, closing the window) and autosave by default; Debug/Release only save with the Save button and ask Save / Don't Save / Cancel when leaving with changes; saves are announced in chat
 - Options > Game: Autosave and Autosave Interval (1-60 min; off by default, on by default in Final builds)

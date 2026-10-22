@@ -1,0 +1,12 @@
+{
+  "Ingredients": [
+    {
+      "Item": "example_glow_shard",
+      "Quantity": 4
+    },
+    {
+      "Item": "glass",
+      "Quantity": 1
+    }
+  ]
+}

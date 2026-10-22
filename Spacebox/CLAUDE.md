@@ -44,7 +44,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/Versioning/` | `WorldLoader`, `VersionConverter`, world upgrade chain (`Steps/`) |
 | `Game/Physics/` | `VoxelPhysics`, hit/collide info |
 | `Game/GameMath/` | World ↔ Sector ↔ Entity ↔ Chunk coordinate conversions |
-| `Game/Resource/` | `GameAssets` registry, `Globals`; `Loaders/` (GameSet, blocks, mobs, generation, `BlockFactory`, atlases), `Json/` (DTOs), `BlockTypes/` (`BlockData` and its subclasses, `TextureTiling`), `Materials/` |
+| `Game/Resource/` | `GameAssets` registry, `Globals`; `Content/` (GameSet stack: `GameSetStackResolver`, `ExtensionResolver`, `GameSetContentReader` for flat + folder format, merge rules in `KeyedContentList`, `GameSetAssetIndex` for textures/emissions/sounds, `Conversion/` flat → folder converter + `ContentSnapshot`), `TexturePacks/` (global texture packs, `TexturePackService`), `Loaders/` (GameSet, blocks, mobs, generation, `BlockFactory`, atlases), `Json/` (DTOs), `BlockTypes/` (`BlockData` and its subclasses, `TextureTiling`), `Materials/` |
 | `Game/Generation/` | World structures, `Blocks/`, meshing/AO, light and electric managers, `Tools/` (NBT, serializers), `Algorithms/` (stateless: noise, `PerlinWorms`, `InternalCavities`, `AsteroidOreGenerator`, `ChunkLODMeshGenerator`, seeds) |
 | `Network/` | Multiplayer (see the Multiplayer section) |
 | `Agent/` | Agent API for automated play testing (left out of Final builds, `AGENT_API` define): `AgentHost` (started from `SpaceboxWindow` with `--agent`, loopback `MiniHttpServer`), `AgentWorldLauncher` (`--agent-world`), one `IAgentModule` per route group in `Modules/` (registered in `AgentModuleCatalog`), `Navigation/AgentNavigator` (A* over `MobNavigationGrid`); client script `Tools/agent/game.sh`, usage in the `play-game` skill |
@@ -106,7 +106,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 ## Signs
 
-- Type `sign` (`SignBlock`, settings `SignBlockData` from the JSON `Sign` section: `MaxLines`, `MaxLineLength`, `DefaultText`, `TextColor`, `Align` (default center), `PixelsPerBlock`, `Margin`, `Glow`, `ViewDistance`, `Font`). A new sign is a `blocks.json` entry with `"Type": "sign"` and textures (`Up` = front plate); no code. Wider signs set `Sign.Width` (1-4), which becomes `Size.X`; give them one texture spanning all cells with `CellPixels`.
+- Type `sign` (`SignBlock`, settings `SignBlockData` from the JSON `Sign` section: `MaxLines`, `MaxLineLength`, `DefaultText`, `TextColor`, `Align` (default center), `PixelsPerBlock`, `Margin`, `Glow`, `ViewDistance`, `Font`). A new sign is a block entry (`block.json`) with `"Type": "sign"` and textures (`Up` = front plate); no code. Wider signs set `Sign.Width` (1-4), which becomes `Size.X`; give them one texture spanning all cells with `CellPixels`.
 - The plate is the code shape `sign_plate` (`SignPlateGeometry`, 1/32 thick, `RequiresSupport`, `FacingUp` so placement picks the `Rotation` that keeps the text upright via `BlockShape.BestRotation`). Wide signs are normal multi-cell blocks (`BaseFrontDirection` Up, cells along the text's right); every cell needs support, all cells can be used and broken, and only the origin cell registers with the renderer.
 - Text markup (`Game/Signs/SignMarkup`): `<b>`, `<color=name|#rgb|#rrggbb>`, `<left> <center> <right>`, sign-wide `<size=x>` / `<fill>` (`SignTextSize`, resolved against `SignTextBaker.FitScale` so text never leaves the area); unknown tags stay text; `Sanitize` limits lines and visible characters. Text is baked per sign with SkiaSharp (`SignTextBaker`) into a small texture only when it changes and drawn as one quad by the entity's `SignRenderer` (`SpaceEntity.Signs`, rendered after doors, distance and facing culled, max 4 bakes per frame).
 - Editing: `SignUI` (window, toolbar) + `SignTextEditor` (custom ImGui rich-text field: caret, selection, clipboard, keys) over `SignDocument` (per-character bold/colour, per-line alignment, converts from/to markup) → `SignNetwork` (`SignTextMessage`, server checks protection and reach, sanitizes) → `BlockStateNetwork`; saved by `SignSerializer` (`sign_data` with `text`).
@@ -231,7 +231,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 ## GameSet editor
 
 - `Spacebox/Editor/`: `GameSetEditorScene` (+ `GameSetEditorLauncher` for `--editor`), `EditorContext` (project, runtime assets, previews, status), `Data/` (JSON files, entry sources, `JsonSchema`, `GameSetCatalog`), `UI/` (`EditorShell`, `JsonInspector`, `Fields/`, `Panels/`), `Preview/` (offscreen previews), `Generation/` (biome map).
-- New content type: add an `EntryDefinition` (+ schema DTO) to `GameSetCatalog` and a `CollectionPanel` in `EditorPanelFactory`. New reference/value widget: an `IJsonFieldEditor` (or `ReferenceFieldEditor`) registered in `JsonFieldEditors.CreateDefault`. New preview: `IPreviewContent` + `IEntryPreview`.
+- New content type: add an `EntryDefinition` (+ schema DTO) to `GameSetCatalog` and a `CollectionPanel` in `EditorPanelFactory`. Blocks, items, blueprints, categories and processing recipes come from `GameSetSources` (flat files and folder format combined by `CompositeEntrySource`; `EntryFolderSource` for entry folders, `RecipeGroupFolderSource` for `Recipes/<type>.json`). Overview converts flat GameSets (`GameSetFolderConverter`). New reference/value widget: an `IJsonFieldEditor` (or `ReferenceFieldEditor`) registered in `JsonFieldEditors.CreateDefault`. New preview: `IPreviewContent` + `IEntryPreview`.
 - The editor theme (`EditorTheme`) and font scale are applied only during the editor's GUI pass and restored from an `ImGuiStyleSnapshot`, so menu and game styles are untouched; the editor does not change fonts.
 - Previews read runtime assets (need Save & Reload after edits), projectile previews read the JSON live. GL work only in `IPreviewContent.Update/Render`; asteroid meshes are built on workers.
 
@@ -239,12 +239,13 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 
 | Feature | Steps |
 |---|---|
-| Data-only block / item | GameSet JSON + texture (`add-block` / `add-item` skills) |
-| Sign | `blocks.json` entry with `"Type": "sign"` and a `Sign` section (see Signs) |
-| Picture / picture frame | `items.json` entry with `"Type": "picture"` + PNG in `Pictures/`; frame: `blocks.json` entry with `"Type": "frame"` and a `Frame` section (see Picture frames) |
+| Data-only block / item | entry folder with JSON + texture (`add-block` / `add-item` skills, `modding-guide.md`) |
+| Extension GameSet / texture pack | `GameSets/<Name>/` with `"Extends"` / `TexturePacks/<Name>/` (see `modding-guide.md`, spec.md §6.1) |
+| Sign | block entry with `"Type": "sign"` and a `Sign` section (see Signs) |
+| Picture / picture frame | item entry with `"Type": "picture"` + PNG in `Pictures/`; frame: block entry with `"Type": "frame"` and a `Frame` section (see Picture frames) |
 | Block behaviour | `Block` subclass in `Game/Generation/Blocks/` + `BlockFactory` entry (+ serializer if stateful) |
 | Tutorial / tutorial step | `GameSets/<set>/Tutorials/*.json` (see `tutorial-design.md`); a new task type is a `TutorialTask` subclass + `TutorialTaskFactory` entry (+ `ITutorialContext` member or `PlayerActivity` event) |
-| Equipment item | `items.json` entry with `"Type": "equipment"`, `Slot`, `Health`/`Power`, `ExplosionProtection` (%); bonuses applied by `EquipmentStatsBinder`, UI in `EquipmentUI` (layout `ArmorLayout`/`DeviceSlots`, 3D figure `PlayerPreview`) |
+| Equipment item | item entry with `"Type": "equipment"`, `Slot`, `Health`/`Power`, `ExplosionProtection` (%); bonuses applied by `EquipmentStatsBinder`, UI in `EquipmentUI` (layout `ArmorLayout`/`DeviceSlots`, 3D figure `PlayerPreview`) |
 | Item type | `Item` subclass in `Game/Inventory/` + case in `GameSetLoader` + interaction branch in `PanelUI` |
 | Interaction | `InteractionMode` subclass + game-mode whitelists + `PanelUI.UpdatePlayerInteraction` |
 | Action for any held item | `IPassiveInteraction` + add it in the game mode's `CreateInteractionHandler` |

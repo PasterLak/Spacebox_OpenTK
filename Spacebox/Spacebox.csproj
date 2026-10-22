@@ -105,6 +105,9 @@
 		<None Update="start-server.sh;start.sh" Condition="'$(LaunchScripts)' == 'unix'">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<Content Include="TexturePacks\**\*.*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 		<Content Include="GameSets\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>

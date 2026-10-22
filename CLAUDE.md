@@ -52,6 +52,7 @@ dotnet test Spacebox.Tests --filter "FullyQualifiedName~BlockTests.SomeMethod"
 
 dotnet run -c Debug --project Spacebox.Benchmarks   # BenchmarkDotNet; edit Program.cs to choose which benchmark runs
 dotnet run --project Tools/Spacebox.AssetAudit -- audit . --list   # list assets that release builds leave out as unused
+dotnet run --project Tools/Spacebox.GameSetTool -- convert Spacebox/GameSets/Default   # flat GameSet JSON -> folder format (verified identical); also export-flat, snapshot, check
 
 dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish   # also win-x64 / osx-x64; single-file: only the executable + game folders
 ```
@@ -81,7 +82,7 @@ Hierarchy: `World` (singleton `Component`, octree of sectors, loads/unloads sect
 
 ## Data-driven content (GameSets)
 
-Game content is JSON, not code: `Spacebox/GameSets/<Name>/` (`Default` is the base set) contains `blocks.json`, `items.json`, `crafting.json`, `recipes.json`, `config.json`, and texture/sound/emission folders. Loading lives in `Game/Resource/` (`GameSetLoader`, `BlocksLoader`, `*JSON.cs` DTOs, `BlockFactory`, `UVAtlas`/`AtlasTexture` for the texture atlas, `GameSetsUnpacker` which extracts .zip/.rar mods). Adding a block usually means a JSON entry + texture; a new block *behaviour* means a `Block` subclass wired up by its `Type` in `BlockFactory`. `VersionConverter` / `WorldLoader` handle save-format upgrades.
+Game content is JSON, not code: `Spacebox/GameSets/<Name>/` (`Default` is the base set) uses the folder format: one folder per block (`Blocks/<group>/<id>/block.json`) and item (`Items/<group>/<id>/item.json`) with its textures, `Emissions/`, sounds, `blueprint.json` and `recipes.json`, plus `Blocks|Items/order.json`, `Recipes/<type>.json`, `Crafting/categories.json` and `config.json`. The old flat `blocks.json`/`items.json`/`crafting.json`/`recipes.json` still load (mods). Extension GameSets (`"Extends"`) add/patch content per world, texture packs (`Spacebox/TexturePacks/`) override textures globally; format and rules in `modding-guide.md` and spec.md §6.1. Loading lives in `Game/Resource/` (`Content/` stack, reader and asset index, `GameSetLoader`, `BlocksLoader`, `*JSON.cs` DTOs, `BlockFactory`, `GameAtlasFactory`, `GameSetsUnpacker` which extracts .zip/.rar mods). Tests read Default content through `Spacebox.Tests/DefaultGameSetContent` (never the flat files). Adding a block usually means an entry folder + texture; a new block *behaviour* means a `Block` subclass wired up by its `Type` in `BlockFactory`. `VersionConverter` / `WorldLoader` handle save-format upgrades.
 
 ## Notes
 

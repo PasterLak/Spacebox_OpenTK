@@ -7,7 +7,7 @@ description: Add a new item to Spacebox (plain item, drill, weapon, consumable) 
 
 ## 1. JSON entry
 
-Add an object to `Spacebox/GameSets/Default/items.json`. `Type` selects the DTO in `Spacebox/Game/Resource/Json/ItemJSON.cs`:
+Default uses the folder format (see `modding-guide.md`): create `Spacebox/GameSets/Default/Items/<Group>/<id>/item.json` with one object and add the id to `Items/order.json`. Flat `items.json` arrays still load (old GameSets). `Type` selects the DTO in `Spacebox/Game/Resource/Json/ItemJSON.cs`:
 
 | Type | DTO | Extra fields |
 |---|---|---|
@@ -20,7 +20,7 @@ Common fields: `ID` (unique, snake_case), `Name`, `Description`, `Category`, `Sp
 
 ## 2. Sprite
 
-PNG in `Spacebox/GameSets/Default/Items/`, file name = `Sprite` value. Weapons may also need a projectile in `Projectiles/` (`ProjectileJSON`).
+PNG in the item's entry folder (`Items/<Group>/<id>/`), file name = `Sprite` value (unique in the GameSet), emission in `<id>/Emissions/`. Weapons may also need a projectile in `Projectiles/` (`ProjectileJSON`).
 
 ## 3. New item type (only if no existing type fits)
 
@@ -30,7 +30,7 @@ PNG in `Spacebox/GameSets/Default/Items/`, file name = `Sprite` value. Weapons m
 
 ## 4. Optional
 
-Crafting blueprint in `crafting.json`, processing recipe in `recipes.json`, starting item in `config.json` → `ItemsOnStart`, loot in `Generation/Loot/*.json`.
+Crafting blueprint in `<id>/blueprint.json`, processing recipe in `<id>/recipes.json` (this item as ingredient) or `Recipes/<type>.json`, starting item in `config.json` → `ItemsOnStart`, loot in `Generation/Loot/*.json`.
 
 ## 5. Verify
 

@@ -1,0 +1,24 @@
+{
+  "ID": "example_glow_block",
+  "Name": "Glow Block",
+  "Description": "Example extension block that glows teal",
+  "Type": "block",
+  "Category": "decor",
+  "Mass": 3,
+  "Durability": 8,
+  "PowerToDrill": 1,
+  "LightColor": {
+    "r": 40,
+    "g": 255,
+    "b": 230
+  },
+  "Textures": {
+    "Active": {
+      "All": "exampleGlowBlock"
+    }
+  },
+  "Sounds": {
+    "Place": "exampleGlowPlace",
+    "Destroy": "blockDestroyGlass"
+  }
+}

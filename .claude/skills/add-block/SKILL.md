@@ -12,7 +12,7 @@ description: Add a new block type to Spacebox — a data-only block (JSON + text
 
 ## 2. JSON entry
 
-Add an object to `Spacebox/GameSets/Default/blocks.json` (fields come from `Spacebox/Game/Resource/Json/BlockJSON.cs`):
+Default uses the folder format (see `modding-guide.md`): create `Spacebox/GameSets/Default/Blocks/<Group>/<id>/block.json` with one object (fields come from `Spacebox/Game/Resource/Json/BlockJSON.cs`) and add the id to `Blocks/order.json` where it should appear (unlisted entries come after the listed ones). Old GameSets may still use a flat `blocks.json` array; both formats can be mixed.
 
 ```json
 {
@@ -46,12 +46,12 @@ Add an object to `Spacebox/GameSets/Default/blocks.json` (fields come from `Spac
 
 ## 4. Texture
 
-- PNG in `Spacebox/GameSets/Default/Blocks/` (32 px is the standard; other sizes are packed too, but isometric icons need all faces of a block to have the same square size).
-- The file name matches the name used in `Textures` (case-insensitive).
+- PNG in the block's entry folder (`Blocks/<Group>/<id>/`), emission maps in `<id>/Emissions/` (32 px is the standard; other sizes are packed too, but isometric icons need all faces of a block to have the same square size). Any PNG under `Blocks/` is a block texture, so shared textures can stay in a group folder.
+- The file name matches the name used in `Textures` (case-insensitive) and must be unique in the GameSet. Sounds used only by this block can live in the entry folder too.
 
 ## 5. Optional
 
-- Crafting: add a blueprint to `crafting.json`; processing output: `recipes.json`.
+- Crafting: `<id>/blueprint.json` (one blueprint; `Product` defaults to this block); processing where this block is the ingredient: `<id>/recipes.json` (array with `Type`), or the machine file `Recipes/<type>.json`.
 - World generation: reference it from an asteroid preset in `Generation/Asteroids/*.json`.
 
 ## 6. Verify

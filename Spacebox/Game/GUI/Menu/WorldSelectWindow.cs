@@ -69,6 +69,8 @@ namespace Spacebox.Game.GUI.Menu
                 }
 
                 ImGui.Text(" Mod: " + name + $"({version})");
+                var extensions = WorldGameSetCheck.ExtensionsOf(menu.selectedWorld);
+                if (extensions.Length > 0) ImGui.TextWrapped(" Extensions: " + string.Join(", ", extensions));
                 if (menu.selectedWorld.GameVersion != Application.Version)
                 {
                     ImGui.TextColored(new Vector4(1, 0, 0, 1), " Version: " + menu.selectedWorld.GameVersion);

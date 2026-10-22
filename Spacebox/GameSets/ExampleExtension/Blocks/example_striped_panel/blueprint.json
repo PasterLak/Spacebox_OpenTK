@@ -1,0 +1,16 @@
+{
+  "Product": {
+    "Item": "example_striped_panel",
+    "Quantity": 4
+  },
+  "Ingredients": [
+    {
+      "Item": "iron_ingot",
+      "Quantity": 1
+    },
+    {
+      "Item": "plastic",
+      "Quantity": 1
+    }
+  ]
+}
