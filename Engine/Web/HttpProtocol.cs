@@ -60,13 +60,25 @@ public static class HttpProtocol
         builder.Append("Content-Length: ").Append(response.Body.Length).Append("\r\n");
         builder.Append("Connection: close\r\n");
         foreach (var header in response.Headers)
-            builder.Append(header.Key).Append(": ").Append(header.Value).Append("\r\n");
+            builder.Append(HeaderText(header.Key)).Append(": ").Append(HeaderText(header.Value)).Append("\r\n");
         builder.Append("\r\n");
 
         var head = Encoding.ASCII.GetBytes(builder.ToString());
         await stream.WriteAsync(head, token);
         if (response.Body.Length > 0) await stream.WriteAsync(response.Body, token);
         await stream.FlushAsync(token);
+    }
+
+    public static string HeaderText(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return "";
+
+        var builder = new StringBuilder(text.Length);
+        foreach (char c in text)
+        {
+            if (c >= ' ' && c != (char)0x7F) builder.Append(c);
+        }
+        return builder.ToString();
     }
 
     public static void SplitTarget(string target, out string path, out Dictionary<string, string> query)

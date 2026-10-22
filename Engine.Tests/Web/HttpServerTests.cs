@@ -38,6 +38,23 @@ public class HttpServerTests
     }
 
     [Fact]
+    public async Task WriteResponse_StripsLineBreaksFromHeaders()
+    {
+        var request = await Parse("GET /dashboard/%0d%0aSet-Cookie:%20sbx=evil HTTP/1.1\r\nHost: s\r\n\r\n");
+        var response = HttpResponse.Redirect("https://s" + request.Path);
+        response.Headers["X-Test\r\nInjected"] = "a\nb";
+
+        var stream = new MemoryStream();
+        await HttpProtocol.WriteResponseAsync(stream, response, CancellationToken.None);
+        string text = Encoding.ASCII.GetString(stream.ToArray());
+
+        Assert.DoesNotContain("\r\nSet-Cookie", text);
+        Assert.DoesNotContain("\r\nInjected", text);
+        Assert.Contains("Location: https://s/dashboard/Set-Cookie: sbx=evil\r\n", text);
+        Assert.Contains("X-TestInjected: ab\r\n", text);
+    }
+
+    [Fact]
     public async Task Router_MatchesExactThenPrefixAndReportsWrongMethod()
     {
         var router = new HttpRouter();
