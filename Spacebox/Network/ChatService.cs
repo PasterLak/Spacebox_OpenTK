@@ -71,7 +71,7 @@ public static class ChatService
 
         string text = ChatText.Clean(message.Text);
         if (text.Length == 0) return;
-        Broadcast($"[{ServerAdmins.Label(name, ServerAdmins.ShowsBadge(name))}]: {text}", Color4.White);
+        Broadcast($"[{PlayerBadges.Label(name, ServerAdmins.ShowsBadge(name))}]: {text}", Color4.White);
     }
 
     private static void RunCommand(int sender, string name, string text)

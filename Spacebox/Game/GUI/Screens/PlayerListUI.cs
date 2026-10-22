@@ -59,7 +59,7 @@ public static class PlayerListUI
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
 
-        string label = Spacebox.Network.Admin.ServerAdmins.Label(player.Name, player.IsAdmin);
+        string label = Spacebox.Network.Admin.PlayerBadges.Label(player.Name, player.IsAdmin);
         if (player.IsHost) label += " (host)";
         if (player.Peer == localPeer) label += " (you)";
         if (player.IsMuted) label += " [muted]";
