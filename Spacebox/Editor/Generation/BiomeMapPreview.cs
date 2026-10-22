@@ -1,7 +1,6 @@
 using Engine;
 using Engine.Multithreading;
 using Engine.Utils;
-using ImGuiNET;
 using OpenTK.Mathematics;
 using Spacebox.Game.GameMath;
 using Spacebox.Game.Generation;
@@ -11,7 +10,7 @@ namespace Spacebox.Editor.Generation;
 
 public sealed class BiomeMapPreview : IDisposable
 {
-    private const int SliceBand = 3;
+    public const int SliceBand = 3;
 
     private volatile BuildResult _pending;
     private BuildResult _result;
@@ -75,60 +74,27 @@ public sealed class BiomeMapPreview : IDisposable
         return asteroids;
     }
 
-    public void Draw(System.Numerics.Vector2 size, int slice, bool showRings)
+    public Vector3[] Asteroids => _result?.Asteroids ?? Array.Empty<Vector3>();
+    public Vector3 Origin => _result?.Origin ?? Vector3.Zero;
+    public Biome[] Biomes => _result?.Biomes ?? Array.Empty<Biome>();
+
+    public void Update()
     {
         AcceptResult();
-        if (_result?.Map == null)
-        {
-            ImGui.TextDisabled(_building ? "Building biome map..." : "Press Build to generate the biome map of a sector.");
-            return;
-        }
+    }
 
+    public Texture2D GetSliceTexture(int slice)
+    {
+        if (_result?.Map == null) return null;
         UpdateTexture(slice);
-        float side = MathF.Min(size.X, size.Y);
-        var imageSize = new System.Numerics.Vector2(side, side);
-        var origin = ImGui.GetCursorScreenPos();
-        ImGui.Image(_texture.Handle, imageSize);
-
-        var drawList = ImGui.GetWindowDrawList();
-        if (showRings) DrawRings(drawList, origin, side, slice);
-        foreach (var asteroid in _result.Asteroids)
-        {
-            bool inSlice = BiomeMapImage.IsInSlice(asteroid.Y, slice, BiomesMap.Resolution, Sector.SizeBlocks, SliceBand);
-            var p = BiomeMapImage.ToImage(asteroid, Sector.SizeBlocks, new Vector2(side, side));
-            drawList.AddCircleFilled(origin + new System.Numerics.Vector2(p.X, p.Y), inSlice ? 3f : 1.5f, inSlice ? 0xFFFFFFFF : 0x60FFFFFF);
-        }
-
-        if (!ImGui.IsItemHovered()) return;
-
-        var mouse = ImGui.GetMousePos() - origin;
-        int x = Math.Clamp((int)(mouse.X / side * BiomesMap.Resolution), 0, BiomesMap.Resolution - 1);
-        int z = Math.Clamp((int)(mouse.Y / side * BiomesMap.Resolution), 0, BiomesMap.Resolution - 1);
-        var biome = _result.Map.GetValue((byte)x, (byte)slice, (byte)z);
-        ImGui.SetTooltip(biome == null ? "No biome" : $"{biome.Name} ({biome.IdString})\nblocks x {x * BiomesMap.SmallestPoint}, z {z * BiomesMap.SmallestPoint}");
+        return _texture;
     }
 
-    private void DrawRings(ImDrawListPtr drawList, System.Numerics.Vector2 imageOrigin, float side, int slice)
+    public Biome BiomeAt(int x, int slice, int z)
     {
-        float scale = side / Sector.SizeBlocks;
-        float sliceY = _result.Origin.Y + (slice + 0.5f) * BiomesMap.SmallestPoint;
-        var center = imageOrigin + new System.Numerics.Vector2(-_result.Origin.X * scale, -_result.Origin.Z * scale);
-
-        drawList.PushClipRect(imageOrigin, imageOrigin + new System.Numerics.Vector2(side, side), true);
-        foreach (var biome in _result.Biomes)
-        {
-            if (biome == null || biome.Distance.IsUnlimited) continue;
-
-            uint color = ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(biome.DebugColor.R / 255f, biome.DebugColor.G / 255f, biome.DebugColor.B / 255f, 1f));
-            DrawRing(drawList, center, BiomeMapImage.RingRadius(biome.Distance.Min, sliceY) * scale, color);
-            DrawRing(drawList, center, BiomeMapImage.RingRadius(biome.Distance.Max, sliceY) * scale, color);
-        }
-        drawList.PopClipRect();
-    }
-
-    private static void DrawRing(ImDrawListPtr drawList, System.Numerics.Vector2 center, float radius, uint color)
-    {
-        if (radius > 0f) drawList.AddCircle(center, radius, color, 128, 2f);
+        if (_result?.Map == null) return null;
+        int last = BiomesMap.Resolution - 1;
+        return _result.Map.GetValue((byte)Math.Clamp(x, 0, last), (byte)Math.Clamp(slice, 0, last), (byte)Math.Clamp(z, 0, last));
     }
 
     public void Dispose()

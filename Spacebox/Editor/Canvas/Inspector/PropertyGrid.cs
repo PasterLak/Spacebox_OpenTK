@@ -2,7 +2,7 @@ using System.Text.Json.Nodes;
 using Engine.CanvasUI;
 using OpenTK.Mathematics;
 using Spacebox.Editor.Data;
-using Spacebox.Editor.UI.Fields;
+using Spacebox.Editor.Canvas.Inspector;
 
 namespace Spacebox.Editor.Canvas.Inspector;
 

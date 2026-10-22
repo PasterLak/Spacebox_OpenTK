@@ -1,11 +1,8 @@
 using Engine;
-using Engine.GUI;
 using Engine.Light;
 using Engine.SceneManagement;
-using ImGuiNET;
 using OpenTK.Mathematics;
 using Spacebox.Editor.Data;
-using Spacebox.Editor.UI;
 using Spacebox.Game;
 using Spacebox.Game.GUI;
 using Spacebox.Scenes;
@@ -23,9 +20,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
 {
     private GameSetEditorArgs _args;
     private EditorContext _context;
-    private EditorShell _shell;
     private Spacebox.Editor.Canvas.EditorHost _host;
-    private ImGuiStyleSnapshot _baseStyle;
     private Vector3 _previousAmbient;
 
     public void Initialize(GameSetEditorArgs param)
@@ -46,8 +41,6 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         _context = new EditorContext(project);
         _context.Assets.Refresh();
         _host = new Spacebox.Editor.Canvas.EditorHost(_context, Spacebox.Editor.Canvas.EditorPages.CreateDefault(project), _args.StartPanel);
-
-        _baseStyle = ImGuiStyleSnapshot.Capture();
         Input.ShowCursor();
     }
 
@@ -82,31 +75,18 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
 
     public override void OnGUI()
     {
-        EditorTheme.Apply();
-        ImGui.GetIO().FontGlobalScale = EditorWidgets.Scale;
-        try
-        {
-            _shell?.Draw();
-        }
-        finally
-        {
-            _baseStyle?.Restore();
-        }
         _host?.Render();
         ColorOverlay.OnGUI();
     }
 
     public override void UnloadContent()
     {
-        _shell?.Dispose();
         _host?.Dispose();
         _host = null;
         _context?.Dispose();
-        _shell = null;
         _context = null;
         GameAssets.DisposeAll();
         Lighting.AmbientColor = _previousAmbient;
-        _baseStyle?.Restore();
     }
 
     private void LoadGameSet()

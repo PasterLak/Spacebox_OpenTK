@@ -217,6 +217,50 @@ public class CanvasEditingTests
     }
 
     [Fact]
+    public void HFlowContainer_WrapsChildrenIntoRows()
+    {
+        var root = CreateRoot();
+        var flow = root.Add(new HFlowContainer());
+        flow.SetOffsets(0, 0, 100, 0);
+        var items = new Control[5];
+        for (int i = 0; i < items.Length; i++) items[i] = flow.AddChild(new Control { CustomMinimumSize = new Vector2(30f, 10f) });
+        root.Layout();
+
+        Assert.Equal(0f, items[0].Rect.Y);
+        Assert.Equal(items[0].Rect.Y, items[2].Rect.Y);
+        Assert.True(items[3].Rect.Y > items[2].Rect.Y);
+        Assert.Equal(0f, items[3].Rect.X);
+        Assert.Equal(24f, flow.GetMinimumSize().Y);
+    }
+
+    [Fact]
+    public void ItemList_ClipsRowsToItsRect()
+    {
+        var root = CreateRoot();
+        var list = root.Add(new ItemList());
+        list.SetOffsets(0, 0, 200, 30);
+        for (int i = 0; i < 10; i++) list.AddItem("Row " + i);
+        root.Layout();
+
+        var commands = new CanvasCommandList();
+        root.Draw(commands);
+        Assert.True(commands.MaxClipDepth >= 1);
+    }
+
+    [Fact]
+    public void ItemList_EnsureVisibleBeforeLayoutWaitsForASize()
+    {
+        var root = CreateRoot();
+        var list = root.Add(new ItemList());
+        list.SetOffsets(0, 0, 200, 100);
+        for (int i = 0; i < 40; i++) list.AddItem("Row " + i);
+        list.EnsureVisible(0);
+        root.Layout();
+        root.Draw(new CanvasCommandList());
+        Assert.Equal(0, list.IndexAt(new Vector2(10f, 2f)));
+    }
+
+    [Fact]
     public void Containers_SwitchTabsSplitAndFold()
     {
         var root = CreateRoot();

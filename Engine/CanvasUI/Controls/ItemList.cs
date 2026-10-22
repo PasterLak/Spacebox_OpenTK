@@ -21,6 +21,7 @@ public class ItemList : Control
 {
     private readonly List<ListItem> _items = new List<ListItem>();
     private float _scroll;
+    private int _pendingVisible = -1;
     private int _selected = -1;
     private int _hovered = -1;
 
@@ -87,6 +88,13 @@ public class ItemList : Control
 
     public void EnsureVisible(int index)
     {
+        if (Size.Y <= 0f)
+        {
+            _pendingVisible = index;
+            return;
+        }
+
+        _pendingVisible = -1;
         float top = index * RowHeight;
         if (top < _scroll) _scroll = top;
         if (top + RowHeight > _scroll + Size.Y) _scroll = top + RowHeight - Size.Y;
@@ -155,6 +163,7 @@ public class ItemList : Control
     {
         GetThemeStyleBox("panel")?.Draw(renderer, LocalRect);
         if (_items.Count == 0) return;
+        if (_pendingVisible >= 0) EnsureVisible(_pendingVisible);
 
         _scroll = Math.Clamp(_scroll, 0f, MaxScroll);
         var font = GetThemeFont();
@@ -169,6 +178,7 @@ public class ItemList : Control
         var secondaryColor = GetThemeColor("font_secondary_color", new Color4(1f, 1f, 1f, 0.45f));
         var headerColor = GetThemeColor("font_header_color", new Color4(1f, 0.77f, 0.16f, 1f));
 
+        renderer.PushClip(LocalRect);
         for (int i = first; i <= last; i++)
         {
             var item = _items[i];
@@ -197,6 +207,7 @@ public class ItemList : Control
                 CanvasDraw.Text(renderer, font, new Vector2(x + used, ty), secondary, size, secondaryColor);
             }
         }
+        renderer.PopClip();
 
         if (scrollbar > 0f)
         {

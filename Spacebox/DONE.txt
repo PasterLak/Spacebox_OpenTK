@@ -26,6 +26,7 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- GameSet editor rebuilt on the new retained UI: every page (blocks, items, projectiles, recipes, disassembly, loot, mobs, generation with biome map, tutorials, sounds, atlases, all files) with property grid, 3D previews and summaries
 - Player/spawn_parameters.json: start items with their place (hand, hotbar slot, inventory, equipment), start health/power/oxygen (also on respawn), preferred spawn biome and distance from the center
 - GameSet editor: Player spawn, Disassembly, Tutorials (outline, step card, problems) and Sounds (play, where used) panels, crafting category order and preview, block previews show models, atlas fits the window; Debug/Release builds also save editor changes into the source GameSet
 - asteroid shapes (new worlds): 70% of asteroids roll their own form (30% stay classic): lumpy stretched blobs with lobes, double asteroids, rare donuts, Pac-Man mouths and bites, craters; no floating blocks
@@ -127,6 +128,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- GameSet editor: Crafting list showed block files instead of blueprints
 - ricochets: projectiles stopped after the 5th bounce and often failed at shallow angles far from the world center (the bounced ray started inside the surface)
 - weapon and cannon ReloadTime are seconds now (were ticks and milliseconds); unused settings removed (weapon Damage, equipment Tier, projectile Mass, recipe PowerPerTickRequared, item Info, generator Version/NoiseModifier, config Dependencies/Textures)
 - new worlds: asteroids outside the first sector got the biome of the sector corner and their spacing was not checked
@@ -291,6 +293,7 @@ Fixes
 - unloading a far entity skipped the next entity in the sector that frame and drew effects of the disposed one
 - entering a sector while it was still loading in the background could drop its unsaved changes (mined-out asteroids came back)
 Engine
+- CanvasUI: HFlowContainer; ItemList clips its rows and scrolls to the selection after the first layout
 - WAV sounds load from read-only installs (files opened read-only and shared)
 - console log keeps the last 5000 messages, draws the last 400, thread-safe for every log call; no log line per disposed GL object
 - archives from servers are checked before extraction (2 GB, 100000 entries, path traversal also on case-sensitive systems)

@@ -1,7 +1,6 @@
 using System.Numerics;
 using Engine;
 using Engine.Graphics;
-using ImGuiNET;
 
 namespace Spacebox.Editor.Preview;
 
@@ -10,7 +9,6 @@ public sealed class PreviewViewport : IDisposable
     private const float OrbitSpeed = 0.4f;
     private const float AutoRotateSpeed = 18f;
     private const int MaxCaptureSize = 4096;
-    private const float ClickDragTolerance = 4f;
 
     private readonly RenderTexture _target = new RenderTexture(256, 256);
     private readonly TrackballViewCamera _camera = new TrackballViewCamera();
@@ -54,50 +52,45 @@ public sealed class PreviewViewport : IDisposable
         _key = null;
     }
 
-    public void Draw(Vector2 size)
+    public int TextureHandle => _target.ColorTexture;
+
+    public string Hint
     {
-        size = Vector2.Max(size, new Vector2(32f, 32f));
+        get
+        {
+            if (_content == null) return "No preview";
+            if (!_content.IsReady) return "Generating...";
+            return ClickTarget != null ? "Click: shoot  Drag: rotate  Wheel: zoom  RMB: auto rotate" : "Drag: rotate  Wheel: zoom  Double click: reset  RMB: auto rotate";
+        }
+    }
+
+    public IPreviewClickTarget ClickTarget => _content is IPreviewClickTarget { AcceptsClicks: true } target && _content.IsReady ? target : null;
+
+    public void Present(int width, int height)
+    {
+        width = Math.Max(32, width);
+        height = Math.Max(32, height);
         _visible = true;
-        _target.Resize((int)size.X, (int)size.Y);
-        float aspect = size.X / size.Y;
-        if (MathF.Abs(aspect - _camera.AspectRatio) > 0.01f)
-        {
-            _camera.AspectRatio = aspect;
-            if (_framed) Reframe();
-        }
+        _target.Resize(width, height);
+        float aspect = width / (float)height;
+        if (MathF.Abs(aspect - _camera.AspectRatio) <= 0.01f) return;
+        _camera.AspectRatio = aspect;
+        if (_framed) Reframe();
+    }
 
-        var start = ImGui.GetCursorScreenPos();
-        ImGui.Image(_target.ColorTexture, size, new Vector2(0, 1), new Vector2(1, 0));
-        ImGui.SetCursorScreenPos(start);
-        ImGui.InvisibleButton("##previewInput", size);
+    public void Orbit(float dx, float dy)
+    {
+        _camera.Orbit(-dx * OrbitSpeed, dy * OrbitSpeed);
+        _autoRotate = false;
+    }
 
-        bool hovered = ImGui.IsItemHovered();
-        var clickTarget = _content is IPreviewClickTarget { AcceptsClicks: true } target && _content.IsReady ? target : null;
-        if (clickTarget != null && hovered && ImGui.IsMouseReleased(ImGuiMouseButton.Left) &&
-            ImGui.GetMouseDragDelta(ImGuiMouseButton.Left, 0f).Length() < ClickDragTolerance)
-        {
-            var point = (ImGui.GetMousePos() - start) / size;
-            clickTarget.Click(_camera.Position, _camera.ViewportPointToDirection(new OpenTK.Mathematics.Vector2(point.X, point.Y)));
-        }
-        if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left, 0f))
-        {
-            var delta = ImGui.GetIO().MouseDelta;
-            _camera.Orbit(-delta.X * OrbitSpeed, delta.Y * OrbitSpeed);
-            _autoRotate = false;
-        }
+    public void Zoom(float wheel) => _camera.Zoom(wheel);
 
-        if (hovered)
-        {
-            float wheel = ImGui.GetIO().MouseWheel;
-            if (wheel != 0f) _camera.Zoom(wheel);
-            if (clickTarget == null && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) ResetView();
-            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right)) _autoRotate = !_autoRotate;
-        }
+    public void ToggleAutoRotate() => _autoRotate = !_autoRotate;
 
-        var drawList = ImGui.GetWindowDrawList();
-        string hint = _content == null ? "No preview" : !_content.IsReady ? "Generating..." :
-            clickTarget != null ? "Click: shoot  Drag: rotate  Wheel: zoom  RMB: auto rotate" : "Drag: rotate  Wheel: zoom  Double click: reset  RMB: auto rotate";
-        drawList.AddText(start + new Vector2(6f, 4f), 0xB0FFFFFF, hint);
+    public void ClickAt(float x01, float y01)
+    {
+        ClickTarget?.Click(_camera.Position, _camera.ViewportPointToDirection(new OpenTK.Mathematics.Vector2(x01, y01)));
     }
 
     public void Update(float deltaTime)

@@ -8,7 +8,7 @@ public static class EntryFiles
 
     public static string Find(string directory, string defaultFileName)
     {
-        string named = NamedPath(directory);
+        string named = IsReserved(defaultFileName) ? null : NamedPath(directory);
         if (named != null && File.Exists(named)) return named;
 
         string fallback = Path.Combine(directory, defaultFileName);
@@ -17,7 +17,8 @@ public static class EntryFiles
 
     public static string PathFor(string directory, string defaultFileName)
     {
-        return Find(directory, defaultFileName) ?? NamedPath(directory) ?? Path.Combine(directory, defaultFileName);
+        string named = IsReserved(defaultFileName) ? null : NamedPath(directory);
+        return Find(directory, defaultFileName) ?? named ?? Path.Combine(directory, defaultFileName);
     }
 
     public static bool IsEntryFile(string path, string defaultFileName, Func<string, bool> exists)
@@ -30,6 +31,7 @@ public static class EntryFiles
         string directory = path.Substring(0, slash);
         string folderName = directory.Substring(directory.LastIndexOf('/') + 1);
 
+        if (IsReserved(defaultFileName)) return string.Equals(fileName, defaultFileName, StringComparison.OrdinalIgnoreCase);
         if (IsNamedFile(fileName, folderName)) return true;
         if (!string.Equals(fileName, defaultFileName, StringComparison.OrdinalIgnoreCase)) return false;
         return IsReserved(NamedFile(folderName)) || !exists(directory + "/" + NamedFile(folderName));

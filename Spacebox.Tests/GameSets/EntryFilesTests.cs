@@ -17,6 +17,15 @@ public sealed class EntryFilesTests
         Assert.Equal(expected, EntryFiles.IsEntryFile(path, GameSetFormat.BlockEntryFile, _ => false));
     }
 
+    [Theory]
+    [InlineData("Blocks/Rocks/stone/blueprint.json", true)]
+    [InlineData("Blocks/Rocks/stone/stone.json", false)]
+    [InlineData("Blocks/Rocks/stone/block.json", false)]
+    public void SecondaryFiles_KeepTheirFixedName(string path, bool expected)
+    {
+        Assert.Equal(expected, EntryFiles.IsEntryFile(path, GameSetFormat.BlueprintFile, _ => true));
+    }
+
     [Fact]
     public void DefaultName_IsIgnoredNextToANamedFile()
     {
