@@ -69,7 +69,8 @@ public static class ChatService
             return;
         }
 
-        string text = message.Text.Length > 256 ? message.Text.Substring(0, 256) : message.Text;
+        string text = ChatText.Clean(message.Text);
+        if (text.Length == 0) return;
         Broadcast($"[{ServerAdmins.Label(name, ServerAdmins.ShowsBadge(name))}]: {text}", Color4.White);
     }
 

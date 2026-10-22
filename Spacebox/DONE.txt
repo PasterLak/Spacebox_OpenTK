@@ -209,6 +209,7 @@ Fixes
 - a claim beacon placed in empty space (first block of a new ship) had no owner, so it never protected anything, and skipped the claim limits (claims off, max claims, spawn distance); the server now checks them and makes the placer the owner
 - multiplayer: a player's NaN or zero rotation was accepted and relayed to everyone (broken model and hitboxes); the server rejects it
 - dedicated server: Ctrl+C, closing the terminal and SIGTERM (systemd, Docker) killed the server without saving; they now save the world and stop like the stop command (a second Ctrl+C still ends it at once)
+- multiplayer: chat messages with line breaks could fake server or player lines; control characters are removed
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

@@ -38,6 +38,14 @@ public class MultiplayerHardeningTests
     }
 
     [Fact]
+    public void ChatText_RemovesLineBreaksAndLimitsLength()
+    {
+        Assert.Equal("hi  [Server]: restart", ChatText.Clean("hi\r\n[Server]: restart"));
+        Assert.Equal(ChatText.MaxLength, ChatText.Clean(new string('x', 1000)).Length);
+        Assert.Equal("", ChatText.Clean("\n\t "));
+    }
+
+    [Fact]
     public void OwnerRotation_RejectsNaNAndZeroQuaternions()
     {
         Assert.True(NetValidation.IsValidRotation(OpenTK.Mathematics.Quaternion.Identity));
