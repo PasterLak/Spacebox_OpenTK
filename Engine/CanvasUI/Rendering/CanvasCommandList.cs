@@ -35,6 +35,11 @@ public sealed class CanvasCommandList : ICanvasRenderer
         Commands.Add(new Command(Transform.TransformAxisAligned(rect), Multiply(color), texture));
     }
 
+    public void DrawTextureHandle(int handle, Rect2 rect, Rect2 uv, Color4 color)
+    {
+        Commands.Add(new Command(Transform.TransformAxisAligned(rect), Multiply(color), null));
+    }
+
     public void PushClip(Rect2 rect)
     {
         _clips.Push(Transform.TransformAxisAligned(rect));

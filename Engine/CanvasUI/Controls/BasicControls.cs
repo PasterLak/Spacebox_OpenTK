@@ -166,3 +166,18 @@ public class NinePatchRect : Control
         CanvasDraw.NinePatch(renderer, Texture, LocalRect, Region, PatchLeft, PatchTop, PatchRight, PatchBottom, Color4.White, DrawCenter);
     }
 }
+
+public class TextureHandleRect : Control
+{
+    public Func<int> Handle { get; set; }
+    public bool FlipY { get; set; } = true;
+    public Color4 Tint { get; set; } = Color4.White;
+
+    protected override void Draw(ICanvasRenderer renderer)
+    {
+        int handle = Handle?.Invoke() ?? 0;
+        if (handle == 0) return;
+        var uv = FlipY ? new Rect2(0f, 1f, 1f, -1f) : new Rect2(0f, 0f, 1f, 1f);
+        renderer.DrawTextureHandle(handle, LocalRect, uv, Tint);
+    }
+}

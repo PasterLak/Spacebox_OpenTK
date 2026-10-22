@@ -17,6 +17,8 @@ public class LineEdit : TextEditBase
 
     public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
 
+    protected virtual float RightPadding => 0f;
+
     public override Vector2 GetMinimumSize()
     {
         var font = GetThemeFont();
@@ -29,7 +31,7 @@ public class LineEdit : TextEditBase
     {
         var style = CurrentStyle();
         style?.Draw(renderer, LocalRect);
-        var inner = style == null ? LocalRect : style.ContentRect(LocalRect);
+        var inner = InnerRect();
         var font = GetThemeFont();
         if (font == null) return;
 
@@ -91,7 +93,8 @@ public class LineEdit : TextEditBase
     private Rect2 InnerRect()
     {
         var style = GetThemeStyleBox("normal");
-        return style == null ? LocalRect : style.ContentRect(LocalRect);
+        var rect = style == null ? LocalRect : style.ContentRect(LocalRect);
+        return new Rect2(rect.X, rect.Y, MathF.Max(0f, rect.Width - RightPadding), rect.Height);
     }
 
     private float TextOrigin(CanvasFont font, float size, Rect2 inner)

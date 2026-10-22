@@ -24,6 +24,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     private GameSetEditorArgs _args;
     private EditorContext _context;
     private EditorShell _shell;
+    private Spacebox.Editor.Canvas.EditorHost _host;
     private ImGuiStyleSnapshot _baseStyle;
     private Vector3 _previousAmbient;
 
@@ -44,7 +45,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         if (project.Mirror != null) Engine.Debug.Log($"[Editor] Development build: saves also go to {project.Mirror.Root}");
         _context = new EditorContext(project);
         _context.Assets.Refresh();
-        _shell = new EditorShell(_context, EditorPanelFactory.CreateDefault(project), _args.StartPanel);
+        _host = new Spacebox.Editor.Canvas.EditorHost(_context, Spacebox.Editor.Canvas.EditorPages.CreateDefault(project), _args.StartPanel);
 
         _baseStyle = ImGuiStyleSnapshot.Capture();
         Input.ShowCursor();
@@ -62,6 +63,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         if (_context == null) return;
 
         _context.Update(Time.Delta);
+        _host?.Update(Time.Delta);
 
         if (_context.ReloadRequested)
         {
@@ -90,12 +92,15 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         {
             _baseStyle?.Restore();
         }
+        _host?.Render();
         ColorOverlay.OnGUI();
     }
 
     public override void UnloadContent()
     {
         _shell?.Dispose();
+        _host?.Dispose();
+        _host = null;
         _context?.Dispose();
         _shell = null;
         _context = null;

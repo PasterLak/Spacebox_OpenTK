@@ -114,6 +114,12 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
         AddQuad(texture.Handle, rect, uv, color);
     }
 
+    public void DrawTextureHandle(int handle, Rect2 rect, Rect2 uv, Color4 color)
+    {
+        if (handle == 0) return;
+        AddQuad(handle, rect, uv, color);
+    }
+
     public void PushClip(Rect2 rect)
     {
         var screen = (_screen * Transform).TransformAxisAligned(rect);

@@ -57,6 +57,8 @@ public class NumberEdit : LineEdit
 
     public override Vector2 GetMinimumSize() => base.GetMinimumSize() + new Vector2(ButtonWidth, 0f);
 
+    protected override float RightPadding => Editable ? ButtonWidth : 0f;
+
     protected internal override bool OnKeyPress(KeyPress press)
     {
         if (HasFocus && press.Key == Keys.Up) { Nudge(1); return true; }
