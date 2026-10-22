@@ -11,7 +11,7 @@ public static class ShipCarrierSpeed
 
     private static float At(Vector3 position)
     {
-        var sector = World.CurrentSector;
+        var sector = World.SectorAt(position);
         if (sector == null || !sector.TryGetNearestEntity(position, out var entity)) return 0f;
 
         var ship = entity?.Ship;

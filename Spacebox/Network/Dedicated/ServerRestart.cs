@@ -16,11 +16,23 @@ public static class ServerRestart
         else World.Instance?.Save(false);
     }
 
-    public static void Stop()
+    public static void Stop() => Stop(null);
+
+    public static void Stop(Action completed)
     {
-        Save("Stop");
-        NetworkSession.Current?.Dispose();
-        Application.Quit();
+        FlushPlayersThen(() =>
+        {
+            try
+            {
+                Save("Stop");
+                NetworkSession.Current?.Dispose();
+                Application.Quit();
+            }
+            finally
+            {
+                completed?.Invoke();
+            }
+        });
     }
 
     public static bool Restart()
@@ -32,22 +44,31 @@ public static class ServerRestart
             return false;
         }
 
-        Save("Restart");
-        NetworkSession.Current?.Dispose();
-
-        try
+        FlushPlayersThen(() =>
         {
-            Process.Start(CreateStartInfo(executable, Environment.GetCommandLineArgs(), Environment.ProcessId));
-        }
-        catch (Exception ex)
-        {
-            Debug.Error($"[Server] Restart failed: {ex.Message}");
-            return false;
-        }
+            Save("Restart");
+            NetworkSession.Current?.Dispose();
 
-        Debug.Warning("[Server] Restarting");
-        Application.Quit();
+            try
+            {
+                Process.Start(CreateStartInfo(executable, Environment.GetCommandLineArgs(), Environment.ProcessId));
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[Server] Restart failed: {ex.Message}");
+                return;
+            }
+
+            Debug.Warning("[Server] Restarting");
+            Application.Quit();
+        });
         return true;
+    }
+
+    private static void FlushPlayersThen(Action action)
+    {
+        if (NetworkSession.Current == null) action();
+        else NetworkSession.Current.FlushPlayerData(action);
     }
 
     public static ProcessStartInfo CreateStartInfo(string executable, string[] commandLine, int processId)

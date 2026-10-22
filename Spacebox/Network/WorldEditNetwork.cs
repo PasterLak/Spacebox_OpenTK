@@ -146,9 +146,29 @@ public static class WorldEditNetwork
     private static readonly SpatialSoundPool EditSounds = new SpatialSoundPool(4, EditSoundMinDistance, EditSoundMaxDistance, EditSoundRolloff);
     private static readonly Random SoundRandom = new Random();
 
+    private static readonly PendingEntityEdits<BlockEditMessage> PendingEdits = new PendingEntityEdits<BlockEditMessage>();
+
     public static void Reset()
     {
         EditSounds.Clear();
+        PendingEdits.Clear();
+    }
+
+    public static void Update()
+    {
+        if (!NetworkManager.Instance.IsServer) return;
+        PendingEdits.Update(Time.Delta, IsEntityLoaded, OnBlockEdit, ExpirePending);
+    }
+
+    private static bool IsEntityLoaded(long entityId)
+    {
+        return World.Instance != null && World.Instance.TryFindEntity(entityId, out _);
+    }
+
+    private static void ExpirePending(int sender, BlockEditMessage message)
+    {
+        Debug.Warning($"[WorldEdit] Entity {message.EntityId} did not load in time, an edit from peer {sender} was dropped");
+        RejectUnknown(sender, message);
     }
 
     public static void NotifyPlaced(SpaceEntity entity, Vector3 entitySpacePosition, Block block)
@@ -208,9 +228,9 @@ public static class WorldEditNetwork
         SpaceEntity entity = null;
         bool known = world != null && world.TryFindEntity(message.EntityId, out entity);
 
-        if (!known)
+        if (!known || PendingEdits.Has(message.EntityId))
         {
-            RejectUnknown(sender, message);
+            if (!PendingEdits.TryAdd(sender, message.EntityId, message)) RejectUnknown(sender, message);
             return;
         }
 

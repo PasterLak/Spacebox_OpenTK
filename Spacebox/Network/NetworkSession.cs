@@ -24,6 +24,7 @@ public sealed class NetworkSession : IDisposable
     private readonly Mobs.MobSpawnService _mobSpawner;
     private float _playerSyncTimer;
     private readonly AutoSaveTimer _autoSave = new AutoSaveTimer();
+    private readonly PlayerDataFlush _playerDataFlush = new PlayerDataFlush();
     private bool _disposed;
     private Auth.ServerAccessSettings _access;
     private readonly Auth.ServerAuthService _auth;
@@ -46,6 +47,7 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Register<JoinRequestMessage>(OnJoinRequest);
         network.Messages.Register<ClientReadyMessage>(OnClientReady);
         network.Messages.Register<PlayerDataMessage>(OnPlayerData);
+        network.Messages.Register<PlayerDataRequestMessage>(OnPlayerDataRequest);
         network.Messages.Register<AuthResponseMessage>(OnAuthResponse);
         network.Messages.AllowBeforeAdmission<JoinRequestMessage>();
         network.Messages.AllowBeforeAdmission<AuthResponseMessage>();
@@ -152,11 +154,32 @@ public sealed class NetworkSession : IDisposable
         return true;
     }
 
+    public void FlushPlayerData(Action completed)
+    {
+        var network = NetworkManager.Instance;
+        if (!network.IsServer)
+        {
+            completed?.Invoke();
+            return;
+        }
+
+        var peers = new List<int>();
+        foreach (var player in PlayerRegistry.All)
+            if (player.Peer != network.LocalPeerId) peers.Add(player.Peer);
+
+        if (peers.Count > 0) Debug.Log($"[Server] Asking {peers.Count} player(s) for their latest data");
+        _playerDataFlush.Start(peers, () => network.SendToClients(new PlayerDataRequestMessage(), DeliveryMode.Reliable), completed);
+    }
+
     public void Update()
     {
+        if (_playerDataFlush.Update(Time.Delta))
+            Debug.Warning("[Server] Some players did not send their latest data in time, saving the last known state");
+
         if (NetworkManager.Instance.IsServer)
         {
             _auth?.Update(Time.Delta);
+            WorldEditNetwork.Update();
             Combat.PlayerHitboxes.Record();
             UpdateObservers();
         }
@@ -260,6 +283,7 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Unregister<JoinRequestMessage>();
         network.Messages.Unregister<ClientReadyMessage>();
         network.Messages.Unregister<PlayerDataMessage>();
+        network.Messages.Unregister<PlayerDataRequestMessage>();
         network.Messages.Unregister<AuthResponseMessage>();
         network.RequireAdmission = false;
 
@@ -394,8 +418,14 @@ public sealed class NetworkSession : IDisposable
         ChatService.Broadcast($"{player.Name} joined the game", Color4.Yellow);
     }
 
+    private void OnPlayerDataRequest(int sender, PlayerDataRequestMessage message)
+    {
+        if (NetworkManager.Instance.IsRemoteClient) SendLocalPlayerData();
+    }
+
     private void OnPlayerData(int sender, PlayerDataMessage message)
     {
+        _playerDataFlush.Received(sender);
         if (!NetworkManager.Instance.IsServer || !PlayerRegistry.TryGet(sender, out var player) || string.IsNullOrEmpty(message.Json)) return;
 
         player.LastPlayerJson = Players.PlayerGameModes.Current.ApplyTo(player.Name, message.Json);
@@ -410,6 +440,7 @@ public sealed class NetworkSession : IDisposable
         _auth?.Remove(peer);
         Players.AstronautNetwork.ForgetGiftsOf(peer);
 
+        _playerDataFlush.Received(peer);
         if (!PlayerRegistry.Remove(peer, out var player)) return;
 
         if (!string.IsNullOrEmpty(player.LastPlayerJson) && World.WorldData != null)

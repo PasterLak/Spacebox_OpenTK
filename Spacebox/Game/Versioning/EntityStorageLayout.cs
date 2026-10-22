@@ -21,12 +21,36 @@ public static class EntityStorageLayout
         world.Write($"Moved {moved} entity files to {EntityFiles.FolderName}/, registered {reconstructors} DNA reconstructors");
     }
 
-    public static void UpgradeInPlace(string worldFolder)
+    public const string BackupLabel = "entity_layout";
+
+    public static string UpgradeInPlace(string worldFolder, string backupDirectory = null)
     {
-        if (!HasLegacyFiles(worldFolder)) return;
+        if (!HasLegacyFiles(worldFolder)) return null;
+
+        string backup = null;
+        try
+        {
+            backup = WorldBackup.Create(worldFolder, BackupLabel, backupDirectory, DateTime.Now);
+            Debug.Log($"[EntityStorageLayout] Backup before moving the entity files: {backup}");
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[EntityStorageLayout] Could not create a backup, moving the entity files without one: {ex.Message}");
+        }
 
         var world = new WorldUpgradeContext(new WorldInfo { Name = Path.GetFileName(worldFolder) }, worldFolder);
-        Upgrade(world);
+        try
+        {
+            Upgrade(world);
+        }
+        catch (Exception ex)
+        {
+            string restoreError = new WorldFolderRestorer().Restore(backup, worldFolder);
+            Debug.Error($"[EntityStorageLayout] Moving the entity files failed: {ex.Message}" + (restoreError == null ? "" : $". Restoring the backup failed: {restoreError}"));
+            throw;
+        }
+
         foreach (var line in world.Log) Debug.Warning("[EntityStorageLayout] " + line);
+        return backup;
     }
 }

@@ -109,7 +109,7 @@ public static class ProtectionNetwork
     {
         entity = null;
         distance = float.MaxValue;
-        var sector = World.CurrentSector;
+        var sector = World.SectorAt(position);
         if (sector == null || !sector.TryGetNearestEntity(position, out var nearest)) return false;
 
         var box = nearest.GeometryBoundingBox;

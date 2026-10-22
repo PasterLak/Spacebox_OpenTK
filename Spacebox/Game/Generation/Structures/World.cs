@@ -325,12 +325,13 @@ public class World : Component, ISpaceStructure
 
     public bool IsColliding(Vector3 pos, BoundingVolume volume, out CollideInfo collideInfo)
     {
-        if (CurrentSector == null)
+        var sector = SectorAt(pos);
+        if (sector == null)
         {
             collideInfo = new CollideInfo();
             return false;
         }
-        return CurrentSector.IsColliding(pos, volume, out collideInfo);
+        return sector.IsColliding(pos, volume, out collideInfo);
     }
 
     public override void OnDetached()

@@ -9,7 +9,7 @@ public class ServerShutdownSignalsTests
     {
         var queue = new Queue<Action>();
         int stops = 0;
-        using var signals = new ServerShutdownSignals(queue.Enqueue, () => stops++);
+        using var signals = new ServerShutdownSignals(queue.Enqueue, done => { stops++; done(); });
 
         Assert.True(signals.Request());
         Assert.False(signals.Request());
@@ -26,11 +26,26 @@ public class ServerShutdownSignalsTests
     public void Request_CountsAsStoppedEvenWhenStopThrows()
     {
         var queue = new Queue<Action>();
-        using var signals = new ServerShutdownSignals(queue.Enqueue, () => throw new InvalidOperationException());
+        using var signals = new ServerShutdownSignals(queue.Enqueue, _ => throw new InvalidOperationException());
 
         signals.Request();
         Assert.Throws<InvalidOperationException>(() => queue.Dequeue()());
 
+        Assert.True(signals.IsStopped);
+    }
+
+    [Fact]
+    public void Request_IsStoppedOnlyWhenTheAsyncStopCompletes()
+    {
+        var queue = new Queue<Action>();
+        Action finish = null;
+        using var signals = new ServerShutdownSignals(queue.Enqueue, done => finish = done);
+
+        signals.Request();
+        queue.Dequeue()();
+        Assert.False(signals.IsStopped);
+
+        finish();
         Assert.True(signals.IsStopped);
     }
 }

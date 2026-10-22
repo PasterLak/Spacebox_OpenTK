@@ -127,7 +127,7 @@ namespace Engine
             _windowWidth = width;
             _windowHeight = height;
 
-            ImGui.GetIO().FontGlobalScale = width / 1280.0f;
+            ImGui.GetIO().FontGlobalScale = Engine.GUI.ImGuiFontScale.For(width);
         }
 
         public void DestroyDeviceObjects()

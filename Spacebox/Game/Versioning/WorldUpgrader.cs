@@ -1,4 +1,3 @@
-using Engine.Utils;
 using Spacebox.Game.GUI;
 
 namespace Spacebox.Game.Versioning;
@@ -18,7 +17,7 @@ public sealed class WorldUpgradeResult
 
 public sealed class WorldUpgrader
 {
-    public const string BackupFolderName = "_backups";
+    public const string BackupFolderName = WorldBackup.FolderName;
 
     private readonly WorldUpgradeRegistry _registry;
     private readonly string _backupDirectory;
@@ -132,13 +131,7 @@ public sealed class WorldUpgrader
 
     private string CreateBackup(string worldFolder, string version)
     {
-        string directory = string.IsNullOrEmpty(_backupDirectory) ? Path.Combine(Path.GetDirectoryName(Path.GetFullPath(worldFolder)) ?? "", BackupFolderName) : _backupDirectory;
-        Directory.CreateDirectory(directory);
-
-        string name = $"{Path.GetFileName(Path.GetFullPath(worldFolder).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))}_{version}_{_clock():yyyyMMdd_HHmmss}.zip";
-        string path = Path.Combine(directory, name);
-        File.WriteAllBytes(path, DirectoryArchive.Pack(new[] { new ArchiveFolder(worldFolder, WorldFolderRestorer.ArchiveRoot) }));
-        return path;
+        return WorldBackup.Create(worldFolder, version, _backupDirectory, _clock());
     }
 
     private static WorldUpgradeResult Fail(WorldUpgradeStatus status, string from, string to, string error, string backup, IReadOnlyList<string> log)

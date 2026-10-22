@@ -87,11 +87,14 @@ public class EntityStorageLayoutTests : IDisposable
         string folder = Build(w => w.LegacyEntityLayout().Chunk(new[] { "default:light_rock" }));
         Assert.True(EntityStorageLayout.HasLegacyFiles(folder));
 
-        EntityStorageLayout.UpgradeInPlace(folder);
+        string backup = EntityStorageLayout.UpgradeInPlace(folder, Path.Combine(_root, "backups"));
 
         Assert.False(EntityStorageLayout.HasLegacyFiles(folder));
         Assert.Equal(new[] { "Entities/1.entity" }, WorldInspector.EntityFiles(folder));
         Assert.Single(WorldInspector.EntityIndex(folder));
+        Assert.True(File.Exists(backup));
+        Assert.Contains(EntityStorageLayout.BackupLabel, Path.GetFileName(backup));
+        Assert.Null(EntityStorageLayout.UpgradeInPlace(folder, Path.Combine(_root, "backups")));
     }
 
     [Fact]
@@ -116,7 +119,7 @@ public class EntityStorageLayoutTests : IDisposable
         File.SetLastWriteTimeUtc(original, DateTime.UtcNow.AddHours(-1));
         File.SetLastWriteTimeUtc(copy, DateTime.UtcNow);
 
-        EntityStorageLayout.UpgradeInPlace(folder);
+        EntityStorageLayout.UpgradeInPlace(folder, Path.Combine(_root, "backups"));
 
         Assert.Equal(new[] { "Entities/1.entity" }, WorldInspector.EntityFiles(folder));
         var record = Assert.Single(WorldInspector.EntityIndex(folder));

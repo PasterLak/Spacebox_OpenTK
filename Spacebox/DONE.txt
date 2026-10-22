@@ -116,6 +116,11 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- planned server stop/restart asks every player for fresh data first (up to 2.5 s), so no progress is lost
+- worlds saved with the old entity layout at the current version get a zip backup before their entity files are moved
+- players in another sector than the host: drops, physics objects, mobs, ship carry speed and spacer loot use their own sector
+- block edits right after arriving in a far area are no longer lost: the server keeps them until the entity is loaded
+- small windows (800x600, 1024x768): the pixel font is never scaled below 1, larger windows scale in 0.25 steps
 - mods window list icons were upside down
 - ship viewer pictures had no skybox (new render textures left the texture binding cache stale)
 - ship viewer turned ships the wrong way: up now comes from the console top face, forward from the main thrusters and cannons

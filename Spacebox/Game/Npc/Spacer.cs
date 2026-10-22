@@ -137,7 +137,7 @@ namespace Spacebox.Game
 
         public IReadOnlyList<Storage> GetContainerStorages()
         {
-            if (!_lootWasGenerated && !IsReplica && World.CurrentSector != null) GenerateLoot();
+            if (!_lootWasGenerated && !IsReplica && World.SectorAt(Position) != null) GenerateLoot();
             return [Storage];
         }
 
@@ -169,7 +169,7 @@ namespace Spacebox.Game
         private void OnKilled()
         {
 
-            if (!_lootWasGenerated && World.CurrentSector != null)
+            if (!_lootWasGenerated && World.SectorAt(Position) != null)
                 GenerateLoot();
 
             World.DropEffectManager?.DropStorage(Storage, Position);
@@ -180,7 +180,7 @@ namespace Spacebox.Game
         }
         private void AddItems(Storage storage)
         {
-            var items = GameAssets.LootConfig.GenerateLoot("spacer", SeedHelper.ToIntSeed(World.CurrentSector.Seed), storage.SlotsCount);
+            var items = GameAssets.LootConfig.GenerateLoot("spacer", SeedHelper.ToIntSeed(World.SectorAt(Position).Seed), storage.SlotsCount);
 
             foreach (var item in items)
             {

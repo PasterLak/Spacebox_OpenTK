@@ -10,12 +10,12 @@ public sealed class ServerShutdownSignals : IDisposable
     private static readonly PosixSignal[] Signals = { PosixSignal.SIGINT, PosixSignal.SIGTERM, PosixSignal.SIGQUIT };
 
     private readonly Action<Action> _runOnMainThread;
-    private readonly Action _stop;
+    private readonly Action<Action> _stop;
     private readonly ManualResetEventSlim _stopped = new ManualResetEventSlim(false);
     private readonly List<PosixSignalRegistration> _registrations = new List<PosixSignalRegistration>();
     private int _requested;
 
-    public ServerShutdownSignals(Action<Action> runOnMainThread, Action stop)
+    public ServerShutdownSignals(Action<Action> runOnMainThread, Action<Action> stop)
     {
         _runOnMainThread = runOnMainThread;
         _stop = stop;
@@ -45,11 +45,12 @@ public sealed class ServerShutdownSignals : IDisposable
         {
             try
             {
-                _stop();
+                _stop(() => _stopped.Set());
             }
-            finally
+            catch
             {
                 _stopped.Set();
+                throw;
             }
         });
         return true;

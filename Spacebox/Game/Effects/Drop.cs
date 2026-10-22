@@ -97,7 +97,9 @@ public class Drop : IDisposable
                 }
                 else
                 {
-                    hasHit = World.CurrentSector.Raycast(ray, out var worldHit);
+                    var sector = World.SectorAt(Position);
+                    Spacebox.Game.Physics.HitInfo worldHit = default;
+                    hasHit = sector != null && sector.Raycast(ray, out worldHit);
                     if (hasHit)
                     {
                         HandleCollision(worldHit.hitPosition, worldHit.normalWorld);
@@ -159,7 +161,8 @@ public class Drop : IDisposable
         _supportRay.Direction = gravity.Normalized();
         _supportRay.Length = SupportProbe;
         if (SourceEntity != null) return SourceEntity.Raycast(_supportRay, out _);
-        return World.CurrentSector != null && World.CurrentSector.Raycast(_supportRay, out _);
+        var sector = World.SectorAt(Position);
+        return sector != null && sector.Raycast(_supportRay, out _);
     }
 
     public void ResetPickupTimer()

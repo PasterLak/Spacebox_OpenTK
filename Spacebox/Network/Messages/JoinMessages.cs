@@ -99,6 +99,17 @@ public struct ClientReadyMessage : INetMessage
     }
 }
 
+public struct PlayerDataRequestMessage : INetMessage
+{
+    public void Serialize(NetWriter writer)
+    {
+    }
+
+    public void Deserialize(NetReader reader)
+    {
+    }
+}
+
 public struct PlayerDataMessage : INetMessage
 {
     public string Json;
