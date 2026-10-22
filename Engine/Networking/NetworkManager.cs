@@ -138,6 +138,18 @@ public sealed class NetworkManager
         return true;
     }
 
+    public bool PollUntil(Func<bool> done, TimeSpan timeout)
+    {
+        var timer = System.Diagnostics.Stopwatch.StartNew();
+        while (!done())
+        {
+            if (Mode == NetworkMode.None || _transport == null || timer.Elapsed >= timeout) return false;
+            _transport.Poll();
+            if (!done()) Thread.Sleep(5);
+        }
+        return true;
+    }
+
     public void Shutdown(string reason = "Shutdown")
     {
         if (Mode == NetworkMode.None) return;

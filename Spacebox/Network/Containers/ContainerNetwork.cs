@@ -50,6 +50,8 @@ public static class ContainerNetwork
         if (NetworkManager.Instance.IsRemoteClient) _client.Open(container, key);
     }
 
+    public static bool CanUseItems => !NetworkManager.Instance.IsRemoteClient || !_client.HasPendingChanges;
+
     public static bool CanDropFrom(ItemSlot slot)
     {
         if (!NetworkManager.Instance.IsRemoteClient) return true;

@@ -37,6 +37,7 @@ public sealed class InteractionSpawnMob : InteractionMode
         if (_cooldown > 0f) _cooldown -= Time.Delta;
         if (!player.CanMove || _cooldown > 0f || !Input.IsActionDown("use")) return;
         if (_slot == null || !_slot.HasItem || _slot.Item is not MobSpawnerItem spawner) return;
+        if (!Spacebox.Network.Containers.ContainerNetwork.CanUseItems) return;
 
         MobSpawnNetwork.RequestSpawn(spawner, FindSpawnPosition(player));
         _cooldown = spawner.UseCooldown;

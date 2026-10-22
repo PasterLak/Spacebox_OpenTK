@@ -14,10 +14,26 @@ public static class GameSetPackage
     private static string _hash;
     private static byte[] _archive;
     private static IReadOnlyList<TexturePack> _texturePacks = Array.Empty<TexturePack>();
+    private static readonly object Sync = new object();
 
     public static void Register(NetworkManager network)
     {
         network.Transfers.Serve(TransferName, GetArchive);
+    }
+
+    public static void PrepareInBackground()
+    {
+        Engine.Multithreading.WorkerPoolManager.Enqueue(_ =>
+        {
+            try
+            {
+                GetArchive();
+            }
+            catch (Exception ex)
+            {
+                Debug.Warning($"[Server] GameSet package could not be prepared: {ex.Message}");
+            }
+        }, Engine.Multithreading.WorkerPoolManager.Priority.Low);
     }
 
     public static string FolderName
@@ -53,6 +69,14 @@ public static class GameSetPackage
 
     private static byte[] GetArchive()
     {
+        lock (Sync)
+        {
+            return BuildArchive();
+        }
+    }
+
+    private static byte[] BuildArchive()
+    {
         Refresh();
         if (_archive != null) return _archive;
 
@@ -65,6 +89,14 @@ public static class GameSetPackage
     }
 
     private static void Refresh()
+    {
+        lock (Sync)
+        {
+            RefreshLocked();
+        }
+    }
+
+    private static void RefreshLocked()
     {
         string modPath = CurrentModPath;
         string key = StackKey;

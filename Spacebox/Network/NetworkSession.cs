@@ -15,6 +15,7 @@ namespace Spacebox.Network;
 public sealed class NetworkSession : IDisposable
 {
     private const float PlayerSyncInterval = 10f;
+    private static readonly TimeSpan LeaveSaveTimeout = TimeSpan.FromSeconds(2);
     public const float HostAutoSaveInterval = 300f;
     public const string AutosaveReason = "Autosave";
 
@@ -25,7 +26,9 @@ public sealed class NetworkSession : IDisposable
     private float _playerSyncTimer;
     private readonly AutoSaveTimer _autoSave = new AutoSaveTimer();
     private readonly PlayerDataFlush _playerDataFlush = new PlayerDataFlush();
+    private readonly AdmissionWatch _admission = new AdmissionWatch();
     private bool _disposed;
+    private bool _playerDataAcknowledged;
     private Auth.ServerAccessSettings _access;
     private readonly Auth.ServerAuthService _auth;
 
@@ -48,11 +51,13 @@ public sealed class NetworkSession : IDisposable
         network.Messages.Register<ClientReadyMessage>(OnClientReady);
         network.Messages.Register<PlayerDataMessage>(OnPlayerData);
         network.Messages.Register<PlayerDataRequestMessage>(OnPlayerDataRequest);
+        network.Messages.Register<PlayerDataAckMessage>(OnPlayerDataAck);
         network.Messages.Register<AuthResponseMessage>(OnAuthResponse);
         network.Messages.AllowBeforeAdmission<JoinRequestMessage>();
         network.Messages.AllowBeforeAdmission<AuthResponseMessage>();
         network.RequireAdmission = true;
         network.PeerDisconnected += OnPeerDisconnected;
+        network.PeerConnected += OnPeerConnected;
         network.DisconnectedFromServer += OnDisconnectedFromServer;
 
         if (World.DropEffectManager != null) World.DropEffectManager.Replicator = new DropNetwork();
@@ -60,6 +65,7 @@ public sealed class NetworkSession : IDisposable
 
         _access = CreateAccessSettings();
         _auth = CreateAuthService(_access);
+        if (network.IsListening) GameSetPackage.PrepareInBackground();
     }
 
     public bool RemoveAccount(string name) => _auth != null && _auth.RemoveAccount(name);
@@ -149,6 +155,7 @@ public sealed class NetworkSession : IDisposable
         if (!network.IsServer || network.IsListening) return network.IsListening;
 
         if (!network.StartListening(port)) return false;
+        GameSetPackage.PrepareInBackground();
 
         ChatService.Broadcast($"Server is open on port {port}", Color4.Yellow);
         return true;
@@ -179,6 +186,7 @@ public sealed class NetworkSession : IDisposable
         if (NetworkManager.Instance.IsServer)
         {
             _auth?.Update(Time.Delta);
+            UpdateAdmission();
             WorldEditNetwork.Update();
             Combat.PlayerHitboxes.Record();
             UpdateObservers();
@@ -195,6 +203,7 @@ public sealed class NetworkSession : IDisposable
         Players.ReconstructionNetwork.Update();
         Players.AstronautNetwork.UpdateGifts();
         UpdateAutoSave();
+        if (NetworkManager.Instance.IsRemoteClient) RemoteEntityBacklog.Update();
         if (!NetworkManager.Instance.IsRemoteClient || _localPlayer == null) return;
 
         _playerSyncTimer += Time.Delta;
@@ -261,6 +270,22 @@ public sealed class NetworkSession : IDisposable
         }
     }
 
+    private void SendLocalPlayerDataAndWait()
+    {
+        var network = NetworkManager.Instance;
+        if (_localPlayer == null || !network.IsConnected) return;
+
+        _playerDataAcknowledged = false;
+        SendLocalPlayerData();
+        if (!network.PollUntil(() => _playerDataAcknowledged, LeaveSaveTimeout))
+            Debug.Warning("[Network] The server did not confirm the player data before leaving");
+    }
+
+    private void OnPlayerDataAck(int sender, PlayerDataAckMessage message)
+    {
+        _playerDataAcknowledged = true;
+    }
+
     public void SendLocalPlayerData()
     {
         if (_localPlayer == null || !NetworkManager.Instance.IsRemoteClient) return;
@@ -275,15 +300,17 @@ public sealed class NetworkSession : IDisposable
         _disposed = true;
 
         var network = NetworkManager.Instance;
-        SendLocalPlayerData();
+        SendLocalPlayerDataAndWait();
         SaveRemotePlayers();
 
         network.PeerDisconnected -= OnPeerDisconnected;
+        network.PeerConnected -= OnPeerConnected;
         network.DisconnectedFromServer -= OnDisconnectedFromServer;
         network.Messages.Unregister<JoinRequestMessage>();
         network.Messages.Unregister<ClientReadyMessage>();
         network.Messages.Unregister<PlayerDataMessage>();
         network.Messages.Unregister<PlayerDataRequestMessage>();
+        network.Messages.Unregister<PlayerDataAckMessage>();
         network.Messages.Unregister<AuthResponseMessage>();
         network.RequireAdmission = false;
 
@@ -291,6 +318,7 @@ public sealed class NetworkSession : IDisposable
         Discovery.ServerAdvertiser.Stop();
         Combat.CombatNetwork.Reset();
         WorldEditNetwork.Reset();
+        RemoteEntityBacklog.Clear();
         Players.ItemGiftNetwork.Reset();
         Players.ReconstructionNetwork.Reset();
         Players.AstronautNetwork.ClearGifts();
@@ -329,6 +357,7 @@ public sealed class NetworkSession : IDisposable
     {
         var network = NetworkManager.Instance;
         if (!network.IsServer || sender == network.LocalPeerId) return;
+        _admission.Requested(sender);
         if (PlayerRegistry.TryGet(sender, out _)) return;
 
         string reason = ValidateJoin(sender, message);
@@ -431,10 +460,28 @@ public sealed class NetworkSession : IDisposable
         player.LastPlayerJson = Players.PlayerGameModes.Current.ApplyTo(player.Name, message.Json);
         if (World.WorldData != null)
             PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, player.LastPlayerJson);
+        NetworkManager.Instance.Send(sender, new PlayerDataAckMessage(), DeliveryMode.Reliable);
+    }
+
+    private void OnPeerConnected(int peer)
+    {
+        if (NetworkManager.Instance.IsServer && peer != NetworkManager.Instance.LocalPeerId) _admission.Connected(peer);
+    }
+
+    private void UpdateAdmission()
+    {
+        var network = NetworkManager.Instance;
+        var expired = _admission.Update(Time.Delta, network.IsAdmitted);
+        for (int i = 0; i < expired.Count; i++)
+        {
+            Debug.Warning($"[Server] Peer {expired[i]} did not finish joining in time and was disconnected");
+            network.Kick(expired[i], "Join timed out");
+        }
     }
 
     private void OnPeerDisconnected(int peer, string reason)
     {
+        _admission.Forget(peer);
         var network = NetworkManager.Instance;
         network.Spawner.DespawnOwnedBy(peer);
         _auth?.Remove(peer);

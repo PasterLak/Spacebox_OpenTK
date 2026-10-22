@@ -86,6 +86,7 @@ public static class ExplosionNetwork
     private static void OnExplosion(int sender, ExplosionMessage message)
     {
         if (NetworkManager.Instance.IsServer) return;
+        if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnExplosion(sender, message))) return;
 
         var world = World.Instance;
         if (world?.Explosions == null || !world.TryFindEntity(message.EntityId, out var entity)) return;

@@ -203,6 +203,8 @@ public static class ShipNetwork
     private static readonly ShipPilotSeats _pilots = new ShipPilotSeats();
     private static readonly HashSet<long> _movingLastTick = new HashSet<long>();
     private static readonly HashSet<long> _movingThisTick = new HashSet<long>();
+    private static readonly Dictionary<long, int> _restRepeats = new Dictionary<long, int>();
+    private const int RestStateRepeats = 5;
     private static readonly List<(Vector3i, ConsoleCommand)> _commandScratch = new List<(Vector3i, ConsoleCommand)>();
     private static readonly List<Vector3i> _cellScratch = new List<Vector3i>();
     private static int _tickCounter;
@@ -229,6 +231,7 @@ public static class ShipNetwork
         _pilots.Clear();
         _movingLastTick.Clear();
         _movingThisTick.Clear();
+        _restRepeats.Clear();
     }
 
     public static void SubmitCommand(ShipConsoleBlock console, ConsoleCommand command)
@@ -448,8 +451,19 @@ public static class ShipNetwork
                 if (ship == null) continue;
 
                 bool active = ship.Motion.IsMoving || (entity.HasShipControl && entity.ShipControl.Commands.Count > 0);
-                if (active) _movingThisTick.Add(entity.EntityID);
-                if (!active && !_movingLastTick.Contains(entity.EntityID)) continue;
+                long id = entity.EntityID;
+                if (active)
+                {
+                    _movingThisTick.Add(id);
+                    _restRepeats.Remove(id);
+                }
+                else
+                {
+                    if (_movingLastTick.Contains(id)) _restRepeats[id] = RestStateRepeats;
+                    if (!_restRepeats.TryGetValue(id, out int repeats)) continue;
+                    if (repeats <= 1) _restRepeats.Remove(id);
+                    else _restRepeats[id] = repeats - 1;
+                }
 
                 network.SendToClients(BuildState(entity), DeliveryMode.Sequenced);
             }

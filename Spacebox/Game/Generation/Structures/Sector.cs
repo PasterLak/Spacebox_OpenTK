@@ -728,6 +728,8 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
     public static event Action<SpaceEntity> EntityAdded;
 
+    public bool IsLoadingEntity(long entityId) => loadingEntities.Contains(entityId);
+
     public bool RequestEntityLoad(long entityId)
     {
         if (!EntitiesGeneratedData.TryGetValue(entityId, out var data)) return false;

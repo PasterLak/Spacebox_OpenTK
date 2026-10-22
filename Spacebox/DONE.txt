@@ -116,6 +116,12 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- multiplayer: leaving a server no longer loses the last seconds of inventory (the client waits for the server to confirm its data) - fixes item duplication by leaving
+- multiplayer: edits, damage, explosions and block states for an asteroid or ship a client is still loading are applied after it loads instead of being lost
+- multiplayer: a ship that stops sends its final position several times, so clients don't keep it drifting
+- multiplayer: connections that never join are disconnected (30 s, 200 s while logging in) so they can't fill the server
+- multiplayer: the first join no longer freezes the server while the GameSet package is built, and joining near big asteroids is faster
+- multiplayer: items can't be placed or used while a chest change waits for the server (duplication window)
 - planned server stop/restart asks every player for fresh data first (up to 2.5 s), so no progress is lost
 - worlds saved with the old entity layout at the current version get a zip backup before their entity files are moved
 - players in another sector than the host: drops, physics objects, mobs, ship carry speed and spacer loot use their own sector

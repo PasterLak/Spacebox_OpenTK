@@ -69,8 +69,10 @@ public static class BlockStateNetwork
         var network = NetworkManager.Instance;
         if (entity == null || !network.IsServer) return;
 
+        bool onlyChanged = entity.SavesOnlyChangedChunks;
         foreach (var chunk in entity.Chunks)
         {
+            if (onlyChanged && !chunk.ShouldBeSaved) continue;
             var blocks = chunk.Blocks;
             var origin = chunk.PositionIndex * Chunk.Size;
             for (int x = 0; x < Chunk.Size; x++)
@@ -95,6 +97,7 @@ public static class BlockStateNetwork
     private static void OnBlockState(int sender, BlockStateMessage message)
     {
         if (NetworkManager.Instance.IsServer) return;
+        if (!message.Key.IsObject && RemoteEntityBacklog.TryDefer(message.Key.EntityId, () => OnBlockState(sender, message))) return;
         if (!ContainerResolver.TryResolveBlock(message.Key, out var block, out _) || block is not INetworkStateBlock stateBlock) return;
 
         _reader.Set(message.State, 0, message.State.Length);

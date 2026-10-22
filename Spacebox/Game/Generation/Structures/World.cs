@@ -234,6 +234,15 @@ public class World : Component, ISpaceStructure
 
     public Dictionary<Vector3i, Sector>.ValueCollection LoadedSectors => loadedSectors.Values;
 
+    public bool IsEntityLoading(long entityId)
+    {
+        foreach (var sector in loadedSectors.Values)
+        {
+            if (sector.IsLoadingEntity(entityId)) return true;
+        }
+        return false;
+    }
+
     public bool TryFindEntity(long entityId, out SpaceEntity entity)
     {
         foreach (var sector in loadedSectors.Values)

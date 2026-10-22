@@ -134,6 +134,7 @@ namespace Spacebox.Game.GUI
             if (SelectedSlot == null) return false;
             if (!SelectedSlot.HasItem) return false;
             if (UIManager.IsOpen("inventory")) return false;
+            if (!Spacebox.Network.Containers.ContainerNetwork.CanUseItems) return false;
             if (!(SelectedSlot.Item is BlockItem itemBlock)) return false;
             id = itemBlock.BlockId;
             if (gameMode == GameMode.Survival)

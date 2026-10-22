@@ -47,6 +47,7 @@ public static class WorldEditNetwork
     {
         var network = NetworkManager.Instance;
         if (sender == network.LocalPeerId) return;
+        if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnBlockRepair(sender, message))) return;
 
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
@@ -99,6 +100,7 @@ public static class WorldEditNetwork
     {
         var network = NetworkManager.Instance;
         if (sender == network.LocalPeerId) return;
+        if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnBlockDamage(sender, message))) return;
 
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
@@ -220,6 +222,7 @@ public static class WorldEditNetwork
 
         if (!network.IsServer)
         {
+            if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnBlockEdit(sender, message))) return;
             Apply(message);
             return;
         }
@@ -326,6 +329,7 @@ public static class WorldEditNetwork
     {
         var network = NetworkManager.Instance;
         if (sender == network.LocalPeerId) return;
+        if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnBulkEdit(sender, message))) return;
 
         var min = message.Min;
         var max = message.Max;

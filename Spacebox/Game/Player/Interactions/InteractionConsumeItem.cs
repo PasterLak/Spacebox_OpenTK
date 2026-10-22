@@ -88,6 +88,7 @@ public class InteractionConsumeItem : InteractionMode
         var consumable = _itemSlot.Item as ConsumableItem;
 
         if (consumable == null) return;
+        if (!Spacebox.Network.Containers.ContainerNetwork.CanUseItems) return;
 
 
 
