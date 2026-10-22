@@ -31,6 +31,7 @@ public sealed class AstronautNetwork : NetworkTransform
     private static readonly EquipmentSlotType[] EquipmentSlots = Enum.GetValues<EquipmentSlotType>();
 
     public static AstronautNetwork Local { get; private set; }
+    public static event Action<int> PlayerDied;
 
     private FallImpactSound? _fallSound;
 
@@ -501,6 +502,8 @@ public sealed class AstronautNetwork : NetworkTransform
     [Rpc(RpcTarget.Server)]
     private void ReportDeath(int killerPeer, string reason)
     {
+        PlayerDied?.Invoke(OwnerPeer);
+
         string victim = Spacebox.Network.Combat.CombatNetwork.GetPlayerName(OwnerPeer);
         string killer = killerPeer > 0 && killerPeer != OwnerPeer ? Spacebox.Network.Combat.CombatNetwork.GetPlayerName(killerPeer) : null;
         string text = DeathMessageFormatter.Format(victim, killer, reason);

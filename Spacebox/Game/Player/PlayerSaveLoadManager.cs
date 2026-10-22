@@ -243,6 +243,7 @@ namespace Spacebox.Game.Player
                 player.HealthBar.StatsData.Value = data.Health;
                 player.PowerBar.StatsData.Value = data.Power;
                 player.OxygenBar.StatsData.Value = data.Oxygen;
+                if (WasSavedDead(data.Health)) RespawnSavedDeadPlayer(player);
 
                 PanelUI.SetSelectedSlot(0);
                 return true;
@@ -252,6 +253,20 @@ namespace Spacebox.Game.Player
                 Debug.Error($"[PlayerSaveLoadManager] Error loading player data: {ex.Message}");
                 return false;
             }
+        }
+
+        public static bool WasSavedDead(int health)
+        {
+            return health <= 0;
+        }
+
+        private static void RespawnSavedDeadPlayer(LocalAstronaut player)
+        {
+            Debug.Warning("[PlayerSaveLoadManager] The player was saved dead, respawning at the spawn point.");
+            player.SetPosition(Respawn.SafeSpawnFinder.FindFreePosition(Respawn.WorldSpawn.For(player)));
+            player.HealthBar.StatsData.Value = player.HealthBar.StatsData.MaxValue;
+            player.PowerBar.StatsData.Value = player.PowerBar.StatsData.MaxValue;
+            player.OxygenBar.StatsData.Fill();
         }
 
         private static List<SavedItemSlot> CollectSlots(Storage storage)

@@ -200,7 +200,7 @@ public static class ShipNetwork
 {
     private const int StateTicksInterval = 1;
 
-    private static readonly Dictionary<int, (long EntityId, Vector3i Cell)> _pilots = new Dictionary<int, (long, Vector3i)>();
+    private static readonly ShipPilotSeats _pilots = new ShipPilotSeats();
     private static readonly HashSet<long> _movingLastTick = new HashSet<long>();
     private static readonly HashSet<long> _movingThisTick = new HashSet<long>();
     private static readonly List<(Vector3i, ConsoleCommand)> _commandScratch = new List<(Vector3i, ConsoleCommand)>();
@@ -216,6 +216,7 @@ public static class ShipNetwork
         network.Messages.Register<ShipBindingsMessage>(OnBindings);
         network.Messages.Register<ShipShotMessage>(OnShot);
         network.PeerDisconnected += OnPeerDisconnected;
+        Players.AstronautNetwork.PlayerDied += OnPlayerDied;
 
         ShipWeapons.Register();
         ShipWeapons.ShotFired += OnShotFired;
@@ -314,7 +315,12 @@ public static class ShipNetwork
     private static void OnCommand(int sender, ShipCommandMessage message)
     {
         if (!NetworkManager.Instance.IsServer) return;
-        if (!_pilots.TryGetValue(sender, out var pilot) || pilot.EntityId != message.EntityId || pilot.Cell != message.ConsoleCell) return;
+        if (!_pilots.IsPilotOf(sender, new PilotSeat(message.EntityId, message.ConsoleCell))) return;
+        if (IsDead(sender))
+        {
+            ReleasePilot(sender);
+            return;
+        }
         if (!TryGetConsole(message.EntityId, message.ConsoleCell, out var entity, out _)) return;
 
         entity.ShipControl.SetCommand(message.ConsoleCell, new ConsoleCommand
@@ -332,24 +338,22 @@ public static class ShipNetwork
         if (!NetworkManager.Instance.IsServer) return;
 
         ReleasePilot(sender);
-        if (!message.Mount || !TryGetConsole(message.EntityId, message.ConsoleCell, out var mountEntity, out var console) || !console.IsPowered) return;
+        if (!message.Mount || IsDead(sender)) return;
+        if (!TryGetConsole(message.EntityId, message.ConsoleCell, out var mountEntity, out var console) || !console.IsPowered) return;
         if (ProtectionNetwork.BlocksPeerUse(sender, mountEntity)) return;
-        if (IsPiloted(message.EntityId, message.ConsoleCell)) return;
         if (!WorldEditNetwork.IsInReach(sender, mountEntity, message.ConsoleCell)) return;
 
-        _pilots[sender] = (message.EntityId, message.ConsoleCell);
+        _pilots.TryTake(sender, new PilotSeat(message.EntityId, message.ConsoleCell));
     }
 
-    private static bool IsPilotOf(int peer, long entityId, Vector3i cell)
+    private static bool IsDead(int peer)
     {
-        return _pilots.TryGetValue(peer, out var pilot) && pilot.EntityId == entityId && pilot.Cell == cell;
+        return Players.AstronautNetwork.Find(peer) is { IsAlive: false };
     }
 
-    private static bool IsPiloted(long entityId, Vector3i cell)
+    private static void OnPlayerDied(int peer)
     {
-        foreach (var pilot in _pilots.Values)
-            if (pilot.EntityId == entityId && pilot.Cell == cell) return true;
-        return false;
+        if (NetworkManager.Instance.IsServer) ReleasePilot(peer);
     }
 
     private static void OnPeerDisconnected(int peer, string reason)
@@ -359,9 +363,8 @@ public static class ShipNetwork
 
     private static void ReleasePilot(int peer)
     {
-        if (!_pilots.TryGetValue(peer, out var pilot)) return;
+        if (!_pilots.TryRelease(peer, out var pilot)) return;
 
-        _pilots.Remove(peer);
         if (World.Instance != null && World.Instance.TryFindEntity(pilot.EntityId, out var entity))
             entity.ShipControl.ClearCommand(pilot.Cell);
     }
@@ -371,7 +374,7 @@ public static class ShipNetwork
         if (!NetworkManager.Instance.IsServer) return;
         if (!TryGetConsole(message.EntityId, message.ConsoleCell, out var entity, out _)) return;
         if (ProtectionNetwork.BlocksPeerUse(sender, entity)) return;
-        if (!IsPilotOf(sender, message.EntityId, message.ConsoleCell) && !WorldEditNetwork.IsInReach(sender, entity, message.ConsoleCell)) return;
+        if (!_pilots.IsPilotOf(sender, new PilotSeat(message.EntityId, message.ConsoleCell)) && !WorldEditNetwork.IsInReach(sender, entity, message.ConsoleCell)) return;
 
         var control = entity.ShipControl;
         switch (message.Operation)

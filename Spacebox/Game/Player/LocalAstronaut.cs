@@ -360,7 +360,7 @@ namespace Spacebox.Game.Player
 
         public void ApplyImpulse(Vector3 impulse)
         {
-            if (impulse == Vector3.Zero) return;
+            if (impulse == Vector3.Zero || ShipPilot.IsSeated) return;
 
             if (Gravity.IsActive)
                 Gravity.AddImpulse(impulse);
@@ -395,6 +395,7 @@ namespace Spacebox.Game.Player
             LastDeathCase = deathCase;
 
             IsAlive = false;
+            ShipPilot.Unmount(this);
             ResetMotion();
             FOV = 110;
             HitImage.Hide();

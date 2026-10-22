@@ -27,13 +27,14 @@ public static class ShipPilot
     public static bool IsPiloting => Console != null;
     public static bool IsUsingCamera { get; private set; }
     public static bool AllowsMovement => IsPiloting && ShipBindingTool.IsActive;
+    public static bool IsSeated => IsPiloting && !ShipBindingTool.IsActive;
 
     public static event Action<ShipConsoleBlock> Mounted;
     public static event Action<ShipConsoleBlock> Unmounted;
 
     public static void Mount(ShipConsoleBlock console, LocalAstronaut player)
     {
-        if (console?.Entity == null || player == null) return;
+        if (console?.Entity == null || player == null || !player.IsAlive) return;
         if (!Spacebox.Game.Protection.EntityProtection.CheckLocalUse(console.Entity)) return;
         if (IsPiloting) Unmount(player);
 

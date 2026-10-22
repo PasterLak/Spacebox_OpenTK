@@ -61,6 +61,7 @@ namespace Spacebox.Game.GUI
 
         public DeathScreen()
         {
+            IsVisible = false;
             deathSound = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/death.ogg"));
         }
 

@@ -198,6 +198,9 @@ Fixes
 - dying while typing in the chat closed the chat afterwards and hid the cursor on the death screen
 - bombs on protected asteroids (and in claims that respect explosions) no longer explode when shot
 - after dying against a moving ship the player no longer keeps the ship's speed after respawn (ship frame, gravity walker and collision velocity are reset on death, respawn and teleport)
+- dying at a ship console leaves the seat at once (camera view, ship HUD, held commands and firing cannons stop); dead players cannot sit down; the server frees a dead remote pilot's seat and ignores its commands
+- explosions no longer push a seated pilot (the stored push flung the player out when leaving the seat)
+- a player saved while dead loads alive at the spawn point with full health instead of with 0 HP; the death screen no longer carries over into the next world
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons
