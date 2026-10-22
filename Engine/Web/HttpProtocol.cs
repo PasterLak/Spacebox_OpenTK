@@ -5,29 +5,34 @@ namespace Engine.Web;
 public static class HttpProtocol
 {
     public const int MaxHeaderBytes = 16 * 1024;
+    public static readonly TimeSpan HeaderTimeout = TimeSpan.FromSeconds(5);
+    private static readonly string[] SingleHeaders = { "Content-Length", "Host" };
 
     public static async Task<HttpRequest> ReadRequestAsync(Stream stream, string remoteAddress, int maxBodyBytes, CancellationToken token, bool isSecure = false)
     {
-        var headerBytes = await ReadHeaderAsync(stream, token);
+        (byte[] Header, byte[] Extra)? headerBytes;
+        using (var headerTimeout = CancellationTokenSource.CreateLinkedTokenSource(token))
+        {
+            headerTimeout.CancelAfter(HeaderTimeout);
+            headerBytes = await ReadHeaderAsync(stream, headerTimeout.Token);
+        }
         if (headerBytes == null) return null;
 
         string headerText = Encoding.ASCII.GetString(headerBytes.Value.Header);
         var lines = headerText.Split("\r\n");
         var requestLine = lines[0].Split(' ');
-        if (requestLine.Length < 3) throw new InvalidDataException("Bad request line");
+        if (requestLine.Length != 3 || (requestLine[2] != "HTTP/1.1" && requestLine[2] != "HTTP/1.0")) throw new InvalidDataException("Bad request line");
 
-        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        for (int i = 1; i < lines.Length; i++)
-        {
-            int colon = lines[i].IndexOf(':');
-            if (colon <= 0) continue;
-            headers[lines[i].Substring(0, colon).Trim()] = lines[i].Substring(colon + 1).Trim();
-        }
+        var headers = ParseHeaders(lines);
+        if (headers.ContainsKey("Transfer-Encoding")) throw new InvalidDataException("Transfer-Encoding is not supported");
 
         int length = 0;
-        if (headers.TryGetValue("Content-Length", out var lengthText) && (!int.TryParse(lengthText, out length) || length < 0))
+        if (headers.TryGetValue("Content-Length", out var lengthText) && !TryParseLength(lengthText, out length))
             throw new InvalidDataException("Bad Content-Length");
         if (length > maxBodyBytes) throw new PayloadTooLargeException();
+
+        string method = requestLine[0].ToUpperInvariant();
+        if (length > 0 && (method == "GET" || method == "HEAD")) throw new InvalidDataException("GET requests have no body");
 
         var body = new byte[length];
         int filled = Math.Min(length, headerBytes.Value.Extra.Length);
@@ -42,7 +47,7 @@ public static class HttpProtocol
         SplitTarget(requestLine[1], out var path, out var query);
         return new HttpRequest
         {
-            Method = requestLine[0].ToUpperInvariant(),
+            Method = method,
             Path = path,
             Query = query,
             Headers = headers,
@@ -50,6 +55,34 @@ public static class HttpProtocol
             RemoteAddress = remoteAddress,
             IsSecure = isSecure
         };
+    }
+
+    public static Dictionary<string, string> ParseHeaders(string[] lines)
+    {
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        for (int i = 1; i < lines.Length; i++)
+        {
+            if (lines[i].Length == 0) continue;
+            int colon = lines[i].IndexOf(':');
+            if (colon <= 0 || char.IsWhiteSpace(lines[i][colon - 1]) || lines[i].IndexOf('\n') >= 0) throw new InvalidDataException("Bad header line");
+
+            string name = lines[i].Substring(0, colon);
+            string value = lines[i].Substring(colon + 1).Trim();
+            if (headers.ContainsKey(name) && Array.Exists(SingleHeaders, single => string.Equals(single, name, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidDataException($"Duplicate {name} header");
+            headers[name] = value;
+        }
+        return headers;
+    }
+
+    public static bool TryParseLength(string text, out int length)
+    {
+        length = 0;
+        if (string.IsNullOrEmpty(text) || text.Length > 9) return false;
+        foreach (char c in text)
+            if (c < '0' || c > '9') return false;
+        length = int.Parse(text);
+        return true;
     }
 
     public static async Task WriteResponseAsync(Stream stream, HttpResponse response, CancellationToken token)

@@ -8,13 +8,15 @@ namespace Engine.Web;
 
 public sealed class MiniHttpServer : IDisposable
 {
-    private const int MaxConnections = 32;
+    private const int MaxConnections = 64;
+    public const int MaxConnectionsPerAddress = 4;
     private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(15);
 
     private readonly Func<HttpRequest, Task<HttpResponse>> _handler;
     private readonly int _maxBodyBytes;
     private readonly SemaphoreSlim _connections = new SemaphoreSlim(MaxConnections);
     private readonly List<TcpListener> _listeners = new List<TcpListener>();
+    private readonly ConnectionCounter _perAddress = new ConnectionCounter(MaxConnectionsPerAddress);
     private CancellationTokenSource _cancel;
 
     private const byte TlsHandshake = 0x16;
@@ -104,17 +106,39 @@ public sealed class MiniHttpServer : IDisposable
                 continue;
             }
 
-            if (!await _connections.WaitAsync(0, token))
+            string remote = RemoteAddressOf(client);
+            if (!_perAddress.TryEnter(remote))
             {
                 client.Dispose();
                 continue;
             }
 
-            _ = Serve(client, token);
+            if (!await _connections.WaitAsync(0, token))
+            {
+                _perAddress.Leave(remote);
+                client.Dispose();
+                continue;
+            }
+
+            _ = Serve(client, remote, token);
         }
     }
 
-    private async Task Serve(TcpClient client, CancellationToken serverToken)
+    private static string RemoteAddressOf(TcpClient client)
+    {
+        try
+        {
+            return (client.Client.RemoteEndPoint as IPEndPoint)?.Address is { } address
+                ? (address.IsIPv4MappedToIPv6 ? address.MapToIPv4() : address).ToString()
+                : "";
+        }
+        catch (ObjectDisposedException)
+        {
+            return "";
+        }
+    }
+
+    private async Task Serve(TcpClient client, string remote, CancellationToken serverToken)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(serverToken);
         timeout.CancelAfter(RequestTimeout);
@@ -124,8 +148,10 @@ public sealed class MiniHttpServer : IDisposable
             using (client)
             {
                 Stream stream = client.GetStream();
+                using var handshake = CancellationTokenSource.CreateLinkedTokenSource(timeout.Token);
+                handshake.CancelAfter(HttpProtocol.HeaderTimeout);
                 var first = new byte[1];
-                if (await stream.ReadAsync(first, timeout.Token) == 0) return;
+                if (await stream.ReadAsync(first, handshake.Token) == 0) return;
                 stream = new PrefixedStream(stream, first);
 
                 bool secure = false;
@@ -140,15 +166,12 @@ public sealed class MiniHttpServer : IDisposable
                         ServerCertificate = certificate,
                         EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
                         ClientCertificateRequired = false
-                    }, timeout.Token);
+                    }, handshake.Token);
                     stream = ssl;
                     secure = true;
                 }
 
                 await using var connection = stream;
-                string remote = (client.Client.RemoteEndPoint as IPEndPoint)?.Address is { } address
-                    ? (address.IsIPv4MappedToIPv6 ? address.MapToIPv4() : address).ToString()
-                    : "";
 
                 HttpResponse response;
                 try
@@ -179,6 +202,7 @@ public sealed class MiniHttpServer : IDisposable
         finally
         {
             _connections.Release();
+            _perAddress.Leave(remote);
         }
     }
 }

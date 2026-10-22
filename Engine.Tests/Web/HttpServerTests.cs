@@ -37,6 +37,32 @@ public class HttpServerTests
         await Assert.ThrowsAsync<InvalidDataException>(() => Parse("GARBAGE\r\n\r\n"));
     }
 
+    [Theory]
+    [InlineData("POST /x HTTP/1.1\r\nTransfer-Encoding: chunked\r\n\r\n")]
+    [InlineData("POST /x HTTP/1.1\r\nContent-Length: 1\r\nContent-Length: 2\r\n\r\nab")]
+    [InlineData("GET /x HTTP/1.1\r\nHost: a\r\nHost: b\r\n\r\n")]
+    [InlineData("POST /x HTTP/1.1\r\nContent-Length: +1\r\n\r\na")]
+    [InlineData("POST /x HTTP/1.1\r\nContent-Length : 1\r\n\r\na")]
+    [InlineData("GET /x HTTP/2.0\r\n\r\n")]
+    [InlineData("GET /x HTTP/1.1\r\nContent-Length: 3\r\n\r\nabc")]
+    public async Task Parse_RejectsAmbiguousRequests(string raw)
+    {
+        await Assert.ThrowsAsync<InvalidDataException>(() => Parse(raw));
+    }
+
+    [Fact]
+    public void ConnectionCounter_LimitsEachAddressButNotLoopback()
+    {
+        var counter = new ConnectionCounter(2);
+        Assert.True(counter.TryEnter("203.0.113.5"));
+        Assert.True(counter.TryEnter("203.0.113.5"));
+        Assert.False(counter.TryEnter("203.0.113.5"));
+        Assert.True(counter.TryEnter("203.0.113.6"));
+        counter.Leave("203.0.113.5");
+        Assert.True(counter.TryEnter("203.0.113.5"));
+        for (int i = 0; i < 10; i++) Assert.True(counter.TryEnter("127.0.0.1"));
+    }
+
     [Fact]
     public async Task WriteResponse_StripsLineBreaksFromHeaders()
     {
