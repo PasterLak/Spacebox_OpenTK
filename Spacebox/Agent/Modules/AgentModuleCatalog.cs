@@ -16,6 +16,7 @@ public static class AgentModuleCatalog
             new InventoryModule(),
             navigation,
             new UiModule(),
+            new CanvasModule(),
             new ScreenshotModule(),
             new WaitModule(navigation),
             new AppModule()

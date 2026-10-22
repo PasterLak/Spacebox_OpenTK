@@ -33,6 +33,8 @@ Usage: Tools/agent/game.sh <command> [args]
   help                       list all API routes
   state                      scene, player, crosshair target, open windows
   ui [window] | uiflat       ImGui text on screen | just the strings
+  canvas [1]                 CanvasUI layers + layout check (1 = list controls)
+  winsize <w> <h>            resize the game window
   click <text> [window] [index] | hover <text> | clickxy <x> <y>
   key <Key> [tap|hold|release] [frames]      e.g. key E, key W hold 60
   action <name> [tap|hold|release] [frames]  e.g. action inventory, action forward hold 120
@@ -102,6 +104,8 @@ case "$cmd" in
   state) get /state ;;
   ui) if [[ $# -gt 0 ]]; then get /ui "window=$1"; else get /ui; fi ;;
   uiflat) get /ui flat=1 ;;
+  canvas) get /canvas ${1:+"tree=$1"} ;;
+  winsize) post /window/size "w=$1" "h=$2" ;;
   click) post /ui/click "text=$1" ${2:+"window=$2"} ${3:+"index=$3"} ;;
   hover) post /ui/hover "text=$1" ${2:+"window=$2"} ;;
   clickxy) post /ui/click "x=$1" "y=$2" ;;
