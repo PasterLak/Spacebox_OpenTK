@@ -108,6 +108,13 @@ public class SpaceboxWindow : EngineWindow
 
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
+        if (!IsQuitting && LaunchOptions.IsDedicated && Spacebox.Network.NetworkSession.Current != null)
+        {
+            e.Cancel = true;
+            Spacebox.Network.Dedicated.ServerRestart.Stop();
+            return;
+        }
+
         if (!IsQuitting && Spacebox.Game.GUI.PauseUI.TryPromptBeforeLeaving(Quit))
         {
             e.Cancel = true;

@@ -9,6 +9,7 @@ public static class ServerRestart
 {
     private const string WaitArgument = "--wait-pid";
     private const int WaitMilliseconds = 30000;
+    private static bool _stopping;
 
     public static void Save(string reason)
     {
@@ -20,6 +21,9 @@ public static class ServerRestart
 
     public static void Stop(Action completed)
     {
+        if (_stopping) return;
+        _stopping = true;
+        Debug.Warning("[Server] Stopping: saving the world");
         FlushPlayersThen(() =>
         {
             try
@@ -44,6 +48,8 @@ public static class ServerRestart
             return false;
         }
 
+        if (_stopping) return false;
+        _stopping = true;
         FlushPlayersThen(() =>
         {
             Save("Restart");
@@ -56,6 +62,7 @@ public static class ServerRestart
             catch (Exception ex)
             {
                 Debug.Error($"[Server] Restart failed: {ex.Message}");
+                _stopping = false;
                 return;
             }
 
@@ -68,7 +75,7 @@ public static class ServerRestart
     private static void FlushPlayersThen(Action action)
     {
         if (NetworkSession.Current == null) action();
-        else NetworkSession.Current.FlushPlayerData(action);
+        else NetworkSession.Current.FlushPlayerData(() => EngineWindow._mainThreadActions.Enqueue(action));
     }
 
     public static ProcessStartInfo CreateStartInfo(string executable, string[] commandLine, int processId)

@@ -281,6 +281,16 @@ public sealed class NetworkSession : IDisposable
             Debug.Warning("[Network] The server did not confirm the player data before leaving");
     }
 
+    private void RequestRemotePlayerDataAndWait()
+    {
+        var network = NetworkManager.Instance;
+        if (!network.IsListening) return;
+
+        FlushPlayerData(null);
+        if (_playerDataFlush.IsRunning && !network.PollUntil(() => !_playerDataFlush.IsRunning, LeaveSaveTimeout))
+            Debug.Warning("[Server] Some players did not send their latest data before the server closed");
+    }
+
     private void OnPlayerDataAck(int sender, PlayerDataAckMessage message)
     {
         _playerDataAcknowledged = true;
@@ -301,6 +311,7 @@ public sealed class NetworkSession : IDisposable
 
         var network = NetworkManager.Instance;
         SendLocalPlayerDataAndWait();
+        RequestRemotePlayerDataAndWait();
         SaveRemotePlayers();
 
         network.PeerDisconnected -= OnPeerDisconnected;

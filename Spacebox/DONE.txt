@@ -116,6 +116,9 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- dedicated server: closing its window (or taskkill) now saves the world and asks players for their data like the stop command; before, nothing was saved
+- host: leaving a hosted world asks connected players for their latest data before saving them
+- pause menu on a remote client shows "Connected to server" instead of "Open to network"
 - an unreadable player save no longer mixes half-loaded items with start items; the file is kept as localplayer.unreadable_<time>.json
 - drops are picked up into the inventory while a chest or machine window is open and the hotbar is full
 - analyzer, generator and creative selection references are cleared when leaving a world

@@ -43,7 +43,7 @@ namespace Spacebox.Game.GUI
                 {
                     if (!IsMultiplayerActive()) Time.TimeSize = 0;
                     saveButtonText = "Save";
-                    networkButtonText = Engine.Networking.NetworkManager.Instance.IsListening ? $"Open on port {GameSession.Port}" : "Open to network";
+                    networkButtonText = GameSession.IsRemoteClient ? "Connected to server" : Engine.Networking.NetworkManager.Instance.IsListening ? $"Open on port {GameSession.Port}" : "Open to network";
                     Settings.ShowInterface = false;
                 }
                 else
