@@ -37,7 +37,7 @@ namespace Spacebox.Game.Effects
                 Radius = 0.1f
             };
 
-            var sparkTexture = Resources.Load<Texture2D>("Resources/Textures/white.png");
+            var sparkTexture = Resources.Load<Texture2D>(EffectTextures.White);
             sparkTexture.FilterMode = FilterMode.Nearest;
 
             ParticleSystem = new ParticleSystem(new ParticleMaterial(sparkTexture), emitter)

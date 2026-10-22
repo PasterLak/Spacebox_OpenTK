@@ -19,7 +19,7 @@ public sealed class ThrusterExhaustEmitter : IDisposable
 
     public ThrusterExhaustEmitter()
     {
-        var texture = Resources.Load<Texture2D>("Resources/Textures/white.png");
+        var texture = Resources.Load<Texture2D>(Spacebox.Game.Effects.EffectTextures.White);
         _flames = new ParticleSystem(new ParticleMaterial(texture), new SphereEmitter())
         {
             Max = MaxParticles,

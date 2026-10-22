@@ -50,7 +50,7 @@ float hash3(vec3 p)
     return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
 }
 
-float noise3(vec3 p)
+float valueNoise3(vec3 p)
 {
     vec3 i = floor(p);
     vec3 f = fract(p);
@@ -74,10 +74,10 @@ void main()
 
     vec3 q = vRenderPos + uNoiseOffset;
     vec3 drift = vec3(uTime * 0.04, uTime * 0.025, -uTime * 0.03);
-    float haze = noise3(q * 0.8 + drift) * 0.6 + noise3(q * 2.1 - drift * 1.7) * 0.4;
+    float haze = valueNoise3(q * 0.8 + drift) * 0.6 + valueNoise3(q * 2.1 - drift * 1.7) * 0.4;
     float density = mix(0.35, 1.3, haze);
 
-    float sparkle = smoothstep(0.93, 0.99, noise3(q * 22.0 + drift * 3.0)) * smoothstep(4.0, 10.0, cameraDistance) * (1.0 - uInside);
+    float sparkle = smoothstep(0.93, 0.99, valueNoise3(q * 22.0 + drift * 3.0)) * smoothstep(4.0, 10.0, cameraDistance) * (1.0 - uInside);
 
     float insideDim = 1.0 - uInside * 0.7;
     float glow = uIntensity * along * nearFade * insideDim * (edge * density * 0.16 + sparkle * edge * 0.3);

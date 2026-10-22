@@ -36,7 +36,7 @@ public sealed class JetpackEffects : IDisposable
 
     public JetpackEffects()
     {
-        var texture = Resources.Load<Texture2D>("Resources/Textures/white.png");
+        var texture = Resources.Load<Texture2D>(EffectTextures.White);
         _flames = new ParticleSystem(new ParticleMaterial(texture), new SphereEmitter())
         {
             Max = MaxParticles,

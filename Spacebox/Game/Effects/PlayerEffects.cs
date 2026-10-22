@@ -36,11 +36,11 @@ namespace Spacebox.Game.Effects
             var healTexture 
              = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/healEffect.png");
             var chargeTexture 
-             = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/white.png");
+             = GameAssets.LoadResource<Texture2D>(EffectTextures.White);
             var teleportTexture 
-             = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/white.png");
+             = GameAssets.LoadResource<Texture2D>(EffectTextures.White);
             var customTexture 
-             = GameAssets.LoadResource<Texture2D>("Resources/Textures/Effects/white.png");
+             = GameAssets.LoadResource<Texture2D>(EffectTextures.White);
 
             _effects[PlayerEffectType.Damage] = CreateEffect(damageTexture, new Vector4(1f, 0f, 0f, 0.4f), new Vector4(1f, 0f, 0f, 0f));
             _effects[PlayerEffectType.Heal] = CreateEffect(healTexture, new Vector4(0f, 1f, 0f, 0.4f), new Vector4(0f, 1f, 0f, 0f));

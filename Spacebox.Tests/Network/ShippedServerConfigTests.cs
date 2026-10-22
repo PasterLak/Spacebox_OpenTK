@@ -30,6 +30,16 @@ public class ShippedServerConfigTests
         Assert.Equal(defaults.UpdateRate, shipped.UpdateRate);
     }
 
+    [Fact]
+    public void ShippedConfig_MatchesANewlyCreatedConfig()
+    {
+        var shipped = JsonSerializer.Deserialize<ServerConfig>(File.ReadAllText(FindRepoFile(Path.Combine("Spacebox", "Multiplayer", "serverconfig.json"))))!;
+        var created = ServerConfig.CreateNew();
+
+        Assert.Equal(created.RegistrationEnabled, shipped.RegistrationEnabled);
+        Assert.Equal(created.GameMode, shipped.GameMode);
+    }
+
     private static string FindRepoFile(string relative)
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

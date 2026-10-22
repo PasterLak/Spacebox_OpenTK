@@ -22,7 +22,7 @@ public sealed class CannonShotEmitter : IDisposable
 
     public CannonShotEmitter()
     {
-        var texture = Resources.Load<Texture2D>("Resources/Textures/white.png");
+        var texture = Resources.Load<Texture2D>(Spacebox.Game.Effects.EffectTextures.White);
         _particles = new ParticleSystem(new ParticleMaterial(texture), new SphereEmitter())
         {
             Max = MaxParticles,

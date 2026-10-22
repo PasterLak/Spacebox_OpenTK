@@ -24,7 +24,7 @@ public sealed class ExplosionEffects : IDisposable
 
     public ExplosionEffects()
     {
-        var texture = Resources.Load<Texture2D>("Resources/Textures/white.png");
+        var texture = Resources.Load<Texture2D>(Spacebox.Game.Effects.EffectTextures.White);
 
         _fireEmitter = new SphereEmitter
         {
