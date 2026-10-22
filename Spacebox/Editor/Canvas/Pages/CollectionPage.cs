@@ -86,7 +86,12 @@ public sealed class CollectionPage : EditorPage
         if (_summary != null) _summaryHolder.AddChild(_summary.Control);
 
         _document = new JsonDocumentView(_widgets) { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
-        if (_preview != null)
+        if (_preview is IEntryEditor)
+        {
+            var editorControl = _details.AddChild(_preview.Control);
+            editorControl.SizeFlagsVertical = SizeFlags.Fill | SizeFlags.Expand;
+        }
+        else if (_preview != null)
         {
             _editorSplit = _details.AddChild(new SplitContainer { SizeFlagsVertical = SizeFlags.Fill | SizeFlags.Expand, MinFirst = 260f, MinSecond = 200f });
             _editorSplit.Ratio = 0.55f;
@@ -194,7 +199,7 @@ public sealed class CollectionPage : EditorPage
         int index = _list.IndexOf(item => item.Metadata is EditorEntry e && ReferenceEquals(e.Node, entry.Node));
         if (index >= 0 && index != _list.SelectedIndex) _list.Select(index);
         if (index >= 0) _list.EnsureVisible(index);
-        _document.BindNode(Editor, entry.File, entry.Node, _source.Definition.Schema(entry.Node), _scope);
+        if (_preview is not IEntryEditor) _document.BindNode(Editor, entry.File, entry.Node, _source.Definition.Schema(entry.Node), _scope);
         _summary?.Show(Editor, entry);
         _summaryHolder.Visible = _summary != null && _summary.Applies(Editor, entry);
         _previewShown = _preview != null && _preview.Applies(Editor, entry);

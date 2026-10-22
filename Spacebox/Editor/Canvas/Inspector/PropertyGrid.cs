@@ -29,6 +29,7 @@ public sealed class PropertyGrid : VBoxContainer
     }
 
     public JsonNode BoundRoot => _root;
+    public ISet<string> HiddenRootKeys { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
     public void Bind(EditorContext editor, JsonNode root, Type schema, string scope, Action changed)
     {
@@ -80,6 +81,7 @@ public sealed class PropertyGrid : VBoxContainer
         var dictionaryValue = JsonSchema.DictionaryValueType(schema);
         foreach (var key in obj.Select(p => p.Key).ToArray())
         {
+            if (isRoot && HiddenRootKeys.Contains(key)) continue;
             string name = key;
             var property = dictionaryValue == null ? JsonSchema.Find(schema, key) : null;
             var type = dictionaryValue ?? property?.ClrType;
@@ -206,7 +208,7 @@ public sealed class PropertyGrid : VBoxContainer
     {
         var missing = new List<SchemaProperty>();
         foreach (var property in JsonSchema.For(schema))
-            if (EditorJson.FindKey(obj, property.Name) == null) missing.Add(property);
+            if (EditorJson.FindKey(obj, property.Name) == null && !(isRoot && HiddenRootKeys.Contains(property.Name))) missing.Add(property);
 
         if (missing.Count == 0 && !isRoot) return;
         var row = target.AddChild(new HBoxContainer());

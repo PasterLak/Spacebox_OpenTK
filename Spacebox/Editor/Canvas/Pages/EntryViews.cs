@@ -12,6 +12,10 @@ public interface IEntryView
     void Release();
 }
 
+public interface IEntryEditor : IEntryView
+{
+}
+
 public abstract class EntryView : IEntryView
 {
     private Control _control;

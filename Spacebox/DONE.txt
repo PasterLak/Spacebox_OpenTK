@@ -27,6 +27,7 @@ additional
 
 New
 - GameSet editor rebuilt on the new retained UI: every page (blocks, items, projectiles, recipes, disassembly, loot, mobs, generation with biome map, tutorials, sounds, atlases, all files) with property grid, 3D previews and summaries
+- GameSet editor tutorials: outline of chapters and steps, the editor shows only the selected step or chapter, add/move/duplicate/delete steps and chapters
 - Player/spawn_parameters.json: start items with their place (hand, hotbar slot, inventory, equipment), start health/power/oxygen (also on respawn), preferred spawn biome and distance from the center
 - GameSet editor: Player spawn, Disassembly, Tutorials (outline, step card, problems) and Sounds (play, where used) panels, crafting category order and preview, block previews show models, atlas fits the window; Debug/Release builds also save editor changes into the source GameSet
 - asteroid shapes (new worlds): 70% of asteroids roll their own form (30% stay classic): lumpy stretched blobs with lobes, double asteroids, rare donuts, Pac-Man mouths and bites, craters; no floating blocks

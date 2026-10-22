@@ -52,7 +52,7 @@ public static class EditorPages
                 new JsonFilePage("Generator settings", GameSetCatalog.GeneratorFile, EditorScopes.Generator, widgets,
                     "Generation changes apply to the previews after Save and Reload.")),
             new CollectionPage("Tutorials", EditorScopes.Tutorials,
-                new FolderEntrySource(project, GameSetCatalog.TutorialsFolder, GameSetCatalog.Tutorials), widgets, new TutorialPreviewView(),
+                new FolderEntrySource(project, GameSetCatalog.TutorialsFolder, GameSetCatalog.Tutorials), widgets, new TutorialEditorView(widgets),
                 description: "Tutorials that teach new players the game, checked with the game's own parser."),
             new SoundsPage(),
             new AtlasPage(),

@@ -38,6 +38,8 @@ public sealed class JsonDocumentView : VBoxContainer
         _rawToggle.Toggled += (_, raw) => SetRaw(raw);
     }
 
+    public ISet<string> HiddenRootKeys => _grid.HiddenRootKeys;
+
     public void BindFile(EditorContext editor, EditorJsonFile file, Type schema, string scope)
     {
         _editor = editor;
