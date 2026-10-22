@@ -72,6 +72,7 @@ namespace Spacebox.Game.GUI
             currentEntity = hit.chunk.SpaceEntity;
             blockName = GameAssets.GetBlockDataById(block.Id).Name;
 
+            _lastCheckedMass = ulong.MaxValue;
             CountBlocksIfMassChanged();
 
             UIManager.Open("analyzer");

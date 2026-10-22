@@ -224,6 +224,7 @@ Fixes
 - a thrown drop could merge into a drop that expired in the same frame and vanish with it
 - creative players took crash and in-wall damage (and could die); short separate wall contacts added up to suffocation
 - switching to spectator while walking in gravity kept gravity walking active (clamped camera, gravity indicator on)
+- the analyzer window could show the block count of a previously opened entity with the same mass
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons
