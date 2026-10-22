@@ -107,10 +107,17 @@ public static class ShipPilot
         {
             _skipUseThisFrame = false;
         }
-        else if (!UIManager.IsUIMode && Input.IsActionDown("use") && !(ShipBindingTool.IsActive && ShipBindingTool.TryUseDoor(player)))
+        else if (!UIManager.IsUIMode && Input.IsActionDown("use"))
         {
-            Unmount(player);
-            return;
+            if (ShipBindingTool.IsActive)
+            {
+                ShipBindingTool.TryUseDoor(player);
+            }
+            else
+            {
+                Unmount(player);
+                return;
+            }
         }
 
         Spacebox.Game.GUI.ShipConsoleUI.HandleInput();
