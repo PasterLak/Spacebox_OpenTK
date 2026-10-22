@@ -223,6 +223,7 @@ Fixes
 - furnaces and crushers kept processing after being removed by explosions, bulk erase, mobs or collisions, and stopped forever when a recipe rounded to 0 ticks; their window crashed for block types without recipes
 - a thrown drop could merge into a drop that expired in the same frame and vanish with it
 - creative players took crash and in-wall damage (and could die); short separate wall contacts added up to suffocation
+- switching to spectator while walking in gravity kept gravity walking active (clamped camera, gravity indicator on)
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons

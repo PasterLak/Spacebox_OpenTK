@@ -203,6 +203,7 @@ namespace Spacebox.Game.Player
         private void SetGameMode(GameMode mode)
         {
             if (_gameModeBase != null) _gameModeBase.OnDisable();
+            if (mode == GameMode.Spectator && Gravity is { IsActive: true }) Gravity.Exit(this);
 
             switch (mode)
             {
