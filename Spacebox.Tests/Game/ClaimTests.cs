@@ -242,6 +242,24 @@ public class ClaimTests : IDisposable
     }
 
     [Fact]
+    public void NewEntityWithBeacon_FollowsClaimRules()
+    {
+        try
+        {
+            ClaimSettings.SetOverride(new ClaimSettings { Enabled = false });
+            Assert.NotNull(ClaimPlacement.CheckNewEntity(NewBeacon(), Vector3.Zero, "Anna"));
+            Assert.Null(ClaimPlacement.CheckNewEntity(new Block(), Vector3.Zero, "Anna"));
+
+            ClaimSettings.SetOverride(new ClaimSettings { Enabled = true });
+            Assert.Null(ClaimPlacement.CheckNewEntity(NewBeacon(), Vector3.Zero, "Anna"));
+        }
+        finally
+        {
+            ClaimSettings.ClearOverride();
+        }
+    }
+
+    [Fact]
     public void Messages_RoundTrip_AndOnlyOwnerOrAdminManages()
     {
         var writer = new NetWriter();

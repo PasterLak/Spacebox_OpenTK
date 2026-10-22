@@ -32,10 +32,25 @@ public static class EntityCreationNetwork
             return;
         }
 
+        string error = Spacebox.Game.Protection.ClaimPlacement.CheckNewEntity(block, positionWorld, GameSession.PlayerName);
+        if (error != null)
+        {
+            Spacebox.Game.GUI.Chat.Write(error, Color4.Red);
+            Spacebox.Game.Player.PlacementRefund.Refund(Spacebox.Game.GUI.PanelUI.Player, block.Id);
+            return;
+        }
+
+        Create(sector, positionWorld, block, GameSession.PlayerName);
+        Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(block);
+    }
+
+    private static SpaceEntity Create(Sector sector, Vector3 positionWorld, Block block, string owner)
+    {
         var entity = sector.CreateNewEntity(positionWorld);
         entity.CreateFirstBlock(block);
+        Spacebox.Game.Protection.ClaimPlacement.AssignOwner(entity, Vector3i.Zero, owner);
 
-        network.SendToClients(new EntityCreatedMessage
+        NetworkManager.Instance.SendToClients(new EntityCreatedMessage
         {
             Sector = sector.PositionIndex,
             EntityId = entity.EntityID,
@@ -44,6 +59,7 @@ public static class EntityCreationNetwork
             Direction = (byte)block.Direction,
             Rotation = (byte)block.Rotation
         });
+        return entity;
     }
 
     private static void OnCreateRequest(int sender, EntityCreateRequestMessage message)
@@ -58,7 +74,17 @@ public static class EntityCreationNetwork
             return;
         }
 
-        PlaceNewEntity(sector, message.PositionWorld, CreateBlock(message.BlockId, message.Direction, message.Rotation));
+        var block = CreateBlock(message.BlockId, message.Direction, message.Rotation);
+        string owner = PlayerRegistry.GetName(sender);
+        string error = Spacebox.Game.Protection.ClaimPlacement.CheckNewEntity(block, message.PositionWorld, owner);
+        if (error != null)
+        {
+            network.Send(sender, new BlockPlaceRefundMessage { BlockId = message.BlockId });
+            ChatService.SendToPlayer(owner, error, Color4.Red);
+            return;
+        }
+
+        Create(sector, message.PositionWorld, block, owner);
     }
 
     private static bool IsInReach(int peer, Vector3 positionWorld)

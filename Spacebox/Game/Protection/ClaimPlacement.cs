@@ -20,6 +20,11 @@ public static class ClaimPlacement
         return false;
     }
 
+    public static string CheckNewEntity(Block block, Vector3 worldPosition, string owner)
+    {
+        return block is ClaimBeaconBlock ? ClaimRegistry.CheckNewEntityPlacement(worldPosition, owner) : null;
+    }
+
     public static void OnPlacedLocally(Block block)
     {
         if (block is not ClaimBeaconBlock beacon) return;

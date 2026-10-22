@@ -116,14 +116,23 @@ public static class ClaimRegistry
             if (ClaimZone.Overlap(other.LocalCell, radius, cell, radius)) return $"Too close to the claim of {other.Owner}";
         }
 
+        return CheckOwnerLimits(owner, entity.EntityLocalToWorld(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f)));
+    }
+
+    public static string CheckNewEntityPlacement(Vector3 worldPosition, string owner)
+    {
+        if (!ClaimSettings.Current.Enabled) return "Claims are disabled on this server";
+        return CheckOwnerLimits(owner, worldPosition);
+    }
+
+    private static string CheckOwnerLimits(string owner, Vector3 worldPosition)
+    {
+        var settings = ClaimSettings.Current;
         if (settings.MaxClaimsPerPlayer > 0 && _index.CountAll(owner) >= settings.MaxClaimsPerPlayer)
             return $"You already have {settings.MaxClaimsPerPlayer} claim beacon(s)";
 
-        if (settings.MinDistanceFromSpawn > 0 && Player.Respawn.WorldSpawn.TryGet(out var spawn))
-        {
-            var world = entity.EntityLocalToWorld(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, cell.Z + 0.5f));
-            if ((world - spawn).Length < settings.MinDistanceFromSpawn) return $"Claims are not allowed within {settings.MinDistanceFromSpawn} m of the spawn";
-        }
+        if (settings.MinDistanceFromSpawn > 0 && Player.Respawn.WorldSpawn.TryGet(out var spawn) && (worldPosition - spawn).Length < settings.MinDistanceFromSpawn)
+            return $"Claims are not allowed within {settings.MinDistanceFromSpawn} m of the spawn";
 
         return null;
     }
