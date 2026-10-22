@@ -330,8 +330,8 @@ public static class ShipNetwork
         {
             Buttons = message.Buttons,
             Flight = (FlightInput)message.Flight,
-            AimLocal = message.AimLocal,
-            AimPointLocal = message.AimPointLocal,
+            AimLocal = NetValidation.IsFinite(message.AimLocal) ? message.AimLocal : Vector3.Zero,
+            AimPointLocal = NetValidation.IsFinite(message.AimPointLocal) ? message.AimPointLocal : Vector3.Zero,
             PilotPeer = sender
         });
     }

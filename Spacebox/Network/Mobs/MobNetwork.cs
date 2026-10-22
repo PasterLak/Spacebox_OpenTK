@@ -95,6 +95,7 @@ public sealed class MobNetwork : NetworkTransform, IMobLink
     private void PushRequest(Vector3 normal, float targetSpeed)
     {
         if (Owner is not Mob mob || !NetValidation.IsFinite(normal) || !float.IsFinite(targetSpeed) || normal.LengthSquared < 0.0001f) return;
+        if (!PushRange.IsNear(RpcContext.SenderPeer, mob.Position)) return;
         mob.Push(normal.Normalized(), Math.Clamp(targetSpeed, 0f, MaxPushSpeed));
     }
 

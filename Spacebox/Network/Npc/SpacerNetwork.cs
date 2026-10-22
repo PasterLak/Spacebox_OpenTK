@@ -66,6 +66,7 @@ public sealed class SpacerNetwork : NetworkTransform, ISpacerLink
     private void PushRequest(Vector3 normal, float targetSpeed)
     {
         if (Owner is not Spacer spacer || !NetValidation.IsFinite(normal) || !float.IsFinite(targetSpeed) || normal.LengthSquared < 0.0001f) return;
+        if (!PushRange.IsNear(RpcContext.SenderPeer, spacer.Position)) return;
         spacer.Push(normal.Normalized(), Math.Clamp(targetSpeed, 0f, MaxPushSpeed));
     }
 

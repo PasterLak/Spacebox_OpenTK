@@ -47,6 +47,7 @@ public static class WorldEditNetwork
     {
         var network = NetworkManager.Instance;
         if (sender == network.LocalPeerId) return;
+        if (network.IsServer && !DamageMessages.TryConsume(sender, Time.Total)) return;
         if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnBlockRepair(sender, message))) return;
 
         var world = World.Instance;
