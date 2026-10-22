@@ -18,7 +18,7 @@ public class ShipConsoleJSON
 public class CannonJSON
 {
     public string Projectile { get; set; } = "";
-    public int ReloadTime { get; set; } = 1000;
+    public float ReloadTime { get; set; } = 1f;
     public string ShotSound { get; set; } = "ar";
     public float BarrelLength { get; set; } = 1f;
     public float AimCone { get; set; } = 60f;

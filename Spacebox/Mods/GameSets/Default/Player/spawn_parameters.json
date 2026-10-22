@@ -1,0 +1,18 @@
+{
+    "GiveItemsOnStart": [
+        { "ID": "aluminium_drill", "Count": 1, "PutIn": "hand", "SlotId": 0 },
+        { "ID": "furnace", "Count": 1, "PutIn": "hotbar" },
+        { "ID": "crafting_table", "Count": 1, "PutIn": "hotbar" },
+        { "ID": "aluminium_flashlight", "Count": 1, "PutIn": "equipment" }
+    ],
+    "SpawnSettings": {
+        "PreferredSpawnBiome": "",
+        "MinDistanceFromCenter": 0,
+        "MaxDistanceFromCenter": 0,
+        "MinAsteroidRadius": 24,
+        "ExcludedAsteroids": [ "asteroid_icy" ],
+        "HealthOnSpawn": 100,
+        "PowerOnSpawn": 100,
+        "OxygenOnSpawn": 100
+    }
+}

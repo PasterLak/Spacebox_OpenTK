@@ -77,10 +77,10 @@ public static class GameSetLoader
         }
         ModInfo.ModPath = modPath;
         ModInfo.FolderName = stack.Base.FolderName;
-        foreach (var extension in stack.Extensions)
-        {
-            if (extension.Config.ItemsOnStart != null) ModInfo.ItemsOnStart.AddRange(extension.Config.ItemsOnStart);
-        }
+        var spawnParameters = Spacebox.Game.Player.Respawn.SpawnParameters.TryLoad(modPath);
+        var extensionConfigs = new List<ModConfig>();
+        foreach (var extension in stack.Extensions) extensionConfigs.Add(extension.Config);
+        ModInfo.ItemsOnStart = Spacebox.Game.Player.Respawn.SpawnParameters.StartItems(spawnParameters, ModInfo, extensionConfigs);
 
         Stack = stack;
         Content = stack.ReadContent();
@@ -103,6 +103,7 @@ public static class GameSetLoader
         LoadOptionalFiles(modPath);
 
         var generator = GenerationLoader.Load(modPath, defaultModPath);
+        generator.PlayerSpawn = Spacebox.Game.Player.Respawn.SpawnParameters.Rules(spawnParameters, generator.PlayerSpawn);
         Generation.World.WorldGenerator = generator;
 
         Theme.LoadThemeColors(ModInfo.ModPath);
@@ -329,7 +330,6 @@ public static class GameSetLoader
                     if (proj.Damage > byte.MaxValue) proj.Damage = byte.MaxValue;
                     if (proj.DamageBlocks > byte.MaxValue) proj.DamageBlocks = byte.MaxValue;
                     if (proj.Penetration > byte.MaxValue) proj.Penetration = byte.MaxValue;
-                    if (proj.Mass > byte.MaxValue) proj.Mass = byte.MaxValue;
                     if (proj.PossibleRicochets < 0) proj.PossibleRicochets = 0;
                     if (proj.PossibleRicochets > byte.MaxValue) proj.PossibleRicochets = byte.MaxValue;
                     if (proj.RicochetAngle < 0) proj.RicochetAngle = 0;
@@ -787,7 +787,7 @@ public static class GameSetLoader
             Category = data.Category,
         };
         weaponItem.ProjectileID = projectileID;
-        weaponItem.ReloadTime = data.ReloadTime;
+        weaponItem.ReloadSeconds = MathF.Max(0.05f, data.ReloadTime);
         weaponItem.AnimationSpeed = data.AnimationSpeed;
         weaponItem.AnimationPushback = data.AnimationPushback;
         weaponItem.Recoil = data.Recoil;
@@ -1088,17 +1088,18 @@ public static class GameSetLoader
         public float OxygenConsumeInterval { get; set; } = 10f;
         public string Extends { get; set; } = "";
         public List<string> Includes { get; set; } = new List<string>();
+        [System.Text.Json.Serialization.JsonIgnore]
         public string FolderName { get; set; } = "";
+        [System.Text.Json.Serialization.JsonIgnore]
         public string ModPath { get; set; } = "";
-
+        [System.Text.Json.Serialization.JsonIgnore]
         public Texture2D? Icon { get; set; } = null;
-        public List<TextureConfig> Textures { get; set; } = new List<TextureConfig>();
+
         public List<DefaultItem> ItemsOnStart { get; set; } = new List<DefaultItem>();
 
         public void Dispose()
         {
             Icon?.Dispose();
-            Textures.Clear();
             ItemsOnStart.Clear();
         }
     }
@@ -1110,17 +1111,12 @@ public static class GameSetLoader
         public int FogDensity { get; set; } = 10;
     }
 
-    public class TextureConfig
-    {
-        public string Type { get; set; } = "unknown";
-        public string Name { get; set; } = "NoName Texture";
-        public string Path { get; set; } = "";
-    }
-
     public class DefaultItem
     {
         public string ID { get; set; } = "unknown";
         public byte Count { get; set; } = 0;
+        public string PutIn { get; set; } = StartItemPlacement.Auto;
+        public int SlotId { get; set; } = -1;
 
     }
 
@@ -1142,9 +1138,7 @@ public static class GameSetLoader
 
             if (GameAssets.TryGetItemByFullID(fullId, out Item item))
             {
-                if (player.Equipment.TryEquipIfEmpty(item)) continue;
-
-                if (!player.Panel.TryAddItem(item, itemData.Count))
+                if (!StartItemPlacement.Give(player, item, itemData.Count, itemData.PutIn, itemData.SlotId))
                 {
                     Debug.Error($"[GameSetLoader][GiveStartItems] Failed to add start item: {itemData.ID} [{itemData.Count}]");
                 }

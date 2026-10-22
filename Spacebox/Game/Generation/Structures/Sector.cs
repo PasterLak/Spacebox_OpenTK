@@ -442,11 +442,11 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
 
         var asteroidsDataList = EntitiesGeneratedData.Values.ToList();
 
-        var candidates = new List<(string AsteroidId, int Radius)>(asteroidsDataList.Count);
+        var candidates = new List<SpawnCandidate>(asteroidsDataList.Count);
         foreach (var data in asteroidsDataList)
-            candidates.Add((data.asteroid?.IdString ?? "", data.radiusBlocks));
+            candidates.Add(new SpawnCandidate(data.asteroid?.IdString ?? "", data.radiusBlocks, data.biome?.IdString ?? "", data.positionWorld.Length));
 
-        var rules = World.WorldGenerator?.PlayerSpawn ?? PlayerSpawnRules.Default;
+        var rules = PlayerSpawnRules.Current;
         var asteroidIndex = rules.PickIndex(candidates, random);
 
         player.SetPosition(GetRandomPositionNearAsteroid(random, asteroidsDataList[asteroidIndex]));

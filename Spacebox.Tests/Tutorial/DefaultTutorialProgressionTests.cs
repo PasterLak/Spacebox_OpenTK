@@ -165,7 +165,7 @@ public class DefaultTutorialProgressionTests
             .ToDictionary(b => Str(b, "ID"), b => Int(b, "PowerToDrill", 1), StringComparer.OrdinalIgnoreCase);
 
         int startTier = 0;
-        foreach (var start in Load("config.json").GetProperty("ItemsOnStart").EnumerateArray())
+        foreach (var start in Load("Player/spawn_parameters.json").GetProperty("GiveItemsOnStart").EnumerateArray())
             if (drillTiers.TryGetValue(Str(start, "ID"), out int tier)) startTier = Math.Max(startTier, tier);
 
         foreach (var (name, root) in Tutorials())

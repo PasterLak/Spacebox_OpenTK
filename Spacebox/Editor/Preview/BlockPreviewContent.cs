@@ -18,7 +18,7 @@ public sealed class BlockPreviewContent : IPreviewContent
 
     public BlockPreviewContent(BlockData data, BlockState state)
     {
-        var (vertices, indices) = MultiblockPreviewMesh.Build(data, state);
+        var (vertices, indices) = Spacebox.Game.Generation.Shapes.BlockModelMesh.Build(data, state);
         var material = new TextureMaterial(GameAssets.BlocksTexture, Resources.Load<Shader>(Shader, true));
         _block = new SimpleBlock(material, Vector3.Zero) { DisposesTexture = false };
         _block.SetCustomMesh(vertices, indices);

@@ -17,6 +17,11 @@ public interface IEntryPreview
     void Apply(EditorContext context, EditorEntry entry, PreviewViewport viewport);
 }
 
+public interface IEntryCustomPreview : IEntryPreview
+{
+    void Draw(EditorContext context, EditorEntry entry);
+}
+
 public interface IEntrySummary
 {
     void Draw(EditorContext context, EditorEntry entry);

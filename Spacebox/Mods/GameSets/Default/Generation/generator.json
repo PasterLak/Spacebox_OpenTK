@@ -1,6 +1,4 @@
 {
-    "Version": "1",
-    "NoiseModifier": 1.0,
     "MinAsteroidsInSector" : 1250,
     "MaxAsteroidsInSector" : 2500,
     "RejectionSamples" : 5,
@@ -8,10 +6,5 @@
    
     "BiomesMapNoiseFrequency" : 0.001,
     "Biomes": [ "asteroid_field", "dense_cluster" ],
-    "FallbackBiome": "asteroid_field",
-    "Structures": [  ],
-    "PlayerSpawn": {
-        "MinAsteroidRadius": 24,
-        "ExcludedAsteroids": [ "asteroid_icy" ]
-    }
+    "FallbackBiome": "asteroid_field"
 }

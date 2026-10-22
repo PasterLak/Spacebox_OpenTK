@@ -5,7 +5,6 @@ namespace Spacebox.Game.Resource;
 
 public class ItemJSON
 {
-    public string Info { get; set; } = "";
     public string Description { get; set; } = "";
     public string ID { get; set; } = "no_id";
     public string Name { get; set; } = "NoName";
@@ -14,6 +13,7 @@ public class ItemJSON
     public string Sprite { get; set; } = "";
     public int MaxStack { get; set; } = 1;
     public float ModelDepth { get; set; } = 1.0f;
+    public Color3Byte GlowColor { get; set; } = Color3Byte.Zero;
 
     public void ValidateMaxStack()
     {
@@ -33,7 +33,6 @@ public class DrillItemJSON : ItemJSON
 
 public class EquipmentJSON : ItemJSON
 {
-    public byte Tier { get; set; } = 0;
     public string Slot { get; set; } = "";
     public int Health { get; set; } = 0;
     public int Power { get; set; } = 0;
@@ -75,8 +74,7 @@ public class PictureItemJSON : ItemJSON
 
 public class WeaponItemJSON : ItemJSON
 {
-    public byte Damage { get; set; } = 0;
-    public int ReloadTime { get; set; } = 500;
+    public float ReloadTime { get; set; } = 1f;
     public byte Spread { get; set; } = 0;
     public byte PowerUsage { get; set; } = 0;
     public byte AnimationPushback { get; set; } = 0;

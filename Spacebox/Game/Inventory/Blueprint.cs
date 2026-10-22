@@ -46,7 +46,6 @@ public class RecipeBase
 {
     public short Id;
     public short RequiredTicks;
-    public short PowerPerTickRequared;
 }
 public class Recipe : RecipeBase
 {
@@ -71,7 +70,6 @@ public class Blueprint : RecipeBase
 
         copy.Id = this.Id;
         copy.RequiredTicks = this.RequiredTicks;
-        copy.PowerPerTickRequared = this.PowerPerTickRequared;
 
         if (this.Product != null)
         {

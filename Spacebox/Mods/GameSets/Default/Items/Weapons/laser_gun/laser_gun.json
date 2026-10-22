@@ -7,7 +7,7 @@
   "Sprite": "scanner1",
   "MaxStack": 1,
   "ModelDepth": 3,
-  "ReloadTime": 1,
+  "ReloadTime": 0.05,
   "Spread": 0,
   "AnimationPushback": 0,
   "Recoil": 0,

@@ -168,7 +168,7 @@
   },
   "CannonJSON": {
     "Projectile": "Name of the projectile it fires, from the GameSet projectiles. Sets damage, speed and range.",
-    "ReloadTime": "Time between shots in milliseconds (minimum 50, default 1000).",
+    "ReloadTime": "Seconds between two shots of this cannon (minimum 0.05, default 1).",
     "ShotSound": "Sound name played for each shot. Default ar.",
     "BarrelLength": "Distance in blocks from the block centre to the muzzle where projectiles appear (minimum 0.5, default 1).",
     "AimCone": "How far the barrel can turn away from its forward direction, in degrees (0-180, default 60). 0 = fixed forward.",
@@ -186,8 +186,7 @@
     "Id": "Unique id of the crafting tab. Items with this Category are listed in it.",
     "Name": "Tab name shown in the crafting window.",
     "Icon": "Id of the item or block whose icon is shown on the tab.",
-    "Row": "Row of the tab bar the tab is placed in, starting at 1. 0 or a missing row = put in the shortest row. Default: 0.",
-    "IconSprite": "Filled in by the game from Icon; a value written here is ignored."
+    "Row": "Row of the tab bar the tab is placed in, starting at 1. 0 or a missing row = put in the shortest row. Default: 0."
   },
   "CraftingJSON": {
     "Categories": "Tabs of the crafting window. Items join a tab through their Category.",
@@ -195,7 +194,9 @@
   },
   "DefaultItem": {
     "ID": "Item or block id to give at the start.",
-    "Count": "How many to give, 1-255. 0 = skipped."
+    "Count": "How many to give, 1-255. 0 = skipped.",
+    "PutIn": "Where the item goes: auto (equipment slot if it fits, else the hotbar), hand (hotbar slot SlotId, selected), hotbar, inventory or equipment.",
+    "SlotId": "Hotbar slot for hand or hotbar (0 = first). -1 = first free slot."
   },
   "DisassemblerJSON": {
     "Power": "Power used while working, in EU (0-8000, default 40). Speed is set by Efficiency."
@@ -245,7 +246,6 @@
     "DrillColor": "Color of the drill's light while mining, RGB 0-255. Default: blue (100, 116, 255)."
   },
   "EquipmentJSON": {
-    "Tier": "Not used by the game yet.",
     "Slot": "Equipment slot: Helmet, Shoulders, Chest, Arms, Legs, Boots, PowerGenerator, Flashlight or Scanner. An unknown slot skips the item.",
     "Health": "Extra maximum health while worn. Bonuses of all worn items add up. Default: 0.",
     "Power": "Extra maximum power while worn. Bonuses of all worn items add up. Default: 0.",
@@ -286,8 +286,6 @@
     "OuterAngle": "Angle in degrees where the beam fades out completely; keep it larger than InnerAngle. Default: 25."
   },
   "GeneratorJSON": {
-    "Version": "Version label of this generator file. Only informational; the game does not read it.",
-    "NoiseModifier": "Not used by the game yet.",
     "MinAsteroidsInSector": "Fewest asteroid candidates placed in one sector (8192 blocks per side). Biome Density can keep fewer of them.",
     "MaxAsteroidsInSector": "Most asteroid candidates placed in one sector. The real count is random between Min and Max, then filtered by biome Density.",
     "RejectionSamples": "How many random tries the placer makes for each asteroid before it gives up. Higher fills crowded sectors better but takes longer.",
@@ -319,7 +317,6 @@
     "FallDamage": "Fall damage used while the chosen strength is nearest this preset. Empty = the generator's own FallDamage."
   },
   "ItemJSON": {
-    "Info": "Free note for modders, for example to explain the entry. Not used by the game.",
     "Description": "Text shown in the item tooltip under its name. Leave empty for no description.",
     "ID": "Unique item id: lower-case letters, digits and _, 2-64 characters, not starting with a digit. Renaming it later removes the item from existing worlds.",
     "Name": "Name shown to players in tooltips, the inventory and the crafting window.",
@@ -327,7 +324,8 @@
     "Category": "Id of the crafting category (tab) the item is listed in, from Crafting/categories.json. Empty or unknown = not shown in the crafting window.",
     "Sprite": "Item icon. Sprite name = PNG file name without extension under Items/, global for the GameSet. The 3D hand model is also built from it.",
     "MaxStack": "How many fit in one inventory slot, 1-255. Weapons, drills, equipment and pictures always stack to 1. Default: 1.",
-    "ModelDepth": "Thickness of the 3D model built from the sprite when held or dropped. 1 = normal, higher = thicker. Default: 1."
+    "ModelDepth": "Thickness of the 3D model built from the sprite when held or dropped. 1 = normal, higher = thicker. Default: 1.",
+    "GlowColor": "Glow color of the item model when held or dropped (RGB 0-255). 0,0,0 = no glow."
   },
   "LootEntry": {
     "ID": "Item id that can drop. The table name is the file name in Generation/Loot (used by chests and mob Loot).",
@@ -413,10 +411,6 @@
     "OxygenConsumeInterval": "Seconds between oxygen losses while the player is outside breathable air. 0 = oxygen is never used up. Default: 10.",
     "Extends": "Base GameSet id this extension adds to (usually default). Empty = this is a base GameSet.",
     "Includes": "Ids of other extensions that load before this one and are added to the world automatically. Only for extensions.",
-    "FolderName": "Filled in by the game with the GameSet folder name; a value written here is ignored.",
-    "ModPath": "Filled in by the game with the GameSet folder path; a value written here is ignored.",
-    "Icon": "Not used by the game yet. The icon is the icon.png file in the GameSet folder.",
-    "Textures": "Not used by the game yet. Textures are found automatically under Blocks/ and Items/.",
     "ItemsOnStart": "Items given to a new player in survival. Equipment goes to a free equipment slot. Extension start items are added to these."
   },
   "Modlighting": {
@@ -437,6 +431,11 @@
     "Pictures": "List of picture item ids that can be placed in this frame. Other pictures are refused.",
     "ViewDistance": "Distance in blocks up to which the picture is drawn (4-256, default 64)."
   },
+  "PictureItemJSON": {
+    "Picture": "PNG file of the artwork, relative to the GameSet folder (usually Pictures/name.png). The Sprite is only the small inventory icon.",
+    "Width": "Width of the picture in blocks (1-4). It only fits frames of the same size.",
+    "Height": "Height of the picture in blocks (1-4). It only fits frames of the same size."
+  },
   "PipeJSON": {
     "TransferInterval": "Seconds between moved items: the pipe moves one item per interval (0.05-60, default 1).",
     "Power": "Power used by the pipe, in EU (0-1000, default 5).",
@@ -445,7 +444,13 @@
   },
   "PlayerSpawnJSON": {
     "MinAsteroidRadius": "New players only start next to asteroids at least this big (radius in blocks). 0 = any size.",
-    "ExcludedAsteroids": "Asteroid ids new players never start next to (for example ice asteroids without ores)."
+    "ExcludedAsteroids": "Asteroid ids new players never start next to (for example ice asteroids without ores).",
+    "PreferredSpawnBiome": "Biome id new players prefer to start in. Empty or none = any biome. Ignored when no asteroid of that biome is nearby.",
+    "MinDistanceFromCenter": "New players start next to asteroids at least this far from the world center, in blocks. Ignored when none is found in the starting sector.",
+    "MaxDistanceFromCenter": "New players start next to asteroids up to this distance from the world center, in blocks. 0 = no limit.",
+    "HealthOnSpawn": "Health in percent of the maximum when a player starts or respawns (1-100).",
+    "PowerOnSpawn": "Power in percent of the maximum when a player starts or respawns (0-100).",
+    "OxygenOnSpawn": "Oxygen in percent of the maximum when a player starts or respawns (0-100)."
   },
   "PowerGeneratorJSON": {
     "Power": "Power the generator produces for its electrical network, in EU (0-1600, default 50)."
@@ -456,7 +461,6 @@
     "Length": "Length of the visible tracer in blocks (visual only). Default: 1.",
     "Thickness": "Thickness of the visible tracer in blocks (visual only). Default: 0.2.",
     "Color": "Tracer color, RGB 0-255. Default: blue (0, 0, 255).",
-    "Mass": "Not used by the game yet.",
     "Damage": "Damage to players and creatures on hit, 0-255. Default: 0.",
     "DamageBlocks": "Durability damage to blocks, 0-255. Leftover damage carries on to the next block. 50 or more plays an explosion sound. Default: 0.",
     "Penetration": "Strongest block durability it can damage, 0-255. Blocks with more durability stop it without damage. Default: 255.",
@@ -474,7 +478,6 @@
   "RecipeJSON": {
     "Type": "Machine that runs this recipe, matching the machine block's Type (for example furnace or crusher). In Recipes/<machine>.json it comes from the file.",
     "DurationSec": "Seconds the machine needs for one run. Default: 20.",
-    "PowerPerTickRequared": "Not used by the game yet.",
     "Ingredient": "Item put into the machine and how many one run uses. Only one recipe per machine and ingredient. In recipes.json it defaults to the folder's entry.",
     "Product": "Item the machine makes and how many per run."
   },
@@ -484,6 +487,11 @@
   },
   "RecipesJSON": {
     "RecipeCatalog": "Machine recipe groups, one per machine type, each with its list of recipes."
+  },
+  "RepairToolItemJSON": {
+    "RepairTime": "Seconds to repair a fully damaged block. Damaged blocks heal proportionally faster.",
+    "PowerPerSecond": "Power used per second while repairing.",
+    "Range": "How far away blocks can be repaired, in blocks."
   },
   "ShipCameraJSON": {
     "Power": "Power used by the camera, in EU (0-8000, default 15). It must be powered to view through it."
@@ -524,10 +532,9 @@
     "Destroy": "Sound name played when the block is destroyed. Default blockDestroyDefault; unknown names use the default.",
     "Footsteps": "List of sound names for footsteps on this block in gravity, one picked at random. Empty = stone sounds on asteroid blocks, metal on others."
   },
-  "TextureConfig": {
-    "Type": "Not used by the game yet.",
-    "Name": "Not used by the game yet.",
-    "Path": "Not used by the game yet."
+  "SpawnParametersJSON": {
+    "GiveItemsOnStart": "Items every new player gets, with where they go (hand, hotbar, inventory, equipment). Extensions can add more in their config.json ItemsOnStart.",
+    "SpawnSettings": "Where new players start and with how much health, power and oxygen. Also used for respawns."
   },
   "TextureGroup": {
     "Active": "Face textures used normally (and when a machine is working or powered).",
@@ -538,9 +545,64 @@
     "Power": "Power used by the thruster, in EU (0-8000, default 8).",
     "NozzleLength": "Number of blocks in front of the nozzle that must stay free (0-16, default 0 = none)."
   },
+  "TutorialChapterJSON": {
+    "Id": "Chapter id, unique in this tutorial (used for progress and rewards).",
+    "Title": "Chapter title shown in the tutorial panel.",
+    "Icon": "Item id or ui:name (UI texture) shown next to the chapter.",
+    "Optional": "Optional chapters can be skipped and do not block the tutorial.",
+    "Reward": "Items given when the chapter is finished. Never give an item that a task of the tutorial asks for.",
+    "Steps": "Steps in order. The player sees one step at a time."
+  },
+  "TutorialJSON": {
+    "Id": "Unique tutorial id. Progress is saved per id, so do not rename it after release.",
+    "Name": "Name shown in the tutorial menu.",
+    "Description": "Short description shown in the tutorial menu.",
+    "GameModes": "Game modes the tutorial is offered in (Survival, Creative). Empty = all.",
+    "Order": "Position in the tutorial list; lower comes first.",
+    "Chapters": "Chapters in order. Each chapter is a group of steps with an optional reward."
+  },
+  "TutorialRewardJSON": {
+    "Item": "Item id of the reward.",
+    "Count": "How many of the item are given."
+  },
+  "TutorialStepJSON": {
+    "Id": "Step id, unique in its chapter (used for progress and rewards).",
+    "Title": "Step title shown in the tutorial panel.",
+    "Text": "Explanation text. {key:action} shows the key of an input action, {item:id} the item name.",
+    "Hint": "Extra tip shown under the text. Same placeholders as Text.",
+    "Icon": "Item id or ui:name shown next to the step. Empty = the icon of the first task item.",
+    "Skippable": "Lets the player skip this step from the pause menu.",
+    "RequiresGameMode": "Only show this step in this game mode (Survival or Creative). Empty = always.",
+    "Delay": "Seconds before the step appears after the previous one.",
+    "ReadSeconds": "Seconds the step stays when it has no tasks before it completes by itself.",
+    "CompleteSound": "Sound played when the step is completed. Empty = the default sound.",
+    "Reward": "Items given when the step is finished.",
+    "Tasks": "What the player has to do to finish the step. All tasks are needed unless marked Optional."
+  },
+  "TutorialTaskJSON": {
+    "Type": "Task type, for example press, hold, look, move, mine, craft, place, process, equip, open_ui, toggle, stat, pilot, wait, all_of, any_of.",
+    "Label": "Text of the task line. Empty = a default text for the type. Placeholders like {key:action} and {item:id} work.",
+    "Icon": "Item id or ui:name shown on the task line. Empty = the task item.",
+    "Optional": "Optional tasks are shown as bonus and are not needed to finish the step.",
+    "Count": "How many times or how many items (mine, craft, place, process...).",
+    "Item": "Item or block id the task is about (mine, craft, place, process, equip...).",
+    "Block": "Block id for tasks about blocks, when different from Item.",
+    "Action": "Input action for press and hold tasks, for example forward or flashlight.",
+    "Seconds": "Seconds for hold (held in total) and wait (time before it continues).",
+    "Distance": "Blocks to move for move tasks.",
+    "Degrees": "Degrees to turn the camera for look tasks.",
+    "Stat": "Player statistic name for stat tasks (a property of the player statistics, for example BlocksPlaced).",
+    "Delta": "How much the statistic has to grow during the step for stat tasks.",
+    "Window": "Window that must be open for open_ui tasks: inventory, crafting, pause, ...",
+    "What": "Thing to switch for toggle tasks: magnet or flashlight.",
+    "State": "Required state for toggle tasks: true = on, false = off.",
+    "Flight": "For pilot tasks: true = flight console, false = weapon console, empty = either.",
+    "Slot": "Equipment slot for equip tasks, for example Helmet. Empty = any slot.",
+    "Machine": "Machine for process tasks (furnace or crusher). Empty = either.",
+    "Tasks": "Sub tasks for all_of (all needed) and any_of (one is enough)."
+  },
   "WeaponItemJSON": {
-    "Damage": "Not used by the game yet. Damage comes from the projectile's Damage and DamageBlocks.",
-    "ReloadTime": "Time between shots in ticks of 0.05 s (20 = 1 second). Default: 500 (25 seconds), so always set it.",
+    "ReloadTime": "Seconds between two shots (minimum 0.05). 0.1 = 10 shots per second.",
     "Spread": "Random spread of shots, 0-255. 0 = perfectly accurate, 255 = up to about 15 degrees off the aim. Default: 0.",
     "PowerUsage": "Player power used per shot. The weapon can't fire while the power bar is lower than this. 0 = free. Default: 0.",
     "AnimationPushback": "How far the held weapon model kicks back on each shot (visual only), 0-255. Default: 0.",

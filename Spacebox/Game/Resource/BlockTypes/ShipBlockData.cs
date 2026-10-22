@@ -76,7 +76,7 @@ public class CannonBlockData : BlockData, IBlockTooltip
         settings ??= new CannonJSON();
         ProjectileName = (settings.Projectile ?? "").ToLowerInvariant();
         ShotSound = settings.ShotSound ?? "";
-        ReloadSeconds = Math.Max(50, settings.ReloadTime) / 1000f;
+        ReloadSeconds = MathF.Max(0.05f, settings.ReloadTime);
         BarrelLength = Math.Max(0.5f, settings.BarrelLength);
         AimCone = Math.Clamp(settings.AimCone, 0f, 180f);
         TurnSpeed = Math.Clamp(settings.TurnSpeed, 1f, 3600f);

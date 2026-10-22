@@ -7,7 +7,7 @@
   "Sprite": "weapon1",
   "MaxStack": 1,
   "ModelDepth": 1.5,
-  "ReloadTime": 12,
+  "ReloadTime": 0.6,
   "Spread": 50,
   "AnimationPushback": 18,
   "Recoil": 1,

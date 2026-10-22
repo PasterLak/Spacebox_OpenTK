@@ -3,7 +3,6 @@
   "Recipes": [
     {
       "DurationSec": 5.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "ice_rock",
         "Quantity": 1
@@ -15,7 +14,6 @@
     },
     {
       "DurationSec": 6.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "dense_ice_rock",
         "Quantity": 1
@@ -27,7 +25,6 @@
     },
     {
       "DurationSec": 7.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "light_rock",
         "Quantity": 1
@@ -39,7 +36,6 @@
     },
     {
       "DurationSec": 10.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "medium_rock",
         "Quantity": 1
@@ -51,7 +47,6 @@
     },
     {
       "DurationSec": 15.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "heavy_rock",
         "Quantity": 1
@@ -63,7 +58,6 @@
     },
     {
       "DurationSec": 10.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "cobaltite_rock",
         "Quantity": 1
@@ -75,7 +69,6 @@
     },
     {
       "DurationSec": 10.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "cobalt_ingot",
         "Quantity": 1
@@ -87,7 +80,6 @@
     },
     {
       "DurationSec": 12.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_ore",
         "Quantity": 1
@@ -99,7 +91,6 @@
     },
     {
       "DurationSec": 12.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_ingot",
         "Quantity": 1
@@ -111,7 +102,6 @@
     },
     {
       "DurationSec": 10.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_ore",
         "Quantity": 1
@@ -123,7 +113,6 @@
     },
     {
       "DurationSec": 11.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_ingot",
         "Quantity": 1
@@ -135,7 +124,6 @@
     },
     {
       "DurationSec": 16.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_ingot",
         "Quantity": 1
@@ -147,7 +135,6 @@
     },
     {
       "DurationSec": 16.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_ore",
         "Quantity": 1
@@ -159,7 +146,6 @@
     },
     {
       "DurationSec": 18.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "thulium_ingot",
         "Quantity": 1
@@ -171,7 +157,6 @@
     },
     {
       "DurationSec": 18.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "thulium_ore",
         "Quantity": 1
@@ -183,7 +168,6 @@
     },
     {
       "DurationSec": 17.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "uranium_ore",
         "Quantity": 1
@@ -195,7 +179,6 @@
     },
     {
       "DurationSec": 35,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "uranium_ingot",
         "Quantity": 1
@@ -207,7 +190,6 @@
     },
     {
       "DurationSec": 25,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "obscurium_ingot",
         "Quantity": 1
@@ -219,7 +201,6 @@
     },
     {
       "DurationSec": 16.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "obscurium_ore",
         "Quantity": 1
@@ -231,7 +212,6 @@
     },
     {
       "DurationSec": 10.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_panels",
         "Quantity": 3
@@ -243,7 +223,6 @@
     },
     {
       "DurationSec": 12.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_panels",
         "Quantity": 3
@@ -255,7 +234,6 @@
     },
     {
       "DurationSec": 19.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_panels",
         "Quantity": 3
@@ -267,7 +245,6 @@
     },
     {
       "DurationSec": 15.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "plastic",
         "Quantity": 1
@@ -279,7 +256,6 @@
     },
     {
       "DurationSec": 1.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "glass",
         "Quantity": 1
@@ -291,7 +267,6 @@
     },
     {
       "DurationSec": 5.0,
-      "PowerPerTickRequared": 4,
       "Ingredient": {
         "Item": "cobalt_lens",
         "Quantity": 2
@@ -303,7 +278,6 @@
     },
     {
       "DurationSec": 5.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_lens",
         "Quantity": 2
@@ -315,7 +289,6 @@
     },
     {
       "DurationSec": 5.0,
-      "PowerPerTickRequared": 6,
       "Ingredient": {
         "Item": "thulium_lens",
         "Quantity": 2
@@ -327,7 +300,6 @@
     },
     {
       "DurationSec": 11.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_block_light",
         "Quantity": 3
@@ -339,7 +311,6 @@
     },
     {
       "DurationSec": 22.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_block_medium",
         "Quantity": 3
@@ -351,7 +322,6 @@
     },
     {
       "DurationSec": 11.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_block_heavy",
         "Quantity": 1
@@ -363,7 +333,6 @@
     },
     {
       "DurationSec": 12.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_block_light",
         "Quantity": 3
@@ -375,7 +344,6 @@
     },
     {
       "DurationSec": 25.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_block_medium",
         "Quantity": 3
@@ -387,7 +355,6 @@
     },
     {
       "DurationSec": 12.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_block_heavy",
         "Quantity": 1
@@ -399,7 +366,6 @@
     },
     {
       "DurationSec": 16.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_block_light",
         "Quantity": 3
@@ -411,7 +377,6 @@
     },
     {
       "DurationSec": 32.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_block_medium",
         "Quantity": 3
@@ -423,7 +388,6 @@
     },
     {
       "DurationSec": 16.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_block_heavy",
         "Quantity": 1
@@ -435,7 +399,6 @@
     },
     {
       "DurationSec": 11.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_drill_bit",
         "Quantity": 1
@@ -447,7 +410,6 @@
     },
     {
       "DurationSec": 12.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_drill_bit",
         "Quantity": 1
@@ -459,7 +421,6 @@
     },
     {
       "DurationSec": 16.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_drill_bit",
         "Quantity": 1
@@ -471,7 +432,6 @@
     },
     {
       "DurationSec": 35.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "uranium_rods",
         "Quantity": 2
@@ -483,7 +443,6 @@
     },
     {
       "DurationSec": 6.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "window",
         "Quantity": 1
@@ -495,7 +454,6 @@
     },
     {
       "DurationSec": 8.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "reinforced_window",
         "Quantity": 1
@@ -507,7 +465,6 @@
     },
     {
       "DurationSec": 24.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "big_window",
         "Quantity": 1
@@ -519,7 +476,6 @@
     },
     {
       "DurationSec": 15.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "polymer_fiber",
         "Quantity": 1

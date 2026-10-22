@@ -135,7 +135,7 @@ public static class CombatNetwork
     private static bool IsFireAllowed(int sender, WeaponItem weapon, Vector3 origin)
     {
         float now = (float)Time.Total;
-        float interval = MathF.Max(MinShotInterval, weapon.ReloadTime * 0.05f * FireRateTolerance);
+        float interval = MathF.Max(MinShotInterval, weapon.ReloadSeconds * FireRateTolerance);
         if (_lastShotTime.TryGetValue(sender, out float last) && now - last < interval) return false;
 
         var shooter = PlayerHitboxes.FindPlayer(sender);

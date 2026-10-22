@@ -166,6 +166,7 @@ namespace Spacebox.Game.Player
             player.IsNewPlayer = true;
             player.Tutorial = null;
             GameSetLoader.GiveStartItems(player, GameAssets.ItemsStr);
+            player.ApplySpawnStats();
             player.Flashlight.Enabled = true;
             player.PlayerStatistics = new PlayerStatistics();
             player.PlayerStatistics.StartSession();

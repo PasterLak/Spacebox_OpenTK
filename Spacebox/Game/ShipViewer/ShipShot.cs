@@ -23,8 +23,7 @@ public sealed class ShipShotResult
 
 public static class ShipShot
 {
-    private const int MaxRicochets = 5;
-    private const float SurfaceOffset = 0.002f;
+    private const float SurfaceOffset = Engine.Physics.Ray.RicochetSurfaceOffset;
 
     public static ShipShotResult Fire(ShipBlockGrid grid, Vector3 origin, Vector3 direction, float maxDistance, in ProjectileParameters projectile)
     {
@@ -48,11 +47,10 @@ public static class ShipShot
             {
                 ricochets++;
                 result.Path.Add(point);
-                if (ricochets >= MaxRicochets) return result;
 
                 var n = new Vector3(normal.X, normal.Y, normal.Z);
                 direction = Vector3.Normalize(direction - 2f * Vector3.Dot(direction, n) * n);
-                origin = point + direction * SurfaceOffset;
+                origin = point + n * SurfaceOffset;
                 continue;
             }
 

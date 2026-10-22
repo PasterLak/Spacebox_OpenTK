@@ -7,7 +7,7 @@ public class CannonReloadTests
 {
     private static CannonBlock CreateReadyCannon()
     {
-        var data = new CannonBlockData(new BlockData("cannon", "cannon"), new CannonJSON { Projectile = "missing", ReloadTime = 500, AimCone = 45, Power = 45 });
+        var data = new CannonBlockData(new BlockData("cannon", "cannon"), new CannonJSON { Projectile = "missing", ReloadTime = 0.5f, AimCone = 45, Power = 45 });
         return new CannonBlock(data) { IsActive = true, TriggerHeld = true };
     }
 

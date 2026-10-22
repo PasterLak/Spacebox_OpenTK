@@ -1,5 +1,4 @@
 {
-  "Info": "Tags:  Name, Type<Drill,Weapone,Item>, Sprite, MaxStack, ModelDepth",
   "ID": "aluminium_drill",
   "Name": "Aluminium Drill",
   "Description": "Your first drill. Mines soft blocks",

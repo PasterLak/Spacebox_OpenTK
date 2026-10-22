@@ -155,4 +155,18 @@ public class RayTests
         Assert.Equal(expected, Ray.CalculateIncidentAngle(ray, Vector3.UnitY), 3);
         Assert.Equal(expected, Ray.CalculateIncidentAngle(ray, new Vector3SByte(0, 1, 0)), 3);
     }
+
+    [Fact]
+    public void Ricochet_AtAGrazingAngleStartsClearOfTheSurfaceFarFromTheOrigin()
+    {
+        var hit = new Vector3(6000.37f, 1200.5f, 7000.81f);
+        var ray = new Ray(hit - new Vector3(10f, 0.3f, 0f), new Vector3(1f, -0.03f, 0f), 50);
+
+        var bounced = ray.CalculateRicochetRay(hit, Vector3.UnitY, 50);
+        var fromBlock = ray.CalculateRicochetRay(hit, new Vector3SByte(0, 1, 0), 50);
+
+        Assert.True(bounced.Origin.Y - hit.Y >= Ray.RicochetSurfaceOffset * 0.9f);
+        Assert.True(fromBlock.Origin.Y - hit.Y >= Ray.RicochetSurfaceOffset * 0.9f);
+        Assert.True(bounced.Direction.Y > 0f);
+    }
 }

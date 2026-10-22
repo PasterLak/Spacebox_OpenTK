@@ -1,6 +1,6 @@
 namespace Spacebox.Editor.Data;
 
-public sealed class CompositeEntrySource : IEntrySource
+public sealed class CompositeEntrySource : IEntrySource, IReorderableEntrySource
 {
     private readonly IReadOnlyList<IEntrySource> _sources;
     private readonly Func<IEntrySource> _target;
@@ -79,6 +79,13 @@ public sealed class CompositeEntrySource : IEntrySource
     }
 
     public void Remove(EditorEntry entry) => OwnerOf(entry).Remove(entry);
+
+    public bool CanMove(EditorEntry entry, int delta) => OwnerOf(entry) is IReorderableEntrySource owner && owner.CanMove(entry, delta);
+
+    public void Move(EditorEntry entry, int delta)
+    {
+        if (OwnerOf(entry) is IReorderableEntrySource owner) owner.Move(entry, delta);
+    }
 
     private IEntrySource OwnerOf(EditorEntry entry)
     {

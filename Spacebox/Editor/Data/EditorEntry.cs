@@ -45,6 +45,12 @@ public sealed class EntryDefinition
     }
 }
 
+public interface IReorderableEntrySource
+{
+    bool CanMove(EditorEntry entry, int delta);
+    void Move(EditorEntry entry, int delta);
+}
+
 public interface IEntrySource
 {
     EntryDefinition Definition { get; }

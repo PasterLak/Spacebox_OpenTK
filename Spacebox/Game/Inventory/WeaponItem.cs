@@ -4,7 +4,7 @@ namespace Spacebox.Game
 {
     public class WeaponItem : Item
     {
-        public int ReloadTime = 500;
+        public float ReloadSeconds = 1f;
         public byte Spread  = 0;
         public byte AnimationPushback  = 0;
         public byte Recoil = 0;

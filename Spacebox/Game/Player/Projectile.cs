@@ -355,19 +355,6 @@ public class Projectile : Node3D
         SetLineRenderer();
         currentRicochets++;
 
-        if (currentRicochets == 5)
-        {
-            ProjectileHitEffectsManager.Instance.PlayHitEffect(hit.hitPosition, Parameters.ID);
-
-            Enabled = false;
-            if (Parameters.DamageBlocks >= 50)
-            {
-                PlayExplosionSound(hit.hitPosition);
-            }
-            OnDespawn?.Invoke(this);
-            return true;
-        }
-
         return true;
     }
 

@@ -316,11 +316,11 @@ namespace Spacebox.Game.GUI
                     text += "\nDamage: " + $"{+pj.Damage}/{+pj.DamageBlocks}";
                     text += "\nPenetration: " + pj.Penetration;
                     text += "\nProjectile speed: " + pj.Speed + " block/s";
-                    text += $"\nReload time: {itemType.ReloadTime / 20f:0.0}s";
+                    text += $"\nReload time: {itemType.ReloadSeconds:0.0#}s";
                     text += "\nSpread: " + itemType.Spread;
                     text += "\nPower usage: " + itemType.PowerUsage;
 
-                    var shotsMin = (1200 / itemType.ReloadTime);
+                    var shotsMin = (int)(60f / MathF.Max(0.05f, itemType.ReloadSeconds));
                     text += "\nDPM: " + $"{pj.Damage * shotsMin}/{pj.DamageBlocks * shotsMin}";
                 }
                 else if (type == typeof(BlockItem))

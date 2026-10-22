@@ -1,7 +1,6 @@
 {
    
     "Speed": 100,
-    "Mass": 5,
     "MaxTravelDistance": 100,
     "Length": 2,
     "Thickness": 0.1,

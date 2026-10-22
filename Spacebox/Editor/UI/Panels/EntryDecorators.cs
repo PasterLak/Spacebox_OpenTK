@@ -71,7 +71,7 @@ public sealed class RecipeSummary : IEntrySummary
         if (duration >= 0)
         {
             ImGui.SameLine();
-            ImGui.TextDisabled($"   {duration:0.##}s, {EditorJson.GetNumber(obj, "PowerPerTickRequared"):0} power/tick");
+            ImGui.TextDisabled($"   {duration:0.##}s");
         }
         ImGui.Separator();
     }

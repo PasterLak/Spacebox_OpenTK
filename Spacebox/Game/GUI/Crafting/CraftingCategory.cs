@@ -8,6 +8,7 @@ public class CraftingCategory
     public string Name { get; set; } = "x";
     public string Icon { get; set; } = "";
     public int Row { get; set; } = 0;
+    [System.Text.Json.Serialization.JsonIgnore]
     public AtlasSprite IconSprite { get; set; }
     public int ItemsCountInCategory => Items.Count;
     public List<Data> Items = new List<Data>();

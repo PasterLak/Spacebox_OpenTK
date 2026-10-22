@@ -5,8 +5,6 @@ namespace Spacebox.Game.Generation.Structures;
 
 public class GeneratorJSON
 {
-    public string Version { get; set; } = "1";
-    public float NoiseModifier { get; set; } = 1;
     public int MinAsteroidsInSector { get; set; } = 50;
     public int MaxAsteroidsInSector { get; set; } = 200;
     public int RejectionSamples { get; set; } = 5;

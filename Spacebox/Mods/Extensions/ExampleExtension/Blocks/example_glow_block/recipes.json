@@ -2,7 +2,6 @@
   {
     "Type": "crusher",
     "DurationSec": 4.0,
-    "PowerPerTickRequared": 5,
     "Product": {
       "Item": "example_glow_shard",
       "Quantity": 3

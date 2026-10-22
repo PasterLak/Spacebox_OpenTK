@@ -13,6 +13,7 @@ public sealed class AtlasPanel : IEditorPanel
 
     private int _view;
     private float _zoom = 1f;
+    private bool _fit = true;
     private string _filter = "";
     private string _selectedRegion;
 
@@ -43,9 +44,12 @@ public sealed class AtlasPanel : IEditorPanel
             ImGui.Combo("##view", ref _view, Views, Views.Length);
             EditorWidgets.Tooltip("Which texture atlas to show: block or item textures, or their glow (emission) layers.");
             ImGui.SameLine();
-            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * 0.5f);
-            ImGui.SliderFloat("Zoom", ref _zoom, 0.25f, 8f, "%.2fx");
-            EditorWidgets.Tooltip("Zoom of the atlas image.");
+            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * 0.4f);
+            if (ImGui.SliderFloat("Zoom", ref _zoom, 0.05f, 8f, "%.2fx")) _fit = false;
+            EditorWidgets.Tooltip("Zoom of the atlas image. Ctrl + mouse wheel over the atlas zooms too.");
+            ImGui.SameLine();
+            ImGui.Checkbox("Fit", ref _fit);
+            EditorWidgets.Tooltip("Zooms the atlas so it always fits the window.");
             ImGui.SameLine();
             if (ImGui.Button("Reload GameSet")) context.RequestReload();
             EditorWidgets.Tooltip("Rebuilds the atlases from the files on disk.");
@@ -58,11 +62,20 @@ public sealed class AtlasPanel : IEditorPanel
             {
                 ImGui.TextDisabled($"{texture.Width}x{texture.Height} px, {atlas.Count} textures");
                 if (ImGui.BeginChild("##canvas", Vector2.Zero, ImGuiChildFlags.None, ImGuiWindowFlags.HorizontalScrollbar))
+                {
+                    if (_fit) _zoom = FitZoom(texture, ImGui.GetContentRegionAvail());
                     DrawCanvas(atlas, texture);
+                }
                 ImGui.EndChild();
             }
         }
         ImGui.EndChild();
+    }
+
+    public static float FitZoom(Texture2D texture, Vector2 available)
+    {
+        if (texture.Width <= 0 || texture.Height <= 0 || available.X <= 1f || available.Y <= 1f) return 1f;
+        return Math.Clamp(MathF.Min(available.X / texture.Width, available.Y / texture.Height), 0.05f, 8f);
     }
 
     private void DrawRegions(TextureAtlas atlas)
@@ -97,7 +110,11 @@ public sealed class AtlasPanel : IEditorPanel
         {
             var mouse = (ImGui.GetMousePos() - origin) / _zoom;
             float wheel = ImGui.GetIO().MouseWheel;
-            if (wheel != 0f && ImGui.GetIO().KeyCtrl) _zoom = Math.Clamp(_zoom * MathF.Pow(1.15f, wheel), 0.25f, 8f);
+            if (wheel != 0f && ImGui.GetIO().KeyCtrl)
+            {
+                _zoom = Math.Clamp(_zoom * MathF.Pow(1.15f, wheel), 0.05f, 8f);
+                _fit = false;
+            }
 
             var hovered = FindRegion(atlas, texture, mouse);
             if (hovered != null)

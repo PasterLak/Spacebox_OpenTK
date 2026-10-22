@@ -438,6 +438,17 @@ namespace Spacebox.Game.Player
             if (IsAlive) AirZoneSounds.Play(isInAir);
         }
 
+        public void ApplySpawnStats()
+        {
+            var rules = Spacebox.Game.Generation.Structures.PlayerSpawnRules.Current;
+            var health = HealthBar.StatsData;
+            var power = PowerBar.StatsData;
+            var oxygen = OxygenBar.StatsData;
+            health.Value = Spacebox.Game.Generation.Structures.PlayerSpawnRules.ValueOf(health.MaxValue, rules.HealthPercent);
+            power.Value = Spacebox.Game.Generation.Structures.PlayerSpawnRules.ValueOf(power.MaxValue, rules.PowerPercent);
+            oxygen.Value = Spacebox.Game.Generation.Structures.PlayerSpawnRules.ValueOf(oxygen.MaxValue, rules.OxygenPercent);
+        }
+
         public void Revive(Vector3 position)
         {
             if (IsAlive) return;
@@ -445,11 +456,7 @@ namespace Spacebox.Game.Player
             IsAlive = true;
             FOV = Settings.Graphics.Fov;
             Settings.ShowInterface = true;
-            var health = HealthBar.StatsData;
-            var power = PowerBar.StatsData;
-            health.Value = health.MaxValue;
-            power.Value = power.MaxValue;
-            OxygenBar.StatsData.Fill();
+            ApplySpawnStats();
             PanelUI.IsItemModelVisible = true;
             Input.HideCursor();
             Flashlight.Enabled = true;

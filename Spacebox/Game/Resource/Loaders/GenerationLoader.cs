@@ -56,8 +56,6 @@ public class GenerationLoader
                 return;
             }
 
-            generator.Version = generatorJson.Version;
-            generator.NoiseModifier = generatorJson.NoiseModifier;
             generator.MinAsteroidsInSector = generatorJson.MinAsteroidsInSector;
             generator.MaxAsteroidsInSector = generatorJson.MaxAsteroidsInSector;
             generator.Biomes = new Biome[generatorJson.Biomes.Length];

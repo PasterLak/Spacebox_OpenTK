@@ -34,6 +34,12 @@ public sealed class OverviewPanel : IEditorPanel, IDisposable
             ImGui.TextWrapped(project.RootPath);
             if (ImGui.Button("Open folder")) OpenFolder(project.RootPath);
             EditorWidgets.Tooltip("Opens the GameSet folder in the file explorer.");
+            if (project.Mirror != null)
+            {
+                ImGui.TextColored(new Vector4(0.45f, 0.85f, 0.45f, 1f), "Development build: saves are also written to");
+                ImGui.TextWrapped(project.Mirror.Root);
+                EditorWidgets.Tooltip("Debug and Release builds run from bin/, which a rebuild overwrites. Every save and delete is copied to the source GameSet folder so your changes are kept.");
+            }
             DrawConversion(context);
             ImGui.Separator();
             DrawStatistics();

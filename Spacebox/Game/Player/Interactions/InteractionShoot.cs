@@ -91,7 +91,7 @@ public class InteractionShoot : InteractionMode
             return;
         }
 
-        if (_time < weapon.ReloadTime * 0.05f)
+        if (_time < weapon.ReloadSeconds)
         {
             _time += Time.Delta;
         }

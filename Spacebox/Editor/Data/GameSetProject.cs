@@ -12,6 +12,7 @@ public sealed class GameSetProject
     public string RootPath { get; }
     public string FolderName { get; }
     public string ModId { get; }
+    public SourceFolderMirror Mirror { get; set; }
 
     public GameSetProject(string rootPath, string modId)
     {
@@ -131,12 +132,15 @@ public sealed class GameSetProject
         foreach (var path in _pendingDeletes)
         {
             if (File.Exists(path)) File.Delete(path);
+            Mirror?.Delete(Normalize(Path.GetRelativePath(RootPath, path)));
         }
         _pendingDeletes.Clear();
 
         foreach (var file in _files.Values)
         {
-            if (file.IsDirty) file.Save();
+            if (!file.IsDirty) continue;
+            file.Save();
+            if (file.Root != null) Mirror?.Write(file.RelativePath, EditorJsonFile.Serialize(file.Root));
         }
         _structureVersion = EditorJsonFile.NextStamp();
     }

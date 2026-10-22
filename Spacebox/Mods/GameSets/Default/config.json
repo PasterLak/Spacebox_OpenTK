@@ -4,32 +4,5 @@
     "Description": "Basic set of blocks and items",
     "Author": "PasterLak",
     "Version": "0.1.5",
-    "OxygenConsumeInterval": 10,
-
-    "Dependencies": [
-        {
-            "GameSet": "base_game",
-            "Version": "0.1.5"
-        }
-    ],
-
-    "ItemsOnStart": [
-        {
-            "ID": "aluminium_drill",
-            "Count": 1
-        },
-        {
-            "ID": "furnace",
-            "Count": 1
-        },
-        {
-            "ID": "crafting_table",
-            "Count": 1
-        },
-        
-        {
-            "ID": "aluminium_flashlight",
-            "Count": 1
-        }
-    ]
+    "OxygenConsumeInterval": 10
 }

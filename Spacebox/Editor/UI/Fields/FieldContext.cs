@@ -41,6 +41,9 @@ public static class EditorScopes
     public const string Biomes = "biomes";
     public const string Crafting = "crafting";
     public const string Recipes = "recipes";
+    public const string Disassembly = "disassembly";
+    public const string PlayerSpawn = "player_spawn";
+    public const string Tutorials = "tutorials";
     public const string Config = "config";
     public const string Generator = "generator";
 }

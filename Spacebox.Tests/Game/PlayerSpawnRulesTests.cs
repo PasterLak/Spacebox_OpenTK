@@ -49,8 +49,9 @@ public class PlayerSpawnRulesTests
     public void DefaultGameSet_SpawnsOnlyNearLargeRockyAsteroids()
     {
         string folder = FindGeneration();
-        var generator = JsonSerializer.Deserialize<GeneratorJSON>(File.ReadAllText(Path.Combine(folder, "generator.json")));
-        var rules = PlayerSpawnRules.FromJson(generator.PlayerSpawn);
+        var parameters = Spacebox.Game.Player.Respawn.SpawnParameters.TryLoad(Path.GetDirectoryName(folder));
+        Assert.NotNull(parameters);
+        var rules = PlayerSpawnRules.FromJson(parameters.SpawnSettings);
 
         foreach (var file in Directory.GetFiles(Path.Combine(folder, "Asteroids"), "*.json"))
         {
@@ -74,5 +75,38 @@ public class PlayerSpawnRulesTests
             dir = dir.Parent;
         }
         throw new DirectoryNotFoundException("Generation");
+    }
+
+    [Fact]
+    public void Candidates_PreferTheBiomeAndKeepTheDistance()
+    {
+        var rules = new PlayerSpawnRules(0, null) { PreferredBiome = "dense", Distance = new DistanceRange(1000, 5000) };
+        var candidates = new List<SpawnCandidate>
+        {
+            new SpawnCandidate("rock", 30, "field", 2000),
+            new SpawnCandidate("rock", 30, "dense", 9000),
+            new SpawnCandidate("rock", 30, "dense", 3000),
+            new SpawnCandidate("rock", 30, "dense", 500)
+        };
+
+        for (int seed = 0; seed < 50; seed++) Assert.Equal(2, rules.PickIndex(candidates, new Random(seed)));
+
+        var noBiome = new List<SpawnCandidate> { new SpawnCandidate("rock", 30, "field", 2000), new SpawnCandidate("rock", 30, "field", 9000) };
+        Assert.Equal(0, rules.PickIndex(noBiome, new Random(1)));
+
+        var outside = new List<SpawnCandidate> { new SpawnCandidate("rock", 30, "field", 90000) };
+        Assert.Equal(0, rules.PickIndex(outside, new Random(1)));
+    }
+
+    [Fact]
+    public void SpawnStats_ArePercentOfTheMaximum()
+    {
+        var rules = PlayerSpawnRules.FromJson(new PlayerSpawnJSON { HealthOnSpawn = 50, PowerOnSpawn = 0, OxygenOnSpawn = 150 });
+
+        Assert.Equal(50, PlayerSpawnRules.ValueOf(100, rules.HealthPercent));
+        Assert.Equal(0, PlayerSpawnRules.ValueOf(80, rules.PowerPercent));
+        Assert.Equal(120, PlayerSpawnRules.ValueOf(120, rules.OxygenPercent));
+        Assert.Equal(1, PlayerSpawnRules.FromJson(new PlayerSpawnJSON { HealthOnSpawn = 0 }).HealthPercent);
+        Assert.Equal("", PlayerSpawnRules.FromJson(new PlayerSpawnJSON { PreferredSpawnBiome = "none" }).PreferredBiome);
     }
 }

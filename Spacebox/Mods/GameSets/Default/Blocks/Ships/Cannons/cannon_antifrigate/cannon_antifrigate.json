@@ -6,7 +6,7 @@
   "TextureFit": true,
   "Cannon": {
     "Projectile": "p_cannon_plasma",
-    "ReloadTime": 1000,
+    "ReloadTime": 1,
     "ShotSound": "ar",
     "BarrelLength": 2.5,
     "AimCone": 60,

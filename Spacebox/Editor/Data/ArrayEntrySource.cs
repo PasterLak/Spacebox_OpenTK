@@ -2,7 +2,7 @@ using System.Text.Json.Nodes;
 
 namespace Spacebox.Editor.Data;
 
-public sealed class ArrayEntrySource : IEntrySource
+public sealed class ArrayEntrySource : IEntrySource, IReorderableEntrySource
 {
     private readonly GameSetProject _project;
     private readonly string _relativeFile;
@@ -59,6 +59,25 @@ public sealed class ArrayEntrySource : IEntrySource
         if (index < 0) return;
 
         array.RemoveAt(index);
+        _project.GetFile(_relativeFile).MarkDirty();
+    }
+
+    public bool CanMove(EditorEntry entry, int delta)
+    {
+        int index = IndexOf(entry);
+        int target = index + delta;
+        return index >= 0 && target >= 0 && target < EnsureArray().Count;
+    }
+
+    public void Move(EditorEntry entry, int delta)
+    {
+        if (!CanMove(entry, delta)) return;
+
+        var array = EnsureArray();
+        int index = IndexOf(entry);
+        var node = array[index];
+        array.RemoveAt(index);
+        array.Insert(index + delta, node);
         _project.GetFile(_relativeFile).MarkDirty();
     }
 

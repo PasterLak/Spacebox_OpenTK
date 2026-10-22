@@ -157,13 +157,14 @@ namespace Engine.Physics
             return distance >= 0 && distance <= Length;
         }
 
+        public const float RicochetSurfaceOffset = 0.02f;
+
         public Ray CalculateRicochetRay(Vector3 hitPos, Vector3 hitNormal, float length)
         {
-            const float eps = 0.002f;
             var n = hitNormal.Normalized();
             var incoming = Direction.Normalized();
             var reflectionDir = (incoming - 2f * Vector3.Dot(incoming, n) * n).Normalized();
-            return new Ray(hitPos + reflectionDir * eps, reflectionDir, length);
+            return new Ray(hitPos + n * RicochetSurfaceOffset, reflectionDir, length);
         }
 
         public static float CalculateIncidentAngle(Ray ray, Vector3 hitNormal)
@@ -176,9 +177,8 @@ namespace Engine.Physics
 
         public Ray CalculateRicochetRay(Vector3 hitPos, Vector3SByte hitNormal, float length)
         {
-            const float eps = 0.002f;
             var reflectionDir = CalculateRicochet(this, hitPos, hitNormal);
-            var newOrigin = hitPos + reflectionDir * eps;
+            var newOrigin = hitPos + new Vector3(hitNormal.X, hitNormal.Y, hitNormal.Z).Normalized() * RicochetSurfaceOffset;
             return new Ray(newOrigin, reflectionDir, length);
         }
 

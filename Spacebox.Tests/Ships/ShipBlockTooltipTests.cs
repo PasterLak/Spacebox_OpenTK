@@ -37,7 +37,7 @@ public class ShipBlockTooltipTests
     [Fact]
     public void Cannon_ShowsReloadAndAim()
     {
-        var data = new CannonBlockData(new BlockData("cannon", "cannon"), new CannonJSON { Projectile = "missing", ReloadTime = 300, AimCone = 45, Power = 45 });
+        var data = new CannonBlockData(new BlockData("cannon", "cannon"), new CannonJSON { Projectile = "missing", ReloadTime = 0.3f, AimCone = 45, Power = 45 });
 
         var text = Tooltip(data);
 

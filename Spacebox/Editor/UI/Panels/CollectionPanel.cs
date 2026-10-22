@@ -139,6 +139,26 @@ public sealed class CollectionPanel : IEditorPanel
         ImGui.EndChild();
     }
 
+    private void DrawMoveButtons(EditorEntry entry)
+    {
+        if (_source is not IReorderableEntrySource reorderable) return;
+        if (!reorderable.CanMove(entry, -1) && !reorderable.CanMove(entry, 1)) return;
+
+        ImGui.SameLine();
+        DrawMoveButton(reorderable, entry, -1, "Move up", "Moves this entry one place up. The order is the order in the game.");
+        ImGui.SameLine();
+        DrawMoveButton(reorderable, entry, 1, "Move down", "Moves this entry one place down. The order is the order in the game.");
+    }
+
+    private static void DrawMoveButton(IReorderableEntrySource source, EditorEntry entry, int delta, string label, string tooltip)
+    {
+        bool enabled = source.CanMove(entry, delta);
+        if (!enabled) ImGui.BeginDisabled();
+        if (ImGui.Button(label)) source.Move(entry, delta);
+        if (!enabled) ImGui.EndDisabled();
+        EditorWidgets.Tooltip(tooltip);
+    }
+
     private void DrawDetails(EditorContext context)
     {
         if (_selected == null)
@@ -160,6 +180,7 @@ public sealed class CollectionPanel : IEditorPanel
         ImGui.SameLine();
         if (ImGui.Checkbox("Raw JSON", ref _rawMode) && _rawMode) _rawText = EditorJsonFile.Serialize(entry.Node);
         EditorWidgets.Tooltip("Edit the entry as JSON text instead of the property list.");
+        DrawMoveButtons(entry);
 
         if (entry.File.Error != null)
         {
@@ -218,6 +239,13 @@ public sealed class CollectionPanel : IEditorPanel
 
     private void DrawPreview(EditorContext context, EditorEntry entry)
     {
+        if (_preview is IEntryCustomPreview custom)
+        {
+            custom.DrawControls(context, entry);
+            custom.Draw(context, entry);
+            return;
+        }
+
         _viewport ??= context.CreateViewport();
         _preview.DrawControls(context, entry);
         _preview.Apply(context, entry, _viewport);

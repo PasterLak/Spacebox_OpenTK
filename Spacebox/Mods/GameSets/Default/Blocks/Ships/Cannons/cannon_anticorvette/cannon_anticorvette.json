@@ -6,7 +6,7 @@
   "TextureFit": true,
   "Cannon": {
     "Projectile": "p_cannon_antipersonnel_heavy",
-    "ReloadTime": 600,
+    "ReloadTime": 0.6,
     "ShotSound": "ar",
     "BarrelLength": 2,
     "AimCone": 60,

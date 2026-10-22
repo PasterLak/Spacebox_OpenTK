@@ -45,6 +45,22 @@ Mods/GameSets/MyMod/
 - Archives: a `.zip` or `.rar` in `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start into a folder named after its `ModName`. If that folder holds the same mod (same `ModId`) it is updated, otherwise the new one gets a numbered folder; `Default` is never replaced.
 - Old mods keep working: `blocks.json`, `items.json`, `crafting.json` and `recipes.json` (flat arrays) are still read and can be mixed with folders. Convert an old mod with the GameSet editor (Overview -> Convert to folder format) or `dotnet run --project Tools/Spacebox.GameSetTool -- convert Mods/GameSets/MyMod`; the converter checks that the loaded content stays identical before it changes anything.
 
+## Player start
+
+`Player/spawn_parameters.json` (base GameSet):
+
+```json
+{
+  "GiveItemsOnStart": [ { "ID": "aluminium_drill", "Count": 1, "PutIn": "hand", "SlotId": 0 }, { "ID": "aluminium_flashlight", "Count": 1, "PutIn": "equipment" } ],
+  "SpawnSettings": { "PreferredSpawnBiome": "", "MinDistanceFromCenter": 0, "MaxDistanceFromCenter": 0, "MinAsteroidRadius": 24, "ExcludedAsteroids": [ "asteroid_icy" ], "HealthOnSpawn": 100, "PowerOnSpawn": 100, "OxygenOnSpawn": 100 }
+}
+```
+
+- `PutIn`: `auto` (equipment slot if it fits, else the hotbar), `hand` (hotbar slot `SlotId`, selected), `hotbar`, `inventory`, `equipment`.
+- Spawn: new players start next to an asteroid of the start sector that is in the distance range and the preferred biome (falls back to any in range, then any), at least `MinAsteroidRadius` big and not excluded. Health, power and oxygen are percent of the maximum, used for new players and respawns.
+- Without the file the old `config.json` `ItemsOnStart` and `generator.json` `PlayerSpawn` still work. Extensions add start items with `ItemsOnStart` in their `config.json`.
+- All time settings are seconds (weapon and cannon `ReloadTime` too: 0.5 = two shots per second).
+
 ## Extensions
 
 An extension adds content to a base GameSet (usually `Default`) without copying it:

@@ -29,14 +29,17 @@ public static class GameSetCatalog
         { "drill", typeof(DrillItemJSON) },
         { "consumable", typeof(ConsumableItemJSON) },
         { "mob_spawner", typeof(MobSpawnerItemJSON) },
-        { "equipment", typeof(EquipmentJSON) }
+        { "equipment", typeof(EquipmentJSON) },
+        { "repair_tool", typeof(RepairToolItemJSON) },
+        { "picture", typeof(PictureItemJSON) }
     };
 
     private static readonly Dictionary<string, Type> FileSchemas = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
     {
         { ConfigFile, typeof(GameSetLoader.ModConfig) },
         { "ships.json", typeof(ShipPhysicsSettings) },
-        { "disassembly.json", typeof(DisassemblyJSON) },
+        { DisassemblyFile, typeof(DisassemblyJSON) },
+        { Spacebox.Game.Player.Respawn.SpawnParameters.RelativePath, typeof(Spacebox.Game.Player.Respawn.SpawnParametersJSON) },
         { GeneratorFile, typeof(GeneratorJSON) },
         { "Optional/lighting.json", typeof(GameSetLoader.Modlighting) },
         { CraftingFile, typeof(CraftingJSON) },
@@ -60,6 +63,7 @@ public static class GameSetCatalog
         yield return typeof(MobJSON);
         yield return typeof(AsteroidJSON);
         yield return typeof(BiomeJSON);
+        yield return typeof(Spacebox.Game.Tutorial.TutorialJSON);
     }
     public static IEnumerable<string> BlockTypeNames => BlockFactory.Types;
 
@@ -97,6 +101,7 @@ public static class GameSetCatalog
         if (relativePath.StartsWith(MobsFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(MobJSON);
         if (relativePath.StartsWith(AsteroidsFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(AsteroidJSON);
         if (relativePath.StartsWith(BiomesFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(BiomeJSON);
+        if (relativePath.StartsWith(TutorialsFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(Spacebox.Game.Tutorial.TutorialJSON);
         return null;
     }
 
@@ -214,6 +219,27 @@ public static class GameSetCatalog
         Label = node => NameOf(node),
         NewIdPrefix = "new_category",
         Template = () => new JsonObject { ["Id"] = "new_category", ["Name"] = "New Category", ["Icon"] = "" }
+    };
+
+    public const string DisassemblyFile = "disassembly.json";
+    public const string TutorialsFolder = "Tutorials";
+
+    public static readonly EntryDefinition Tutorials = new EntryDefinition
+    {
+        IdKey = "Id",
+        Schema = _ => typeof(Spacebox.Game.Tutorial.TutorialJSON),
+        Label = node => node is JsonObject obj ? EditorJson.GetString(obj, "Name") : "",
+        NewIdPrefix = "new_tutorial",
+        Template = () => JsonSchema.CreateEmpty(typeof(Spacebox.Game.Tutorial.TutorialJSON))
+    };
+
+    public static readonly EntryDefinition DisassemblyItems = new EntryDefinition
+    {
+        IdKey = "Item",
+        Schema = _ => typeof(DisassemblyItemJSON),
+        Label = node => node is JsonObject obj ? EditorJson.GetString(obj, "Item") : "",
+        NewIdPrefix = "item",
+        Template = () => new JsonObject { ["Item"] = "", ["ReturnPercent"] = 50 }
     };
 
     public static readonly EntryDefinition ProcessingRecipes = new EntryDefinition

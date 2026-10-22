@@ -21,6 +21,8 @@ public static class EditorPanelFactory
         return new List<IEditorPanel>
         {
             new OverviewPanel(inspector),
+            new JsonFilePanel("Player spawn", Spacebox.Game.Player.Respawn.SpawnParameters.RelativePath, EditorScopes.PlayerSpawn, inspector,
+                "Start items and where they go, start health/power/oxygen, and which asteroid new players start next to. Used for new players and respawns."),
             new CollectionPanel("Blocks", EditorScopes.Blocks,
                 GameSetSources.Blocks(project), inspector, new BlockEntryPreview(), itemIcon),
             new CollectionPanel("Items", EditorScopes.Items,
@@ -34,12 +36,23 @@ public static class EditorPanelFactory
                     GameSetSources.ProcessingRecipes(project), inspector, null, productIcon, recipeSummary),
                 new CollectionPanel("Categories", EditorScopes.Crafting,
                     GameSetSources.Categories(project), inspector, null,
-                    new ItemIdIconProvider(node => node is System.Text.Json.Nodes.JsonObject obj ? EditorJson.GetString(obj, "Icon") : ""))),
+                    new ItemIdIconProvider(node => node is System.Text.Json.Nodes.JsonObject obj ? EditorJson.GetString(obj, "Icon") : ""),
+                    new CraftingCategoryPreview())),
+            new TabbedPanel("Disassembly",
+                new CollectionPanel("Items", EditorScopes.Disassembly,
+                    new ArrayEntrySource(project, GameSetCatalog.DisassemblyFile, "Items", GameSetCatalog.DisassemblyItems), inspector, null,
+                    new ItemIdIconProvider(node => node is System.Text.Json.Nodes.JsonObject obj ? EditorJson.GetString(obj, "Item") : ""),
+                    new DisassemblySummary()),
+                new JsonFilePanel("Defaults", GameSetCatalog.DisassemblyFile, EditorScopes.Disassembly, inspector,
+                    "Defaults for every item without its own entry. Items not listed are disassembled from their crafting or machine recipe.")),
             new CollectionPanel("Loot", EditorScopes.Loot,
                 new FolderEntrySource(project, GameSetCatalog.LootFolder, GameSetCatalog.Loot), inspector),
             new CollectionPanel("Mobs", EditorScopes.Mobs,
                 new FolderEntrySource(project, GameSetCatalog.MobsFolder, GameSetCatalog.Mobs), inspector, new MobEntryPreview()),
             new GenerationPanel(inspector, asteroids, biomes),
+            new CollectionPanel("Tutorials", EditorScopes.Tutorials,
+                new FolderEntrySource(project, GameSetCatalog.TutorialsFolder, GameSetCatalog.Tutorials), inspector, new TutorialEntryPreview()),
+            new SoundsPanel(),
             new AtlasPanel(),
             new FilesPanel(inspector)
         };

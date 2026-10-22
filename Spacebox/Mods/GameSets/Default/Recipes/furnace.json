@@ -3,7 +3,6 @@
   "Recipes": [
     {
       "DurationSec": 6,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "ice_shard",
         "Quantity": 2
@@ -15,7 +14,6 @@
     },
     {
       "DurationSec": 8.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "sand",
         "Quantity": 1
@@ -27,7 +25,6 @@
     },
     {
       "DurationSec": 7.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "ice_rock",
         "Quantity": 1
@@ -39,7 +36,6 @@
     },
     {
       "DurationSec": 13.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "dense_ice_rock",
         "Quantity": 1
@@ -51,7 +47,6 @@
     },
     {
       "DurationSec": 9.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "cobalt_dust",
         "Quantity": 1
@@ -63,7 +58,6 @@
     },
     {
       "DurationSec": 10.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_dust",
         "Quantity": 1
@@ -75,7 +69,6 @@
     },
     {
       "DurationSec": 10.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_dust",
         "Quantity": 1
@@ -87,7 +80,6 @@
     },
     {
       "DurationSec": 12.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_dust",
         "Quantity": 1
@@ -99,7 +91,6 @@
     },
     {
       "DurationSec": 13.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "thulium_dust",
         "Quantity": 1
@@ -111,7 +102,6 @@
     },
     {
       "DurationSec": 12.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "uranium_dust",
         "Quantity": 1
@@ -123,7 +113,6 @@
     },
     {
       "DurationSec": 12.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "cobaltite_rock",
         "Quantity": 1
@@ -135,7 +124,6 @@
     },
     {
       "DurationSec": 14.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "aluminium_ore",
         "Quantity": 1
@@ -147,7 +135,6 @@
     },
     {
       "DurationSec": 15.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "iron_ore",
         "Quantity": 1
@@ -159,7 +146,6 @@
     },
     {
       "DurationSec": 18.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "titanium_ore",
         "Quantity": 1
@@ -171,7 +157,6 @@
     },
     {
       "DurationSec": 25.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "uranium_ore",
         "Quantity": 1
@@ -183,7 +168,6 @@
     },
     {
       "DurationSec": 40.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "obscurium_dust",
         "Quantity": 1
@@ -195,7 +179,6 @@
     },
     {
       "DurationSec": 8.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "water",
         "Quantity": 1
@@ -207,7 +190,6 @@
     },
     {
       "DurationSec": 20.0,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "polymer_pellets",
         "Quantity": 4
@@ -219,7 +201,6 @@
     },
     {
       "DurationSec": 6.5,
-      "PowerPerTickRequared": 5,
       "Ingredient": {
         "Item": "methane_ice_shard",
         "Quantity": 1

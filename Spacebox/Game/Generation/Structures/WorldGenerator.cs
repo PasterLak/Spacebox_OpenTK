@@ -5,8 +5,6 @@ namespace Spacebox.Game.Generation.Structures;
 
 public class WorldGenerator
 {
-    public string Version { get; set; } = "1";
-    public float NoiseModifier { get; set; } = 1;
     public int MinAsteroidsInSector { get; set; } = 50;
     public int MaxAsteroidsInSector { get; set; } = 200;
     public int RejectionSamples { get; set; } = 5;
@@ -83,8 +81,6 @@ public class WorldGenerator
     public void DebugPrint()
     {
         Debug.Log("=== GENERATOR DEBUG INFO ===");
-        Debug.Log($"Version: {Version}");
-        Debug.Log($"NoiseModifier: {NoiseModifier}");
         Debug.Log($"Biomes Count: {Biomes.Length}");
         Debug.Log($"Loaded Asteroids: {loadedAsteroids.Count}");
         Debug.Log($"Loaded Biomes: {loadedBiomes.Count}");

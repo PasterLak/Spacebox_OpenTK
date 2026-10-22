@@ -40,6 +40,8 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         LoadGameSet();
 
         var project = new GameSetProject(Spacebox.Network.GameSetLocator.FolderPath(_args.ModFolderName), _args.ModId);
+        project.Mirror = SourceFolderMirror.TryCreate(project.RootPath);
+        if (project.Mirror != null) Engine.Debug.Log($"[Editor] Development build: saves also go to {project.Mirror.Root}");
         _context = new EditorContext(project);
         _context.Assets.Refresh();
         _shell = new EditorShell(_context, EditorPanelFactory.CreateDefault(project), _args.StartPanel);

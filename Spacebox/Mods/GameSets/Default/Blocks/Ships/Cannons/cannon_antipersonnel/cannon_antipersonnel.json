@@ -6,7 +6,7 @@
   "TextureFit": true,
   "Cannon": {
     "Projectile": "p_cannon_antipersonnel",
-    "ReloadTime": 200,
+    "ReloadTime": 0.2,
     "ShotSound": "smg",
     "BarrelLength": 1.5,
     "AimCone": 60,

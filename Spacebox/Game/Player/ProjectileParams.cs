@@ -7,7 +7,6 @@ namespace Spacebox.Game.Player
         public short ID { get; private set; } = -1;
         public string Name { get; private set; } = "projectiledefault";
         public float Speed { get; private set; }
-        public byte Mass { get; private set; } = 1;
         public int MaxTravelDistance { get; private set; }
         public float Length { get; private set; }
         public float Thickness { get; private set; }
@@ -41,7 +40,6 @@ namespace Spacebox.Game.Player
             Thickness = p.Thickness;
             Color = p.Color.ToColor4();
             DropBlock = p.DropBlock;
-            Mass = (byte)p.Mass;
             Damage = (byte)p.Damage;
             DamageBlocks = (byte)p.DamageBlocks;
             Penetration = (byte)p.Penetration;
@@ -65,7 +63,6 @@ namespace Spacebox.Game.Player
             p.Thickness = 0.1f;
             p.Color = Color4.Blue;
             p.Penetration = 255;
-            p.Mass = 2;
             p.Damage = 5;
             p.DamageBlocks = 5;
             p.RicochetAngle = 30;
@@ -86,7 +83,6 @@ namespace Spacebox.Game.Player
             p.Thickness = 0.1f;
             p.Color = Color4.Yellow;
             p.Penetration = 255;
-            p.Mass = 2;
             p.Damage = 5;
             p.DamageBlocks = 5;
             p.RicochetAngle = 30;
@@ -112,7 +108,6 @@ namespace Spacebox.Game.Player
             p.MaxTravelDistance = 100;
             p.Length = 1f;
             p.Thickness = 0.1f;
-            p.Mass = 1;
             p.Color = Color4.Pink;
             p.Penetration = 255;
             p.Damage = 0;
