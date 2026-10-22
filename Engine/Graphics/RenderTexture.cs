@@ -113,6 +113,7 @@ public sealed class RenderTexture : IDisposable
         GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
         GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         GL.BindTexture(TextureTarget.Texture2D, 0);
+        Texture2D.ResetBindingCache();
     }
 
     private void Delete()
