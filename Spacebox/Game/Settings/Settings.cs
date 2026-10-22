@@ -10,6 +10,7 @@ public class Settings
     public static InterfaceSettings Interface { get; set; } = new InterfaceSettings();
     public static GameplaySettings Gameplay { get; set; } = new GameplaySettings();
     public static MetaSettings Meta { get; set; } = new MetaSettings();
+    public static TexturePackSettings TexturePacks { get; set; } = new TexturePackSettings();
 
     public static GameSettings AsGameSettings()
     {
@@ -19,7 +20,8 @@ public class Settings
             Graphics = Graphics,
             Interface = Interface,
             Game = Gameplay,
-            Meta = Meta
+            Meta = Meta,
+            TexturePacks = TexturePacks
         };
 
         return newSettings;
@@ -59,5 +61,6 @@ public class Settings
         Graphics = settings.Graphics;
         Interface = settings.Interface;
         Meta = settings.Meta;
+        TexturePacks = settings.TexturePacks;
     }
 }

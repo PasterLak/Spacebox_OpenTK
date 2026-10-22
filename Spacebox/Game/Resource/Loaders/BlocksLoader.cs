@@ -3,6 +3,8 @@ using Engine.Utils;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Generation.Shapes;
+using Spacebox.Game.Resource.Content;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 
@@ -32,28 +34,19 @@ namespace Spacebox.Game.Resource
             GameAssetsRegister.RegisterBlock(air);
         }
 
-        public static void LoadBlocks(string modPath, string defaultModPath)
+        public static void LoadBlocks(GameSetContent content, string[] modelSearchRoots)
         {
             if (!GameAssets.HasItem("default:void")) AddVoidBlock();
             if (!GameAssets.HasItem("default:air")) AddAirBlock();
 
-            string blocksFile = GameSetLoader.GetFilePath(modPath, defaultModPath, "blocks.json");
-            if (blocksFile == null) return;
-
             try
             {
-                List<BlockJSON> blocks = JsonFixer.LoadJsonSafe<List<BlockJSON>>(blocksFile);
+                var shapes = new BlockShapeResolver(modelSearchRoots);
 
-                if (blocks == null)
+                foreach (var entry in content.Blocks)
                 {
-                    Debug.Error("[GameSetLoader] Failed to parse blocks.json file");
-                    return;
-                }
-
-                var shapes = new BlockShapeResolver(modPath, defaultModPath);
-
-                foreach (var block in blocks)
-                {
+                    var block = Deserialize(entry);
+                    if (block == null) continue;
                     if (!ProcessBlock(block, shapes))
                         continue;
                 }
@@ -61,6 +54,19 @@ namespace Spacebox.Game.Resource
             catch (Exception ex)
             {
                 Debug.Error($"[GameSetLoader] Error loading blocks: {ex.Message}");
+            }
+        }
+
+        private static BlockJSON Deserialize(ContentEntry entry)
+        {
+            try
+            {
+                return entry.Data.Deserialize<BlockJSON>(ContentJson.CaseInsensitive);
+            }
+            catch (JsonException ex)
+            {
+                Debug.Error($"[GameSetLoader] Block '{entry.Key}' in {entry.Source} could not be read: {ex.Message}");
+                return null;
             }
         }
 

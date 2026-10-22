@@ -135,6 +135,11 @@ public sealed class TextureAtlas : IDisposable
         return true;
     }
 
+    public bool AddLayerFile(string layer, string name, string path)
+    {
+        return TryLoadPixels(path, out var pixels) && AddLayer(layer, name, pixels);
+    }
+
     public int AddLayerDirectory(string layer, string path, bool recursive = true, bool skipIgnoredFolders = false)
     {
         CreateLayer(layer);

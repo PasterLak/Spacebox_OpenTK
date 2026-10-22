@@ -193,6 +193,28 @@ namespace Spacebox.Game
         static bool OutOfRange(int v, int min, int max) => v < min || v > max;
     }
 
+    public sealed class TexturePackSettings
+    {
+        [JsonPropertyName("enabled")] public List<string> Enabled { get; set; } = new();
+
+        public bool Validate()
+        {
+            bool changed = false;
+            if (Enabled == null) { Enabled = new List<string>(); return true; }
+
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = Enabled.Count - 1; i >= 0; i--)
+            {
+                if (string.IsNullOrWhiteSpace(Enabled[i])) { Enabled.RemoveAt(i); changed = true; }
+            }
+            for (int i = 0; i < Enabled.Count; i++)
+            {
+                if (!seen.Add(Enabled[i])) { Enabled.RemoveAt(i--); changed = true; }
+            }
+            return changed;
+        }
+    }
+
     public sealed class GameSettings
     {
         [JsonPropertyName("meta")] public MetaSettings Meta { get; set; } = new();
@@ -200,6 +222,7 @@ namespace Spacebox.Game
         [JsonPropertyName("graphics")] public GraphicsSettings Graphics { get; set; } = new();
         [JsonPropertyName("interface")] public InterfaceSettings Interface { get; set; } = new();
         [JsonPropertyName("game")] public GameplaySettings Game { get; set; } = new();
+        [JsonPropertyName("texture_packs")] public TexturePackSettings TexturePacks { get; set; } = new();
 
         public static GameSettings Default() => new();
 
@@ -212,6 +235,7 @@ namespace Spacebox.Game
             if (Graphics == null) { Graphics = d.Graphics; changed = true; }
             if (Interface == null) { Interface = d.Interface; changed = true; }
             if (Game == null) { Game = d.Game; changed = true; }
+            if (TexturePacks == null) { TexturePacks = d.TexturePacks; changed = true; }
 
             if (Meta.SchemaVersion <= 0) { Meta.SchemaVersion = d.Meta.SchemaVersion; changed = true; }
 
@@ -219,6 +243,7 @@ namespace Spacebox.Game
             changed |= Graphics.Validate(d.Graphics);
             changed |= Interface.Validate(d.Interface);
             changed |= Game.Validate(d.Game, allowedLanguages);
+            changed |= TexturePacks.Validate();
 
             return changed;
         }

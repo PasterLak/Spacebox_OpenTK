@@ -30,6 +30,7 @@ public struct SpaceSceneArgs
     public string seed;
 
     public string modfolderName;
+    public string[] extensions = Array.Empty<string>();
     public string key;
     public string hostIp;
     public int port;

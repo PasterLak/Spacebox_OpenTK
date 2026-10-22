@@ -10,12 +10,15 @@ using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Scenes;
 using System.Text.Json;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Resource;
 
 public static class GameSetLoader
 {
     public static ModConfig ModInfo;
+    public static GameSetStack Stack { get; private set; }
+    public static GameSetContent Content { get; private set; }
     private static string modPath;
 
     private static readonly Queue<Action> _postLoadActions = new Queue<Action>();
@@ -42,59 +45,54 @@ public static class GameSetLoader
         }
         ModInfo = null;
         modPath = null;
+        Stack = null;
+        Content = null;
         Spacebox.Game.Tutorial.TutorialLibrary.Clear();
     }
-    public static void Load(string modId, bool useLocalGameSetsFolder, string serverName)
+    public static void Load(GameSetStack stack, GameSetAssetIndex assets)
     {
         Unload();
 
-
-        string modsDirectory = ModPath.GetModsPath(useLocalGameSetsFolder, serverName);
-        string defaultModId = Globals.GameSet.Default.ToLower();
-        string defaultModPath = Path.Combine(modsDirectory, Globals.GameSet.Default);
-
-        if (!Directory.Exists(modsDirectory))
+        if (stack == null)
         {
-            Directory.CreateDirectory(modsDirectory);
-            Debug.Error("[GameSetLoader] Mods directory created. Please add mods and try again.");
+            Debug.Error("[GameSetLoader] No GameSet to load.");
             return;
         }
 
-        modPath = modId.ToLower() == defaultModId ? defaultModPath : FindModPath(modsDirectory, modId);
-
-       
-
-        if (string.IsNullOrEmpty(modPath))
-        {
-            Debug.Error($"[GameSetLoader] Mod with ID '{modId}' not found in Mods directory.");
-            return;
-        }
-
+        modPath = stack.Base.Folder;
+        string defaultModPath = stack.Fallback?.Root ?? modPath;
         string configFile = Path.Combine(modPath, "config.json");
 
         if (!File.Exists(configFile))
         {
-            Debug.Error($"[GameSetLoader] Config file not found for mod '{modId}'.");
+            Debug.Error($"[GameSetLoader] Config file not found for mod '{stack.Base.Id}'.");
             return;
         }
 
         ModInfo = LoadConfig(configFile);
         if (ModInfo == null)
         {
-            Debug.Error($"[GameSetLoader] Failed to load config for mod '{modId}'.");
+            Debug.Error($"[GameSetLoader] Failed to load config for mod '{stack.Base.Id}'.");
             return;
         }
         ModInfo.ModPath = modPath;
+        ModInfo.FolderName = stack.Base.FolderName;
+        foreach (var extension in stack.Extensions)
+        {
+            if (extension.Config.ItemsOnStart != null) ModInfo.ItemsOnStart.AddRange(extension.Config.ItemsOnStart);
+        }
 
+        Stack = stack;
+        Content = stack.ReadContent();
+        foreach (var warning in Content.Warnings) Debug.Warning($"[GameSetLoader] {warning}");
 
-
-        LoadSounds(modPath);
-        BlocksLoader.LoadBlocks(modPath, defaultModPath);
+        LoadSounds(assets);
+        BlocksLoader.LoadBlocks(Content, stack.SearchRootsNewestFirst());
         LoadProjectiles(modPath, defaultModPath);
-        LoadItems(modPath, defaultModPath);
+        LoadItems(Content);
         SetBlocksDrop();
-        LoadRecipes(modPath, defaultModPath);
-        LoadCrafting(modPath, defaultModPath);
+        LoadRecipes(Content);
+        LoadCrafting(Content);
         DisassemblyRecipes.Initialize(DisassemblySettingsLoader.Load(modPath, ModInfo.ModId));
         ShipPhysicsSettings.Current = ShipPhysicsSettingsLoader.Load(modPath);
         LoadLoot(modPath, defaultModPath);
@@ -111,37 +109,11 @@ public static class GameSetLoader
 
         ExecutePostLoadActions();
 
-        Debug.Success($"[GameSetLoader] Mod '{modId}' loaded successfully.");
+        string extensions = stack.Extensions.Count == 0 ? "" : $" with extensions {string.Join(", ", stack.ExtensionIds)}";
+        Debug.Success($"[GameSetLoader] Mod '{stack.Base.Id}'{extensions} loaded successfully.");
 
         //generator.DebugPrint();
     }
-
-    private static string FindModPath(string modsDirectory, string modId)
-    {
-        modId = modId.ToLower();
-        foreach (var directory in Directory.GetDirectories(modsDirectory))
-        {
-            string configPath = Path.Combine(directory, "config.json");
-            if (!File.Exists(configPath)) continue;
-
-            try
-            {
-
-                ModConfig config = JsonFixer.LoadJsonSafe<ModConfig>(configPath);
-                if (config != null && config.ModId.ToLower() == modId)
-                {
-                    return directory;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Error($"[GameSetLoader] Error reading config from '{directory}': {ex.Message}");
-            }
-        }
-        return string.Empty;
-    }
-
-
 
     private static ModConfig LoadConfig(string configFile)
     {
@@ -158,19 +130,13 @@ public static class GameSetLoader
         }
     }
 
-    private static void LoadSounds(string modPath)
+    private static void LoadSounds(GameSetAssetIndex assets)
     {
-        var audioPath = Path.Combine(modPath, "Sounds");
-
-        if (!Directory.Exists(audioPath)) return;
-
         try
         {
-            string[] files = GetFilesRecursive(audioPath, new string[] { ".wav", ".ogg" });
-            foreach (string file in files)
+            foreach (var pair in assets.Sounds)
             {
-
-                ProcessSoundFile(file);
+                if (!GameAssets.Sounds.ContainsKey(pair.Key)) GameAssets.Sounds.Add(pair.Key, Resources.Load<AudioClip>(pair.Value));
             }
 
             if (!GameAssets.Sounds.ContainsKey("error"))
@@ -180,8 +146,6 @@ public static class GameSetLoader
         {
             Debug.Error($"[GameSetLoader] Error loading sounds: {ex.Message}");
         }
-
-
     }
 
     public static string[] GetFilesRecursive(string rootPath, string[] extensionsWithDot)
@@ -204,19 +168,6 @@ public static class GameSetLoader
         }
         return files.ToArray();
     }
-
-
-    private static void ProcessSoundFile(string file)
-    {
-        var soundName = Path.GetFileNameWithoutExtension(file);
-
-        if (!GameAssets.Sounds.ContainsKey(soundName))
-        {
-            var clip = Resources.Load<AudioClip>(file);
-            GameAssets.Sounds.Add(soundName, clip);
-        }
-    }
-
 
 
     public static string ValidateIdString(string @namespace, string idString)
@@ -400,21 +351,13 @@ public static class GameSetLoader
         }
     }
 
-    private static void LoadItems(string modPath, string defaultModPath)
+    private static void LoadItems(GameSetContent content)
     {
-        string itemsFile = GetFilePath(modPath, defaultModPath, "items.json");
-        if (itemsFile == null) return;
-
         try
         {
-            string json = File.ReadAllText(itemsFile);
-
-
-            using JsonDocument jsonDoc = JsonDocument.Parse(json);
-            JsonElement root = jsonDoc.RootElement;
-
-            foreach (JsonElement itemElement in root.EnumerateArray())
+            foreach (var entry in content.Items)
             {
+                JsonElement itemElement = JsonSerializer.SerializeToElement(entry.Data);
 
                 try
                 {
@@ -474,11 +417,11 @@ public static class GameSetLoader
                             break;
                         case "picture":
                             var pictureData = itemElement.Deserialize<PictureItemJSON>();
-                            if (pictureData != null) registeredItem = RegisterPictureItem(pictureData, idString);
+                            if (pictureData != null) registeredItem = RegisterPictureItem(pictureData, idString, entry);
                             break;
                         case "equipment":
                             var equipmentData = itemElement.Deserialize<EquipmentJSON>();
-                            if (equipmentData != null) registeredItem = RegisterEquipmentItem(equipmentData, idString);
+                            if (equipmentData != null) registeredItem = RegisterEquipmentItem(equipmentData, idString, entry);
                             break;
                         case "item":
                         default:
@@ -508,7 +451,7 @@ public static class GameSetLoader
         }
         catch (Exception ex)
         {
-            Debug.Error($"[GamesetLoader] Critical error opening items.json: {ex.Message}");
+            Debug.Error($"[GamesetLoader] Critical error loading items: {ex.Message}");
         }
     }
     private static void SetBlocksDrop()
@@ -554,54 +497,40 @@ public static class GameSetLoader
         }
     }
 
-    private static void LoadRecipes(string modPath, string defaultModPath)
+    private static void LoadRecipes(GameSetContent content)
     {
-        string itemsFile = GetFilePath(modPath, defaultModPath, "recipes.json");
-        if (itemsFile == null) return;
-
         try
         {
-
-            RecipesJSON t = JsonFixer.LoadJsonSafe<RecipesJSON>(itemsFile);
-
-
-            foreach (var typ in t.RecipeCatalog)
+            foreach (var entry in content.Recipes)
             {
-                var type = typ.Type;
+                var r = entry.Data.Deserialize<RecipeJSON>(ContentJson.CaseInsensitive);
+                if (r == null) continue;
 
-                foreach (var r in typ.Recipes)
+                var ingredientFullId = CombineId(ModInfo.ModId, r.Ingredient.Item);
+                var productFullId = CombineId(ModInfo.ModId, r.Product.Item);
+
+                var item = GameAssets.GetItemByFullID(ingredientFullId);
+                var item2 = GameAssets.GetItemByFullID(productFullId);
+
+                if (item == null)
                 {
-                    if (r == null) continue;
-
-                    var ingredientFullId = CombineId(ModInfo.ModId, r.Ingredient.Item);
-                    var productFullId = CombineId(ModInfo.ModId, r.Product.Item);
-
-                    var item = GameAssets.GetItemByFullID(ingredientFullId);
-                    var item2 = GameAssets.GetItemByFullID(productFullId);
-
-                    if (item == null)
-                    {
-                        Debug.Error($"[GameSetLoader] Recipes: ingredient was not found - {r.Ingredient.Item} . This recipe was skipped");
-                        continue;
-                    }
-                    if (item2 == null)
-                    {
-                        Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Product.Item} . This recipe was skipped");
-                        continue;
-                    }
-
-                    if (item == item2)
-                    {
-                        Debug.Error($"[GameSetLoader] Recipes: item <{item.Name}> needs itself for crafting! This recipe was skipped");
-                        continue;
-                    }
-
-                    r.Type = type;
-
-                    GameAssetsRegister.RegisterRecipe(r, item, item2);
+                    Debug.Error($"[GameSetLoader] Recipes: ingredient was not found - {r.Ingredient.Item} . This recipe was skipped");
+                    continue;
                 }
-            }
+                if (item2 == null)
+                {
+                    Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Product.Item} . This recipe was skipped");
+                    continue;
+                }
 
+                if (item == item2)
+                {
+                    Debug.Error($"[GameSetLoader] Recipes: item <{item.Name}> needs itself for crafting! This recipe was skipped");
+                    continue;
+                }
+
+                GameAssetsRegister.RegisterRecipe(r, item, item2);
+            }
         }
         catch (Exception ex)
         {
@@ -609,15 +538,11 @@ public static class GameSetLoader
         }
     }
 
-    private static void LoadCrafting(string modPath, string defaultModPath)
+    private static void LoadCrafting(GameSetContent content)
     {
-        string file = GetFilePath(modPath, defaultModPath, "crafting.json");
-        if (file == null) return;
-
         try
         {
-
-            CraftingJSON crafting = JsonFixer.LoadJsonSafe<CraftingJSON>(file);
+            CraftingJSON crafting = content.CraftingJson().Deserialize<CraftingJSON>(ContentJson.CaseInsensitive);
 
             if (crafting == null)
             {
@@ -990,9 +915,9 @@ public static class GameSetLoader
         return spawnerItem;
     }
 
-    private static Item RegisterPictureItem(PictureItemJSON data, string id)
+    private static Item RegisterPictureItem(PictureItemJSON data, string id, ContentEntry entry)
     {
-        string picturePath = ResolveGameSetFile(data.Picture);
+        string picturePath = ResolveGameSetFile(data.Picture, entry);
         if (picturePath.Length == 0)
             Debug.Error($"[GameSetLoader] Picture file <{data.Picture}> for item <{data.Name}> was not found");
 
@@ -1008,7 +933,7 @@ public static class GameSetLoader
         return picture;
     }
 
-    private static Item RegisterEquipmentItem(EquipmentJSON data, string id)
+    private static Item RegisterEquipmentItem(EquipmentJSON data, string id, ContentEntry entry)
     {
         if (!Enum.TryParse(data.Slot, true, out EquipmentSlotType slot))
         {
@@ -1029,17 +954,20 @@ public static class GameSetLoader
             ExplosionProtection = Spacebox.Game.Player.ArmorProtection.FromPercent(data.ExplosionProtection),
             Flashlight = data.Flashlight,
             Radar = data.Radar,
-            ArmorModelPath = ResolveGameSetFile(data.ArmorModel),
-            ArmorTexturePath = ResolveGameSetFile(data.ArmorTexture),
+            ArmorModelPath = ResolveGameSetFile(data.ArmorModel, entry),
+            ArmorTexturePath = ResolveGameSetFile(data.ArmorTexture, entry),
         };
         GameAssetsRegister.RegisterItem(equipmentItem, data.Sprite);
 
         return equipmentItem;
     }
 
-    private static string ResolveGameSetFile(string relativePath)
+    private static string ResolveGameSetFile(string relativePath, ContentEntry entry)
     {
         if (string.IsNullOrWhiteSpace(relativePath) || ModInfo == null) return "";
+
+        string own = entry?.ResolveFile(relativePath) ?? "";
+        if (own.Length > 0) return own;
 
         string path = Path.Combine(ModInfo.ModPath, relativePath);
         return File.Exists(path) ? path : "";
@@ -1147,6 +1075,8 @@ public static class GameSetLoader
         public string Author { get; set; } = "";
         public string Version { get; set; } = "0";
         public float OxygenConsumeInterval { get; set; } = 10f;
+        public string Extends { get; set; } = "";
+        public List<string> Includes { get; set; } = new List<string>();
         public string FolderName { get; set; } = "";
         public string ModPath { get; set; } = "";
 

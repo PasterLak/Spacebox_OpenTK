@@ -10,7 +10,7 @@ public static class UIAtlas
 
     private static TextureAtlas _standalone;
 
-    public static void AddUIElements(TextureAtlas atlas)
+    public static void AddUIElements(TextureAtlas atlas, bool overwrite = false)
     {
         if (!Directory.Exists(Folder)) return;
 
@@ -23,7 +23,8 @@ public static class UIAtlas
             if (!ImagePixels.TryGetSize(file, out int width, out int height)) continue;
             if (width > MaxElementSize || height > MaxElementSize) continue;
 
-            atlas.AddFile(ToName(file), file);
+            string name = ToName(file);
+            atlas.AddFile(name, Spacebox.Game.Resource.TexturePacks.TexturePackService.ResolveUI(name.Substring(Prefix.Length)) ?? file, overwrite);
         }
     }
 
@@ -35,6 +36,12 @@ public static class UIAtlas
         if (items != null && items.Contains(key)) return AtlasSprite.From(items, key);
 
         return AtlasSprite.From(GetStandalone(), key);
+    }
+
+    public static void Invalidate()
+    {
+        if (_standalone != null) AddUIElements(_standalone, true);
+        if (GameAssets.AtlasItems != null) AddUIElements(GameAssets.AtlasItems, true);
     }
 
     private static TextureAtlas GetStandalone()
