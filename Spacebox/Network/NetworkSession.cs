@@ -28,7 +28,8 @@ public sealed class NetworkSession : IDisposable
     private readonly PlayerDataFlush _playerDataFlush = new PlayerDataFlush();
     private readonly AdmissionWatch _admission = new AdmissionWatch();
     private bool _disposed;
-    private bool _playerDataAcknowledged;
+    private int _playerDataSequence;
+    private int _playerDataAcknowledged;
     private Auth.ServerAccessSettings _access;
     private readonly Auth.ServerAuthService _auth;
 
@@ -279,9 +280,9 @@ public sealed class NetworkSession : IDisposable
         var network = NetworkManager.Instance;
         if (_localPlayer == null || !network.IsConnected) return;
 
-        _playerDataAcknowledged = false;
         SendLocalPlayerData();
-        if (!network.PollUntil(() => _playerDataAcknowledged, LeaveSaveTimeout))
+        int expected = _playerDataSequence;
+        if (!network.PollUntil(() => _playerDataAcknowledged == expected, LeaveSaveTimeout))
             Debug.Warning("[Network] The server did not confirm the player data before leaving");
     }
 
@@ -297,7 +298,7 @@ public sealed class NetworkSession : IDisposable
 
     private void OnPlayerDataAck(int sender, PlayerDataAckMessage message)
     {
-        _playerDataAcknowledged = true;
+        _playerDataAcknowledged = message.Sequence;
     }
 
     public void SendLocalPlayerData()
@@ -305,7 +306,7 @@ public sealed class NetworkSession : IDisposable
         if (_localPlayer == null || !NetworkManager.Instance.IsRemoteClient) return;
 
         var json = PlayerSaveLoadManager.Serialize(_localPlayer);
-        if (json != null) NetworkManager.Instance.SendToServer(new PlayerDataMessage { Json = json, AppliedSeq = Items.ItemSync.AppliedSeq });
+        if (json != null) NetworkManager.Instance.SendToServer(new PlayerDataMessage { Json = json, AppliedSeq = Items.ItemSync.AppliedSeq, Sequence = ++_playerDataSequence });
     }
 
     public void Dispose()
@@ -446,9 +447,21 @@ public sealed class NetworkSession : IDisposable
         if (nameError != null) return nameError;
         if (Moderation.ServerModeration.IsBanned(message.Name.Trim(), NetworkManager.Instance.GetPeerAddress(sender))) return Moderation.ServerModeration.BannedReason;
         if (string.Equals(message.Name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase) && GameSession.HasLocalPlayer) return "Name is already taken";
-        if (PlayerRegistry.TryGetByName(message.Name.Trim(), out _)) return "Name is already taken";
+        if (PlayerRegistry.TryGetByName(message.Name.Trim(), out var existing) && !TryReplaceStalePeer(existing, sender)) return "Name is already taken";
         if (!_access.IsAllowed(message.Name)) return "You are not on the whitelist of this server";
         return null;
+    }
+
+    private bool TryReplaceStalePeer(ConnectedPlayer existing, int sender)
+    {
+        var network = NetworkManager.Instance;
+        string address = network.GetPeerAddress(sender);
+        if (existing.Peer == network.LocalPeerId || string.IsNullOrEmpty(address) || address != network.GetPeerAddress(existing.Peer)) return false;
+
+        Debug.Log($"[Server] {existing.Name} reconnected from the same address, the old connection (peer {existing.Peer}) is closed");
+        OnPeerDisconnected(existing.Peer, "Reconnected");
+        network.Kick(existing.Peer, "You connected again from another window");
+        return true;
     }
 
     private void OnClientReady(int sender, ClientReadyMessage message)
@@ -484,7 +497,7 @@ public sealed class NetworkSession : IDisposable
         player.LastPlayerJson = Players.PlayerGameModes.Current.ApplyTo(player.Name, json);
         if (World.WorldData != null)
             PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, player.LastPlayerJson);
-        NetworkManager.Instance.Send(sender, new PlayerDataAckMessage(), DeliveryMode.Reliable);
+        NetworkManager.Instance.Send(sender, new PlayerDataAckMessage { Sequence = message.Sequence }, DeliveryMode.Reliable);
     }
 
     private void OnPeerConnected(int peer)

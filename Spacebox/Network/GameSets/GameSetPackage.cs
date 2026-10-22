@@ -15,6 +15,7 @@ public static class GameSetPackage
     private static byte[] _archive;
     private static IReadOnlyList<TexturePack> _texturePacks = Array.Empty<TexturePack>();
     private static readonly object Sync = new object();
+    private static readonly object ArchiveSync = new object();
 
     public static void Register(NetworkManager network)
     {
@@ -69,7 +70,7 @@ public static class GameSetPackage
 
     private static byte[] GetArchive()
     {
-        lock (Sync)
+        lock (ArchiveSync)
         {
             return BuildArchive();
         }
@@ -77,15 +78,27 @@ public static class GameSetPackage
 
     private static byte[] BuildArchive()
     {
-        Refresh();
-        if (_archive != null) return _archive;
+        string key;
+        string modPath;
+        IReadOnlyList<TexturePack> packs;
+        lock (Sync)
+        {
+            RefreshLocked();
+            if (_archive != null) return _archive;
+            key = _stackKey;
+            modPath = CurrentModPath;
+            packs = _texturePacks;
+        }
 
-        string modPath = CurrentModPath;
         if (string.IsNullOrEmpty(modPath) || !Directory.Exists(modPath)) throw new InvalidOperationException("No GameSet is loaded");
 
-        _archive = GameSetFolders.Pack(modPath, Extensions, _texturePacks);
-        Debug.Log($"[Server] GameSet package ready ({_archive.Length / 1024} KB)");
-        return _archive;
+        var archive = GameSetFolders.Pack(modPath, Extensions, packs);
+        lock (Sync)
+        {
+            if (_stackKey == key) _archive = archive;
+        }
+        Debug.Log($"[Server] GameSet package ready ({archive.Length / 1024} KB)");
+        return archive;
     }
 
     private static void Refresh()

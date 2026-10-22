@@ -104,12 +104,16 @@ public struct ClientReadyMessage : INetMessage
 
 public struct PlayerDataAckMessage : INetMessage
 {
+    public int Sequence;
+
     public void Serialize(NetWriter writer)
     {
+        writer.Write(Sequence);
     }
 
     public void Deserialize(NetReader reader)
     {
+        Sequence = reader.ReadInt();
     }
 }
 
@@ -128,16 +132,19 @@ public struct PlayerDataMessage : INetMessage
 {
     public string Json;
     public int AppliedSeq;
+    public int Sequence;
 
     public void Serialize(NetWriter writer)
     {
         writer.Write(Json);
         writer.Write(AppliedSeq);
+        writer.Write(Sequence);
     }
 
     public void Deserialize(NetReader reader)
     {
         Json = reader.ReadString();
         AppliedSeq = reader.ReadInt();
+        Sequence = reader.ReadInt();
     }
 }
