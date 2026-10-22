@@ -19,6 +19,7 @@ public interface INetTransport : IDisposable
     event Action<IPEndPoint, byte[], int, int, bool> UnconnectedReceived;
 
     bool IsRunning { get; }
+    int MaxPeers { get; set; }
 
     bool StartServer(int port, int maxPeers, string connectionKey);
     bool Connect(string host, int port, string connectionKey);

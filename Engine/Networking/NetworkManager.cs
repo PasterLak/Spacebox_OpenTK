@@ -15,11 +15,21 @@ public sealed class NetworkManager
     private readonly NetReader _reader = new NetReader();
     private INetTransport _transport;
     private float _tickTimer;
+    private int _maxPeers = 16;
 
     public NetworkMode Mode { get; private set; } = NetworkMode.None;
     public int LocalPeerId { get; private set; } = ServerPeerId;
     public string ConnectionKey { get; set; } = "Engine:" + Application.EngineVersion;
-    public int MaxPeers { get; set; } = 16;
+    public int MaxPeers
+    {
+        get => _maxPeers;
+        set
+        {
+            _maxPeers = value;
+            if (_transport != null) _transport.MaxPeers = value;
+        }
+    }
+
     public float TickRate { get; set; } = 20f;
     public Func<INetTransport> TransportFactory { get; set; } = () => new LiteNetTransport();
 

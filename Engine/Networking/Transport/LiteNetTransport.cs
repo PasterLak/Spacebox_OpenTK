@@ -26,6 +26,12 @@ public sealed class LiteNetTransport : INetTransport
 
     public bool IsRunning => _manager != null && _manager.IsRunning;
 
+    public int MaxPeers
+    {
+        get => _maxPeers;
+        set => _maxPeers = Math.Max(1, value);
+    }
+
     public LiteNetTransport()
     {
         _listener.ConnectionRequestEvent += OnConnectionRequest;

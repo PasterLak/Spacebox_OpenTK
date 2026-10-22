@@ -204,6 +204,7 @@ Fixes
 - right click in the ship binding mode left the console instead of returning to the seat
 - multiplayer: a client could send a damage message to the host and hurt or kill the host player (bypassing PvP rules); player damage is accepted only from the server
 - dashboard: a crafted link could inject response headers (for example Set-Cookie) through line breaks in the redirected path; header names and values are stripped of control characters
+- dashboard: changing Max players had no effect until a restart (the transport kept the old limit)
 Engine
 - InputManager.SerializeConfiguration
 - IsometricRasterizer.Render fitToSize option; PixelIconSampler samples a top-down pixel array for icons
