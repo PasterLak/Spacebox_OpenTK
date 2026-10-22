@@ -15,6 +15,10 @@ public sealed class SlotControl : Control
     public bool Selected { get; set; }
     public float IconPadding { get; set; } = 6f;
     public event Action<SlotControl> Clicked;
+    public event Action<SlotControl> SecondaryClicked;
+
+    public ShowcaseSlot Slot => _slot;
+    public override bool IsInteractive => true;
 
     public SlotControl(ShowcaseSlot slot, float size, Texture2D placeholder = null)
     {
@@ -29,6 +33,11 @@ public sealed class SlotControl : Control
 
     protected override bool OnMouseDown(Vector2 localPosition, MouseButton button)
     {
+        if (button == MouseButton.Right && SecondaryClicked != null)
+        {
+            SecondaryClicked.Invoke(this);
+            return true;
+        }
         if (button != MouseButton.Left) return false;
         Clicked?.Invoke(this);
         return true;

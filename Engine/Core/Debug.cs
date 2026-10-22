@@ -88,6 +88,7 @@ namespace Engine
             RegisterCommandGlobal(new ExitCommand());
             RegisterCommandGlobal(new ResourcesCommand());
             RegisterCommandGlobal(new SaveMessagesCommand());
+            RegisterCommandGlobal(new UiValidateCommand());
         }
 
         private static void RegisterCommandGlobal(CommandBase command)

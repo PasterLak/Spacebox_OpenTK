@@ -20,13 +20,14 @@ public sealed class TutorialVariant : IInterfaceVariant
     public string Name => "Tutorial style";
     public string Description => "Dark translucent panels, thin borders and gold titles from the tutorial window; labelled slim bars.";
 
-    public Control Build(ShowcaseAssets assets, ShowcaseState state, ShowcaseBindings bindings)
+    public void Build(ShowcaseView view)
     {
-        var root = new Control { Theme = CreateTheme(assets), MouseFilter = MouseFilter.Ignore };
-        root.SetAnchorsPreset(LayoutPreset.FullRect);
+        var state = view.State;
+        var bindings = view.Bindings;
+        var assets = view.Assets;
 
-        var hud = root.AddChild(new PanelContainer { ThemeTypeVariation = "HudPanel" });
-        hud.SetAnchorsAndOffsetsPreset(LayoutPreset.CenterBottom, 10f, new Vector2(560f, 92f));
+        var hud = view.Hud.AddChild(new PanelContainer { Name = "Hud", ThemeTypeVariation = "HudPanel", CustomMinimumSize = new Vector2(560f, 0f) });
+        hud.SetAnchorsAndOffsetsPreset(LayoutPreset.CenterBottom, 10f);
         var hudColumn = hud.AddChild(new VBoxContainer());
         hudColumn.AddThemeConstantOverride("separation", 6f);
 
@@ -39,11 +40,9 @@ public sealed class TutorialVariant : IInterfaceVariant
         var hotbar = hudColumn.AddChild(Hotbar(state, bindings, 48f, 4f, true));
         hotbar.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
 
-        var windows = root.AddChild(new HBoxContainer { Alignment = BoxAlignment.Center });
+        var windows = view.Windows.AddChild(new HBoxContainer { Name = "Windows", Alignment = BoxAlignment.Center });
         windows.AddThemeConstantOverride("separation", 12f);
-        windows.SetAnchorsAndOffsetsPreset(LayoutPreset.Center, 0f, new Vector2(900f, 330f));
-        windows.OffsetTop -= 60f;
-        windows.OffsetBottom -= 60f;
+        windows.SetAnchorsAndOffsetsPreset(LayoutPreset.Center);
         bindings.Window(windows);
 
         windows.AddChild(Window("INVENTORY", "Drag items to move them, right click to split", InventoryGrid(state, 42f, 4f)));
@@ -55,8 +54,6 @@ public sealed class TutorialVariant : IInterfaceVariant
         figure.AddChild(Text("player\npreview", Faint, 12f, HorizontalAlignment.Center));
         equipment.AddChild(SlotColumn(assets, state.DeviceSlots, 42f, 4f));
         windows.AddChild(Window("EQUIPMENT", "Armor and devices", equipment));
-
-        return root;
     }
 
     private static void AddBar(HBoxContainer row, ShowcaseBindings bindings, string name, Color4 color, Func<ShowcaseState, float> value)
@@ -77,13 +74,14 @@ public sealed class TutorialVariant : IInterfaceVariant
         column.AddThemeConstantOverride("separation", 8f);
         var header = column.AddChild(new HBoxContainer());
         header.AddChild(Text(title, Gold, 24f)).SizeFlagsHorizontal = SizeFlags.ExpandFill;
-        column.AddChild(Text(hint, Faint, 12f));
+        var hintLabel = column.AddChild(Text(hint, Faint, 12f));
+        hintLabel.Overrun = TextOverrun.Ellipsis;
         column.AddChild(new ColorRect(Border) { CustomMinimumSize = new Vector2(0f, 1f) });
         column.AddChild(content);
         return panel;
     }
 
-    private static Engine.CanvasUI.Theme CreateTheme(ShowcaseAssets assets)
+    public Engine.CanvasUI.Theme CreateTheme(ShowcaseAssets assets)
     {
         var theme = new Engine.CanvasUI.Theme { DefaultFont = assets.Font, DefaultFontSize = 12f };
         theme.SetStyleBox("Window", "panel", new StyleBoxFlat(Panel, 14f).SetBorder(1f, Border));

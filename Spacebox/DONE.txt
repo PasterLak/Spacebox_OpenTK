@@ -256,6 +256,9 @@ Engine
 - post processing presents with the passthrough shader (the vignette was applied twice); Shader.SetVector3Array
 - transparent pass (Graphics/Transparency/TransparentQueue): Fade/Transparent models and particle systems are drawn after the opaque scene, sorted back to front
 - particles: depth tested (no longer drawn through walls), sorted back to front inside each system (ParticleSystem.SortByDistance)
+- CanvasUI layout for any screen: StretchSettings (UI scale, min/max scale, minimum viewport, scale steps), safe areas (screen margins, max aspect for ultrawide), UI layers (HUD, windows, popups, modal, tooltip), SafeArea/ExclusionArea/ScrollContainer/PopupPanel, max sizes, label ellipsis/clip, whole-pixel rects, autowrap relayout
+- CanvasUI layout validator (Engine.CanvasUI.Validation): headless checks for screen/safe area bounds, overflow, overlaps, layer covers, text fit and size, hit target size and reachability, popups covering anchors; screen profile matrix, LayoutHarness, debug overlay (F8 in the showcase) and console command ui_validate
+- UI showcase: five interface variants (new Sidebar with item details popup and Terminal), help dialog, UI scale keys, every variant tested on 33 screen profiles
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.2

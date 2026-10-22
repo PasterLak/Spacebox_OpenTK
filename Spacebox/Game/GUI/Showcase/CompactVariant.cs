@@ -15,30 +15,33 @@ public sealed class CompactVariant : IInterfaceVariant
     public string Name => "Compact";
     public string Description => "Minimal HUD: stacked bars in the corner, slim hotbar with key numbers, inventory and equipment in a docked side drawer.";
 
-    public Control Build(ShowcaseAssets assets, ShowcaseState state, ShowcaseBindings bindings)
+    public void Build(ShowcaseView view)
     {
-        var root = new Control { Theme = CreateTheme(assets), MouseFilter = MouseFilter.Ignore };
-        root.SetAnchorsPreset(LayoutPreset.FullRect);
+        var state = view.State;
+        var bindings = view.Bindings;
+        var assets = view.Assets;
 
-        var stats = root.AddChild(new PanelContainer { ThemeTypeVariation = "Glass" });
-        stats.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomLeft, 14f, new Vector2(210f, 78f));
+        var stats = view.Hud.AddChild(new PanelContainer { Name = "Stats", ThemeTypeVariation = "Glass", CustomMinimumSize = new Vector2(210f, 0f) });
+        stats.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomLeft, 14f);
         var statColumn = stats.AddChild(new VBoxContainer());
         statColumn.AddThemeConstantOverride("separation", 5f);
         AddStat(statColumn, bindings, "HP", Rgba(255, 90, 90), s => s.Health);
         AddStat(statColumn, bindings, "EN", Accent, s => s.Power);
         AddStat(statColumn, bindings, "O2", Rgba(150, 255, 200), s => s.Oxygen);
 
-        var hotbarPanel = root.AddChild(new PanelContainer { ThemeTypeVariation = "Glass" });
+        var hotbarPanel = view.Hud.AddChild(new PanelContainer { Name = "Hotbar", ThemeTypeVariation = "Glass" });
         hotbarPanel.AddChild(Hotbar(state, bindings, 38f, 3f, true));
         hotbarPanel.SetAnchorsAndOffsetsPreset(LayoutPreset.CenterBottom, 14f);
 
-        var drawer = root.AddChild(new PanelContainer { ThemeTypeVariation = "Drawer" });
+        var drawer = view.Windows.AddChild(new PanelContainer { Name = "Drawer", ThemeTypeVariation = "Drawer" });
         drawer.SetAnchorsPreset(LayoutPreset.RightWide);
-        drawer.SetOffsets(-470f, 72f, -8f, -84f);
+        drawer.SetOffsets(-462f, 0f, 0f, 0f);
         drawer.GrowHorizontal = GrowDirection.Begin;
         bindings.Window(drawer);
 
-        var column = drawer.AddChild(new VBoxContainer());
+        var scroll = drawer.AddChild(new ScrollContainer());
+        scroll.AddThemeColorOverride("scroll_thumb", Accent);
+        var column = scroll.AddChild(new VBoxContainer());
         column.AddThemeConstantOverride("separation", 10f);
         column.AddChild(Text("CARGO", Accent, 24f));
         column.AddChild(Text("40 slots  ·  mass 1.2 t", Text2, 12f));
@@ -54,7 +57,6 @@ public sealed class CompactVariant : IInterfaceVariant
 
         column.AddChild(Spacer(0f, 0f, true));
         column.AddChild(Text("Tab: close drawer", Text2, 12f));
-        return root;
     }
 
     private static SlotControl EquipmentSlot(ShowcaseAssets assets, (string Slot, string Icon) slot)
@@ -76,7 +78,7 @@ public sealed class CompactVariant : IInterfaceVariant
         bindings.Bar(bar, value, number);
     }
 
-    private static Engine.CanvasUI.Theme CreateTheme(ShowcaseAssets assets)
+    public Engine.CanvasUI.Theme CreateTheme(ShowcaseAssets assets)
     {
         var theme = new Engine.CanvasUI.Theme { DefaultFont = assets.Font, DefaultFontSize = 12f };
         theme.SetStyleBox("Glass", "panel", new StyleBoxFlat(Glass, 7f).SetBorder(1f, Line));

@@ -12,51 +12,64 @@ public sealed class ShowcaseItem
 
 public sealed class ShowcaseAssets : IDisposable
 {
-    private const string FontPath = "Resources/Fonts/FusionPixel/FusionPixel12pxMonospacedLatin.ttf";
+    public const string FontPath = "Resources/Fonts/FusionPixel/FusionPixel12pxMonospacedLatin.ttf";
     private const string ItemsFolder = "GameSets/Default/Items";
     private const string EquipmentFolder = "Resources/Textures/UI/Equipment";
 
-    public SkiaCanvasFont Font { get; }
+    public CanvasFont Font { get; }
     public IReadOnlyList<ShowcaseItem> Items { get; }
     public IReadOnlyDictionary<string, Texture2D> EquipmentIcons { get; }
     public Texture2D Slot { get; }
     public Texture2D SelectedSlot { get; }
 
-    public ShowcaseAssets()
+    public ShowcaseAssets(CanvasFont font, IReadOnlyList<ShowcaseItem> items, IReadOnlyDictionary<string, Texture2D> equipmentIcons, Texture2D slot, Texture2D selectedSlot)
     {
-        Font = new SkiaCanvasFont(FontPath, 12);
-        Items = LoadItems();
-        EquipmentIcons = LoadFolder(EquipmentFolder);
-        Slot = LoadTexture("Resources/Textures/UI/slot.png");
-        SelectedSlot = LoadTexture("Resources/Textures/UI/selectedSlot.png");
+        Font = font;
+        Items = items;
+        EquipmentIcons = equipmentIcons;
+        Slot = slot;
+        SelectedSlot = selectedSlot;
+    }
+
+    public static ShowcaseAssets Load() => Load("", LoadTexture);
+
+    public static ShowcaseAssets Load(string baseDirectory, Func<string, Texture2D> loadTexture)
+    {
+        var font = new SkiaCanvasFont(Path.Combine(baseDirectory, FontPath), 12);
+        return new ShowcaseAssets(
+            font,
+            LoadItems(Path.Combine(baseDirectory, ItemsFolder), loadTexture),
+            LoadFolder(Path.Combine(baseDirectory, EquipmentFolder), loadTexture),
+            loadTexture(Path.Combine(baseDirectory, "Resources/Textures/UI/slot.png")),
+            loadTexture(Path.Combine(baseDirectory, "Resources/Textures/UI/selectedSlot.png")));
     }
 
     public ShowcaseItem Item(int index) => Items.Count == 0 ? null : Items[index % Items.Count];
 
     public void Dispose()
     {
-        Font.Dispose();
+        (Font as IDisposable)?.Dispose();
     }
 
-    private static List<ShowcaseItem> LoadItems()
+    private static List<ShowcaseItem> LoadItems(string folder, Func<string, Texture2D> loadTexture)
     {
         var items = new List<ShowcaseItem>();
-        if (!Directory.Exists(ItemsFolder)) return items;
+        if (!Directory.Exists(folder)) return items;
 
-        foreach (var file in Directory.GetFiles(ItemsFolder, "*.png", SearchOption.AllDirectories).OrderBy(f => f, StringComparer.Ordinal))
+        foreach (var file in Directory.GetFiles(folder, "*.png", SearchOption.AllDirectories).OrderBy(f => f, StringComparer.Ordinal))
         {
             if (file.Contains("_Ignored")) continue;
-            items.Add(new ShowcaseItem { Name = Prettify(Path.GetFileNameWithoutExtension(file)), Icon = LoadTexture(file) });
+            items.Add(new ShowcaseItem { Name = Prettify(Path.GetFileNameWithoutExtension(file)), Icon = loadTexture(file) });
         }
         return items;
     }
 
-    private static Dictionary<string, Texture2D> LoadFolder(string folder)
+    private static Dictionary<string, Texture2D> LoadFolder(string folder, Func<string, Texture2D> loadTexture)
     {
         var result = new Dictionary<string, Texture2D>(StringComparer.OrdinalIgnoreCase);
         if (!Directory.Exists(folder)) return result;
         foreach (var file in Directory.GetFiles(folder, "*.png"))
-            result[Path.GetFileNameWithoutExtension(file)] = LoadTexture(file);
+            result[Path.GetFileNameWithoutExtension(file)] = loadTexture(file);
         return result;
     }
 

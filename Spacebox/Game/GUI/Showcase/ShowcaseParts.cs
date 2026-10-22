@@ -7,7 +7,18 @@ public interface IInterfaceVariant
 {
     string Name { get; }
     string Description { get; }
-    Control Build(ShowcaseAssets assets, ShowcaseState state, ShowcaseBindings bindings);
+    Engine.CanvasUI.Theme CreateTheme(ShowcaseAssets assets);
+    void Build(ShowcaseView view);
+}
+
+public sealed class ShowcaseView
+{
+    public Control Hud { get; init; }
+    public Control Windows { get; init; }
+    public Control Popups { get; init; }
+    public ShowcaseAssets Assets { get; init; }
+    public ShowcaseState State { get; init; }
+    public ShowcaseBindings Bindings { get; init; }
 }
 
 public sealed class ShowcaseBindings
@@ -24,6 +35,8 @@ public sealed class ShowcaseBindings
     public void Hotbar(SlotControl slot) => _hotbar.Add(slot);
 
     public void Window(Control window) => _windows.Add(window);
+
+    public IReadOnlyList<SlotControl> HotbarSlots => _hotbar;
 
     public void SetWindowsVisible(bool visible)
     {

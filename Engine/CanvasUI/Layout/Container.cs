@@ -28,7 +28,20 @@ public abstract class Container : Control
             else if ((child.SizeFlagsVertical & SizeFlags.ShrinkEnd) != 0) y += rect.Height - h;
         }
 
+        var max = child.CustomMaximumSize;
+        if (max.X > 0f) LimitAxis(ref x, ref w, MathF.Max(max.X, min.X), child.SizeFlagsHorizontal);
+        if (max.Y > 0f) LimitAxis(ref y, ref h, MathF.Max(max.Y, min.Y), child.SizeFlagsVertical);
+
         child.ApplyRect(new Rect2(MathF.Round(x), MathF.Round(y), MathF.Round(w), MathF.Round(h)));
+    }
+
+    private static void LimitAxis(ref float position, ref float size, float max, SizeFlags flags)
+    {
+        if (size <= max) return;
+        float free = size - max;
+        size = max;
+        if ((flags & SizeFlags.ShrinkCenter) != 0) position += free * 0.5f;
+        else if ((flags & SizeFlags.ShrinkEnd) != 0) position += free;
     }
 
     protected int CountLayoutChildren()

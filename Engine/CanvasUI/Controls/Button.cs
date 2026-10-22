@@ -10,6 +10,7 @@ public abstract class BaseButton : Control
     public bool Disabled { get; set; }
     public bool ToggleMode { get; set; }
     public bool IsPressing { get; private set; }
+    public override bool IsInteractive => true;
 
     public event Action<BaseButton> Pressed;
     public event Action<BaseButton, bool> Toggled;
@@ -94,6 +95,17 @@ public class Button : BaseButton
         {
             _icon = value;
             QueueLayout();
+        }
+    }
+
+    public Vector2 GetContentSize() => ContentSize(out _, out _);
+
+    public Rect2 ContentRect
+    {
+        get
+        {
+            var style = GetThemeStyleBox("normal");
+            return style == null ? Rect : style.ContentRect(Rect);
         }
     }
 

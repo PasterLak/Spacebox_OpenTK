@@ -48,6 +48,19 @@ public abstract class CanvasItem
         return child;
     }
 
+    public T InsertChild<T>(int index, T child) where T : CanvasItem
+    {
+        if (child == null || child == this) return child;
+        child.Parent?.RemoveChild(child);
+        _children.Insert(Math.Clamp(index, 0, _children.Count), child);
+        child.Parent = this;
+        child.SetRoot(Root);
+        QueueLayout();
+        return child;
+    }
+
+    public int IndexOf(CanvasItem child) => _children.IndexOf(child);
+
     public void RemoveChild(CanvasItem child)
     {
         if (child == null || child.Parent != this) return;

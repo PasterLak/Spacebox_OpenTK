@@ -16,7 +16,11 @@ public sealed class CanvasRoot
     private const float TooltipDelay = 0.45f;
 
     private readonly Control _content = new Control { Name = "Root", MouseFilter = MouseFilter.Ignore };
+    private readonly Dictionary<UiLayer, UiLayerRoot> _layers = new Dictionary<UiLayer, UiLayerRoot>();
+    private readonly TooltipPresenter _tooltip = new TooltipPresenter();
     private Vector2 _screenSize;
+    private StretchResult _stretch;
+    private bool _hasStretch;
     private bool _layoutDirty = true;
     private PointerState _previous;
     private Control _hovered;
@@ -24,16 +28,22 @@ public sealed class CanvasRoot
     private Control _pressedRight;
     private float _hoverTime;
 
-    public Vector2 VirtualSize { get; set; } = new Vector2(1280f, 720f);
-    public StretchMode StretchMode { get; set; } = StretchMode.Expand;
+    public StretchSettings Stretch { get; } = new StretchSettings();
+    public Vector2 VirtualSize { get => Stretch.VirtualSize; set => Stretch.VirtualSize = value; }
+    public StretchMode StretchMode { get => Stretch.Mode; set => Stretch.Mode = value; }
     public Theme Theme { get; set; }
     public Control Content => _content;
     public Transform2D ScreenTransform { get; private set; } = Transform2D.Identity;
+    public Vector2 ScreenSize => _screenSize;
     public Vector2 ViewportSize { get; private set; }
+    public Rect2 ViewportRect => new Rect2(Vector2.Zero, ViewportSize);
+    public Rect2 SafeRect { get; private set; }
     public float Scale { get; private set; } = 1f;
     public Control Hovered => _hovered;
     public Vector2 PointerPosition { get; private set; }
     public bool WantsPointer => _hovered != null || _pressedLeft != null || _pressedRight != null;
+    public bool IsLayoutDirty => _layoutDirty;
+    public PopupPanel TooltipPanel => _tooltip.Panel;
     public string TooltipText => _hovered != null && _hoverTime >= TooltipDelay && !string.IsNullOrEmpty(_hovered.TooltipText) ? _hovered.TooltipText : null;
 
     public CanvasRoot()
@@ -42,33 +52,52 @@ public sealed class CanvasRoot
         _content.SetRoot(this);
     }
 
-    public T Add<T>(T item) where T : CanvasItem => _content.AddChild(item);
+    public T Add<T>(T item, UiLayer layer = UiLayer.Hud) where T : CanvasItem => Layer(layer).AddChild(item);
+
+    public UiLayerRoot Layer(UiLayer layer)
+    {
+        if (_layers.TryGetValue(layer, out var root)) return root;
+
+        root = new UiLayerRoot(layer);
+        int index = 0;
+        var children = _content.Children;
+        while (index < children.Count && (children[index] is not UiLayerRoot other || other.Layer < layer)) index++;
+        _content.InsertChild(index, root);
+        _layers[layer] = root;
+        return root;
+    }
+
+    public bool TryGetLayer(UiLayer layer, out UiLayerRoot root) => _layers.TryGetValue(layer, out root);
 
     public void MarkLayoutDirty() => _layoutDirty = true;
 
     public void Resize(Vector2 screenSize)
     {
-        if (screenSize == _screenSize && !_layoutDirty) return;
-        if (screenSize != _screenSize)
-        {
-            _screenSize = screenSize;
-            UpdateStretch();
-        }
-        Layout();
+        _screenSize = screenSize;
+        var stretch = CanvasStretch.Compute(Stretch, screenSize);
+        if (!_hasStretch || !stretch.Equals(_stretch)) ApplyStretch(stretch);
+        if (_layoutDirty) Layout();
+    }
+
+    public void EnsureLayout()
+    {
+        if (_layoutDirty) Layout();
     }
 
     public void Layout()
     {
-        _layoutDirty = false;
-        _content.ApplyRect(new Rect2(Vector2.Zero, ViewportSize));
-        if (_layoutDirty)
+        if (!_hasStretch) ApplyStretch(CanvasStretch.Compute(Stretch, _screenSize));
+        for (int pass = 0; pass < 3; pass++)
         {
             _layoutDirty = false;
             _content.ApplyRect(new Rect2(Vector2.Zero, ViewportSize));
+            if (!_layoutDirty) return;
         }
     }
 
     public Vector2 ScreenToCanvas(Vector2 screen) => ScreenTransform.Inverse().Apply(screen);
+
+    public Vector2 CanvasToScreen(Vector2 canvas) => ScreenTransform.Apply(canvas);
 
     public void Update(float deltaTime, PointerState pointer)
     {
@@ -80,8 +109,9 @@ public sealed class CanvasRoot
         UpdateHover(deltaTime);
         HandleButton(pointer.LeftDown, _previous.LeftDown, MouseButton.Left, ref _pressedLeft);
         HandleButton(pointer.RightDown, _previous.RightDown, MouseButton.Right, ref _pressedRight);
-        if (pointer.Scroll != 0f) Bubble(_hovered, c => c.OnScroll(PointerPosition - c.Rect.Position, pointer.Scroll));
+        if (pointer.Scroll != 0f) BubbleScroll(_hovered, pointer.Scroll);
         _previous = pointer;
+        _tooltip.Update(this, TooltipText, PointerPosition);
     }
 
     public void Draw(ICanvasRenderer renderer)
@@ -90,7 +120,24 @@ public sealed class CanvasRoot
         _content.DrawTree(renderer, Color4.White);
     }
 
-    public Control HitTest(Vector2 canvasPoint) => HitTest(_content, canvasPoint);
+    public Control HitTest(Vector2 canvasPoint)
+    {
+        var children = _content.Children;
+        for (int i = children.Count - 1; i >= 0; i--)
+        {
+            var hit = HitTest(children[i], canvasPoint);
+            if (hit != null) return hit;
+            if (children[i] is UiLayerRoot { Layer: UiLayer.Modal } modal && modal.Visible && modal.HasVisibleContent) return null;
+        }
+        return null;
+    }
+
+    public bool IsBlockedByModal(CanvasItem item)
+    {
+        var layer = UiLayerRoot.LayerOf(item);
+        if (layer == null || layer >= UiLayer.Modal) return false;
+        return _layers.TryGetValue(UiLayer.Modal, out var modal) && modal.Visible && modal.HasVisibleContent;
+    }
 
     private static Control HitTest(CanvasItem item, Vector2 point)
     {
@@ -168,28 +215,20 @@ public sealed class CanvasRoot
         return null;
     }
 
-    private void UpdateStretch()
+    private void BubbleScroll(Control start, float delta)
     {
-        var screen = Vector2.ComponentMax(_screenSize, Vector2.One);
-        switch (StretchMode)
-        {
-            case StretchMode.Disabled:
-                Scale = 1f;
-                ViewportSize = screen;
-                ScreenTransform = Transform2D.Identity;
-                break;
-            case StretchMode.KeepAspect:
-                Scale = MathF.Min(screen.X / VirtualSize.X, screen.Y / VirtualSize.Y);
-                ViewportSize = VirtualSize;
-                var offset = (screen - VirtualSize * Scale) * 0.5f;
-                ScreenTransform = new Transform2D(new Vector2(Scale, 0f), new Vector2(0f, Scale), new Vector2(MathF.Floor(offset.X), MathF.Floor(offset.Y)));
-                break;
-            default:
-                Scale = MathF.Min(screen.X / VirtualSize.X, screen.Y / VirtualSize.Y);
-                ViewportSize = screen / Scale;
-                ScreenTransform = Transform2D.Scaling(new Vector2(Scale));
-                break;
-        }
+        for (CanvasItem item = start; item != null; item = item.Parent)
+            if (item is Control control && control.OnScroll(PointerPosition - control.Rect.Position, delta)) return;
+    }
+
+    private void ApplyStretch(StretchResult stretch)
+    {
+        _stretch = stretch;
+        _hasStretch = true;
+        Scale = stretch.Scale;
+        ViewportSize = stretch.ViewportSize;
+        ScreenTransform = stretch.ScreenTransform;
+        SafeRect = stretch.SafeRect;
         _layoutDirty = true;
     }
 }

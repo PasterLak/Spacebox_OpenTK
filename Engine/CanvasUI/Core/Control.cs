@@ -10,6 +10,7 @@ public class Control : CanvasItem
     private float _anchorLeft, _anchorTop, _anchorRight, _anchorBottom;
     private float _offsetLeft, _offsetTop, _offsetRight, _offsetBottom;
     private Vector2 _customMinimumSize;
+    private Vector2 _customMaximumSize;
     private SizeFlags _sizeFlagsHorizontal = SizeFlags.Fill;
     private SizeFlags _sizeFlagsVertical = SizeFlags.Fill;
     private float _stretchRatio = 1f;
@@ -59,6 +60,19 @@ public class Control : CanvasItem
             QueueLayout();
         }
     }
+
+    public Vector2 CustomMaximumSize
+    {
+        get => _customMaximumSize;
+        set
+        {
+            if (_customMaximumSize == value) return;
+            _customMaximumSize = value;
+            QueueLayout();
+        }
+    }
+
+    public virtual bool IsInteractive => false;
 
     public SizeFlags SizeFlagsHorizontal
     {
@@ -273,7 +287,13 @@ public class Control : CanvasItem
         bool resized = rect.Size != Rect.Size;
         Rect = rect;
         LayoutChildren();
-        if (resized) Resized?.Invoke(this);
+        if (!resized) return;
+        OnResized();
+        Resized?.Invoke(this);
+    }
+
+    protected virtual void OnResized()
+    {
     }
 
     protected virtual void LayoutChildren()
@@ -300,7 +320,7 @@ public class Control : CanvasItem
         }
     }
 
-    internal Rect2 ComputeAnchoredRect(Rect2 parent)
+    protected internal virtual Rect2 ComputeAnchoredRect(Rect2 parent)
     {
         float left = parent.X + _anchorLeft * parent.Width + _offsetLeft;
         float right = parent.X + _anchorRight * parent.Width + _offsetRight;
@@ -310,7 +330,11 @@ public class Control : CanvasItem
         var min = GetCombinedMinimumSize();
         Grow(ref left, ref right, min.X, GrowHorizontal);
         Grow(ref top, ref bottom, min.Y, GrowVertical);
-        return new Rect2(left, top, right - left, bottom - top);
+        if (_customMaximumSize.X > 0f) Limit(ref left, ref right, MathF.Max(_customMaximumSize.X, min.X), GrowHorizontal);
+        if (_customMaximumSize.Y > 0f) Limit(ref top, ref bottom, MathF.Max(_customMaximumSize.Y, min.Y), GrowVertical);
+        float x = MathF.Round(left);
+        float y = MathF.Round(top);
+        return new Rect2(x, y, MathF.Round(right - left), MathF.Round(bottom - top));
     }
 
     internal override void DrawTree(ICanvasRenderer renderer, Color4 parentModulate)
@@ -351,6 +375,25 @@ public class Control : CanvasItem
                 break;
             default:
                 end = begin + min;
+                break;
+        }
+    }
+
+    private static void Limit(ref float begin, ref float end, float max, GrowDirection direction)
+    {
+        if (end - begin <= max) return;
+        switch (direction)
+        {
+            case GrowDirection.Begin:
+                begin = end - max;
+                break;
+            case GrowDirection.Both:
+                float center = (begin + end) * 0.5f;
+                begin = center - max * 0.5f;
+                end = center + max * 0.5f;
+                break;
+            default:
+                end = begin + max;
                 break;
         }
     }

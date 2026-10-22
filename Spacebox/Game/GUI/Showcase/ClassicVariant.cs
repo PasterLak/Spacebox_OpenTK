@@ -9,14 +9,15 @@ public sealed class ClassicVariant : IInterfaceVariant
     public string Name => "Classic";
     public string Description => "The current look rebuilt on the new UI: bevelled grey slots, coloured bars above the hotbar, grey windows.";
 
-    public Control Build(ShowcaseAssets assets, ShowcaseState state, ShowcaseBindings bindings)
+    public void Build(ShowcaseView view)
     {
-        var root = new Control { Theme = CreateTheme(assets), MouseFilter = MouseFilter.Ignore };
-        root.SetAnchorsPreset(LayoutPreset.FullRect);
+        var state = view.State;
+        var bindings = view.Bindings;
+        var assets = view.Assets;
 
-        var hud = root.AddChild(new VBoxContainer());
+        var hud = view.Hud.AddChild(new VBoxContainer { Name = "Hud" });
         hud.AddThemeConstantOverride("separation", 4f);
-        hud.SetAnchorsAndOffsetsPreset(LayoutPreset.CenterBottom, 12f, new Vector2(470f, 76f));
+        hud.SetAnchorsAndOffsetsPreset(LayoutPreset.CenterBottom, 12f);
 
         var bars = hud.AddChild(new HBoxContainer { Alignment = BoxAlignment.Center });
         bars.AddThemeConstantOverride("separation", 48f);
@@ -27,11 +28,9 @@ public sealed class ClassicVariant : IInterfaceVariant
         var hotbar = hud.AddChild(Hotbar(state, bindings, 44f, 2f, false));
         hotbar.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
 
-        var windows = root.AddChild(new HBoxContainer { Alignment = BoxAlignment.Center });
+        var windows = view.Windows.AddChild(new HBoxContainer { Name = "Windows", Alignment = BoxAlignment.Center });
         windows.AddThemeConstantOverride("separation", 16f);
-        windows.SetAnchorsAndOffsetsPreset(LayoutPreset.Center, 0f, new Vector2(860f, 300f));
-        windows.OffsetTop -= 50f;
-        windows.OffsetBottom -= 50f;
+        windows.SetAnchorsAndOffsetsPreset(LayoutPreset.Center);
         bindings.Window(windows);
 
         windows.AddChild(Window("Inventory", InventoryGrid(state, 40f, 2f)));
@@ -43,8 +42,6 @@ public sealed class ClassicVariant : IInterfaceVariant
         figure.AddChild(Text("3D", Rgba(90, 90, 90), 24f, HorizontalAlignment.Center)).SetAnchorsPreset(LayoutPreset.FullRect);
         equipment.AddChild(SlotColumn(assets, state.DeviceSlots, 40f, 2f));
         windows.AddChild(Window("Equipment", equipment));
-
-        return root;
     }
 
     private static void AddBar(HBoxContainer row, ShowcaseBindings bindings, Color4 fill, Func<ShowcaseState, float> value)
@@ -65,7 +62,7 @@ public sealed class ClassicVariant : IInterfaceVariant
         return panel;
     }
 
-    private static Engine.CanvasUI.Theme CreateTheme(ShowcaseAssets assets)
+    public Engine.CanvasUI.Theme CreateTheme(ShowcaseAssets assets)
     {
         var bevel = new StyleBoxFlat(Rgba(190, 190, 190), 10f) { BorderColor = Rgba(90, 90, 90), HighlightColor = Rgba(235, 235, 235), HighlightSize = 2f };
         bevel.SetBorder(2f, Rgba(90, 90, 90));

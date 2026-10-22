@@ -24,10 +24,21 @@ public readonly struct Rect2 : IEquatable<Rect2>
     public Vector2 End => Position + Size;
     public Vector2 Center => Position + Size * 0.5f;
     public bool HasArea => Size.X > 0f && Size.Y > 0f;
+    public float Area => MathF.Max(0f, Size.X) * MathF.Max(0f, Size.Y);
 
     public bool Contains(Vector2 point)
     {
         return point.X >= Position.X && point.Y >= Position.Y && point.X < Position.X + Size.X && point.Y < Position.Y + Size.Y;
+    }
+
+    public bool Encloses(Rect2 other, float tolerance = 0f)
+    {
+        return other.X >= X - tolerance && other.Y >= Y - tolerance && other.End.X <= End.X + tolerance && other.End.Y <= End.Y + tolerance;
+    }
+
+    public bool Intersects(Rect2 other, float tolerance = 0f)
+    {
+        return other.X < End.X - tolerance && other.End.X > X + tolerance && other.Y < End.Y - tolerance && other.End.Y > Y + tolerance;
     }
 
     public Rect2 Intersection(Rect2 other)
