@@ -397,6 +397,7 @@ namespace Spacebox.Game.GUI
         public static void Dispose()
         {
             analyzerBlock = null;
+            currentEntity = null;
             
         }
     }

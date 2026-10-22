@@ -721,6 +721,8 @@ namespace Spacebox.Game.Effects
                 var amountToAdd = Math.Min(quantity, 255);
 
                 _player.Panel.TryAddItem(item, (byte)amountToAdd, out var notAdded);
+                if (notAdded > 0 && !(_player.Panel.MoveItemsToConnectedStorage && ReferenceEquals(_player.Panel.ConnectedStorage, _player.Inventory)))
+                    _player.Inventory.TryAddItem(item, notAdded, out notAdded);
                 int added = amountToAdd - notAdded;
                 addedQuantity += added;
                 quantity -= added;

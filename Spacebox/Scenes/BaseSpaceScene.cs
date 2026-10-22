@@ -405,6 +405,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Protection.ClaimVisuals.Reset();
         Spacebox.Game.Protection.ClaimSettings.ClearOverride();
         GravityGeneratorUI.Reset();
+        GeneratorUI.Reset();
+        AnalyzerUI.Dispose();
+        CreativeTools.Reset();
         SignUI.Reset();
         DnaReconstructorUI.Reset();
         Spacebox.Game.Pictures.PictureFrameInteraction.Reset();

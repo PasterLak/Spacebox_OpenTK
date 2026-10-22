@@ -153,10 +153,15 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
     private void FinishLoadedEntity(CompoundTag tag, PreparedEntity prepared, NotGeneratedEntity data, bool applyFixes, string fileName)
     {
         loadingEntities.Remove(data.Id);
-        if (Entities == null || tag == null) return;
+        if (Entities == null || tag == null || Entities.Exists(e => e.EntityID == data.Id)) return;
 
         var entity = NBTHelper.TagToSpaceEntity(tag, this, data, prepared);
-        if (entity == null || Entities.Exists(e => e.EntityID == entity.EntityID)) return;
+        if (entity == null) return;
+        if (Entities.Exists(e => e.EntityID == entity.EntityID))
+        {
+            entity.Dispose();
+            return;
+        }
 
         if (applyFixes) ApplyLoadedEntityFixes(entity, data, fileName ?? entity.Name);
         AddEntity(entity, entity.PositionWorld);

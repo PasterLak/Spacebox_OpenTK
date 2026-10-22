@@ -116,6 +116,10 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- an unreadable player save no longer mixes half-loaded items with start items; the file is kept as localplayer.unreadable_<time>.json
+- drops are picked up into the inventory while a chest or machine window is open and the hotbar is full
+- analyzer, generator and creative selection references are cleared when leaving a world
+- an entity loaded twice at the same time no longer leaves a ghost copy registered (gravity, DNA reconstructors, machines)
 - mods: archives can't write outside their folder (RAR), get a safe folder name, never replace Default and only replace a folder of the same mod
 - mods: item JSON property names are case-insensitive like all other content
 - mods: textures and sounds a base GameSet lacks come from Default; a block without its place/break sound no longer crashes

@@ -12,6 +12,11 @@ namespace Spacebox.Game.GUI
     public class GeneratorUI
     {
         private static GeneratorBlock generatorBlock;
+
+        public static void Reset()
+        {
+            generatorBlock = null;
+        }
         static int power;
         static int consum;
         static string blockName = "Generator";

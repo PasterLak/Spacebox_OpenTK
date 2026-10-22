@@ -125,13 +125,29 @@ namespace Spacebox.Game.Player
                 Debug.Error($"[PlayerSaveLoadManager] Error reading player data: {ex.Message}");
             }
 
-            LoadPlayerFromJson(player, json);
+            if (!LoadPlayerFromJson(player, json) && !string.IsNullOrEmpty(json)) BackupUnreadablePlayer(worldFolder, json);
         }
 
-        public static void LoadPlayerFromJson(LocalAstronaut player, string json)
+        public static bool LoadPlayerFromJson(LocalAstronaut player, string json)
         {
-            if (string.IsNullOrEmpty(json) || !Apply(player, json))
-                ApplyNewPlayer(player);
+            if (!string.IsNullOrEmpty(json) && Apply(player, json)) return true;
+
+            ApplyNewPlayer(player);
+            return false;
+        }
+
+        private static void BackupUnreadablePlayer(string worldFolder, string json)
+        {
+            try
+            {
+                string path = Path.Combine(worldFolder, $"localplayer.unreadable_{DateTime.Now:yyyyMMdd_HHmmss}.json");
+                File.WriteAllText(path, json);
+                Debug.Warning($"[PlayerSaveLoadManager] The player save could not be read and was kept as {path}");
+            }
+            catch (Exception ex)
+            {
+                Debug.Error($"[PlayerSaveLoadManager] Could not keep the unreadable player save: {ex.Message}");
+            }
         }
 
         public static void ApplyNewPlayer(LocalAstronaut player)
@@ -187,8 +203,9 @@ namespace Spacebox.Game.Player
                 player.PlayerStatistics.StartSession();
               
 
-                foreach (var savedSlot in data.InventorySlots)
+                foreach (var savedSlot in data.InventorySlots ?? new List<SavedItemSlot>())
                 {
+                    if (savedSlot == null) continue;
                     if (GameAssets.TryGetItemByFullID(savedSlot.ItemID, out var item))
                     {
                         var slot = player.Inventory.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
@@ -208,8 +225,9 @@ namespace Spacebox.Game.Player
                     }
                 }
 
-                foreach (var savedSlot in data.PanelSlots)
+                foreach (var savedSlot in data.PanelSlots ?? new List<SavedItemSlot>())
                 {
+                    if (savedSlot == null) continue;
                     if (GameAssets.TryGetItemByFullID(savedSlot.ItemID, out var item))
                     {
                         var slot = player.Panel.GetSlot(savedSlot.SlotX, savedSlot.SlotY);
@@ -252,6 +270,9 @@ namespace Spacebox.Game.Player
             catch (Exception ex)
             {
                 Debug.Error($"[PlayerSaveLoadManager] Error loading player data: {ex.Message}");
+                player.Inventory.Clear();
+                player.Panel.Clear();
+                player.Equipment.Storage.Clear();
                 return false;
             }
         }
@@ -294,6 +315,7 @@ namespace Spacebox.Game.Player
         {
             foreach (var savedSlot in savedSlots)
             {
+                if (savedSlot == null) continue;
                 if (!GameAssets.TryGetItemByFullID(savedSlot.ItemID, out var item))
                 {
                     Debug.Error($"[PlayerSaveLoadManager] Item ID {savedSlot.ItemID} not found. Skipping loading into Equipment.");
