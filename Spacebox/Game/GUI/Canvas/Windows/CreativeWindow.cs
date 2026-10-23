@@ -41,6 +41,10 @@ public sealed class CreativeWindow : GameWindow
         items.AddChild(_grid);
     }
 
+    public override Sounds.UiSoundSpec OpenSound => default;
+
+    public override Sounds.UiSoundSpec CloseSound => default;
+
     public override bool IsOpen => _creative.IsVisible;
 
     protected override void Refresh()

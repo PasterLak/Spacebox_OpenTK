@@ -255,7 +255,7 @@
     "Range": "How far the drill reaches, in blocks. Default: 6.",
     "Damage": "Damage per second dealt to creatures and other targets hit with the drill. Does not affect mining speed. Default: 1.",
     "DrillColor": "Color of the drill's light while mining, RGB 0-255. Default: blue (100, 116, 255).",
-    "Sound": "Sound name of the drill's loop, played softly while the drill runs, slightly lower on harder blocks. Default drillLoop; an unknown name = silent drill."
+    "Sound": "Sound name of the drill's loop, played softly while the drill runs, slightly lower on harder blocks. Empty (default) or an unknown name = silent drill."
   },
   "EquipmentJSON": {
     "Slot": "Equipment slot: Helmet, Shoulders, Chest, Arms, Legs, Boots, PowerGenerator, Flashlight or Scanner. An unknown slot skips the item.",
@@ -266,7 +266,7 @@
     "Radar": "Makes the item a scanner when worn: sets how far object markers are shown and whether mass is shown.",
     "ArmorModel": "Path of the .obj model drawn on the player's body, relative to the item folder or GameSet. Needs ArmorTexture too. Empty = not visible.",
     "ArmorTexture": "Path of the PNG texture for ArmorModel, relative to the item folder or GameSet. Empty = armor not visible.",
-    "EquipSound": "Sound name played when the player equips the item. Empty (default) = equipArmor for armor slots, equipDevice for the other slots."
+    "EquipSound": "Sound name played when the player equips the item. Empty (default) = no sound."
   },
   "ExplosiveJSON": {
     "Radius": "Blast radius in blocks (1-32, default 4). Players and objects take damage inside it.",

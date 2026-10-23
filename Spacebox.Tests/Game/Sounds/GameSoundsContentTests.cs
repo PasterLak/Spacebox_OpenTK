@@ -18,7 +18,7 @@ public class GameSoundsContentTests
             var spec = UiSoundCatalog.Get(sound);
             Assert.False(spec.IsEmpty, sound.ToString());
             Assert.InRange(spec.Volume, 0.05f, 1f);
-            Assert.True(File.Exists(Path.Combine(SpaceboxFolder, spec.Clip)), spec.Clip);
+            Assert.True(ClipExists(spec.Clip), spec.Clip);
         }
     }
 
@@ -42,8 +42,8 @@ public class GameSoundsContentTests
     }
 
     [Theory]
-    [InlineData("furnace", "furnaceLoop", "machineDone")]
-    [InlineData("crusher", "crusherLoop", "machineDone")]
+    [InlineData("furnace", "furnaceLoop", null)]
+    [InlineData("crusher", "crusherLoop", null)]
     [InlineData("disassembler", "disassemblerLoop", "disassemblerDone")]
     [InlineData("cobalt_power_block", "generatorHum", null)]
     public void MachinesHaveSounds(string id, string working, string finished)
@@ -54,13 +54,9 @@ public class GameSoundsContentTests
         Assert.Equal(finished, group["Finished"]?.GetValue<string>());
     }
 
-    [Theory]
-    [InlineData(DrillItem.DefaultSound)]
-    [InlineData(EquipSoundNames.Armor)]
-    [InlineData(EquipSoundNames.Device)]
-    public void BaseGameSetContainsPlayerSound(string name)
+    private static bool ClipExists(string clip)
     {
-        Assert.True(DefaultGameSetContent.Assets.Sounds.ContainsKey(name), name);
-        Assert.NotEmpty(Directory.GetFiles(Path.Combine(DefaultGameSetContent.EmptyFolder, "Sounds"), name + ".wav", SearchOption.AllDirectories));
+        if (clip.Contains('/')) return Directory.GetFiles(Path.Combine(SpaceboxFolder, Path.GetDirectoryName(clip)!), Path.GetFileName(clip) + ".*").Length > 0;
+        return DefaultGameSetContent.Assets.Sounds.ContainsKey(clip) || Directory.GetFiles(Path.Combine(SpaceboxFolder, "Resources", "Audio"), clip + ".*", SearchOption.AllDirectories).Length > 0;
     }
 }

@@ -15,28 +15,11 @@ def swish(seconds, low, high, q=0.9):
     return lowpass(resonator(noise(n), centers, q), 5000) * env
 
 
-def window(opening):
-    length = 0.22
-    out = np.zeros(samples(length))
-    place(out, swish(0.18, 500, 1900, 0.8) if opening else swish(0.17, 1700, 450, 0.8), 0.0)
-    tone_a, tone_b = (660, 990) if opening else (880, 587)
-    place(out, blip(tone_a, tone_a * 1.02, 0.12, 0.004, 0.035) * 0.55, 0.03)
-    place(out, blip(tone_b, tone_b * 1.01, 0.14, 0.004, 0.045) * 0.45, 0.075)
-    return soft_clip(lowpass(out, 4200), 1.05)
-
-
 def hover():
     n = samples(0.05)
     t = np.arange(n) / RATE
     tick = np.sin(2 * math.pi * 1900 * t) * np.exp(-t / 0.009) * (1 - np.exp(-t / 0.0015))
     return lowpass(tick, 3500)
-
-
-def tab():
-    out = np.zeros(samples(0.11))
-    place(out, blip(1050, 1050, 0.06, 0.002, 0.015) * 0.8, 0.0)
-    place(out, blip(1400, 1400, 0.07, 0.002, 0.02) * 0.6, 0.035)
-    return lowpass(out, 4000)
 
 
 def slot_pick():
@@ -64,14 +47,6 @@ def slot_split():
     tap = lowpass(resonator(noise(samples(0.02)), 1500, 2.0), 3500) * np.exp(-np.arange(samples(0.02)) / (0.004 * RATE))
     place(out, tap * 0.4, 0.0)
     return lowpass(out, 3800)
-
-
-def craft_complete():
-    out = np.zeros(samples(0.7))
-    place(out, bell(784, 0.6, 0.2) * 0.6, 0.0)
-    place(out, bell(1175, 0.6, 0.24) * 0.45, 0.07)
-    place(out, swish(0.12, 900, 2400, 1.2) * 0.12, 0.0)
-    return soft_clip(lowpass(out, 5000), 1.05)
 
 
 def denied():
@@ -120,17 +95,11 @@ def low_oxygen():
     return lowpass(out, 3000)
 
 
-for opening, name in ((True, "windowOpen"), (False, "windowClose")):
-    sound = window(opening)
-    save(name, sound, loudness_peak(sound, 0.05))
-
 for name, make, rms in (
         ("buttonHover", hover, 0.02),
-        ("tabSwitch", tab, 0.035),
         ("slotPick", slot_pick, 0.045),
         ("slotPlace", slot_place, 0.05),
         ("slotSplit", slot_split, 0.04),
-        ("craftComplete", craft_complete, 0.06),
         ("denied", denied, 0.06),
         ("noPower", no_power, 0.06),
         ("waypointAdded", waypoint, 0.05),

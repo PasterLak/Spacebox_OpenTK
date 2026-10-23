@@ -24,7 +24,6 @@
     }
   },
   "Sounds": {
-    "Working": "crusherLoop",
-    "Finished": "machineDone"
+    "Working": "crusherLoop"
   }
 }

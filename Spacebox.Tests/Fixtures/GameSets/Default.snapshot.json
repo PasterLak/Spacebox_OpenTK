@@ -899,8 +899,7 @@
           }
         },
         "Sounds": {
-          "Working": "furnaceLoop",
-          "Finished": "machineDone"
+          "Working": "furnaceLoop"
         }
       }
     },
@@ -935,8 +934,7 @@
           }
         },
         "Sounds": {
-          "Working": "furnaceLoop",
-          "Finished": "machineDone"
+          "Working": "furnaceLoop"
         }
       }
     },
@@ -968,8 +966,7 @@
           }
         },
         "Sounds": {
-          "Working": "crusherLoop",
-          "Finished": "machineDone"
+          "Working": "crusherLoop"
         }
       }
     },
@@ -1005,8 +1002,7 @@
           }
         },
         "Sounds": {
-          "Working": "crusherLoop",
-          "Finished": "machineDone"
+          "Working": "crusherLoop"
         }
       }
     },
@@ -8507,9 +8503,6 @@
     "dnaReconstructionStage": "563df88355d6c00a",
     "drill0": "7339e7049b48d69d",
     "drill1": "0a330a5065940b7c",
-    "drillLoop": "903e43c71a97a833",
-    "equipArmor": "5ddefb476cdf7b72",
-    "equipDevice": "6ad81b4197911db7",
     "footstepGlass1": "01f6247ac29da782",
     "footstepGlass2": "20bee26314e5dbf6",
     "footstepGlass3": "81d3e1a9c4bf1238",
@@ -8534,7 +8527,6 @@
     "ironDoorOpen1": "f04d945a58d2f479",
     "ironDoorOpen2": "2cde8ee87c98ba87",
     "ironDoorOpen3": "1d6def34495369fc",
-    "machineDone": "977f43c912f0755e",
     "openBlock1": "16c51de76d26280a",
     "openBlock2": "e484b6dc79e42715",
     "openBlock3": "ca73dab097cec470",

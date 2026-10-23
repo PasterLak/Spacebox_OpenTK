@@ -43,6 +43,10 @@ public sealed class EquipmentWindow : GameWindow
         foreach (var type in EquipmentUI.DeviceSlots) devices.AddChild(CreateSlot(type));
     }
 
+    public override Sounds.UiSoundSpec OpenSound => default;
+
+    public override Sounds.UiSoundSpec CloseSound => default;
+
     public override bool IsOpen => UIManager.IsOpen(HudVisibility.ItemWindow) && _inventory.Player?.Equipment != null;
 
     protected override void Refresh()

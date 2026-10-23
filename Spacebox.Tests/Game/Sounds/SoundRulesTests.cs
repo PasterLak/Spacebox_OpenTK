@@ -9,14 +9,12 @@ namespace Spacebox.Tests.Game.Sounds;
 public class SoundRulesTests
 {
     [Theory]
-    [InlineData(EquipmentSlotType.Helmet, EquipSoundNames.Armor)]
-    [InlineData(EquipmentSlotType.Boots, EquipSoundNames.Armor)]
-    [InlineData(EquipmentSlotType.Flashlight, EquipSoundNames.Device)]
-    [InlineData(EquipmentSlotType.PowerGenerator, EquipSoundNames.Device)]
-    public void EquipSoundDependsOnSlot(EquipmentSlotType slot, string expected)
+    [InlineData(EquipmentSlotType.Helmet)]
+    [InlineData(EquipmentSlotType.Flashlight)]
+    public void EquipSoundIsSilentByDefault(EquipmentSlotType slot)
     {
-        Assert.Equal(expected, EquipSoundNames.Resolve(slot, ""));
-        Assert.Equal(expected, EquipSoundNames.Resolve(slot, null));
+        Assert.Equal("", EquipSoundNames.Resolve(slot, ""));
+        Assert.Equal("", EquipSoundNames.Resolve(slot, null));
     }
 
     [Fact]

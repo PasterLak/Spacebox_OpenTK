@@ -21,6 +21,10 @@ public sealed class InventoryWindow : GameWindow
 
     private Storage Storage => _inventory.Player?.Inventory;
 
+    public override Sounds.UiSoundSpec OpenSound => default;
+
+    public override Sounds.UiSoundSpec CloseSound => default;
+
     public override bool IsOpen => UIManager.IsOpen(HudVisibility.ItemWindow) && Storage != null;
 
     public override int SoundPriority => 0;

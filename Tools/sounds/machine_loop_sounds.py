@@ -88,15 +88,6 @@ def generator_hum():
     return loop_filter(hum + buzz, lambda x: lowpass(x, 1200))
 
 
-def machine_done():
-    out = np.zeros(samples(0.9))
-    place(out, bell(880, 0.85, 0.28) * 0.6, 0.0)
-    place(out, bell(1320, 0.7, 0.22) * 0.35, 0.09)
-    click_n = samples(0.03)
-    place(out, resonator(noise(click_n), 2000, 2.0) * np.exp(-np.arange(click_n) / (0.005 * RATE)) * 0.15, 0.0)
-    return soft_clip(lowpass(out, 5000), 1.05)
-
-
 def disassembler_done():
     out = np.zeros(samples(0.6))
     n = samples(0.2)
@@ -117,7 +108,6 @@ for name, make, rms in (
     save(name, sound, loudness_peak(sound, rms), fade_edges=False)
 
 for name, make, rms in (
-        ("machineDone", machine_done, 0.06),
         ("disassemblerDone", disassembler_done, 0.07)):
     sound = make()
     save(name, sound, loudness_peak(sound, rms))

@@ -11,13 +11,15 @@ public sealed class CraftingWindow : GameWindow
     private const int DefaultInventoryColumns = 8;
 
     private const float TileGap = 4f;
+    private const float HoverArmDistance = 4f;
+
+    private Vector2 _hoverAnchor;
 
     private readonly VBoxContainer _categories = new VBoxContainer();
     private readonly HBoxContainer _tabs = new HBoxContainer();
     private readonly GridContainer _tiles = new GridContainer();
     private readonly List<Button> _tabButtons = new List<Button>();
     private readonly VBoxContainer _itemsView = new VBoxContainer { Visible = false };
-    private readonly Label _categoryTitle = new Label { ThemeTypeVariation = "SectionLabel", SizeFlagsHorizontal = SizeFlags.ExpandFill, VerticalAlignment = VerticalAlignment.Center };
     private readonly GridContainer _items = new GridContainer();
     private readonly ScrollContainer _itemsScroll = new ScrollContainer();
     private readonly List<CraftItemControl> _itemControls = new List<CraftItemControl>();
@@ -48,7 +50,7 @@ public sealed class CraftingWindow : GameWindow
 
         var footer = _itemsView.AddChild(new HBoxContainer());
         footer.AddThemeConstantOverride("separation", 8f);
-        footer.AddChild(_categoryTitle);
+        footer.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilter.Ignore });
         var back = footer.AddChild(new Button { Text = "Back", CustomMinimumSize = new Vector2(64f, 26f) });
         back.Pressed += _ =>
         {
@@ -57,7 +59,7 @@ public sealed class CraftingWindow : GameWindow
         };
         back.MouseEntered += _ =>
         {
-            if (!_itemsView.Visible) return;
+            if (!_itemsView.Visible || !HoverArmed) return;
             _crafting.PlayClick();
             ShowCategories();
         };
@@ -129,8 +131,13 @@ public sealed class CraftingWindow : GameWindow
                 int i = row * columns + column;
                 if (i < categories.Count)
                 {
-                    var button = _tiles.AddChild(new CraftCategoryButton(categories[i]) { CustomMinimumSize = size });
+                    var category = categories[i];
+                    var button = _tiles.AddChild(new CraftCategoryButton(category) { CustomMinimumSize = size });
                     button.Clicked += ShowItems;
+                    button.MouseEntered += _ =>
+                    {
+                        if (_categories.Visible && HoverArmed) ShowItems(category);
+                    };
                 }
                 else _tiles.AddChild(Spacer(size.X, size.Y));
             }
@@ -148,17 +155,26 @@ public sealed class CraftingWindow : GameWindow
 
     private int InventoryColumns => Math.Max(1, (int)(_inventory.Player?.Inventory?.SizeX ?? DefaultInventoryColumns));
 
+    private bool HoverArmed => Root != null && (Root.PointerPosition - _hoverAnchor).LengthSquared > HoverArmDistance * HoverArmDistance;
+
+    private void DisarmHover()
+    {
+        if (Root != null) _hoverAnchor = Root.PointerPosition;
+    }
+
     private void ShowCategories()
     {
         _categories.Visible = true;
         _itemsView.Visible = false;
         TitleLabel.Text = "Crafting";
+        DisarmHover();
     }
 
     private void ShowItems(CraftingCategory category)
     {
         _crafting.PlayClick();
-        _categoryTitle.Text = category.Name;
+        TitleLabel.Text = category.Name;
+        DisarmHover();
         _items.ClearChildren();
         _itemControls.Clear();
         int columns = InventoryColumns;

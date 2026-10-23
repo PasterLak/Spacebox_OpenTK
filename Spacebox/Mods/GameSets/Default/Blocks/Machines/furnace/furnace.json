@@ -22,7 +22,6 @@
     }
   },
   "Sounds": {
-    "Working": "furnaceLoop",
-    "Finished": "machineDone"
+    "Working": "furnaceLoop"
   }
 }

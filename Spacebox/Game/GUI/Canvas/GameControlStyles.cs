@@ -125,7 +125,7 @@ public static class GameControlStyles
         theme.SetTypeVariation("InsetPanel", "PanelContainer");
         theme.SetStyleBox("InsetPanel", "panel", Sunken(p, p.List, 8f, 6f));
         theme.SetTypeVariation("ChatPanel", "PanelContainer");
-        theme.SetStyleBox("ChatPanel", "panel", Sunken(p, p.List, 6f));
+        theme.SetStyleBox("ChatPanel", "panel", new StyleBoxEmpty().SetContentMargins(6f));
         theme.SetTypeVariation("ChatPanelClear", "PanelContainer");
         theme.SetStyleBox("ChatPanelClear", "panel", new StyleBoxEmpty().SetContentMargins(6f));
         theme.SetTypeVariation("ImagePanel", "PanelContainer");
