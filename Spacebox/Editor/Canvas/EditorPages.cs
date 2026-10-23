@@ -17,8 +17,12 @@ public static class EditorPages
         return new List<EditorPage>
         {
             new OverviewPage(widgets),
-            new JsonFilePage("Player spawn", Spacebox.Game.Player.Respawn.SpawnParameters.RelativePath, EditorScopes.PlayerSpawn, widgets,
-                "Start items and where they go, start health/power/oxygen, and which asteroid new players start next to. Used for new players and respawns."),
+            new TabbedPage("Player", "How players start and the game modes they play in.",
+                new JsonFilePage("Spawn", Spacebox.Game.Player.Respawn.SpawnParameters.RelativePath, EditorScopes.PlayerSpawn, widgets,
+                    "Start items and where they go, start health/power/oxygen, and which asteroid new players start next to. Used for new players and respawns."),
+                new CollectionPage("Game modes", EditorScopes.GameModes,
+                    new FolderEntrySource(project, GameSetCatalog.GameModesFolder, GameSetCatalog.GameModes), widgets,
+                    description: "Ids 0-2 are Survival, Creative and Spectator; ids 3-31 are new modes on one of these bases with their own rules. Tag and TagColor mark worlds of the mode in the world list.")),
             new CollectionPage("Blocks", EditorScopes.Blocks, GameSetSources.Blocks(project), widgets, new BlockPreviewView(), itemIcon,
                 description: "Every block of the GameSet: textures, model, behaviour type and its settings."),
             new CollectionPage("Items", EditorScopes.Items, GameSetSources.Items(project), widgets, new ItemPreviewView(), new SpriteIconProvider(),

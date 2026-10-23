@@ -285,6 +285,22 @@
     "InnerAngle": "Angle in degrees of the fully bright center of the beam. Default: 15.",
     "OuterAngle": "Angle in degrees where the beam fades out completely; keep it larger than InnerAngle. Default: 25."
   },
+  "GameModeJSON": {
+    "Id": "Number of the mode, saved in worlds and player files. 0 Survival, 1 Creative, 2 Spectator; 3-31 for new modes. Must be unique in the GameSet.",
+    "Key": "Short name for commands and the dashboard, e.g. gm explorer. Lower case, unique.",
+    "Name": "Name shown to players.",
+    "Base": "survival, creative or spectator: movement, inventory and interactions of the new mode. Ignored for ids 0-2.",
+    "Tag": "Up to 3 letters shown as a small tag before worlds of this mode in the world list. Empty = first letter of the name.",
+    "TagColor": "Tag colour as #RRGGBB. Empty = colour of the base mode.",
+    "Rules": "What players may do in this mode. Rules left empty use the base mode's value."
+  },
+  "GameModeRulesJSON": {
+    "BreakBlocks": "Players can break and drill blocks.",
+    "PlaceBlocks": "Players can place blocks.",
+    "UseWeapons": "Players can shoot weapons.",
+    "TakeDamage": "Players take damage and can die.",
+    "NeedOxygen": "Players use up oxygen outside air zones."
+  },
   "GeneratorJSON": {
     "MinAsteroidsInSector": "Fewest asteroid candidates placed in one sector (8192 blocks per side). Biome Density can keep fewer of them.",
     "MaxAsteroidsInSector": "Most asteroid candidates placed in one sector. The real count is random between Min and Max, then filtered by biome Density.",

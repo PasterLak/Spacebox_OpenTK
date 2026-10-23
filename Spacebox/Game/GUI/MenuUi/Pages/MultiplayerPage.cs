@@ -66,7 +66,7 @@ public sealed class MultiplayerPage : MenuPage
         var actions = new HBoxContainer();
         actions.AddThemeConstantOverride("separation", 8f);
         _join = MenuLayout.Button(Menu, "Join", _window.JoinOrCancel);
-        _info = MenuLayout.Button(Menu, "Info", () => _dialog.OpenInfo(_window.Selected));
+        _info = MenuLayout.Button(Menu, "Edit", () => _dialog.OpenInfo(_window.Selected));
         _remove = MenuLayout.Button(Menu, "Remove", () => _window.RemoveServer(_window.Selected));
         actions.AddChild(_join);
         actions.AddChild(_info);

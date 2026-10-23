@@ -14,6 +14,7 @@ public sealed class EditorScopesTests
     [InlineData("Generation/Asteroids/light.json", EditorScopes.Asteroids)]
     [InlineData("Generation/generator.json", EditorScopes.Generator)]
     [InlineData("Tutorials/basics.json", EditorScopes.Tutorials)]
+    [InlineData("GameModes/explorer.json", EditorScopes.GameModes)]
     [InlineData("disassembly.json", EditorScopes.Disassembly)]
     [InlineData("config.json", EditorScopes.Config)]
     [InlineData("notes/other.json", EditorScopes.Generic)]

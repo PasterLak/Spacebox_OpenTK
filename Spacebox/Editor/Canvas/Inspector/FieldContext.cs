@@ -45,6 +45,7 @@ public static class EditorScopes
     public const string Recipes = "recipes";
     public const string Disassembly = "disassembly";
     public const string PlayerSpawn = "player_spawn";
+    public const string GameModes = "game_modes";
     public const string Tutorials = "tutorials";
     public const string Config = "config";
     public const string Generator = "generator";
@@ -78,6 +79,7 @@ public static class EditorScopes
         (GameSetCatalog.AsteroidsFolder + "/", Asteroids),
         (GameSetCatalog.BiomesFolder + "/", Biomes),
         (GameSetCatalog.GeneratorFile, Generator),
+        (GameSetCatalog.GameModesFolder + "/", GameModes),
         (GameSetCatalog.DisassemblyFile, Disassembly),
         (GameSetCatalog.TutorialsFolder + "/", Tutorials),
         (Spacebox.Game.Player.Respawn.SpawnParameters.RelativePath, PlayerSpawn)

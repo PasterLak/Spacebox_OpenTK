@@ -21,6 +21,7 @@ public static class GameSetCatalog
     public const string AsteroidsFolder = "Generation/Asteroids";
     public const string BiomesFolder = "Generation/Biomes";
     public const string GeneratorFile = "Generation/generator.json";
+    public const string GameModesFolder = Spacebox.Game.Resource.GameModesLoader.FolderName;
 
     private static readonly Dictionary<string, Type> ItemTypes = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
     {
@@ -64,6 +65,7 @@ public static class GameSetCatalog
         yield return typeof(AsteroidJSON);
         yield return typeof(BiomeJSON);
         yield return typeof(Spacebox.Game.Tutorial.TutorialJSON);
+        yield return typeof(Spacebox.Game.Player.GameModes.GameModeJSON);
     }
     public static IEnumerable<string> BlockTypeNames => BlockFactory.Types;
 
@@ -102,6 +104,7 @@ public static class GameSetCatalog
         if (relativePath.StartsWith(AsteroidsFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(AsteroidJSON);
         if (relativePath.StartsWith(BiomesFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(BiomeJSON);
         if (relativePath.StartsWith(TutorialsFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(Spacebox.Game.Tutorial.TutorialJSON);
+        if (relativePath.StartsWith(GameModesFolder + "/", StringComparison.OrdinalIgnoreCase)) return typeof(Spacebox.Game.Player.GameModes.GameModeJSON);
         return null;
     }
 
@@ -180,6 +183,24 @@ public static class GameSetCatalog
         Label = node => NameOf(node),
         NewIdPrefix = "new_mob",
         Template = () => JsonSchema.CreateEmpty(typeof(MobJSON))
+    };
+
+    public static readonly EntryDefinition GameModes = new EntryDefinition
+    {
+        IdKey = "Key",
+        Schema = _ => typeof(Spacebox.Game.Player.GameModes.GameModeJSON),
+        Label = node => NameOf(node),
+        NewIdPrefix = "new_mode",
+        Template = () => new JsonObject
+        {
+            ["Id"] = 10,
+            ["Key"] = "",
+            ["Name"] = "New mode",
+            ["Tag"] = "N",
+            ["TagColor"] = "#C08A2E",
+            ["Base"] = "survival",
+            ["Rules"] = new JsonObject()
+        }
     };
 
     public static readonly EntryDefinition Asteroids = new EntryDefinition

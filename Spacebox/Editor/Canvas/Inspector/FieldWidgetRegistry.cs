@@ -38,6 +38,7 @@ public sealed class FieldWidgetRegistry
         widgets.Add(new ReferenceFieldWidget(c => c.NameIs("FallbackBiome", "PreferredSpawnBiome") || c.Scope == EditorScopes.Asteroids && c.PathContains("Mobs") && c.PathContains("Biomes"), e => e.Assets.Biomes));
         widgets.Add(new ReferenceFieldWidget(c => c.PathContains("ExcludedAsteroids"), e => e.Assets.Asteroids));
         widgets.Add(new ReferenceFieldWidget(c => c.NameIs("PutIn"), _ => Spacebox.Game.Player.StartItemPlacement.All));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.GameModes && c.NameIs("Base") && IsTopLevel(c), _ => GameModeBases));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Type"), _ => Spacebox.Game.Tutorial.Tasks.TutorialTaskFactory.Types.OrderBy(t => t).ToArray()));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Action"), _ => InputActions()));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Block"), e => e.Assets.ItemIds, (e, n) => e.Assets.ItemIcon(n)));
@@ -46,6 +47,8 @@ public sealed class FieldWidgetRegistry
         widgets.AddKeySuggestions(c => c.NameIs("BiomeMultipliers"), e => e.Assets.Biomes);
         return widgets;
     }
+
+    private static readonly string[] GameModeBases = { "survival", "creative", "spectator" };
 
     public void Add(IFieldWidget widget) => _widgets.Add(widget);
 

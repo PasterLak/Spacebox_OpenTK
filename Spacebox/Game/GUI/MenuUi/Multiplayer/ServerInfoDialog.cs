@@ -100,7 +100,7 @@ public sealed class ServerInfoDialog
 
     private void Show()
     {
-        _frame.Title.Text = _addMode ? "Add server" : "Server info";
+        _frame.Title.Text = _addMode ? "Add server" : "Edit server";
         _header.Visible = !_addMode;
         _details.Visible = !_addMode;
         _descriptionBox.Visible = !_addMode;
