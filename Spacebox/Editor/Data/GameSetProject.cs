@@ -13,12 +13,14 @@ public sealed class GameSetProject
     public string FolderName { get; }
     public string ModId { get; }
     public SourceFolderMirror Mirror { get; set; }
+    public bool IsReadOnly { get; }
 
     public GameSetProject(string rootPath, string modId)
     {
         RootPath = rootPath;
         FolderName = Path.GetFileName(rootPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
         ModId = modId;
+        IsReadOnly = Spacebox.Game.Resource.Content.GameSetRoles.IsEmpty(modId) || Spacebox.Game.Resource.Content.GameSetRoles.IsEmpty(FolderName);
     }
 
     public int Version
@@ -129,6 +131,7 @@ public sealed class GameSetProject
 
     public void SaveAll()
     {
+        if (IsReadOnly) throw new InvalidOperationException(ReadOnlyMessage);
         foreach (var path in _pendingDeletes)
         {
             if (File.Exists(path)) File.Delete(path);
@@ -164,6 +167,8 @@ public sealed class GameSetProject
         }
         _structureVersion = EditorJsonFile.NextStamp();
     }
+
+    public const string ReadOnlyMessage = "Empty is read-only. Create a new GameSet in Mods to build on it.";
 
     public static string Normalize(string relativePath)
     {

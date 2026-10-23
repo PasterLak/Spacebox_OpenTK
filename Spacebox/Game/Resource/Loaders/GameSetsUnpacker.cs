@@ -92,7 +92,7 @@ internal static class GameSetsUnpacker
                 string modName = useModNameAsFolder ? GetModNameFromConfig(modFolder) : null;
                 string targetFolderName = ModInstallTarget.SafeFolderName(modName, Path.GetFileNameWithoutExtension(archivePath));
                 var config = InstalledGameSets.ReadConfig(modFolder);
-                bool isExtension = !string.IsNullOrWhiteSpace(config?.Extends);
+                bool isExtension = Spacebox.Game.Resource.Content.GameSetRoles.IsExtension(config?.Extends);
                 string targetRoot = folders.FolderFor(isExtension);
                 Directory.CreateDirectory(targetRoot);
                 string targetFolder = ModInstallTarget.Resolve(targetRoot, targetFolderName, config?.ModId, folder => InstalledGameSets.ReadConfig(folder)?.ModId, out bool replaces);

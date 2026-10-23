@@ -66,6 +66,7 @@ public static class GameSetPackage
 
     private static string CurrentModPath => GameSetLoader.ModInfo?.ModPath;
     private static IReadOnlyList<InstalledGameSet> Extensions => GameSetLoader.Stack?.Extensions ?? Array.Empty<InstalledGameSet>();
+    private static IReadOnlyList<string> FallbackFolders => GameSetLoader.Stack?.FallbackFolders ?? Array.Empty<string>();
     private static string StackKey => CurrentModPath + "|" + WorldExtensionList.Format(GameSetLoader.Stack?.ExtensionIds) + "|" + WorldExtensionList.Format(ServerTexturePacks.Ids);
 
     private static byte[] GetArchive()
@@ -92,7 +93,7 @@ public static class GameSetPackage
 
         if (string.IsNullOrEmpty(modPath) || !Directory.Exists(modPath)) throw new InvalidOperationException("No GameSet is loaded");
 
-        var archive = GameSetFolders.Pack(modPath, Extensions, packs);
+        var archive = GameSetFolders.Pack(modPath, FallbackFolders, Extensions, packs);
         lock (Sync)
         {
             if (_stackKey == key) _archive = archive;
@@ -118,6 +119,6 @@ public static class GameSetPackage
         _stackKey = key;
         _archive = null;
         _texturePacks = ServerTexturePacks.Resolve();
-        _hash = string.IsNullOrEmpty(modPath) || !Directory.Exists(modPath) ? null : GameSetFolders.ComputeHash(modPath, Extensions, _texturePacks);
+        _hash = string.IsNullOrEmpty(modPath) || !Directory.Exists(modPath) ? null : GameSetFolders.ComputeHash(modPath, FallbackFolders, Extensions, _texturePacks);
     }
 }

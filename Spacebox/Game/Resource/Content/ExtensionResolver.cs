@@ -78,7 +78,9 @@ public sealed class ExtensionResolver
 
         if (!extension.IsExtension)
         {
-            _errors.Add($"'{extension.Id}' is not an extension (its config.json has no \"Extends\")");
+            _errors.Add(extension.IsBasedOnEmpty
+                ? $"'{extension.Id}' is a GameSet built on Empty, not an extension"
+                : $"'{extension.Id}' is not an extension (its config.json has no \"Extends\")");
             _states[extension] = VisitState.Done;
             return;
         }

@@ -8,7 +8,7 @@ Spacebox content is data: JSON files plus PNG textures and OGG/WAV sounds. There
 | Extension GameSet | `Mods/Extensions/<Name>/` with `"Extends"` in `config.json` | per world (Extensions list in Create World) | yes (`Extensions`) |
 | Texture pack | `Mods/TexturePacks/<Name>/` | globally in Mods -> Texture packs | no |
 
-Examples shipped with the game: `Mods/Extensions/ExampleExtension` and `Mods/TexturePacks/ExamplePack`. `Mods/GameSets/Empty` is a base GameSet with nothing in it (no blocks, items, crafting, asteroids, mobs or tutorials; worlds are empty space): copy it, change `ModId` and `ModName` and build your own GameSet from scratch. A base GameSet without a content folder (`Projectiles`, `Mobs`, `Tutorials`, `GameModes`, `Generation/Asteroids`, `Generation/Biomes`, `Generation/Loot`) or without blocks, items, crafting or recipes uses Default's; an existing folder, even an empty one, or an empty `blocks.json`/`items.json` list keeps it empty. A `.zip` or `.rar` dropped into `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start (extensions always end up in `Mods/Extensions/`).
+Examples shipped with the game: `Mods/Extensions/ExampleExtension` and `Mods/TexturePacks/ExamplePack`. See "Creating a GameSet" below for `Mods/GameSets/Empty`, the base every GameSet is built on. A `.zip` or `.rar` dropped into `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start (extensions always end up in `Mods/Extensions/`).
 
 ## GameSet layout (folder format)
 
@@ -78,6 +78,19 @@ Mods/GameSets/MyMod/
 ```
 
 `Tag` (up to 3 letters, default: first letter of the name) and `TagColor` (`#RRGGBB`, default by base) mark worlds of this mode in the world list. Rules: `BreakBlocks`, `PlaceBlocks`, `UseWeapons`, `TakeDamage`, `NeedOxygen`. The server checks breaking, placing and shooting with the player's mode. Switch with `gm <id or key>` (e.g. `gm explorer`) or on the dashboard.
+
+## Creating a GameSet
+
+Mods > Create opens a window with two choices:
+
+- **New GameSet:** a complete GameSet of your own in `Mods/GameSets/<Name>/` with `"Extends": "empty"` in its `config.json`. It is built on `Empty`, so it works from the start, and it is listed as a GameSet (not as an extension) in Create World. You add every block, item, asteroid and so on yourself.
+- **Extension:** adds or changes content of an existing GameSet (`Default` or one of your own) in `Mods/Extensions/<Name>/`; see Extensions.
+
+Both write `config.json` and an icon and open the GameSet editor.
+
+`Mods/GameSets/Empty` holds what the game itself needs (interface, footstep, pickup, crafting and default block sounds, `Optional/lighting.json`, the three game modes) and no content: worlds made with it are empty space. It is read-only in the editor and cannot be extended. `Default` is built on Empty too (`"Extends": "empty"`).
+
+Missing files come from the GameSet it is built on: a GameSet built on Empty takes missing sounds, textures, `Generation`, `Mobs`, `Projectiles`, `Tutorials`, `GameModes`, `Loot`, `Optional/lighting.json` and blocks, items, crafting or recipes from Empty. An existing folder, even an empty one, keeps that part empty. Old GameSets without `Extends` keep taking missing files from Default (and from Empty after it).
 
 ## Extensions
 

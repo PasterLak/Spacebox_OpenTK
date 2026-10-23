@@ -7,9 +7,10 @@ public static class DefaultGameSetContent
 {
     private static readonly Lazy<string> _folder = new Lazy<string>(FindFolder);
     private static readonly Lazy<GameSetContent> _content = new Lazy<GameSetContent>(() => GameSetContentReader.ReadFolder(Folder, "default"));
-    private static readonly Lazy<GameSetAssetIndex> _assets = new Lazy<GameSetAssetIndex>(() => GameSetAssetIndex.Build(new[] { new ContentLayer("default", Folder) }));
+    private static readonly Lazy<GameSetAssetIndex> _assets = new Lazy<GameSetAssetIndex>(() => GameSetAssetIndex.Build(new[] { new ContentLayer("empty", EmptyFolder), new ContentLayer("default", Folder) }));
 
     public static string Folder => _folder.Value;
+    public static string EmptyFolder => Path.Combine(Path.GetDirectoryName(Folder)!, "Empty");
     public static GameSetContent Content => _content.Value;
     public static GameSetAssetIndex Assets => _assets.Value;
 

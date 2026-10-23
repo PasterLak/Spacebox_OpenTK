@@ -4,30 +4,41 @@ public sealed class GameSetStack
 {
     public InstalledGameSet Base { get; }
     public IReadOnlyList<InstalledGameSet> Extensions { get; }
+    public IReadOnlyList<InstalledGameSet> Fallbacks { get; }
     public ContentLayer Fallback { get; }
     public IReadOnlyList<ContentLayer> Layers { get; }
 
-    public GameSetStack(InstalledGameSet baseSet, IReadOnlyList<InstalledGameSet> extensions, string defaultFolder)
+    public GameSetStack(InstalledGameSet baseSet, IReadOnlyList<InstalledGameSet> extensions, IReadOnlyList<InstalledGameSet> fallbacks)
     {
         Base = baseSet;
         Extensions = extensions ?? Array.Empty<InstalledGameSet>();
+        Fallbacks = fallbacks ?? Array.Empty<InstalledGameSet>();
 
         var layers = new List<ContentLayer> { baseSet.ToLayer() };
         foreach (var extension in Extensions) layers.Add(extension.ToLayer());
         Layers = layers;
 
-        if (!string.IsNullOrEmpty(defaultFolder) && Directory.Exists(defaultFolder) && !SameFolder(defaultFolder, baseSet.Folder))
-            Fallback = new ContentLayer(Globals.GameSet.Default.ToLowerInvariant(), defaultFolder);
+        if (Fallbacks.Count > 0) Fallback = Fallbacks[0].ToLayer();
     }
 
     public IReadOnlyList<ContentLayer> AssetLayers
     {
         get
         {
-            if (Fallback == null) return Layers;
-            var layers = new List<ContentLayer>(Layers.Count + 1) { Fallback };
+            var layers = new List<ContentLayer>(Layers.Count + Fallbacks.Count);
+            for (int i = Fallbacks.Count - 1; i >= 0; i--) layers.Add(Fallbacks[i].ToLayer());
             layers.AddRange(Layers);
             return layers;
+        }
+    }
+
+    public IReadOnlyList<string> FallbackFolders
+    {
+        get
+        {
+            var folders = new List<string>(Fallbacks.Count);
+            foreach (var fallback in Fallbacks) folders.Add(fallback.Folder);
+            return folders;
         }
     }
 
@@ -56,7 +67,7 @@ public sealed class GameSetStack
         var roots = new List<string>();
         for (int i = Extensions.Count - 1; i >= 0; i--) roots.Add(Extensions[i].Folder);
         roots.Add(Base.Folder);
-        if (Fallback != null) roots.Add(Fallback.Root);
+        foreach (var fallback in Fallbacks) roots.Add(fallback.Folder);
         return roots.ToArray();
     }
 

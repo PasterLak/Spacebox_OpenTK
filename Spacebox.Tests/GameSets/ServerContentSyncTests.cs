@@ -43,7 +43,7 @@ public sealed class ServerContentSyncTests : IDisposable
         var world = new RemoteWorldInfo { ModId = "default", Extensions = new[] { "lamps" }, TexturePacks = new[] { "bright" } };
 
         var client = new ModFolders(Path.Combine(_sets.Root, "Client"));
-        Engine.Utils.DirectoryArchive.Extract(GameSetFolders.Pack(stack.Base.Folder, stack.Extensions, packs), Path.Combine(_sets.Root, "Client"));
+        Engine.Utils.DirectoryArchive.Extract(GameSetFolders.Pack(stack, packs), Path.Combine(_sets.Root, "Client"));
 
         Assert.True(Directory.Exists(Path.Combine(client.Extensions, "Lamps")));
         Assert.True(GameSetDownloader.TryResolve(client, world, out var downloaded, out var downloadedPacks));

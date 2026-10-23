@@ -41,7 +41,7 @@ public class ModsWindow : MenuWindow
         if (ImGui.BeginChild("##gameSets", new Vector2(width - padding * 2f, listHeight), ImGuiChildFlags.Border))
         {
             for (int i = 0; i < gameSets.Count; i++)
-                DrawGameSet(gameSets[i], i, buttonHeight * (string.IsNullOrWhiteSpace(gameSets[i].Extends) ? 1.4f : 2f));
+                DrawGameSet(gameSets[i], i, buttonHeight * (!Spacebox.Game.Resource.Content.GameSetRoles.IsExtension(gameSets[i].Extends) ? 1.4f : 2f));
         }
         ImGui.EndChild();
 
@@ -92,7 +92,7 @@ public class ModsWindow : MenuWindow
         ImGui.BeginGroup();
         ImGui.Text($"{mod.ModName}  v{mod.Version}");
         ImGui.TextDisabled($"{mod.ModId} by {(string.IsNullOrEmpty(mod.Author) ? "unknown" : mod.Author)}  -  {mod.Description}");
-        if (!string.IsNullOrWhiteSpace(mod.Extends))
+        if (Spacebox.Game.Resource.Content.GameSetRoles.IsExtension(mod.Extends))
         {
             string includes = mod.Includes != null && mod.Includes.Count > 0 ? $", includes {string.Join(", ", mod.Includes)}" : "";
             ImGui.TextColored(new Vector4(0.6f, 0.8f, 1f, 1f), $"Extension of '{mod.Extends}'{includes} - pick it when creating a world");

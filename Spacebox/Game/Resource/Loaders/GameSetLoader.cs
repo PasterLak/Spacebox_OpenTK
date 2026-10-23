@@ -101,7 +101,7 @@ public static class GameSetLoader
         MobIconRenderer.ApplyToSpawners();
         Spacebox.Game.Tutorial.TutorialLoader.Load(modPath, defaultModPath, ModInfo.ModId);
         LoadSettings(modPath);
-        LoadOptionalFiles(modPath);
+        foreach (var root in BaseAndFallbackRoots(stack)) if (LoadOptionalFiles(root)) break;
 
         var generator = GenerationLoader.Load(modPath, defaultModPath);
         generator.PlayerSpawn = Spacebox.Game.Player.Respawn.SpawnParameters.Rules(spawnParameters, generator.PlayerSpawn);
@@ -1017,9 +1017,16 @@ public static class GameSetLoader
         }
     }
 
-    private static void LoadOptionalFiles(string modPath)
+    private static IEnumerable<string> BaseAndFallbackRoots(GameSetStack stack)
+    {
+        yield return stack.Base.Folder;
+        foreach (var folder in stack.FallbackFolders) yield return folder;
+    }
+
+    private static bool LoadOptionalFiles(string modPath)
     {
         string optionalPath = Path.Combine(modPath, "Optional");
+        bool loaded = false;
 
         if (Directory.Exists(optionalPath))
         {
@@ -1028,10 +1035,12 @@ public static class GameSetLoader
                 if (Path.GetFileNameWithoutExtension(file).Equals("lighting", StringComparison.OrdinalIgnoreCase))
                 {
                     LoadLighting(optionalPath);
+                    loaded = true;
 
                 }
             }
         }
+        return loaded;
     }
 
     private static void LoadLighting(string path)
@@ -1069,7 +1078,7 @@ public static class GameSetLoader
         if (!File.Exists(filePath))
         {
             filePath = defaultFilePath;
-            Debug.Error($"[GameSetLoader] {fileName} not found in mod. Using default.");
+            Debug.Log($"[GameSetLoader] {fileName} not found in the GameSet, using the one of the GameSet it is built on.");
             if (!File.Exists(filePath))
             {
                 Debug.Error($"[GameSetLoader] Default {fileName} not found.");

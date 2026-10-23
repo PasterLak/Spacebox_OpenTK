@@ -7,6 +7,8 @@ public static class Globals
     {
         
         public const string Default = "Default";
+        public const string Empty = "Empty";
+        public const string EmptyId = "empty";
         public const string Blocks = "Blocks";
         public const string Items = "Items";
         public const string Emissions = "Emissions";

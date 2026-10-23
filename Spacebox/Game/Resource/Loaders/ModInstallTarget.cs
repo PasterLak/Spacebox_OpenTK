@@ -7,7 +7,7 @@ public static class ModInstallTarget
         string cleaned = Clean(name);
         if (cleaned.Length == 0) cleaned = Clean(fallback);
         if (cleaned.Length == 0) cleaned = "Mod";
-        if (string.Equals(cleaned, Globals.GameSet.Default, StringComparison.OrdinalIgnoreCase)) cleaned += "_mod";
+        if (string.Equals(cleaned, Globals.GameSet.Default, StringComparison.OrdinalIgnoreCase) || string.Equals(cleaned, Globals.GameSet.Empty, StringComparison.OrdinalIgnoreCase)) cleaned += "_mod";
         return cleaned;
     }
 

@@ -190,10 +190,12 @@ Behaviour subclasses are created by `BlockFactory` from the JSON `Type` string (
 
 A GameSet is a folder (or a `.zip` / `.rar` archive, extracted by `GameSetsUnpacker` into `Mods/GameSets/` or, when its `config.json` has `Extends`, `Mods/Extensions/`) under `Mods/GameSets/`; extensions live in `Mods/Extensions/`, texture packs in `Mods/TexturePacks/` (`ModFolders`: one root with these three folders; `ModFolders.Local` = `Mods/`, `MultiplayerFolders.ModCache(server)` = `Multiplayer/Mods/<host>_<port>/`; `InstalledGameSets.Scan(ModFolders)` and `GameSetStackResolver.Resolve(ModFolders, ...)` read both GameSet folders). Modding guide: `modding-guide.md`.
 
+`Mods/GameSets/Empty` (id `empty`) is the read-only base of every GameSet: no content, only the sounds and settings the code needs (interface, footsteps, pickup, crafting, default block sounds, `Optional/lighting.json`, game modes). A GameSet with `"Extends": "empty"` (Default and everything made with Mods > Create > New GameSet, `GameSetCreator`) is a base GameSet; any other `Extends` makes an extension, and Empty cannot be extended. `GameSetFallbacks` picks the fallback chain of a stack: GameSets built on Empty -> Empty; old GameSets without `Extends` -> Default, then Empty; Empty -> none. `GameSetStack.Fallback` (nearest) supplies missing content files and folders, `AssetLayers` and `SearchRootsNewestFirst` include the whole chain, and the server packs every fallback folder for clients (`GameSetFolders.Pack(stack)`).
+
 ```
 Mods/GameSets/Default/
   config.json      ModId, ModName, Author, Version, OxygenConsumeInterval (s per 1 oxygen, default 10), ItemsOnStart (old place, see Player/spawn_parameters.json),
-                   Extends (base GameSet id, extensions only), Includes (other extensions loaded first)
+                   Extends (base GameSet id for extensions; "empty" = a base GameSet built on Empty, `GameSetRoles`), Includes (other extensions loaded first)
   Blocks/<group>/<id>/<id>.json    one block (ID, Name, Type, PowerToDrill, Mass, Durability, Textures, Sounds, Drop, DropQuantity, Model, ...); the entry file is named after its folder (`EntryFiles`) or `block.json` (old name; ignored when `<folder>.json` exists); `blueprint.json`, `recipes.json` and `order.json` are never entry files
   Items/<group>/<id>/<id>.json     one item (or `item.json`)
   <entry>/*.png, <entry>/Emissions/*.png, <entry>/*.ogg|*.wav   the entry's textures, emission maps and sounds (names stay global)

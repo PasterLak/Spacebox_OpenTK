@@ -48,7 +48,7 @@ public static class GameFolderMigration
 
         foreach (var folder in Directory.GetDirectories(source))
         {
-            bool isExtension = !string.IsNullOrWhiteSpace(InstalledGameSets.ReadConfig(folder)?.Extends);
+            bool isExtension = GameSetRoles.IsExtension(InstalledGameSets.ReadConfig(folder)?.Extends);
             MoveDirectory(folder, Path.Combine(mods.FolderFor(isExtension), Path.GetFileName(folder)), log);
         }
         foreach (var file in Directory.GetFiles(source)) MoveFile(file, Path.Combine(mods.GameSets, Path.GetFileName(file)), false, log);

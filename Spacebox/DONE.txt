@@ -351,6 +351,8 @@ Fixes
 - world list: small tags for game mode (Tag and TagColor in GameModes/*.json) and game version (orange when the world needs converting); icon buttons for random seed and delete; GameSet icon in the GameSet box
 - GameSet editor: Player page with Spawn and Game modes (add, duplicate and edit modes, rules, tag and tag colour) (tag colour with a colour picker)
 - Empty GameSet: a base GameSet with nothing in it (empty space, no blocks, items, crafting, asteroids, mobs or tutorials) as a start for own GameSets
+- Mods > Create: new GameSet (built on Empty, works from the start) or extension of an existing GameSet, with a short explanation; opens the GameSet editor
+- Empty is the read-only base of every GameSet: Default and new GameSets are built on it ("Extends": "empty") and take missing sounds and files from it; Empty cannot be extended
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine

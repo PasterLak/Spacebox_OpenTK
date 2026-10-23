@@ -1,12 +1,14 @@
 Empty GameSet
 =============
 
-A starting point for a GameSet of your own. Worlds made with it are empty space:
-no asteroids, no blocks, no items, no crafting, no mobs and no tutorials.
-Nothing is taken from the Default GameSet, only interface textures and sounds.
+The base of every GameSet. Worlds made with it are empty space: no asteroids,
+no blocks, no items, no crafting, no mobs and no tutorials. It holds the sounds and
+settings the game itself needs (interface, footsteps, pickup, default block sounds, lighting).
 
-Copy this folder, rename it, change ModId and ModName in config.json and add content
-with the GameSet editor (Mods > GameSet editor) or by hand. See modding-guide.md.
+Empty is read-only. To make your own GameSet use Mods > Create > New GameSet: it creates
+a GameSet with "Extends": "empty" in its config.json. Everything it does not have itself
+comes from Empty, so it works from the start. Default is built on Empty the same way.
+Empty cannot be extended; extensions extend Default or your own GameSet. See modding-guide.md.
 
 Files that keep the GameSet empty:
 - blocks.json, items.json: empty lists. Delete them when you add block or item folders.

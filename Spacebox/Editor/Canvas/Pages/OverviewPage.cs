@@ -64,7 +64,7 @@ public sealed class OverviewPage : EditorPage
     {
         bool flat = GameSetFolderConverter.HasFlatFiles(Editor.Project.RootPath);
         bool dirty = Editor.Project.DirtyCount > 0;
-        _convert.Visible = flat;
+        _convert.Visible = flat && !Editor.Project.IsReadOnly;
         _convert.Disabled = dirty;
         _convert.TooltipText = dirty ? "Save or discard your changes first" : "Moves every block and item into its own folder with its textures, blueprints into the entry folders and processing recipes into Recipes/. The loaded content stays identical.";
     }

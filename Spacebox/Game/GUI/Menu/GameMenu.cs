@@ -617,6 +617,17 @@ namespace Spacebox.Game.GUI.Menu
 
         }
 
+        public string CreateGameSet(Spacebox.Game.Resource.Content.NewGameSetRequest request)
+        {
+            var result = Spacebox.Game.Resource.Content.GameSetCreator.Create(Spacebox.Game.Resource.Content.ModFolders.Local, request, installedGameSets);
+            if (!result.Success) return result.Error;
+
+            Debug.Success($"[Mods] Created {request.Kind} '{result.ModId}' in {result.Folder}");
+            LoadGameSets();
+            OpenGameSetEditor(GetModById(result.ModId), "Overview");
+            return null;
+        }
+
         public void OpenGameSetEditor(ModConfig mod, string startPanel)
         {
             if (mod == null) return;

@@ -18,6 +18,7 @@ public sealed class EditorHost : IDisposable
     private readonly ConfirmDialog _dialog = new ConfirmDialog();
     private Button _save;
     private Button _discard;
+    private Button _saveReload;
     private SkiaCanvasFont _font;
     private int _current = -1;
 
@@ -70,11 +71,13 @@ public sealed class EditorHost : IDisposable
     public void Update(float deltaTime)
     {
         int dirty = _context.Project.DirtyCount;
+        bool readOnly = _context.Project.IsReadOnly;
         _save.Text = dirty > 0 ? $"Save ({dirty})" : "Save";
-        _save.Disabled = dirty == 0;
+        _save.Disabled = dirty == 0 || readOnly;
+        _saveReload.Disabled = readOnly;
         _discard.Disabled = dirty == 0;
-        _dirty.Text = dirty > 0 ? $"{dirty} unsaved file(s)" : "All changes saved";
-        _dirty.FontColor = dirty > 0 ? EditorCanvasTheme.Warning : EditorCanvasTheme.TextDim;
+        _dirty.Text = readOnly ? Spacebox.Editor.Data.GameSetProject.ReadOnlyMessage : dirty > 0 ? $"{dirty} unsaved file(s)" : "All changes saved";
+        _dirty.FontColor = readOnly || dirty > 0 ? EditorCanvasTheme.Warning : EditorCanvasTheme.TextDim;
         _status.Text = _context.StatusText;
         _status.FontColor = _context.StatusIsError ? EditorCanvasTheme.Error : EditorCanvasTheme.Success;
 
@@ -102,13 +105,13 @@ public sealed class EditorHost : IDisposable
         main.SetOffsets(6f, 4f, -6f, -4f);
 
         var toolbar = main.AddChild(new HBoxContainer { Name = "Toolbar" });
-        _title.Text = $"GameSet Editor - {_context.Assets.ModId}  ({_context.Project.FolderName})";
+        _title.Text = $"GameSet Editor - {_context.Assets.ModId}  ({_context.Project.FolderName}){(_context.Project.IsReadOnly ? "  read-only" : "")}";
         _title.FontColor = EditorCanvasTheme.Accent;
         _title.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         toolbar.AddChild(_title);
         toolbar.AddChild(new VSeparator());
         _save = Toolbar(toolbar, "Save", "Saves every changed file (Ctrl+S).", Save);
-        Toolbar(toolbar, "Save & Reload", "Saves all files and reloads the GameSet (textures, atlases, previews).", () => { Save(); _context.RequestReload(); });
+        _saveReload = Toolbar(toolbar, "Save & Reload", "Saves all files and reloads the GameSet (textures, atlases, previews).", () => { Save(); _context.RequestReload(); });
         Toolbar(toolbar, "Reload", "Reloads textures and data from disk without saving.", _context.RequestReload);
         _discard = Toolbar(toolbar, "Discard", "Throws away all unsaved changes and reloads the files from disk.", Discard);
         var spacer = toolbar.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand, MouseFilter = MouseFilter.Ignore });
@@ -181,8 +184,9 @@ public sealed class EditorHost : IDisposable
     private void RequestExit()
     {
         int dirty = _context.Project.DirtyCount;
-        if (dirty == 0)
+        if (dirty == 0 || _context.Project.IsReadOnly)
         {
+            _context.Project.DiscardChanges();
             _context.RequestExit();
             return;
         }

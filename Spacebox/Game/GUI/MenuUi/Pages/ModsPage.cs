@@ -14,6 +14,7 @@ public sealed class ModsPage : MenuPage
     private readonly VBoxContainer _rows = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
     private readonly List<SelectableRow> _rowControls = new List<SelectableRow>();
     private ModConfig _selected;
+    private CreateGameSetDialog _create;
 
     public ModsPage(GameMenu menu)
     {
@@ -28,11 +29,15 @@ public sealed class ModsPage : MenuPage
 
         frame.Body.AddChild(MenuLayout.ScrollList(_rows, 250f));
 
+        _create = new CreateGameSetDialog(_menu);
         var tools = new HBoxContainer();
         var download = MenuLayout.Button(_menu, "Download mods", null);
         download.Disabled = true;
         download.TooltipText = "Mod hub - coming soon: a place to find and download mods, texture packs and ships from other players";
         tools.AddChild(download);
+        var create = MenuLayout.Button(_menu, "Create", _create.Open);
+        create.TooltipText = "Create a new GameSet or an extension of an existing one";
+        tools.AddChild(create);
         tools.AddChild(MenuLayout.Button(_menu, "GameSet editor", () => OpenEditor("Overview")));
         tools.AddChild(MenuLayout.Button(_menu, "Generation editor", () => OpenEditor("Generation")));
         frame.Body.AddChild(tools);
@@ -53,7 +58,9 @@ public sealed class ModsPage : MenuPage
             var row = new SelectableRow(IconSize) { Metadata = mod, Icon = mod.Icon, FlipIcon = true };
             row.AddLine($"{mod.ModName}  v{mod.Version}");
             row.AddLine($"{mod.ModId} by {(string.IsNullOrEmpty(mod.Author) ? "unknown" : mod.Author)}  -  {mod.Description}", "MutedLabel");
-            if (!string.IsNullOrWhiteSpace(mod.Extends))
+            if (Spacebox.Game.Resource.Content.GameSetRoles.IsEmpty(mod.ModId))
+                row.AddLine("Read-only base of every new GameSet - press Create to start your own", "MutedLabel");
+            if (Spacebox.Game.Resource.Content.GameSetRoles.IsExtension(mod.Extends))
             {
                 string includes = mod.Includes != null && mod.Includes.Count > 0 ? $", includes {string.Join(", ", mod.Includes)}" : "";
                 row.AddLine($"Extension of '{mod.Extends}'{includes} - pick it when creating a world", "MutedLabel");

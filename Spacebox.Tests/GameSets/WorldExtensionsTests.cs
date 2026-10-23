@@ -71,7 +71,7 @@ public sealed class WorldExtensionsTests : IDisposable
 
         var stack = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "default", new[] { "lamps" }).Stack;
         string target = Path.Combine(_sets.Root, "Download");
-        Engine.Utils.DirectoryArchive.Extract(GameSetFolders.Pack(stack.Base.Folder, stack.Extensions), target);
+        Engine.Utils.DirectoryArchive.Extract(GameSetFolders.Pack(stack), target);
 
         var downloaded = GameSetStackResolver.Resolve(new ModFolders(target), "default", new[] { "lamps" });
         Assert.True(downloaded.Success, downloaded.ErrorText);

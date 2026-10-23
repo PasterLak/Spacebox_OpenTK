@@ -16,7 +16,9 @@ public sealed class InstalledGameSet
     public string Id => Config.ModId ?? "";
     public string FolderName => Path.GetFileName(Folder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
     public string DisplayName => string.IsNullOrWhiteSpace(Config.ModName) ? Id : Config.ModName;
-    public bool IsExtension => !string.IsNullOrWhiteSpace(Config.Extends);
+    public bool IsExtension => GameSetRoles.IsExtension(Config.Extends);
+    public bool IsBasedOnEmpty => GameSetRoles.IsBasedOnEmpty(Config.Extends);
+    public bool IsEmpty => GameSetRoles.IsEmpty(Id);
     public IReadOnlyList<string> Includes => Config.Includes ?? new List<string>();
 
     public bool Matches(string idOrFolder)

@@ -54,7 +54,7 @@ public static class GameSetStackResolver
 
         var resolution = ExtensionResolver.Resolve(baseSet, installed, requested);
         errors.AddRange(resolution.Errors);
-        var stack = new GameSetStack(baseSet, resolution.Order, defaultFolder);
+        var stack = new GameSetStack(baseSet, resolution.Order, GameSetFallbacks.For(baseSet, installed, defaultFolder));
         return new GameSetStackResult(stack, errors);
     }
 
