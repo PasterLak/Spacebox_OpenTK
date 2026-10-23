@@ -42,7 +42,7 @@ public static class EditorPages
                 new JsonFilePage("Defaults", GameSetCatalog.DisassemblyFile, EditorScopes.Disassembly, widgets,
                     "Defaults for every item without its own entry. Items not listed are disassembled from their crafting or machine recipe.")),
             new CollectionPage("Loot", EditorScopes.Loot,
-                new FolderEntrySource(project, GameSetCatalog.LootFolder, GameSetCatalog.Loot), widgets,
+                new FolderEntrySource(project, GameSetCatalog.LootFolder, GameSetCatalog.Loot), widgets, null, null, new LootPreviewView(),
                 description: "Loot tables of storages found in the world."),
             new CollectionPage("Mobs", EditorScopes.Mobs,
                 new FolderEntrySource(project, GameSetCatalog.MobsFolder, GameSetCatalog.Mobs), widgets, new MobPreviewView(),
@@ -61,6 +61,18 @@ public static class EditorPages
             new SoundsPage(),
             new AtlasPage(),
             new FilesPage(widgets)
+        };
+    }
+
+    public static List<EditorPage> CreateTexturePack()
+    {
+        var widgets = FieldWidgetRegistry.CreateDefault();
+        return new List<EditorPage>
+        {
+            new TexturePackTexturesPage(),
+            new JsonFilePage("Pack", Spacebox.Game.Resource.TexturePacks.TexturePack.InfoFile, EditorScopes.Generic, widgets,
+                "Name, author, version and description shown in Mods > Texture packs. The icon is icon.png in the pack folder."),
+            new AtlasPage()
         };
     }
 

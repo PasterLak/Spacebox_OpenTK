@@ -44,7 +44,8 @@ public static class GameSetCatalog
         { GeneratorFile, typeof(GeneratorJSON) },
         { "Optional/lighting.json", typeof(GameSetLoader.Modlighting) },
         { CraftingFile, typeof(CraftingJSON) },
-        { RecipesFile, typeof(RecipesJSON) }
+        { RecipesFile, typeof(RecipesJSON) },
+        { Spacebox.Game.Resource.TexturePacks.TexturePack.InfoFile, typeof(Spacebox.Game.Resource.TexturePacks.TexturePackInfo) }
     };
 
     public static IEnumerable<string> ItemTypeNames => ItemTypes.Keys;

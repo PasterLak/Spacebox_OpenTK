@@ -60,6 +60,9 @@ public sealed class TexturePacksPage : MenuPage
             row.AddLine($"{pack.Id} by {(string.IsNullOrEmpty(pack.Info.Author) ? "unknown" : pack.Info.Author)}  -  {pack.TextureCount} textures  {pack.Info.Description}", "MutedLabel");
 
             string id = pack.Id;
+            var edit = row.Row.AddChild(new Button { Text = "Edit", ThemeTypeVariation = "SmallButton", SizeFlagsVertical = SizeFlags.ShrinkCenter, TooltipText = "Open the pack in the editor, shown on the Default GameSet." });
+            var editedPack = pack;
+            edit.Pressed += _ => _menu.OpenTexturePackEditor(editedPack);
             row.Row.AddChild(Small(active ? "Disable" : "Enable", () => TexturePackOrder.Toggle(enabled, id)));
             if (active)
             {

@@ -573,6 +573,13 @@
     "Active": "Face textures used normally (and when a machine is working or powered).",
     "Inactive": "Face textures used when the block is inactive (idle or without power) and for the build preview. Empty faces use the Active textures."
   },
+  "TexturePackInfo": {
+    "Id": "Unique id of the pack, used in the settings to remember which packs are enabled. Empty: the folder name.",
+    "Name": "Name shown in Mods > Texture packs.",
+    "Description": "Short text shown under the name.",
+    "Author": "Who made the pack.",
+    "Version": "Version of the pack, shown next to its name."
+  },
   "ThrusterJSON": {
     "Force": "Thrust pushing the ship away from the nozzle face (0-100000, default 20). The effect depends on the ship's total block mass.",
     "Power": "Power used by the thruster, in EU (0-8000, default 8).",

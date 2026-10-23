@@ -241,6 +241,7 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 - The editor draws no ImGui; `PreviewViewport` has an ImGui adapter (`PreviewViewportImGui`) only for the menu's ship viewer.
 - Previews read runtime assets (need Save & Reload after edits), projectile previews read the JSON live.
 - Extensions: `EditorTargets` lists the GameSets an extension works with; the toolbar Target selector reloads the scene with `GameSetEditorArgs.TargetBase`, the project then roots at `Bases/<id>/` and the preview loads that GameSet with the extension.
+- Texture packs: `GameSetEditorArgs.TexturePack` (Mods > Texture packs > Edit, or `--editor <pack id>`) opens the pack folder as the project on top of Default with only that pack applied (`SpaceSceneArgs.textureOverrides`); pages from `EditorPages.CreateTexturePack` (Textures: `PackTextures` rows, copy/open/remove pack files; Pack: `pack.json`; Atlases).
 - `GameSetProject.IsReadOnly` (the `Empty` GameSet): saving is refused, the toolbar and status bar say so, Overview hides the converter. GL work only in `IPreviewContent.Update/Render`; asteroid meshes are built on workers.
 
 ## Where to add things

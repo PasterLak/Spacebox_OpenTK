@@ -29,6 +29,20 @@ public sealed class SourceFolderMirror
         }
     }
 
+    public void Copy(string relativePath, string sourceFile)
+    {
+        string path = FullPath(relativePath);
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            File.Copy(sourceFile, path, true);
+        }
+        catch (Exception ex)
+        {
+            Engine.Debug.Warning($"[Editor] Could not write the source copy {path}: {ex.Message}");
+        }
+    }
+
     public void Delete(string relativePath)
     {
         string path = FullPath(relativePath);

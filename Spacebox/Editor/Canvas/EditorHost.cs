@@ -105,7 +105,9 @@ public sealed class EditorHost : IDisposable
         main.SetOffsets(6f, 4f, -6f, -4f);
 
         var toolbar = main.AddChild(new HBoxContainer { Name = "Toolbar" });
-        _title.Text = string.IsNullOrEmpty(_context.CurrentTarget)
+        _title.Text = _context.IsTexturePack
+            ? $"Texture Pack Editor - {_context.Project.ModId}  ({_context.Project.FolderName}, shown on {_context.TexturePackBase})"
+            : string.IsNullOrEmpty(_context.CurrentTarget)
             ? $"GameSet Editor - {_context.Project.ModId}  ({_context.Project.FolderName}){(_context.Project.IsReadOnly ? "  read-only" : "")}"
             : $"GameSet Editor - {_context.Project.ModId}  (Bases/{_context.CurrentTarget})";
         _title.FontColor = EditorCanvasTheme.Accent;

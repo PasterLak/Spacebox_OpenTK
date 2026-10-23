@@ -671,13 +671,22 @@ namespace Spacebox.Game.GUI.Menu
         {
             if (mod == null) return;
 
-            var args = new Spacebox.Editor.GameSetEditorArgs
+            OpenEditor(new Spacebox.Editor.GameSetEditorArgs
             {
                 ModId = mod.ModId,
                 ModFolderName = mod.FolderName,
                 StartPanel = startPanel
-            };
+            });
+        }
 
+        public void OpenTexturePackEditor(Spacebox.Game.Resource.TexturePacks.TexturePack pack)
+        {
+            if (pack == null) return;
+            OpenEditor(Spacebox.Editor.GameSetEditorLauncher.TexturePackArgs(pack.Folder));
+        }
+
+        private void OpenEditor(Spacebox.Editor.GameSetEditorArgs args)
+        {
             Click1.Play();
             hide = true;
             IsVisible = false;

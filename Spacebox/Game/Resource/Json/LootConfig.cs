@@ -78,34 +78,14 @@ public class LootConfig
             return Array.Empty<LootResult>();
         }
 
-        var rng = new Random(seed);
-        var results = new List<LootResult>();
-        int total = 0;
-
-        foreach (var entry in entries)
+        var rolls = LootRoller.Roll(entries, seed, maxItems, id => GameAssets.TryGetItemByFullID(id, out _));
+        var results = new LootResult[rolls.Count];
+        for (int i = 0; i < rolls.Count; i++)
         {
-            if (total >= maxItems) break;
-
-            if (rng.Next(0, 100) >= entry.Probability) continue;
-
-            int count = entry.MinCount == entry.MaxCount
-                ? entry.MinCount
-                : rng.Next(entry.MinCount, entry.MaxCount + 1);
-
-            if (count <= 0) continue;
-
-            if (!GameAssets.TryGetItemByFullID(entry.ItemIdStr, out var proto))
-            {
-                continue;
-            }
-
-            if (total + count > maxItems)
-                count = maxItems - total;
-
-            results.Add(new LootResult(proto, (byte)count));
-            total += count;
+            GameAssets.TryGetItemByFullID(rolls[i].ItemId, out var proto);
+            results[i] = new LootResult(proto, (byte)rolls[i].Count);
         }
 
-        return results.ToArray();
+        return results;
     }
 }

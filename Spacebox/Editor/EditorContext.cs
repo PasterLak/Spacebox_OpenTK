@@ -21,6 +21,10 @@ public sealed class EditorContext : IDisposable
     public IReadOnlyList<EditorTarget> Targets { get; init; } = Array.Empty<EditorTarget>();
     public string CurrentTarget { get; init; } = "";
     public string TargetRequest { get; private set; }
+    public string TexturePackFolder { get; init; }
+    public string TexturePackBase { get; init; }
+    public bool IsTexturePack => !string.IsNullOrEmpty(TexturePackFolder);
+    public Spacebox.Game.Resource.Content.GameSetAssetIndex BaseTextures { get; set; }
 
     public void RequestTarget(string target) => TargetRequest = target ?? "";
 

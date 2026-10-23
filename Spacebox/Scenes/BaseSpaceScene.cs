@@ -33,6 +33,7 @@ public struct SpaceSceneArgs
     public string[] extensions = Array.Empty<string>();
     public string[] serverTexturePacks = Array.Empty<string>();
     public bool applyTexturePacks = true;
+    public IReadOnlyList<Spacebox.Game.Resource.Content.ITextureOverrideSource> textureOverrides = null;
     public string key;
     public string hostIp;
     public int port;

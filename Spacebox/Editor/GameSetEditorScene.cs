@@ -15,6 +15,7 @@ public struct GameSetEditorArgs
     public string ModFolderName;
     public string StartPanel;
     public string TargetBase;
+    public string TexturePack;
 }
 
 public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs>
@@ -23,6 +24,9 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     private EditorContext _context;
     private Spacebox.Editor.Canvas.EditorHost _host;
     private Vector3 _previousAmbient;
+    private Spacebox.Game.Resource.Content.GameSetAssetIndex _baseTextures;
+
+    private bool IsTexturePack => !string.IsNullOrEmpty(_args.TexturePack);
 
     public void Initialize(GameSetEditorArgs param)
     {
@@ -36,13 +40,18 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
 
         LoadGameSet();
 
-        var targets = EditorTargets.For(_args.ModId);
-        var project = new GameSetProject(EditorTargets.ProjectRoot(Spacebox.Network.GameSetLocator.FolderPath(_args.ModFolderName), _args.TargetBase), _args.ModId);
+        var project = IsTexturePack
+            ? new GameSetProject(_args.TexturePack, Spacebox.Game.Resource.TexturePacks.TexturePack.Load(_args.TexturePack)?.Id ?? "")
+            : new GameSetProject(EditorTargets.ProjectRoot(Spacebox.Network.GameSetLocator.FolderPath(_args.ModFolderName), _args.TargetBase), _args.ModId);
         project.Mirror = SourceFolderMirror.TryCreate(project.RootPath);
         if (project.Mirror != null) Engine.Debug.Log($"[Editor] Development build: saves also go to {project.Mirror.Root}");
-        _context = new EditorContext(project) { Targets = targets, CurrentTarget = _args.TargetBase ?? "" };
+        _context = IsTexturePack
+            ? new EditorContext(project) { TexturePackFolder = _args.TexturePack, TexturePackBase = _args.ModId }
+            : new EditorContext(project) { Targets = EditorTargets.For(_args.ModId), CurrentTarget = _args.TargetBase ?? "" };
+        _context.BaseTextures = _baseTextures;
         _context.Assets.Refresh();
-        _host = new Spacebox.Editor.Canvas.EditorHost(_context, Spacebox.Editor.Canvas.EditorPages.CreateDefault(project), _args.StartPanel);
+        var pages = IsTexturePack ? Spacebox.Editor.Canvas.EditorPages.CreateTexturePack() : Spacebox.Editor.Canvas.EditorPages.CreateDefault(project);
+        _host = new Spacebox.Editor.Canvas.EditorHost(_context, pages, _args.StartPanel);
         Input.ShowCursor();
     }
 
@@ -102,14 +111,20 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     private void LoadGameSet()
     {
         bool targeted = !string.IsNullOrEmpty(_args.TargetBase);
-        SceneAssetsPreloader.Preload(new SpaceSceneArgs
+        var pack = IsTexturePack ? Spacebox.Game.Resource.TexturePacks.TexturePack.Load(_args.TexturePack) : null;
+        var stack = SceneAssetsPreloader.Preload(new SpaceSceneArgs
         {
             modId = targeted ? _args.TargetBase : _args.ModId,
             extensions = targeted ? new[] { _args.ModId } : Array.Empty<string>(),
             applyTexturePacks = false,
+            textureOverrides = pack != null ? new Spacebox.Game.Resource.Content.ITextureOverrideSource[] { pack } : null,
             modfolderName = targeted ? null : _args.ModFolderName,
             SearchForGameSetInLocalFolder = true
         });
+        _baseTextures = IsTexturePack
+            ? Spacebox.Game.Resource.Content.GameSetAssetIndex.Build(stack?.AssetLayers ?? Array.Empty<Spacebox.Game.Resource.Content.ContentLayer>(), Spacebox.Game.Resource.GameAtlasFactory.BuiltInBlocksFolder, Spacebox.Game.Resource.GameAtlasFactory.BuiltInItemsFolder)
+            : null;
+        if (_context != null) _context.BaseTextures = _baseTextures;
     }
 
     private void ReloadGameSet()

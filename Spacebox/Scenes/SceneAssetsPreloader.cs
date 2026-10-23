@@ -10,10 +10,10 @@ namespace Spacebox.Scenes
 
     public static class SceneAssetsPreloader
     {
-        private static void InitializeGamesetData(GameSetStack stack, bool applyTexturePacks)
+        private static void InitializeGamesetData(GameSetStack stack, bool applyTexturePacks, IReadOnlyList<ITextureOverrideSource> textureOverrides)
         {
             var layers = stack?.AssetLayers ?? Array.Empty<ContentLayer>();
-            var overrides = applyTexturePacks ? Spacebox.Game.Resource.TexturePacks.TexturePackService.ActiveOverrides() : null;
+            var overrides = textureOverrides ?? (applyTexturePacks ? Spacebox.Game.Resource.TexturePacks.TexturePackService.ActiveOverrides() : null);
             var assets = GameSetAssetIndex.Build(layers, GameAtlasFactory.BuiltInBlocksFolder, GameAtlasFactory.BuiltInItemsFolder, overrides);
 
             GameAssets.AtlasBlocks = GameAtlasFactory.CreateBlocksAtlas(assets);
@@ -29,7 +29,7 @@ namespace Spacebox.Scenes
             Preload(param);
         }
 
-        public static void Preload(SpaceSceneArgs param)
+        public static GameSetStack Preload(SpaceSceneArgs param)
         {
             bool isMultiplayer = !param.SearchForGameSetInLocalFolder;
             var modFolderName = string.IsNullOrEmpty(param.modfolderName) ? GameSetLocator.FindFolder(param.modId) : param.modfolderName;
@@ -41,7 +41,8 @@ namespace Spacebox.Scenes
 
             if (GameAssets.IsInitialized) GameAssets.DisposeAll();
             Spacebox.Game.Resource.TexturePacks.TexturePackService.SetSessionPacks(param.applyTexturePacks ? param.serverTexturePacks : null);
-            InitializeGamesetData(result.Stack, param.applyTexturePacks);
+            InitializeGamesetData(result.Stack, param.applyTexturePacks, param.textureOverrides);
+            return result.Stack;
         }
     }
 }
