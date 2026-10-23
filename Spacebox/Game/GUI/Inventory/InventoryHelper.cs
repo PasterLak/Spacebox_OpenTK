@@ -254,8 +254,6 @@ namespace Spacebox.Game.GUI
 
         }
 
-        private static readonly System.Text.StringBuilder _tooltipBuilder = new System.Text.StringBuilder();
-
         public static void ShowTooltip(ItemSlot slot, bool showStackSize, bool showDescription, bool showId = false)
         {
             if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
@@ -271,126 +269,7 @@ namespace Spacebox.Game.GUI
             }
             if (ImGui.IsItemHovered() && slot.HasItem)
             {
-                var text = "";
-                var type = slot.Item.GetType();
-
-                if (showDescription)
-                {
-                    var desc = slot.Item.Description;
-                    if (!string.IsNullOrWhiteSpace(desc))
-                    {
-                        text += "\n" + desc + "\n";
-                    }
-                }
-
-                if (showId)
-                {
-
-                    text += "\nID: " + slot.Item.Id_string;
-
-                }
-
-                if (showStackSize)
-                {
-                    if (slot.Item.IsStackable)
-                    {
-
-                        text += "\nStack: " + slot.Item.StackSize;
-                    }
-                }
-
-                if (type == typeof(DrillItem))
-                {
-                    var itemType = slot.Item as DrillItem;
-                    text += "\nTier: " + itemType.Tier;
-                    text += "\nPower usage: " + itemType.PowerUsage;
-                    text += "\nRange: " + itemType.Range + " blocks";
-                    text += "\nDamage: " + itemType.Damage + "/s";
-                }
-                else if (type == typeof(WeaponItem))
-                {
-                    var itemType = slot.Item as WeaponItem;
-
-                    var pj = GameAssets.Projectiles[itemType.ProjectileID];
-
-                    text += "\nDamage: " + $"{+pj.Damage}/{+pj.DamageBlocks}";
-                    text += "\nPenetration: " + pj.Penetration;
-                    text += "\nProjectile speed: " + pj.Speed + " block/s";
-                    text += $"\nReload time: {itemType.ReloadSeconds:0.0#}s";
-                    text += "\nSpread: " + itemType.Spread;
-                    text += "\nPower usage: " + itemType.PowerUsage;
-
-                    var shotsMin = (int)(60f / MathF.Max(0.05f, itemType.ReloadSeconds));
-                    text += "\nDPM: " + $"{pj.Damage * shotsMin}/{pj.DamageBlocks * shotsMin}";
-                }
-                else if (type == typeof(BlockItem))
-                {
-                    var itemType = slot.Item as BlockItem;
-                    text += "\nMass: " + itemType.Mass;
-                    text += "\nDurability: " + itemType.Health;
-
-                    BlockData d = GameAssets.GetBlockDataById(itemType.BlockId);
-                    if (d != null)
-                    {
-                        text += "\nPower to drill: " + d.PowerToDrill;
-
-                        if(d is StorageBlockData storageData)
-                        {
-                            text += $"\nSize: {storageData.Size.X}x{ storageData.Size.Y} slots";
-                        }
-
-                        if (d.Efficiency != 1f && d.Efficiency > 0f)
-                        {
-                            text += $"\nSpeed: {d.Efficiency * 100f:0}%";
-                        }
-
-                        if (d is GeneratorBlockData generatorData)
-                        {
-                            text += $"\nGenerates: {generatorData.Power} EU";
-                        }
-
-                        if (d is IBlockTooltip blockTooltip)
-                        {
-                            _tooltipBuilder.Clear();
-                            blockTooltip.AppendTooltip(_tooltipBuilder);
-                            text += _tooltipBuilder.ToString();
-                        }
-                    }
-
-                }
-                else if (type == typeof(EquipmentItem))
-                {
-                    var itemType = slot.Item as EquipmentItem;
-                    text += "\nSlot: " + itemType.Slot;
-                    if (itemType.HealthBonus != 0)
-                        text += "\nHealth: +" + itemType.HealthBonus;
-                    if (itemType.PowerBonus != 0)
-                        text += "\nPower: +" + itemType.PowerBonus;
-                    if (itemType.ExplosionProtection > 0f)
-                        text += $"\nExplosion protection: {itemType.ExplosionProtection * 100f:0}%";
-                    if (itemType.Flashlight != null)
-                        text += $"\nBeam range: {itemType.Flashlight.Range:0} m";
-                    if (itemType.Radar != null)
-                        text += $"\nScan range: {itemType.Radar.Range:0} m" + (itemType.Radar.ShowMass ? "\nShows mass" : "");
-                }
-                else if (type == typeof(ConsumableItem))
-                {
-                    var itemType = slot.Item as ConsumableItem;
-                    if (itemType.HealAmount > 0)
-                        text += "\nHealing: +" + itemType.HealAmount;
-                    if (itemType.PowerAmount > 0)
-                        text += "\nPower: +" + itemType.PowerAmount;
-                    if (itemType.OxygenAmount > 0)
-                        text += "\nOxygen: +" + itemType.OxygenAmount;
-
-                }
-
-                if (slot.Item is IItemTooltip itemTooltip)
-                {
-                    _tooltipBuilder.Clear();
-                    itemTooltip.AppendTooltip(_tooltipBuilder);
-                    text += _tooltipBuilder.ToString();
-                }
+                var text = ItemTooltipText.Details(slot.Item, showStackSize, showDescription, showId);
 
                 ImGui.BeginTooltip();
                 ImGui.Text($"{slot.Item.Name}\n{text}");
