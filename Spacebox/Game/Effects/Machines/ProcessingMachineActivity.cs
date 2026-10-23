@@ -1,24 +1,27 @@
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 
 namespace Spacebox.Game.Effects.Machines;
 
 public sealed class ProcessingMachineActivity : IMachineActivity
 {
-    public bool Handles(Block block) => block is ResourceProcessingBlock;
+    public bool Handles(Block block) => Processing(block) != null;
 
-    public bool IsWorking(Block block) => block is ResourceProcessingBlock machine && machine.IsRunning && machine.HasPower;
+    public bool IsWorking(Block block) => Processing(block) is { } machine && machine.IsRunning && machine.HasPower;
 
     public IDisposable? WatchFinished(Block block, Action finished)
     {
-        return block is ResourceProcessingBlock machine ? new Subscription(machine, finished) : null;
+        return Processing(block) is { } machine ? new Subscription(machine, finished) : null;
     }
+
+    private static ProcessingComponent Processing(Block block) => block is ComponentBlock host && host.TryGet(out ProcessingComponent processing) ? processing : null;
 
     private sealed class Subscription : IDisposable
     {
-        private readonly ResourceProcessingBlock _machine;
-        private readonly Action<ResourceProcessingBlock> _handler;
+        private readonly ProcessingComponent _machine;
+        private readonly Action<ProcessingComponent> _handler;
 
-        public Subscription(ResourceProcessingBlock machine, Action finished)
+        public Subscription(ProcessingComponent machine, Action finished)
         {
             _machine = machine;
             _handler = _ => finished();

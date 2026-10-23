@@ -389,6 +389,9 @@ Fixes
 - crafting: hovering a group tab opens it, category tiles fill the width with equal size and start at the bottom; the outline also wraps blocky models (spacer, players)
 - crafting categories reorganized: Ships has Controls, Thrusters, Cannons, Hull, Windows, Doors; Blocks gets Lights and Storage; Items gets Explosives and Armor; hovering Back returns to the categories
 - tutorial panel, step toasts and the tutorial menu (pause > Tutorial) on CanvasUI; waypoint names snap to screen pixels so they move smoothly
+- chat and ship library window on CanvasUI; menu and editor fades without ImGui
+- new sounds: window open/close, button hover, tab switch, slot pick/place/split, craft complete, denied, no power, waypoint added, low oxygen beeps, furnace/crusher/disassembler working loops and finish, generator hum, armor/device equip, soft drill loop
+- blocks can combine behaviours by JSON (Components: processing, storage, generator, consumer, light; Type "modular"); furnace, crusher and generators run on the component system
 - fixed: server config with a typo was overwritten (kept as .broken now), unprotect/clear_inventory/spawn/tpa/use from remote chat, same-IP join kicked a logged-in player before the password check, bans lost while the server sleeps, unban kept the IP ban, sleeping server woke for banned/wrong-version joins, mod install leftovers and names, duplicate ids renamed instead of skipped
 - fixed multiplayer: rejected area edits and multi-cell block edits desynced the client, failed placements sent to others, gravity generator button stuck, mob spawner lost when the server refused, door/binding changes lost while an entity loaded, client-sent block damage/repair trusted, fake death messages, ship mount refusal
 - fixed GameSet editor: Save and exit on a failed save, edits lost after folder conversion, adding to a broken JSON file overwrote it, loot preview crash, stale entry list, duplicated game modes replacing others, texture pack page blank, deleted files coming back, blueprint left after deleting an entry, new files outside the GameSet
@@ -406,6 +409,7 @@ Engine
 - CanvasUI: LineEdit password mode (Secret, never copied), HSlider DragEnded, ItemList row badges and row styles (item, item_hover, item_selected), LineEdit icon, ComboBox shows the icon of the selected option, button icon_color
 - CanvasUI: CanvasShapes (lines, circles)
 - CanvasUI: Control.TooltipContent (custom controls in tooltips)
+- CanvasUI theme lookups and minimum sizes cached (UI draw about 17x, layout about 15x faster), worker pool wakes jobs immediately by priority, net messages without allocations, single-pass BVH culling
 - WAV sounds load from read-only installs (files opened read-only and shared)
 - console log keeps the last 5000 messages, draws the last 400, thread-safe for every log call; no log line per disposed GL object
 - archives from servers are checked before extraction (2 GB, 100000 entries, path traversal also on case-sensitive systems)

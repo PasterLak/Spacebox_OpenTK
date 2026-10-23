@@ -146,7 +146,7 @@ namespace Spacebox.Game.GUI
         private static void OnCrafted(ProcessingComponent block)
         {
             if (!UIManager.IsOpen("resourceProcessing")) return;
-            if (!string.IsNullOrEmpty(GameAssets.GetBlockDataById(block.Id).FinishedSound)) return;
+            if (!string.IsNullOrEmpty(GameAssets.GetBlockDataById(block.Host.Id).FinishedSound)) return;
 
             if (craftedSound.IsPlaying)
             {
