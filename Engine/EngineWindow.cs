@@ -318,7 +318,7 @@ namespace Engine
                 SceneManager.Current.OnGUI();
                 Debug.Render();
                 Overlay.OnGUI();
-                DevGui.Draw();
+                DevPanel.Draw();
                 DrawRenderDebugLabel();
                 //InputOverlay.OnGUI();
 
@@ -546,6 +546,7 @@ namespace Engine
             _sceneRenderer?.Dispose();
             Debug.SaveMessagesToFile(true);
             Close();
+            DevPanel.Shutdown();
             WorkerPoolManager.Shutdown();
             ServiceLocator.Reset();
         }
