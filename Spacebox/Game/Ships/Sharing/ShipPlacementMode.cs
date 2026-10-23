@@ -18,6 +18,9 @@ public static class ShipPlacementMode
     private static Vector3 _localCenter;
     private static Vector3 _halfSize;
     private static Quaternion _rotation = Quaternion.Identity;
+    private static Quaternion _frame = Quaternion.Identity;
+    private static bool _frameKnown;
+    private static bool _turned;
     private static float _distance;
     private static bool _unblockPending;
     private static bool _alignPending;
@@ -39,6 +42,9 @@ public static class ShipPlacementMode
         _localCenter = ((Vector3)ship.Min + (Vector3)ship.Max) * 0.5f;
         _halfSize = Vector3.ComponentMax((Vector3)ship.Size * 0.5f, new Vector3(0.5f));
         _rotation = Quaternion.Identity;
+        _frame = Quaternion.Identity;
+        _frameKnown = false;
+        _turned = false;
         _alignPending = true;
         _distance = Math.Clamp(_halfSize.Length + 4f, MinDistance, MaxDistance);
         if (_unblockPending) _unblockPending = false;
@@ -73,9 +79,16 @@ public static class ShipPlacementMode
 
         if (!IsActive || player == null) return;
 
+        if (!_frameKnown && _preview != null && _preview.TryGetFrame(out var frame))
+        {
+            _frame = frame;
+            _frameKnown = true;
+            if (!_turned) _alignPending = true;
+        }
+
         if (_alignPending)
         {
-            _rotation = ShipPlacementRotation.AlignedTo(player.Right, player.Up, player.Front);
+            _rotation = ShipPlacementRotation.AlignedTo(player.Right, player.Up, player.Front, _frame);
             _alignPending = false;
         }
 
@@ -91,10 +104,14 @@ public static class ShipPlacementMode
     {
         float step = (Input.IsKey(Keys.LeftControl) || Input.IsKey(Keys.RightControl) ? ShipPlacementRotation.FineStep : ShipPlacementRotation.CoarseStep)
                      * (Input.IsKey(Keys.LeftShift) || Input.IsKey(Keys.RightShift) ? -1f : 1f);
-        if (Input.IsKeyDown(Keys.R)) _rotation = ShipPlacementRotation.Turn(_rotation, Vector3.UnitY, step);
-        if (Input.IsKeyDown(Keys.Y)) _rotation = ShipPlacementRotation.Turn(_rotation, Vector3.UnitX, step);
-        if (Input.IsKeyDown(Keys.U)) _rotation = ShipPlacementRotation.Turn(_rotation, Vector3.UnitZ, step);
-        if (Input.IsKeyDown(Keys.Backspace)) _rotation = ShipPlacementRotation.AlignedTo(player.Right, player.Up, player.Front);
+        if (Input.IsKeyDown(Keys.R)) TurnAround(Vector3.UnitY, step);
+        if (Input.IsKeyDown(Keys.Y)) TurnAround(Vector3.UnitX, step);
+        if (Input.IsKeyDown(Keys.U)) TurnAround(Vector3.UnitZ, step);
+        if (Input.IsKeyDown(Keys.Backspace))
+        {
+            _rotation = ShipPlacementRotation.AlignedTo(player.Right, player.Up, player.Front, _frame);
+            _turned = false;
+        }
 
         float scroll = Input.MouseScrollDelta.Y;
         if (scroll != 0f) _distance = Math.Clamp(_distance + scroll * MathF.Max(1f, _distance * 0.1f), MinDistance, MaxDistance);
@@ -111,5 +128,11 @@ public static class ShipPlacementMode
         var center = player.Position + player.Front * _distance;
         Spacebox.Network.ShipSharingNetwork.RequestPlace(ship.Entity, center, _rotation, (message, ok) => Chat.Write(message, ok ? Color4.LightGreen : Color4.OrangeRed));
         Cancel();
+    }
+
+    private static void TurnAround(Vector3 frameAxis, float degrees)
+    {
+        _rotation = ShipPlacementRotation.Turn(_rotation, _frame, frameAxis, degrees);
+        _turned = true;
     }
 }

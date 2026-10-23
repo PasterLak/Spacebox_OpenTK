@@ -17,6 +17,8 @@ public sealed class ShipModelMeshes : IDisposable
     private readonly List<(Mesh Mesh, Matrix4 Offset)> _meshes = new List<(Mesh, Matrix4)>();
     private volatile bool _cancelled;
     private volatile bool _failed;
+    private volatile bool _hasFrame;
+    private Quaternion _frame = Quaternion.Identity;
     private int _total = -1;
     private int _received;
 
@@ -27,6 +29,13 @@ public sealed class ShipModelMeshes : IDisposable
     }
 
     public bool IsFailed => _failed;
+
+    public bool TryGetFrame(out Quaternion frame)
+    {
+        frame = _hasFrame ? _frame : Quaternion.Identity;
+        return _hasFrame;
+    }
+
     public bool IsComplete
     {
         get
@@ -70,6 +79,9 @@ public sealed class ShipModelMeshes : IDisposable
         {
             var chunks = ShipChunkMesher.ReadChunks(entity, () => _cancelled);
             if (_cancelled) return;
+            var parts = ShipViewerParts.Scan(chunks);
+            _frame = ShipPlacementRotation.FromViewFrame(parts.Orientation.Resolve(parts.Extent));
+            _hasFrame = true;
             if (LightManager.EnableLighting) ShipLightFlood.Propagate(chunks);
             Volatile.Write(ref _total, chunks.Count);
             foreach (var index in chunks.Keys)

@@ -1,6 +1,7 @@
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Ships.Sharing;
+using Spacebox.Game.ShipViewer;
 
 namespace Spacebox.Tests.Ships;
 
@@ -34,6 +35,34 @@ public sealed class ShipPlacementTests
 
         AssertClose(Vector3.UnitZ, Vector3.Transform(Vector3.UnitY, turned));
         AssertClose(Vector3.Transform(Vector3.UnitX, aligned), Vector3.Transform(Vector3.UnitZ, turned));
+    }
+
+    [Fact]
+    public void ShipsStart_WithTheirUpAsPlayerUp_AndNoseTowardThePlayer()
+    {
+        var shipUp = Vector3.UnitZ;
+        var shipForward = -Vector3.UnitX;
+        var frame = ShipPlacementRotation.FromViewFrame(ShipViewOrientation.FromPilotFrame(shipForward, shipUp));
+        var right = new Vector3(0f, 0f, 1f);
+        var up = new Vector3(1f, 0f, 0f);
+        var front = new Vector3(0f, -1f, 0f);
+
+        var rotation = ShipPlacementRotation.AlignedTo(right, up, front, frame);
+
+        AssertClose(up, Vector3.Transform(shipUp, rotation));
+        AssertClose(-front, Vector3.Transform(shipForward, rotation));
+    }
+
+    [Fact]
+    public void Turns_FollowTheShipsOwnUp()
+    {
+        var shipUp = Vector3.UnitZ;
+        var frame = ShipPlacementRotation.FromViewFrame(ShipViewOrientation.FromPilotFrame(Vector3.UnitX, shipUp));
+        var rotation = ShipPlacementRotation.AlignedTo(Vector3.UnitX, Vector3.UnitY, -Vector3.UnitZ, frame);
+
+        var turned = ShipPlacementRotation.Turn(rotation, frame, Vector3.UnitY, 90f);
+
+        AssertClose(Vector3.UnitY, Vector3.Transform(shipUp, turned));
     }
 
     [Fact]

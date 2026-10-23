@@ -50,6 +50,12 @@ public sealed class ShipPlacementPreview : Node3D
         });
     }
 
+    public bool TryGetFrame(out Quaternion frame)
+    {
+        frame = Quaternion.Identity;
+        return _model != null && _model.TryGetFrame(out frame);
+    }
+
     public void Hide()
     {
         _version++;
