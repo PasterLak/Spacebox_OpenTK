@@ -4,6 +4,7 @@ using Spacebox.Game.Player;
 
 namespace Spacebox.Tests.GUI;
 
+[Collection(Spacebox.Tests.GameAssetsCollection.Name)]
 public class GameUiTests
 {
     [Fact]

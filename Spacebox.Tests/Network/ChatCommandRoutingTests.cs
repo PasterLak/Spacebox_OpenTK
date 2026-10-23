@@ -2,6 +2,7 @@ using Spacebox.Network.Admin;
 
 namespace Spacebox.Tests.Network;
 
+[Collection(Spacebox.Tests.GameAssetsCollection.Name)]
 public class ChatCommandRoutingTests
 {
     [Theory]
