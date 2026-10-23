@@ -19,6 +19,7 @@ public sealed class CreateGameSetDialog
     private readonly LineEdit _author = new LineEdit { MaxLength = 32 };
     private readonly ChoiceBox _base = new ChoiceBox();
     private readonly VBoxContainer _baseField;
+    private readonly Label _baseHint = new Label { ThemeTypeVariation = "MutedLabel", Autowrap = true };
     private readonly Label _error = new Label { ThemeTypeVariation = "ErrorLabel", Autowrap = true };
     private readonly List<InstalledGameSet> _bases = new List<InstalledGameSet>();
     private NewGameSetKind _kind = NewGameSetKind.GameSet;
@@ -40,6 +41,8 @@ public sealed class CreateGameSetDialog
         _frame.Body.AddChild(MenuLayout.Field("Author", _author));
         _baseField = MenuLayout.Field("Extends", _base);
         _frame.Body.AddChild(_baseField);
+        _baseField.AddChild(_baseHint);
+        _base.IndexChanged += _ => UpdateBaseHint();
         _frame.Body.AddChild(_error);
         _name.TextSubmitted += _ => Create();
 
@@ -52,15 +55,16 @@ public sealed class CreateGameSetDialog
     {
         _bases.Clear();
         _bases.AddRange(GameSetCreator.ExtendableBases(_menu.InstalledGameSets));
-        var names = new List<string>();
-        var icons = new List<Texture2D>();
+        var names = new List<string> { AnyGameSet };
+        var icons = new List<Texture2D> { null };
         foreach (var baseSet in _bases)
         {
             names.Add(baseSet.DisplayName);
             icons.Add(_menu.GetModById(baseSet.Id)?.Icon);
         }
         _base.SetChoices(names, icons, true);
-        _base.SelectedIndex = Math.Max(0, _bases.FindIndex(b => string.Equals(b.Id, "default", StringComparison.OrdinalIgnoreCase)));
+        _base.SelectedIndex = _bases.FindIndex(b => string.Equals(b.Id, "default", StringComparison.OrdinalIgnoreCase)) + 1;
+        UpdateBaseHint();
 
         _name.Text = "";
         _author.Text = ClientConfigStore.Load()?.PlayerNickname ?? "";
@@ -96,7 +100,7 @@ public sealed class CreateGameSetDialog
             Kind = _kind,
             Name = _name.Text,
             Author = _author.Text,
-            BaseId = _kind == NewGameSetKind.Extension && _base.SelectedIndex >= 0 && _base.SelectedIndex < _bases.Count ? _bases[_base.SelectedIndex].Id : ""
+            BaseId = _kind == NewGameSetKind.Extension ? SelectedBaseId() : ""
         };
 
         string error = GameSetCreator.Validate(request, _menu.InstalledGameSets);
@@ -109,6 +113,22 @@ public sealed class CreateGameSetDialog
         Close();
         error = _menu.CreateGameSet(request);
         if (error != null) _menu.ShowMessage("Create", error);
+    }
+
+    private const string AnyGameSet = "Any GameSet (general pack)";
+
+    private string SelectedBaseId()
+    {
+        int index = _base.SelectedIndex;
+        if (index == 0) return ExtensionTargets.Any;
+        return index > 0 && index <= _bases.Count ? _bases[index - 1].Id : "";
+    }
+
+    private void UpdateBaseHint()
+    {
+        _baseHint.Text = _base.SelectedIndex == 0
+            ? "Works with every GameSet. Bring your own items, projectiles and sounds, start your ids with the pack id, and put recipes that need items of one GameSet into Bases/<its id>/."
+            : "Adds to this GameSet only and needs its current version or newer.";
     }
 
     private void SetError(string text)

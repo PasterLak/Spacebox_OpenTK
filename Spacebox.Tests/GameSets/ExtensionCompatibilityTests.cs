@@ -87,4 +87,17 @@ public sealed class ExtensionCompatibilityTests : IDisposable
         Assert.Empty(InstalledGameSets.ExtensionsFor(installed, Find("mine")));
         Assert.Contains("Made for default, other", ExtensionCompatibility.Problem(Find("weapons"), Find("mine")));
     }
+
+    [Fact]
+    public void OpeningAnAnyGameSetExtension_UsesDefaultAsItsBase()
+    {
+        WriteBaseSets();
+        _sets.Write("Weapons/config.json", "{ \"ModId\": \"weapons\", \"Extends\": \"*\" }");
+
+        var result = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "weapons", null);
+
+        Assert.True(result.Success, result.ErrorText);
+        Assert.Equal("default", result.Stack.Base.Id);
+        Assert.Equal("weapons", Assert.Single(result.Stack.Extensions).Id);
+    }
 }

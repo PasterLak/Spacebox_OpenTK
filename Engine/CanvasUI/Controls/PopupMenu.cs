@@ -35,7 +35,7 @@ public class PopupMenu : PopupPanel
     public void Open(CanvasRoot root, Vector2 position)
     {
         if (root == null || ItemCount == 0) return;
-        if (Parent == null) root.Add(this, UiLayer.Popup);
+        if (Parent == null) root.Add(this, CanvasRoot.PopupLayerFor(Owner));
         Popup(new Rect2(position, Vector2.Zero), PopupSide.Below);
     }
 

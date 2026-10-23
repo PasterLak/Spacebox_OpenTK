@@ -15,6 +15,7 @@ public sealed class NewGameSetRequest
     public string Name { get; init; } = "";
     public string Author { get; init; } = "";
     public string BaseId { get; init; } = "";
+    public bool IsGeneral => Kind == NewGameSetKind.Extension && BaseId == ExtensionTargets.Any;
 }
 
 public sealed class NewGameSetResult
@@ -48,7 +49,7 @@ public static class GameSetCreator
         if (name.Length == 0) return "Enter a name";
         if (name.Length > MaxNameLength) return $"The name can have up to {MaxNameLength} characters";
         if (MakeId(name).Length == 0) return "The name needs at least one letter or digit";
-        if (request.Kind == NewGameSetKind.Extension && FindBase(request.BaseId, installed) == null) return "Pick the GameSet to extend";
+        if (request.Kind == NewGameSetKind.Extension && !request.IsGeneral && FindBase(request.BaseId, installed) == null) return "Pick the GameSet to extend";
         return null;
     }
 
@@ -74,7 +75,7 @@ public static class GameSetCreator
         try
         {
             Directory.CreateDirectory(folder);
-            File.WriteAllText(Path.Combine(folder, GameSetFormat.ConfigFile), Config(modId, name, request.Author, baseSet).ToJsonString(ContentJson.Indented));
+            File.WriteAllText(Path.Combine(folder, GameSetFormat.ConfigFile), Config(modId, name, request.Author, ExtendsOf(request, baseSet), baseSet).ToJsonString(ContentJson.Indented));
             CopyIcon(baseSet ?? FindEmpty(installed), folder);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -121,7 +122,13 @@ public static class GameSetCreator
         return InstalledGameSets.Find(installed, id) != null;
     }
 
-    private static JsonObject Config(string modId, string name, string author, InstalledGameSet baseSet)
+    private static string ExtendsOf(NewGameSetRequest request, InstalledGameSet baseSet)
+    {
+        if (request.Kind == NewGameSetKind.GameSet) return Globals.GameSet.EmptyId;
+        return request.IsGeneral ? ExtensionTargets.Any : baseSet.Id;
+    }
+
+    private static JsonObject Config(string modId, string name, string author, string extends, InstalledGameSet baseSet)
     {
         var config = new JsonObject
         {
@@ -130,7 +137,7 @@ public static class GameSetCreator
             ["Description"] = "",
             ["Author"] = author?.Trim() ?? "",
             ["Version"] = FirstVersion,
-            ["Extends"] = baseSet?.Id ?? Globals.GameSet.EmptyId
+            ["Extends"] = extends
         };
         if (baseSet != null && !string.IsNullOrWhiteSpace(baseSet.Config.Version)) config["MinBaseVersion"] = baseSet.Config.Version;
         return config;

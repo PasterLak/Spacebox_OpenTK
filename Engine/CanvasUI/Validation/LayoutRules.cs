@@ -6,7 +6,7 @@ public sealed class LayoutRules
     private readonly HashSet<(Control, Control)> _allowedOverlaps = new HashSet<(Control, Control)>();
     private readonly HashSet<(UiLayer Upper, UiLayer Lower)> _forbiddenCovers = new HashSet<(UiLayer, UiLayer)> { (UiLayer.Windows, UiLayer.Hud) };
     private readonly HashSet<Type> _transparentTypes = new HashSet<Type> { typeof(Control) };
-    private readonly HashSet<UiLayer> _transientLayers = new HashSet<UiLayer> { UiLayer.Popup, UiLayer.Tooltip };
+    private readonly HashSet<UiLayer> _transientLayers = new HashSet<UiLayer> { UiLayer.Popup, UiLayer.ModalPopup, UiLayer.Tooltip };
 
     public float Tolerance { get; set; } = 0.5f;
     public float MinHitTargetPixels { get; set; } = 24f;

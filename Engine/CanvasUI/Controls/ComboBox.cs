@@ -147,7 +147,7 @@ public class ComboBox : Control
 
         _filtering = false;
         Fill("");
-        if (_popup.Parent == null) Root.Add(_popup, UiLayer.Popup);
+        if (_popup.Parent == null) Root.Add(_popup, CanvasRoot.PopupLayerFor(this));
         float chrome = (_popup.GetThemeStyleBox("panel")?.MinimumSize.Y ?? 0f) + (_list.GetThemeStyleBox("panel")?.MinimumSize.Y ?? 0f);
         _popup.CustomMinimumSize = new Vector2(MathF.Max(PopupMinWidth, Size.X), MathF.Min(260f, _list.RowHeight * Math.Max(1, _list.Items.Count) + MathF.Max(8f, chrome + 2f)));
         _popup.Popup(Rect, PopupSide.Below);

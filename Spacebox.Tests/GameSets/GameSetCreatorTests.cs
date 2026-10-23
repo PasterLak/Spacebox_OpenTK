@@ -97,4 +97,20 @@ public sealed class GameSetCreatorTests : IDisposable
         Assert.NotNull(GameSetCreator.Validate(new NewGameSetRequest { Name = "  " }, Installed()));
         Assert.NotNull(GameSetCreator.Validate(new NewGameSetRequest { Name = "###" }, Installed()));
     }
+
+    [Fact]
+    public void GeneralExtension_ExtendsEveryGameSet()
+    {
+        WriteBaseSets();
+
+        var result = GameSetCreator.Create(Folders, new NewGameSetRequest { Kind = NewGameSetKind.Extension, Name = "Weapons Pack", BaseId = ExtensionTargets.Any }, Installed());
+
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(Path.Combine(Folders.Extensions, "Weapons Pack"), result.Folder);
+        Assert.Equal("*", Config(result.Folder).GetProperty("Extends").GetString());
+        Assert.False(Config(result.Folder).TryGetProperty("MinBaseVersion", out _));
+        Assert.Equal("empty-icon", File.ReadAllText(Path.Combine(result.Folder, "icon.png")));
+        var installed = Installed();
+        Assert.Single(InstalledGameSets.ExtensionsFor(installed, InstalledGameSets.Find(installed, "default")));
+    }
 }

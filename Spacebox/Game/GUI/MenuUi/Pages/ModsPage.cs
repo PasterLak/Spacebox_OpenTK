@@ -15,6 +15,7 @@ public sealed class ModsPage : MenuPage
     private readonly List<SelectableRow> _rowControls = new List<SelectableRow>();
     private ModConfig _selected;
     private CreateGameSetDialog _create;
+    private int _shownVersion = -1;
 
     public ModsPage(GameMenu menu)
     {
@@ -49,8 +50,14 @@ public sealed class ModsPage : MenuPage
         frame.Footer.AddChild(packs);
     }
 
+    public override void Tick(float deltaTime)
+    {
+        if (_shownVersion != _menu.GameSetsVersion) OnShow();
+    }
+
     public override void OnShow()
     {
+        _shownVersion = _menu.GameSetsVersion;
         _rows.ClearChildren();
         _rowControls.Clear();
         foreach (var mod in _menu.AllGameSets)

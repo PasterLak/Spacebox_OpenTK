@@ -346,4 +346,19 @@ public class CanvasEditingTests
         Key(root, Keys.V, control: true);
         Assert.Equal("hunter2pasted", edit.Text);
     }
+
+    [Fact]
+    public void ComboBoxInAModal_OpensItsListAboveTheModal()
+    {
+        var root = CreateRoot();
+        var combo = root.Add(new ComboBox(), UiLayer.Modal);
+        combo.AddOption("a");
+        combo.AddOption("b");
+
+        combo.OpenPopup();
+
+        Assert.True(root.TryGetLayer(UiLayer.ModalPopup, out var layer));
+        Assert.Single(layer.Children);
+        Assert.False(root.TryGetLayer(UiLayer.Popup, out _));
+    }
 }

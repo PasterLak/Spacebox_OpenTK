@@ -245,7 +245,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public ModConfig? GetModById(string id)
         {
-            foreach (var m in gameSets)
+            foreach (var m in allGameSets)
             {
                 if (m.ModId == id) return m;
             }
@@ -348,8 +348,11 @@ namespace Spacebox.Game.GUI.Menu
 
 
 
+        public int GameSetsVersion { get; private set; }
+
         private void LoadGameSets()
         {
+            GameSetsVersion++;
             gameSets.Clear();
             allGameSets.Clear();
             installedGameSets.Clear();

@@ -83,7 +83,7 @@ public class ColorPickerButton : Control
         }
 
         Sync();
-        if (_popup.Parent == null) Root.Add(_popup, UiLayer.Popup);
+        if (_popup.Parent == null) Root.Add(_popup, CanvasRoot.PopupLayerFor(this));
         _popup.Popup(Rect, PopupSide.Below);
         return true;
     }

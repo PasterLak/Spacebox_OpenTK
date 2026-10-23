@@ -7,6 +7,7 @@ public enum UiLayer
     Windows = 200,
     Popup = 300,
     Modal = 400,
+    ModalPopup = 450,
     Tooltip = 500,
     Debug = 600
 }

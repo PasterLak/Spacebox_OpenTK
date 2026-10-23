@@ -109,6 +109,12 @@ public sealed class CanvasRoot
 
     public bool TryGetLayer(UiLayer layer, out UiLayerRoot root) => _layers.TryGetValue(layer, out root);
 
+    public static UiLayer PopupLayerFor(CanvasItem owner)
+    {
+        var layer = owner == null ? null : UiLayerRoot.LayerOf(owner);
+        return layer.HasValue && layer.Value >= UiLayer.Modal ? UiLayer.ModalPopup : UiLayer.Popup;
+    }
+
     public void MarkLayoutDirty() => _layoutDirty = true;
 
     public void Resize(Vector2 screenSize)
@@ -326,7 +332,13 @@ public sealed class CanvasRoot
 
     private void HideAutoPopups(Control target)
     {
-        if (!_layers.TryGetValue(UiLayer.Popup, out var layer)) return;
+        HideAutoPopups(target, UiLayer.Popup);
+        HideAutoPopups(target, UiLayer.ModalPopup);
+    }
+
+    private void HideAutoPopups(Control target, UiLayer popupLayer)
+    {
+        if (!_layers.TryGetValue(popupLayer, out var layer)) return;
 
         var children = layer.Children;
         for (int i = children.Count - 1; i >= 0; i--)

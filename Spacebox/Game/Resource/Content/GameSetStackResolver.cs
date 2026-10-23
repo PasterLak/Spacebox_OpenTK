@@ -35,8 +35,7 @@ public static class GameSetStackResolver
         var baseSet = selected;
         if (selected.IsExtension)
         {
-            var targets = ExtensionTargets.Parse(selected.Config.Extends);
-            baseSet = ExtensionTargets.IsAny(selected.Config.Extends) || targets.Count == 0 ? null : InstalledGameSets.Find(installed, targets[0]);
+            baseSet = PreviewBase(selected, installed, defaultFolder);
             requested.Add(selected.Id);
             if (baseSet == null)
             {
@@ -57,6 +56,24 @@ public static class GameSetStackResolver
         errors.AddRange(resolution.Errors);
         var stack = new GameSetStack(baseSet, resolution.Order, GameSetFallbacks.For(baseSet, installed, defaultFolder));
         return new GameSetStackResult(stack, errors);
+    }
+
+    private static InstalledGameSet PreviewBase(InstalledGameSet extension, IReadOnlyList<InstalledGameSet> installed, string defaultFolder)
+    {
+        var candidates = new List<InstalledGameSet>();
+        foreach (var gameSet in installed)
+        {
+            if (ExtensionTargets.Matches(extension.Config.Extends, gameSet)) candidates.Add(gameSet);
+        }
+
+        foreach (var target in ExtensionTargets.Parse(extension.Config.Extends))
+        {
+            var listed = candidates.Find(c => c.Matches(target));
+            if (listed != null) return listed;
+        }
+
+        var defaultSet = candidates.Find(c => !string.IsNullOrEmpty(defaultFolder) && GameSetStack.SameFolder(c.Folder, defaultFolder));
+        return defaultSet ?? (candidates.Count > 0 ? candidates[0] : null);
     }
 
     private static InstalledGameSet FindSelected(IReadOnlyList<InstalledGameSet> installed, string modId, string folderName)

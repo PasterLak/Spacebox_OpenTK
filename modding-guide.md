@@ -84,7 +84,7 @@ Mods/GameSets/MyMod/
 Mods > Create opens a window with two choices:
 
 - **New GameSet:** a complete GameSet of your own in `Mods/GameSets/<Name>/` with `"Extends": "empty"` in its `config.json`. It is built on `Empty`, so it works from the start, and it is listed as a GameSet (not as an extension) in Create World. You add every block, item, asteroid and so on yourself.
-- **Extension:** adds or changes content of an existing GameSet (`Default` or one of your own) in `Mods/Extensions/<Name>/`; see Extensions.
+- **Extension:** adds or changes content of an existing GameSet (`Default` or one of your own) in `Mods/Extensions/<Name>/`; pick "Any GameSet (general pack)" for a pack that works with every GameSet (`"Extends": "*"`). The editor opens a general pack on top of Default. See Extensions.
 
 Both write `config.json` and an icon and open the GameSet editor.
 
