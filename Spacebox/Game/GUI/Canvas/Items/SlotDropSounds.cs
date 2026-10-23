@@ -1,4 +1,3 @@
-using Spacebox.Game.GUI.Sounds;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI.Canvas.Items;
@@ -10,13 +9,7 @@ public static class SlotDropSounds
         if (target is not ItemSlotControl control) return;
 
         var slot = control.Slot;
-        if (slot != null && slot.Item is EquipmentItem equipment && IsEquipmentSlot(slot))
-        {
-            EquipmentSounds.Play(equipment);
-            return;
-        }
-
-        UiSounds.Play(UiSound.SlotPlace);
+        if (slot != null && slot.Item is EquipmentItem equipment && IsEquipmentSlot(slot)) EquipmentSounds.Play(equipment);
     }
 
     private static bool IsEquipmentSlot(ItemSlot slot)

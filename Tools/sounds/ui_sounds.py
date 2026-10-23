@@ -22,33 +22,6 @@ def hover():
     return lowpass(tick, 3500)
 
 
-def slot_pick():
-    n = samples(0.09)
-    out = np.zeros(n)
-    tap = lowpass(resonator(noise(samples(0.03)), 1100, 2.0), 3000) * np.exp(-np.arange(samples(0.03)) / (0.006 * RATE))
-    place(out, tap * 0.7, 0.0)
-    place(out, blip(520, 820, 0.07, 0.003, 0.02) * 0.5, 0.005)
-    return lowpass(out, 3800)
-
-
-def slot_place():
-    n = samples(0.1)
-    out = np.zeros(n)
-    tap = lowpass(resonator(noise(samples(0.035)), 650, 1.6), 2200) * np.exp(-np.arange(samples(0.035)) / (0.008 * RATE))
-    place(out, tap * 0.8, 0.0)
-    place(out, blip(360, 250, 0.08, 0.002, 0.022) * 0.6, 0.0)
-    return lowpass(out, 3000)
-
-
-def slot_split():
-    out = np.zeros(samples(0.12))
-    place(out, blip(760, 760, 0.04, 0.0015, 0.01) * 0.6, 0.0)
-    place(out, blip(980, 980, 0.05, 0.0015, 0.012) * 0.5, 0.045)
-    tap = lowpass(resonator(noise(samples(0.02)), 1500, 2.0), 3500) * np.exp(-np.arange(samples(0.02)) / (0.004 * RATE))
-    place(out, tap * 0.4, 0.0)
-    return lowpass(out, 3800)
-
-
 def denied():
     out = np.zeros(samples(0.26))
     for i in range(2):
@@ -97,9 +70,6 @@ def low_oxygen():
 
 for name, make, rms in (
         ("buttonHover", hover, 0.02),
-        ("slotPick", slot_pick, 0.045),
-        ("slotPlace", slot_place, 0.05),
-        ("slotSplit", slot_split, 0.04),
         ("denied", denied, 0.06),
         ("noPower", no_power, 0.06),
         ("waypointAdded", waypoint, 0.05),

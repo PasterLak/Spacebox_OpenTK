@@ -21,9 +21,6 @@ public static class UiSoundCatalog
         SetClip(specs, UiSound.WindowClose, "openBlock4", 1f, 0.08f);
         Set(specs, UiSound.ButtonHover, "buttonHover.wav", 0.6f, 0.05f);
         SetClip(specs, UiSound.TabSwitch, "Resources/Audio/scroll", 1f, 0.05f);
-        Set(specs, UiSound.SlotPick, "slotPick.wav", 0.8f, 0.04f);
-        Set(specs, UiSound.SlotPlace, "slotPlace.wav", 0.8f, 0.04f);
-        Set(specs, UiSound.SlotSplit, "slotSplit.wav", 0.8f, 0.04f);
         SetClip(specs, UiSound.CraftComplete, "click1", 0.6f, 0.08f);
         Set(specs, UiSound.Denied, "denied.wav", 0.7f, 0.25f);
         Set(specs, UiSound.NoPower, "noPower.wav", 0.7f, 0.5f);

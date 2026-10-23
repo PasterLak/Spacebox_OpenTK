@@ -134,10 +134,6 @@ public sealed class CraftingWindow : GameWindow
                     var category = categories[i];
                     var button = _tiles.AddChild(new CraftCategoryButton(category) { CustomMinimumSize = size });
                     button.Clicked += ShowItems;
-                    button.MouseEntered += _ =>
-                    {
-                        if (_categories.Visible && HoverArmed) ShowItems(category);
-                    };
                 }
                 else _tiles.AddChild(Spacer(size.X, size.Y));
             }
