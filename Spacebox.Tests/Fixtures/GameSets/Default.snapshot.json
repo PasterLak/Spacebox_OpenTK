@@ -2027,7 +2027,7 @@
         "ShipCamera": {
           "Power": 15
         },
-        "Category": "ships",
+        "Category": "cameras",
         "PowerToDrill": 2,
         "Mass": 1,
         "Durability": 40,
@@ -4432,6 +4432,16 @@
       }
     },
     {
+      "Key": "hull",
+      "Data": {
+        "Id": "hull",
+        "Name": "Hull",
+        "Icon": "titanium_block_heavy",
+        "Row": 1,
+        "Group": "Blocks"
+      }
+    },
+    {
       "Key": "decor",
       "Data": {
         "Id": "decor",
@@ -4452,6 +4462,16 @@
       }
     },
     {
+      "Key": "cameras",
+      "Data": {
+        "Id": "cameras",
+        "Name": "Cameras",
+        "Icon": "ship_camera",
+        "Row": 1,
+        "Group": "Ships"
+      }
+    },
+    {
       "Key": "thrusters",
       "Data": {
         "Id": "thrusters",
@@ -4467,16 +4487,6 @@
         "Id": "cannons",
         "Name": "Cannons",
         "Icon": "cannon_light_assault",
-        "Row": 1,
-        "Group": "Ships"
-      }
-    },
-    {
-      "Key": "hull",
-      "Data": {
-        "Id": "hull",
-        "Name": "Hull",
-        "Icon": "titanium_block_heavy",
         "Row": 1,
         "Group": "Ships"
       }

@@ -50,6 +50,13 @@
       "Group": "Blocks"
     },
     {
+      "Id": "hull",
+      "Name": "Hull",
+      "Icon": "titanium_block_heavy",
+      "Row": 1,
+      "Group": "Blocks"
+    },
+    {
       "Id": "decor",
       "Name": "Decor",
       "Icon": "picture_retro_cactus",
@@ -64,6 +71,13 @@
       "Group": "Ships"
     },
     {
+      "Id": "cameras",
+      "Name": "Cameras",
+      "Icon": "ship_camera",
+      "Row": 1,
+      "Group": "Ships"
+    },
+    {
       "Id": "thrusters",
       "Name": "Thrusters",
       "Icon": "thruster_standard",
@@ -74,13 +88,6 @@
       "Id": "cannons",
       "Name": "Cannons",
       "Icon": "cannon_light_assault",
-      "Row": 1,
-      "Group": "Ships"
-    },
-    {
-      "Id": "hull",
-      "Name": "Hull",
-      "Icon": "titanium_block_heavy",
       "Row": 1,
       "Group": "Ships"
     },

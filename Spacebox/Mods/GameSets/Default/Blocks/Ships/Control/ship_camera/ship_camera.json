@@ -6,7 +6,7 @@
   "ShipCamera": {
     "Power": 15
   },
-  "Category": "ships",
+  "Category": "cameras",
   "PowerToDrill": 2,
   "Mass": 1,
   "Durability": 40,

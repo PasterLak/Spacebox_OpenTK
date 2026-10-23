@@ -388,7 +388,7 @@ Fixes
 - aimed mobs and players get a thin model outline instead of a ring
 - crafting: hovering a group tab opens it, category tiles fill the width with equal size and start at the bottom; the outline also wraps blocky models (spacer, players)
 - crafting categories reorganized: Ships has Controls, Thrusters, Cannons, Hull, Windows, Doors; Blocks gets Lights and Storage; Items gets Explosives and Armor; hovering Back returns to the categories
-- crafting: the window title shows the category, hover on Back only acts after the mouse moved; chat without background again
+- crafting: the window title shows the category, Back works by click only; Hull moved to Blocks, new Cameras category under Ships; chat without background again
 - tutorial panel, step toasts and the tutorial menu (pause > Tutorial) on CanvasUI; waypoint names snap to screen pixels so they move smoothly
 - chat and ship library window on CanvasUI; menu and editor fades without ImGui
 - new sounds: button hover, denied, no power, waypoint added, low oxygen beeps, furnace/crusher/disassembler working loops, disassembler finish, generator hum (tab, craft, split and furnace finish sounds stay the old ones; every block window, crates included, uses the crafting table open/close sound; no drill, equip or slot drag sound)

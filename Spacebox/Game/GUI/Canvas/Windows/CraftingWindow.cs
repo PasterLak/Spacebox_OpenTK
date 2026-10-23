@@ -11,9 +11,6 @@ public sealed class CraftingWindow : GameWindow
     private const int DefaultInventoryColumns = 8;
 
     private const float TileGap = 4f;
-    private const float HoverArmDistance = 4f;
-
-    private Vector2 _hoverAnchor;
 
     private readonly VBoxContainer _categories = new VBoxContainer();
     private readonly HBoxContainer _tabs = new HBoxContainer();
@@ -54,12 +51,6 @@ public sealed class CraftingWindow : GameWindow
         var back = footer.AddChild(new Button { Text = "Back", CustomMinimumSize = new Vector2(64f, 26f) });
         back.Pressed += _ =>
         {
-            _crafting.PlayClick();
-            ShowCategories();
-        };
-        back.MouseEntered += _ =>
-        {
-            if (!_itemsView.Visible || !HoverArmed) return;
             _crafting.PlayClick();
             ShowCategories();
         };
@@ -151,26 +142,17 @@ public sealed class CraftingWindow : GameWindow
 
     private int InventoryColumns => Math.Max(1, (int)(_inventory.Player?.Inventory?.SizeX ?? DefaultInventoryColumns));
 
-    private bool HoverArmed => Root != null && (Root.PointerPosition - _hoverAnchor).LengthSquared > HoverArmDistance * HoverArmDistance;
-
-    private void DisarmHover()
-    {
-        if (Root != null) _hoverAnchor = Root.PointerPosition;
-    }
-
     private void ShowCategories()
     {
         _categories.Visible = true;
         _itemsView.Visible = false;
         TitleLabel.Text = "Crafting";
-        DisarmHover();
     }
 
     private void ShowItems(CraftingCategory category)
     {
         _crafting.PlayClick();
         TitleLabel.Text = category.Name;
-        DisarmHover();
         _items.ClearChildren();
         _itemControls.Clear();
         int columns = InventoryColumns;
