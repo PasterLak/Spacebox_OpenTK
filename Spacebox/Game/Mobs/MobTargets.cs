@@ -44,7 +44,7 @@ public static class MobTargets
             if (astronautNetwork == null) continue;
 
             var position = astronautNetwork.IsOwner ? astronaut.Position : astronautNetwork.TargetPosition;
-            _targets.Add(new MobTarget(networkObject.OwnerPeer, position, astronautNetwork.IsVulnerable));
+            _targets.Add(new MobTarget(networkObject.OwnerPeer, position, astronautNetwork.IsVulnerable, astronaut.Flashlight?.Enabled == true));
         }
     }
 }

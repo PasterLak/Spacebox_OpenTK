@@ -62,6 +62,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     private FreeCamera freeCamera;
     private NetworkSession _networkSession;
     private Spacebox.Game.Rendering.FlashlightBeamRenderer _flashlightBeams;
+    private Spacebox.Game.Rendering.BodyOutlineRenderer _bodyOutlines;
     
 
     public void Initialize(SpaceSceneArgs param)
@@ -131,6 +132,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         if (!Application.IsHeadless) localPlayer.AddChild(new DustSpawner());
         if (!Application.IsHeadless) _flashlightBeams = new Spacebox.Game.Rendering.FlashlightBeamRenderer();
+        if (!Application.IsHeadless) _bodyOutlines = new Spacebox.Game.Rendering.BodyOutlineRenderer();
 
         Debug.RegisterCommand(new DebugTexturesCommand());
         Debug.RegisterCommand(new Spacebox.Game.Commands.BackupCommand());
@@ -322,6 +324,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         base.Render();
         _flashlightBeams?.Render();
+        _bodyOutlines?.Render();
         Spacebox.Game.Protection.ClaimVisuals.Update(localPlayer, Time.Delta);
         if (VisualDebug.Enabled)
         {
@@ -427,6 +430,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipConsoleUI.Reset();
         ShipPilot.Reset();
         Spacebox.Game.Rendering.CameraFeedController.Reset();
+        Spacebox.Game.Rendering.BodyOutlineRenderer.Reset();
         Spacebox.Game.Rendering.FlashlightGlareController.Reset();
         Spacebox.Game.Rendering.VignetteController.SetWarning(0f);
         ShipRider.Reset();

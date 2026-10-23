@@ -8,7 +8,7 @@ namespace Spacebox.Game.GUI.Canvas.Windows;
 public sealed class ProcessingWindow : GameWindow
 {
     private const float RecipeIconSize = 26f;
-    private const float RecipeListHeight = 150f;
+    private const float RecipeListHeight = 112f;
 
     private readonly Label _status = StatusText.Create();
     private readonly ItemSlotControl _input = new ItemSlotControl();

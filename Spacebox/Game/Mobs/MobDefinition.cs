@@ -23,6 +23,9 @@ public sealed class MobDefinition
     public float HearingRange { get; init; } = 4f;
     public float ForgetTime { get; init; } = 4f;
     public float FleeChance { get; init; }
+    public float DarkSightRange { get; init; }
+    public float WatchChance { get; init; }
+    public float ReturnDistance { get; init; }
     public float EatTime { get; init; } = 3f;
     public float FoodSearchRadius { get; init; } = 8f;
     public float MealIntervalMin { get; init; } = 60f;

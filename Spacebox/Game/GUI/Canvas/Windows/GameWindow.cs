@@ -61,6 +61,7 @@ public abstract class GameWindow : PanelContainer
     protected void MatchInventorySize()
     {
         MatchColumnWidth();
+        SizeFlagsVertical = SizeFlags.Fill;
         MatchesInventoryHeight = true;
     }
 

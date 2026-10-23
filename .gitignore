@@ -407,3 +407,5 @@ FodyWeavers.xsd
 .idea/.idea.Spacebox/.idea/workspace.xml
 /Documentation/html
 /Documentation/latex
+
+.claude/worktrees/

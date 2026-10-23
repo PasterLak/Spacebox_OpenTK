@@ -73,7 +73,7 @@ public sealed class MobSenses
             return;
         }
 
-        float loseRange = SightRange * LoseRangeMultiplier;
+        float loseRange = RangeFor(target) * LoseRangeMultiplier;
         float distanceSquared = Vector3.DistanceSquared(_mob.Position, target.Position);
         CanSeeTarget = distanceSquared <= loseRange * loseRange && _grid.HasLineOfSight(_mob.Position, target.Position);
 
@@ -102,6 +102,8 @@ public sealed class MobSenses
             var offset = target.Position - _mob.Position;
             float distanceSquared = offset.LengthSquared;
             if (distanceSquared >= bestDistanceSquared) continue;
+            float targetRange = RangeFor(target);
+            if (distanceSquared >= targetRange * targetRange) continue;
             if (!IsNoticeable(offset, distanceSquared)) continue;
             if (!_grid.HasLineOfSight(_mob.Position, target.Position)) continue;
 
@@ -127,6 +129,8 @@ public sealed class MobSenses
         float cos = Vector3.Dot(_mob.Forward, offset / MathF.Sqrt(distanceSquared));
         return cos >= _halfFovCos;
     }
+
+    private float RangeFor(MobTarget target) => MobVision.NoticeRange(SightRange, _definition.DarkSightRange, target.HasLight, _mob.IsProvoked);
 
     private float SightRange => IsAlerted ? _definition.SightRange * AlertRangeMultiplier : _definition.SightRange;
 }

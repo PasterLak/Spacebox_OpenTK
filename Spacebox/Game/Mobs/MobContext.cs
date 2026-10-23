@@ -12,6 +12,8 @@ public sealed class MobContext
 
     private readonly float _appetite;
     private float _distanceTimer;
+    private bool _hadTarget;
+    private int _rolledPeer = -1;
 
     public MobContext(Mob mob, Random random)
     {
@@ -21,6 +23,7 @@ public sealed class MobContext
         Hunger = MobRandom.Range(random, MinStartHunger, 1f);
         _appetite = MobRandom.Range(random, 1f - AppetiteSpread, 1f + AppetiteSpread);
         _distanceTimer = MobRandom.Range(random, 0f, DistanceCheckInterval);
+        Home = mob.Position;
     }
 
     public Mob Mob { get; }
@@ -40,6 +43,10 @@ public sealed class MobContext
     public bool IsHungry => Hunger >= 1f;
     public bool WantsToEat => IsHungry && NearestPlayerDistance < Definition.MealFarDistance;
     public float NearestPlayerDistance { get; private set; } = float.MaxValue;
+    public Vector3 Home { get; private set; }
+    public bool IsWatching { get; private set; }
+    public bool WillAttack => IsHostile && (!IsWatching || Mob.IsProvoked);
+    public bool IsFarFromHome => Definition.ReturnDistance > 0f && Vector3.DistanceSquared(Mob.Position, Home) > Definition.ReturnDistance * Definition.ReturnDistance;
 
     public bool IsTargetInAttackRange(float multiplier = 1f)
     {
@@ -49,15 +56,29 @@ public sealed class MobContext
     public void Tick(float deltaTime)
     {
         if (AttackCooldown > 0f) AttackCooldown -= deltaTime;
+        UpdateWatching();
 
         _distanceTimer -= deltaTime;
         if (_distanceTimer <= 0f)
         {
             _distanceTimer = DistanceCheckInterval;
             NearestPlayerDistance = FindNearestPlayerDistance();
+            if (Navigation.SurfaceFinder.IsOnSurface(Grid, Mob.Position)) Home = Mob.Position;
         }
 
         if (!IsHungry) Hunger += Definition.HungerRate(NearestPlayerDistance) * _appetite * deltaTime;
+    }
+
+    private void UpdateWatching()
+    {
+        bool hasTarget = Senses.HasTarget;
+        if (hasTarget && (!_hadTarget || Senses.TargetPeer != _rolledPeer))
+        {
+            _rolledPeer = Senses.TargetPeer;
+            IsWatching = MobVision.RollWatch(Definition.WatchChance, Random);
+        }
+        if (Mob.IsProvoked) IsWatching = false;
+        _hadTarget = hasTarget;
     }
 
     private float FindNearestPlayerDistance()

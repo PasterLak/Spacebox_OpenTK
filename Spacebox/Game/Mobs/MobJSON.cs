@@ -25,6 +25,9 @@ public class MobJSON
     public float HearingRange { get; set; } = 4f;
     public float ForgetTime { get; set; } = 4f;
     public byte FleeChance { get; set; } = 0;
+    public float DarkSightRange { get; set; } = 0f;
+    public byte WatchChance { get; set; } = 0;
+    public float ReturnDistance { get; set; } = 0f;
     public float EatTime { get; set; } = 3f;
     public float FoodSearchRadius { get; set; } = 8f;
     public float MealIntervalMin { get; set; } = 60f;

@@ -17,17 +17,26 @@ public sealed class ParasiteBrain : IMobBrain
         var chase = new ChaseState();
         var attack = new AttackState();
         var flee = new FleeState();
+        var watch = new WatchState();
+        var home = new ReturnHomeState();
 
         _machine = new StateMachine<MobContext>(context);
         _machine.SetInitial(forage);
         _machine
             .AddTransition(forage, flee, c => c.Senses.HasTarget && c.IsTimid)
-            .AddTransition(forage, chase, c => c.Senses.HasTarget && c.IsHostile)
+            .AddTransition(forage, chase, c => c.Senses.HasTarget && c.WillAttack)
+            .AddTransition(forage, watch, c => c.Senses.HasTarget && c.IsHostile && c.IsWatching)
+            .AddTransition(watch, chase, c => c.Senses.HasTarget && c.WillAttack)
+            .AddTransition(watch, forage, c => !c.Senses.HasTarget || !c.IsHostile)
             .AddTransition(chase, attack, c => c.IsTargetInAttackRange())
             .AddTransition(chase, forage, c => !c.Senses.HasTarget || !c.IsHostile)
             .AddTransition(attack, forage, c => !c.Senses.HasTarget || !c.IsHostile)
             .AddTransition(attack, chase, c => !c.IsTargetInAttackRange(AttackRangeHysteresis))
-            .AddTransition(flee, forage, c => !c.Senses.HasTarget && flee.TimeInState > FleeCalmTime);
+            .AddTransition(flee, home, c => !c.Senses.HasTarget && flee.TimeInState > FleeCalmTime && c.IsFarFromHome)
+            .AddTransition(flee, forage, c => !c.Senses.HasTarget && flee.TimeInState > FleeCalmTime)
+            .AddTransition(home, flee, c => c.Senses.HasTarget && c.IsTimid)
+            .AddTransition(home, chase, c => c.Senses.HasTarget && c.WillAttack)
+            .AddTransition(home, forage, _ => home.IsDone);
     }
 
     public string StateName => Describe(_machine);

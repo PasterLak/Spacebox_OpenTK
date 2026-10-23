@@ -29,6 +29,13 @@ public static class BodyHighlight
         var kind = BodyHighlightRules.Resolve(hit.Body.Owner, heldItem, hit.Distance, giftRange, Engine.Networking.NetworkManager.Instance.IsActive);
         if (kind == BodyHighlightKind.None || IsBehindBlock(player, hit.Distance)) return;
 
+        var color = kind == BodyHighlightKind.Drill ? DrillColor : GiftColor;
+        if (hit.Body.Owner is Node3D node)
+        {
+            Spacebox.Game.Rendering.BodyOutlineRenderer.Request(node, color);
+            return;
+        }
+
         float radius = hit.Body.HitRadius;
         var towardViewer = (player.Position - hit.Body.Center).LengthSquared > 1e-6f ? (player.Position - hit.Body.Center).Normalized() : -player.Front;
         DrawRing(hit.Body.Center + towardViewer * radius, radius * RingScale, player.Front, kind == BodyHighlightKind.Drill ? DrillColor : GiftColor);
