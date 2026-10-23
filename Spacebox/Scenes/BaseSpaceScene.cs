@@ -86,6 +86,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         }
 
         AddChild(new BlockSelector());
+        AddChild(Spacebox.Game.Ships.Sharing.ShipPlacementMode.CreatePreview());
         AddChild(localPlayer);
 
         localPlayer.SetSkinColor(SceneArgs.skinColor);
