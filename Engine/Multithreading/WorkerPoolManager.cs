@@ -7,9 +7,11 @@ namespace Engine.Multithreading
     {
         public enum Priority { High, Medium, Low }
 
-        static readonly BlockingCollection<WorkItem> highQueue = new BlockingCollection<WorkItem>();
-        static readonly BlockingCollection<WorkItem> medQueue = new BlockingCollection<WorkItem>();
-        static readonly BlockingCollection<WorkItem> lowQueue = new BlockingCollection<WorkItem>();
+        static readonly ConcurrentQueue<WorkItem> highQueue = new ConcurrentQueue<WorkItem>();
+        static readonly ConcurrentQueue<WorkItem> medQueue = new ConcurrentQueue<WorkItem>();
+        static readonly ConcurrentQueue<WorkItem> lowQueue = new ConcurrentQueue<WorkItem>();
+        static readonly SemaphoreSlim generalAvailable = new SemaphoreSlim(0);
+        static volatile bool generalAddingCompleted;
     
         static readonly ConcurrentDictionary<string, BlockingCollection<WorkItem>> namedQueues = new ConcurrentDictionary<string, BlockingCollection<WorkItem>>();
         static readonly List<Thread> workers;
@@ -21,9 +23,6 @@ namespace Engine.Multithreading
         static long tasksQueued = 0;
         static long tasksCompleted = 0;
         static long tasksFailed = 0;
-
-        const int MIN_DELAY_MS = 5;
-        const int MAX_DELAY_MS = 50;
 
         static WorkerPoolManager()
         {
@@ -75,7 +74,7 @@ namespace Engine.Multithreading
                     }
                 }
             };
-            if (!TryAdd(QueueFor(priority), item)) tcs.TrySetCanceled();
+            if (!TryAddGeneral(QueueFor(priority), item)) tcs.TrySetCanceled();
             return tcs.Task;
         }
 
@@ -111,7 +110,7 @@ namespace Engine.Multithreading
                     }
                 }
             };
-            if (!TryAdd(QueueFor(priority), item)) tcs.TrySetCanceled();
+            if (!TryAddGeneral(QueueFor(priority), item)) tcs.TrySetCanceled();
             return tcs.Task;
         }
 
@@ -167,12 +166,25 @@ namespace Engine.Multithreading
             return tcs.Task;
         }
 
-        static BlockingCollection<WorkItem> QueueFor(Priority priority) => priority switch
+        static ConcurrentQueue<WorkItem> QueueFor(Priority priority) => priority switch
         {
             Priority.High => highQueue,
             Priority.Medium => medQueue,
             _ => lowQueue
         };
+
+        static bool TryAddGeneral(ConcurrentQueue<WorkItem> queue, WorkItem item)
+        {
+            if (generalAddingCompleted) return false;
+            queue.Enqueue(item);
+            generalAvailable.Release();
+            return true;
+        }
+
+        static bool TryTakeGeneral(out WorkItem item)
+        {
+            return highQueue.TryDequeue(out item) || medQueue.TryDequeue(out item) || lowQueue.TryDequeue(out item);
+        }
 
         static bool TryAdd(BlockingCollection<WorkItem> queue, WorkItem item)
         {
@@ -190,10 +202,8 @@ namespace Engine.Multithreading
 
         public static void Shutdown()
         {
+            generalAddingCompleted = true;
             cts.Cancel();
-            highQueue.CompleteAdding();
-            medQueue.CompleteAdding();
-            lowQueue.CompleteAdding();
             foreach (var q in namedQueues.Values) q.CompleteAdding();
             foreach (var t in workers) t.Join();
             foreach (var t in dedicatedWorkers.Values) t.Join();
@@ -205,17 +215,8 @@ namespace Engine.Multithreading
             {
                 try
                 {
-                    WorkItem item;
-                    int totalPending = highQueue.Count + medQueue.Count + lowQueue.Count;
-                    int workerCount = workers.Count;
-                    int delay = totalPending > workerCount ? MIN_DELAY_MS : MAX_DELAY_MS;
-
-                    if (highQueue.TryTake(out item, highQueue.Count > workerCount ? 1 : MIN_DELAY_MS, cts.Token) ||
-                        medQueue.TryTake(out item, delay, cts.Token) ||
-                        lowQueue.TryTake(out item, delay, cts.Token))
-                    {
-                        item.Execute();
-                    }
+                    generalAvailable.Wait(cts.Token);
+                    if (TryTakeGeneral(out var item)) item.Execute();
                 }
                 catch (OperationCanceledException)
                 {

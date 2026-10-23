@@ -10,33 +10,56 @@ public sealed class Theme
     private readonly Dictionary<(string Type, string Name), Color4> _colors = new Dictionary<(string, string), Color4>();
     private readonly Dictionary<(string Type, string Name), float> _constants = new Dictionary<(string, string), float>();
     private readonly Dictionary<string, string> _variationBases = new Dictionary<string, string>();
+    private CanvasFont _defaultFont;
+    private float _defaultFontSize = 12f;
 
-    public CanvasFont DefaultFont { get; set; }
-    public float DefaultFontSize { get; set; } = 12f;
+    public CanvasFont DefaultFont
+    {
+        get => _defaultFont;
+        set
+        {
+            _defaultFont = value;
+            ThemeVersion.Invalidate();
+        }
+    }
+
+    public float DefaultFontSize
+    {
+        get => _defaultFontSize;
+        set
+        {
+            _defaultFontSize = value;
+            ThemeVersion.Invalidate();
+        }
+    }
 
     public static Theme Fallback => _fallback ??= CreateFallback();
 
     public Theme SetStyleBox(string type, string name, StyleBox style)
     {
         _styles[(type, name)] = style;
+        ThemeVersion.Invalidate();
         return this;
     }
 
     public Theme SetColor(string type, string name, Color4 color)
     {
         _colors[(type, name)] = color;
+        ThemeVersion.Invalidate();
         return this;
     }
 
     public Theme SetConstant(string type, string name, float value)
     {
         _constants[(type, name)] = value;
+        ThemeVersion.Invalidate();
         return this;
     }
 
     public Theme SetTypeVariation(string variation, string baseType)
     {
         _variationBases[variation] = baseType;
+        ThemeVersion.Invalidate();
         return this;
     }
 

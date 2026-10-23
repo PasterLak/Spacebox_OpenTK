@@ -45,6 +45,7 @@ public sealed class CanvasRoot
     private const float TooltipDelay = 0.45f;
     private const float DoubleClickTime = 0.35f;
     private const float DoubleClickDistance = 4f;
+    private static int _lastLayoutStamp;
 
     private readonly Control _content = new Control { Name = "Root", MouseFilter = MouseFilter.Ignore };
     private readonly Dictionary<UiLayer, UiLayerRoot> _layers = new Dictionary<UiLayer, UiLayerRoot>();
@@ -62,11 +63,22 @@ public sealed class CanvasRoot
     private float _lastClickTime = -10f;
     private Vector2 _lastClickPosition;
     private Control _focus;
+    private int _layoutStamp;
+    private Theme _theme;
+    private bool _inLayout;
 
     public StretchSettings Stretch { get; } = new StretchSettings();
     public Vector2 VirtualSize { get => Stretch.VirtualSize; set => Stretch.VirtualSize = value; }
     public StretchMode StretchMode { get => Stretch.Mode; set => Stretch.Mode = value; }
-    public Theme Theme { get; set; }
+    public Theme Theme
+    {
+        get => _theme;
+        set
+        {
+            _theme = value;
+            ThemeVersion.Invalidate();
+        }
+    }
     public Control Content => _content;
     public Transform2D ScreenTransform { get; private set; } = Transform2D.Identity;
     public Vector2 ScreenSize => _screenSize;
@@ -83,6 +95,8 @@ public sealed class CanvasRoot
     public ICanvasClipboard Clipboard { get; set; } = new MemoryClipboard();
     public event Action<KeyPress> UnhandledKeyPress;
     public bool IsLayoutDirty => _layoutDirty;
+    internal bool IsInLayout => _inLayout;
+    internal int LayoutStamp => _layoutStamp;
     public PopupPanel TooltipPanel => _tooltip.Panel;
     public string TooltipText => TooltipSource?.TooltipText is { Length: > 0 } text ? text : null;
     public Control TooltipSource => _hovered != null && _hoverTime >= TooltipDelay && _hovered.HasTooltip ? _hovered : null;
@@ -116,7 +130,13 @@ public sealed class CanvasRoot
         return layer.HasValue && layer.Value >= UiLayer.Modal ? UiLayer.ModalPopup : UiLayer.Popup;
     }
 
-    public void MarkLayoutDirty() => _layoutDirty = true;
+    public void MarkLayoutDirty()
+    {
+        _layoutDirty = true;
+        InvalidateMinimumSizes();
+    }
+
+    internal void InvalidateMinimumSizes() => _layoutStamp = ++_lastLayoutStamp;
 
     public void Resize(Vector2 screenSize)
     {
@@ -137,7 +157,16 @@ public sealed class CanvasRoot
         for (int pass = 0; pass < 3; pass++)
         {
             _layoutDirty = false;
-            _content.ApplyRect(new Rect2(Vector2.Zero, ViewportSize));
+            InvalidateMinimumSizes();
+            _inLayout = true;
+            try
+            {
+                _content.ApplyRect(new Rect2(Vector2.Zero, ViewportSize));
+            }
+            finally
+            {
+                _inLayout = false;
+            }
             if (!_layoutDirty) return;
         }
     }

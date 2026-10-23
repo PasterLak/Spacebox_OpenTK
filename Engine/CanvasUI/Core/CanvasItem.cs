@@ -46,6 +46,7 @@ public abstract class CanvasItem
         _children.Add(child);
         child.Parent = this;
         child.SetRoot(Root);
+        ThemeVersion.Invalidate();
         QueueLayout();
         return child;
     }
@@ -57,6 +58,7 @@ public abstract class CanvasItem
         _children.Insert(Math.Clamp(index, 0, _children.Count), child);
         child.Parent = this;
         child.SetRoot(Root);
+        ThemeVersion.Invalidate();
         QueueLayout();
         return child;
     }
@@ -69,6 +71,7 @@ public abstract class CanvasItem
         _children.Remove(child);
         child.Parent = null;
         child.SetRoot(null);
+        ThemeVersion.Invalidate();
         QueueLayout();
     }
 
@@ -145,6 +148,7 @@ public abstract class CanvasItem
         if (Root == root) return;
         if (Root != null) OnExitTree();
         Root = root;
+        ThemeVersion.Invalidate();
         if (Root != null) OnEnterTree();
         for (int i = 0; i < _children.Count; i++) _children[i].SetRoot(root);
     }

@@ -21,6 +21,15 @@ public class Control : CanvasItem
     private Dictionary<string, float> _constantOverrides;
     private float _fontSizeOverride;
     private Theme _theme;
+    private Vector2 _cachedMinimumSize;
+    private ThemeLookupCache<StyleBox> _styleCache;
+    private ThemeLookupCache<Color4?> _colorCache;
+    private ThemeLookupCache<float?> _constantCache;
+    private CanvasFont _cachedFont;
+    private float _cachedFontSize;
+    private int _fontVersion = -1;
+    private int _fontSizeVersion = -1;
+    private int _minimumSizeStamp = -1;
 
     public Rect2 Rect { get; private set; }
     public Vector2 Size => Rect.Size;
@@ -112,6 +121,7 @@ public class Control : CanvasItem
         set
         {
             _theme = value;
+            ThemeVersion.Invalidate();
             QueueLayout();
         }
     }
@@ -123,6 +133,7 @@ public class Control : CanvasItem
         {
             _themeTypeVariation = value;
             _themeTypes = null;
+            ThemeVersion.Invalidate();
             QueueLayout();
         }
     }
@@ -154,7 +165,22 @@ public class Control : CanvasItem
 
     public virtual Vector2 GetMinimumSize() => Vector2.Zero;
 
-    public Vector2 GetCombinedMinimumSize() => Vector2.ComponentMax(_customMinimumSize, GetMinimumSize());
+    public Vector2 GetCombinedMinimumSize()
+    {
+        var root = Root;
+        if (root == null || !root.IsInLayout) return Vector2.ComponentMax(_customMinimumSize, GetMinimumSize());
+
+        int stamp = root.LayoutStamp;
+        if (_minimumSizeStamp == stamp) return _cachedMinimumSize;
+
+        var size = Vector2.ComponentMax(_customMinimumSize, GetMinimumSize());
+        if (root.LayoutStamp == stamp)
+        {
+            _cachedMinimumSize = size;
+            _minimumSizeStamp = stamp;
+        }
+        return size;
+    }
 
     public Control SetAnchors(float left, float top, float right, float bottom)
     {
@@ -195,29 +221,46 @@ public class Control : CanvasItem
     public void AddThemeStyleBoxOverride(string name, StyleBox style)
     {
         (_styleOverrides ??= new Dictionary<string, StyleBox>())[name] = style;
+        ThemeVersion.Invalidate();
         QueueLayout();
     }
 
     public void AddThemeColorOverride(string name, Color4 color)
     {
         (_colorOverrides ??= new Dictionary<string, Color4>())[name] = color;
+        ThemeVersion.Invalidate();
     }
 
-    public void RemoveThemeColorOverride(string name) => _colorOverrides?.Remove(name);
+    public void RemoveThemeColorOverride(string name)
+    {
+        if (_colorOverrides != null && _colorOverrides.Remove(name)) ThemeVersion.Invalidate();
+    }
 
     public void AddThemeConstantOverride(string name, float value)
     {
         (_constantOverrides ??= new Dictionary<string, float>())[name] = value;
+        ThemeVersion.Invalidate();
         QueueLayout();
     }
 
     public void AddThemeFontSizeOverride(float size)
     {
         _fontSizeOverride = size;
+        ThemeVersion.Invalidate();
         QueueLayout();
     }
 
     public StyleBox GetThemeStyleBox(string name)
+    {
+        int version = ThemeVersion.Current;
+        _styleCache ??= new ThemeLookupCache<StyleBox>();
+        if (_styleCache.TryGet(version, name, out var cached)) return cached;
+        var style = LookupThemeStyleBox(name);
+        _styleCache.Store(version, name, style);
+        return style;
+    }
+
+    private StyleBox LookupThemeStyleBox(string name)
     {
         if (_styleOverrides != null && _styleOverrides.TryGetValue(name, out var style)) return style;
         var types = ThemeTypes();
@@ -233,6 +276,18 @@ public class Control : CanvasItem
 
     public Color4 GetThemeColor(string name, Color4 fallback)
     {
+        int version = ThemeVersion.Current;
+        _colorCache ??= new ThemeLookupCache<Color4?>();
+        if (!_colorCache.TryGet(version, name, out var found))
+        {
+            found = LookupThemeColor(name);
+            _colorCache.Store(version, name, found);
+        }
+        return found ?? fallback;
+    }
+
+    private Color4? LookupThemeColor(string name)
+    {
         if (_colorOverrides != null && _colorOverrides.TryGetValue(name, out var color)) return color;
         var types = ThemeTypes();
         CanvasItem cursor = this;
@@ -242,10 +297,22 @@ public class Control : CanvasItem
             for (int i = 0; i < types.Length; i++)
                 if (theme.TryGetColor(types[i], name, out color)) return color;
         }
-        return fallback;
+        return null;
     }
 
     public float GetThemeConstant(string name, float fallback)
+    {
+        int version = ThemeVersion.Current;
+        _constantCache ??= new ThemeLookupCache<float?>();
+        if (!_constantCache.TryGet(version, name, out var found))
+        {
+            found = LookupThemeConstant(name);
+            _constantCache.Store(version, name, found);
+        }
+        return found ?? fallback;
+    }
+
+    private float? LookupThemeConstant(string name)
     {
         if (_constantOverrides != null && _constantOverrides.TryGetValue(name, out var value)) return value;
         var types = ThemeTypes();
@@ -256,10 +323,19 @@ public class Control : CanvasItem
             for (int i = 0; i < types.Length; i++)
                 if (theme.TryGetConstant(types[i], name, out value)) return value;
         }
-        return fallback;
+        return null;
     }
 
     public CanvasFont GetThemeFont()
+    {
+        int version = ThemeVersion.Current;
+        if (_fontVersion == version) return _cachedFont;
+        _cachedFont = LookupThemeFont();
+        _fontVersion = version;
+        return _cachedFont;
+    }
+
+    private CanvasFont LookupThemeFont()
     {
         CanvasItem cursor = this;
         int stage = 0;
@@ -269,6 +345,15 @@ public class Control : CanvasItem
     }
 
     public float GetThemeFontSize()
+    {
+        int version = ThemeVersion.Current;
+        if (_fontSizeVersion == version) return _cachedFontSize;
+        _cachedFontSize = LookupThemeFontSize();
+        _fontSizeVersion = version;
+        return _cachedFontSize;
+    }
+
+    private float LookupThemeFontSize()
     {
         if (_fontSizeOverride > 0f) return _fontSizeOverride;
         for (CanvasItem item = this; item != null; item = item.Parent)
@@ -337,6 +422,7 @@ public class Control : CanvasItem
     {
         bool resized = rect.Size != Rect.Size;
         Rect = rect;
+        if (resized) Root?.InvalidateMinimumSizes();
         LayoutChildren();
         if (!resized) return;
         OnResized();

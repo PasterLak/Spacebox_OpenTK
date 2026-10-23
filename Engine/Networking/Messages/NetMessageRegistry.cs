@@ -2,17 +2,36 @@ namespace Engine.Networking;
 
 public sealed class NetMessageRegistry
 {
-    private sealed class Handler
+    private abstract class Handler
     {
-        public Func<INetMessage> Create;
-        public Action<int, INetMessage> Invoke;
         public string Name;
+        public abstract Delegate Callback { get; }
+        public abstract void Dispatch(int peer, NetReader reader);
+    }
+
+    private sealed class Handler<T> : Handler where T : INetMessage, new()
+    {
+        public Action<int, T> Invoke;
+
+        public override Delegate Callback => Invoke;
+
+        public override void Dispatch(int peer, NetReader reader)
+        {
+            var message = new T();
+            message.Deserialize(reader);
+            Invoke(peer, message);
+        }
+    }
+
+    private static class MessageId<T> where T : INetMessage
+    {
+        public static readonly uint Value = StableHash.Compute(typeof(T).FullName);
     }
 
     private readonly Dictionary<uint, Handler> _handlers = new Dictionary<uint, Handler>();
     private readonly HashSet<uint> _openMessages = new HashSet<uint>();
 
-    public static uint GetId<T>() where T : INetMessage => StableHash.Compute(typeof(T).FullName);
+    public static uint GetId<T>() where T : INetMessage => MessageId<T>.Value;
 
     public void Register<T>(Action<int, T> handler) where T : INetMessage, new()
     {
@@ -20,10 +39,9 @@ public sealed class NetMessageRegistry
         if (_handlers.TryGetValue(id, out var existing) && existing.Name != typeof(T).FullName)
             throw new InvalidOperationException($"[NetMessageRegistry] Hash collision between {existing.Name} and {typeof(T).FullName}");
 
-        _handlers[id] = new Handler
+        _handlers[id] = new Handler<T>
         {
-            Create = () => new T(),
-            Invoke = (peer, message) => handler(peer, (T)message),
+            Invoke = handler,
             Name = typeof(T).FullName
         };
     }
@@ -62,15 +80,13 @@ public sealed class NetMessageRegistry
             return false;
         }
 
-        var message = handler.Create();
-        message.Deserialize(reader);
-        handler.Invoke(peer, message);
+        handler.Dispatch(peer, reader);
         return true;
     }
 
     public void DispatchLocal<T>(int peer, T message) where T : INetMessage
     {
-        if (_handlers.TryGetValue(GetId<T>(), out var handler))
-            handler.Invoke(peer, message);
+        if (_handlers.TryGetValue(GetId<T>(), out var handler) && handler.Callback is Action<int, T> callback)
+            callback(peer, message);
     }
 }
