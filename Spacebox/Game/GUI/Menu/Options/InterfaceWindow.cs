@@ -17,7 +17,7 @@ public class InterfaceWindow : SettingsCategoryWindow
     {
         var settings = Settings.Interface;
 
-        SettingsUI.Render("Interface", "Interface", 5,
+        SettingsUI.Render("Interface", "Interface", 8,
             (listSize, rowH) =>
             {
                 var rows = OptionsRows.Begin("table##interface", listSize.X);
@@ -39,6 +39,15 @@ public class InterfaceWindow : SettingsCategoryWindow
                     Apply(settings, () => settings.FontSize = fontSize);
 
                 rows.TextInput("Font Test", "Type any text to see how the selected font draws it. Not saved.", ref _fontTest, FontTestLength);
+
+                rows.Section("Layout");
+                int design = Math.Max(0, Array.IndexOf(Canvas.GameUiDesigns.Ids, settings.Design));
+                if (rows.Combo("Design", "Look of the game interface: Classic keeps the familiar grey blocks, Modern uses dark translucent panels like the tutorial.", ref design, Canvas.GameUiDesigns.Names))
+                    Apply(settings, () => settings.Design = Canvas.GameUiDesigns.Ids[design]);
+
+                int scale = (int)MathF.Round(settings.UiScale * 100f);
+                if (rows.Slider("UI Scale", "Size of the game interface (hotbar, bars and new windows) on top of the automatic size for your screen.", ref scale, (int)(InterfaceSettings.MinUiScale * 100), (int)(InterfaceSettings.MaxUiScale * 100), "%d %%"))
+                    Apply(settings, () => settings.UiScale = scale / 100f);
 
                 rows.End();
             },

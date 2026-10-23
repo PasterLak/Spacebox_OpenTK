@@ -161,6 +161,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         InventoryUI.Initialize();
         StorageUI.Initialize();
         PanelUI.Initialize(localPlayer);
+        _gameCanvas = new Spacebox.Game.GUI.Canvas.GameCanvas();
         GeneratorUI.Initialize();
         InventoryUI.Player = localPlayer;
         CreativeWindowUI.SetDefaultIcon(localPlayer);
@@ -228,11 +229,14 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Chat.Write("Welcome to Spacebox!", Color4.Yellow);
     }
 
+    private Spacebox.Game.GUI.Canvas.GameCanvas _gameCanvas;
+
     public override void Update()
     {
         Time.HandleTicks();
 
         base.Update();
+        _gameCanvas?.Update(localPlayer, Time.Delta);
 
         MainThreadDispatcher.Instance.ExecutePending(StreamingBudget.DispatcherBudgetMs);
         _networkSession?.Update();
@@ -336,6 +340,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             return;
         }
 
+        _gameCanvas?.Render();
         base.OnGUI();
         ColorOverlay.OnGUI();
 
@@ -395,6 +400,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
     public override void UnloadContent()
     {
+        _gameCanvas?.Dispose();
+        _gameCanvas = null;
         _networkSession?.Dispose();
         _networkSession = null;
         Spacebox.Game.Resource.TexturePacks.TexturePackService.SetSessionPacks(null);

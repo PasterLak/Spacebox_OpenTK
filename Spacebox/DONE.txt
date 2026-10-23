@@ -345,6 +345,7 @@ Fixes
 - dashboard on phones: compact sticky header with a scrolling menu, player lists as cards, rule switches next to their text; new Backups panel with "Back up now"
 - developer panel (F3) rebuilt on the new UI: scenes, lighting, hierarchy and node inspector in the editor style
 - debug console rebuilt on the new UI: filters with counts, copy all, select mode, right-click copies a line, Tab completion and history; drawn above the game interface
+- new interface system for the game: hotbar and health, oxygen and power bars rebuilt; Options > Interface: Design (Classic or Modern) and UI Scale
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine

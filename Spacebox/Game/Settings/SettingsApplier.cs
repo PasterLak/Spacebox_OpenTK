@@ -70,6 +70,7 @@ public static class SettingsApplier
     public static void ApplyInterface(InterfaceSettings settings)
     {
         SpaceboxWindow.Instance?.RequestImGuiFont(InterfaceFonts.ToRequest(settings.Font, settings.FontSize));
+        Spacebox.Game.GUI.Canvas.GameCanvas.Current?.Apply(settings);
     }
 
     public static void ApplyGameplay(GameplaySettings gameplay)
