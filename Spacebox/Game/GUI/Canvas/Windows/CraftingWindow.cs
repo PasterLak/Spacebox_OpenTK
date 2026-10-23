@@ -82,6 +82,12 @@ public sealed class CraftingWindow : GameWindow
                 CraftingGUI.PlayClick();
                 ShowGroup(index);
             };
+            tab.MouseEntered += _ =>
+            {
+                if (CraftingGUI.SelectedGroup == index) return;
+                CraftingGUI.PlayHover(index);
+                ShowGroup(index);
+            };
             _tabButtons.Add(tab);
         }
         _tabs.Visible = groups.Count > 1;
@@ -96,21 +102,27 @@ public sealed class CraftingWindow : GameWindow
         for (int i = 0; i < _tabButtons.Count; i++) _tabButtons[i].ButtonPressed = i == index;
 
         var tile = CraftCategoryButton.DefaultSize;
-        int columns = Math.Max(1, (int)((GridWidth + TileGap) / (tile.X + TileGap)));
+        float width = GridWidth;
+        int columns = Math.Max(1, (int)((width + TileGap) / (tile.X + TileGap)));
+        var size = new Vector2(MathF.Floor((width - (columns - 1) * TileGap) / columns), tile.Y);
         int rows = 1;
         foreach (var group in groups) rows = Math.Max(rows, (group.Categories.Count + columns - 1) / columns);
 
         _tiles.ClearChildren();
         _tiles.Columns = columns;
         var categories = index < groups.Count ? groups[index].Categories : new List<CraftingCategory>();
-        for (int i = 0; i < rows * columns; i++)
+        for (int row = rows - 1; row >= 0; row--)
         {
-            if (i < categories.Count)
+            for (int column = 0; column < columns; column++)
             {
-                var button = _tiles.AddChild(new CraftCategoryButton(categories[i]));
-                button.Clicked += ShowItems;
+                int i = row * columns + column;
+                if (i < categories.Count)
+                {
+                    var button = _tiles.AddChild(new CraftCategoryButton(categories[i]) { CustomMinimumSize = size });
+                    button.Clicked += ShowItems;
+                }
+                else _tiles.AddChild(Spacer(size.X, size.Y));
             }
-            else _tiles.AddChild(Spacer(tile.X, tile.Y));
         }
     }
 
