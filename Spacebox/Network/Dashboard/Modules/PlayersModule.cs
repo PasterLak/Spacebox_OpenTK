@@ -50,9 +50,9 @@ public sealed class PlayersModule : IDashboardModule
             string name = DashboardGuard.Read<NameRequest>(request)?.Name?.Trim();
             if (string.IsNullOrEmpty(name)) return HttpResponse.Error("Missing name", 400);
 
-            await MainThread.Run(() => ServerModeration.BanName(name));
-            DashboardContext.Audit(user, $"banned {name}");
-            return HttpResponse.Json(new { ok = true });
+            bool banned = await MainThread.Run(() => ServerModeration.BanName(name));
+            if (banned) DashboardContext.Audit(user, $"banned {name}");
+            return HttpResponse.Json(new { ok = banned });
         }));
 
         router.Map("POST", DashboardContext.Api("/players/gamemode"), guard.Admin(async (request, user) =>

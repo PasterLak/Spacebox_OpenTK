@@ -246,29 +246,6 @@ public static class GameSetLoader
             Debug.Error($"ID too long, truncated to '{idString}'");
         }
 
-        string originalId = idString;
-        string fullId = $"{@namespace}:{idString}";
-        int counter = 1;
-
-        while (GameAssets.HasItem(fullId))
-        {
-            idString = $"{originalId}_{counter}";
-            fullId = $"{@namespace}:{idString}";
-            counter++;
-
-            if (counter == 1000)
-            {
-                Debug.Error($"Too many duplicate IDs for '{originalId}', using random suffix");
-                idString = $"{originalId}_{System.DateTime.Now.Ticks % 10000}";
-                break;
-            }
-        }
-
-        if (idString != originalId)
-        {
-            Debug.Error($"ID '{@namespace}:{originalId}' already exists, using '{@namespace}:{idString}' instead");
-        }
-
         return idString;
     }
 
@@ -1159,7 +1136,7 @@ public static class GameSetLoader
     public static void GiveStartItems(LocalAstronaut player, Dictionary<string, Item> allGameItems)
     {
         if (player == null || !player.GameModeRules.StartItems ||
-            ModInfo?.ItemsOnStart?.Count == 0 ||
+            ModInfo?.ItemsOnStart == null || ModInfo.ItemsOnStart.Count == 0 ||
             allGameItems?.Count == 0)
             return;
 

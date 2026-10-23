@@ -2,6 +2,7 @@ using Engine;
 using Engine.Commands;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.Respawn;
+using Spacebox.Network.Admin;
 
 namespace Spacebox.Game.Commands;
 
@@ -22,6 +23,7 @@ public sealed class SpawnCommand : CommandBase
 
     public override void Execute(string[] args)
     {
+        if (ChatCommands.RefusesRemoteSender(Name)) return;
         if (_player == null) return;
 
         _player.Teleport(SafeSpawnFinder.FindFreePosition(WorldSpawn.For(_player)));

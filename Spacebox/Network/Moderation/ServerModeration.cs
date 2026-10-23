@@ -7,13 +7,6 @@ using Spacebox.Game.Generation;
 
 namespace Spacebox.Network.Moderation;
 
-public sealed class ModerationData
-{
-    public List<string> BannedNames { get; set; } = new List<string>();
-    public List<string> BannedAddresses { get; set; } = new List<string>();
-    public List<string> MutedNames { get; set; } = new List<string>();
-}
-
 public static class ServerModeration
 {
     public const string KickedReason = "You were kicked from the server";
@@ -27,13 +20,12 @@ public static class ServerModeration
 
     public static bool IsBanned(string name, string address)
     {
-        var data = Load();
-        return Contains(data.BannedNames, name) || (!string.IsNullOrEmpty(address) && Contains(data.BannedAddresses, address));
+        return Load().IsBanned(name, address);
     }
 
     public static bool IsMuted(string name)
     {
-        return Contains(Load().MutedNames, name);
+        return Load().IsMuted(name);
     }
 
     public static void Kick(int peer)
@@ -44,69 +36,54 @@ public static class ServerModeration
         ChatService.Broadcast($"{player.Name} was kicked", NoticeColor);
     }
 
-    public static void Ban(int peer)
+    public static bool Ban(int peer)
     {
-        if (!CanModerate(peer, out var player)) return;
+        if (!CanModerate(peer, out var player)) return false;
 
         var data = Load();
-        AddUnique(data.BannedNames, player.Name);
+        data.BanName(player.Name);
 
         string address = NetworkManager.Instance.GetPeerAddress(peer);
-        if (IPAddress.TryParse(address, out var ip) && !IPAddress.IsLoopback(ip)) AddUnique(data.BannedAddresses, address);
+        if (IPAddress.TryParse(address, out var ip) && !IPAddress.IsLoopback(ip)) data.BanAddress(player.Name, address);
 
         Save();
         NetworkManager.Instance.Kick(peer, BannedReason);
         ChatService.Broadcast($"{player.Name} was banned", NoticeColor);
+        return true;
     }
 
-    public static void BanName(string name)
+    public static bool BanName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name)) return;
+        if (string.IsNullOrWhiteSpace(name)) return false;
 
-        if (PlayerRegistry.TryGetByName(name, out var player))
-        {
-            Ban(player.Peer);
-            return;
-        }
+        if (PlayerRegistry.TryGetByName(name, out var player)) return Ban(player.Peer);
 
-        AddUnique(Load().BannedNames, name.Trim());
-        Save();
+        if (Load().BanName(name)) Save();
+        return true;
     }
 
     public static bool Unban(string name)
     {
-        var data = Load();
-        bool removed = data.BannedNames.RemoveAll(entry => string.Equals(entry, name, StringComparison.OrdinalIgnoreCase)) > 0;
+        bool removed = Load().UnbanName(name);
         if (removed) Save();
         return removed;
     }
 
     public static ModerationData Snapshot()
     {
-        var data = Load();
-        return new ModerationData
-        {
-            BannedNames = new List<string>(data.BannedNames),
-            BannedAddresses = new List<string>(data.BannedAddresses),
-            MutedNames = new List<string>(data.MutedNames)
-        };
+        return Load().Copy();
     }
 
     public static bool UnbanAddress(string address)
     {
-        var data = Load();
-        bool removed = data.BannedAddresses.RemoveAll(entry => string.Equals(entry, address, StringComparison.OrdinalIgnoreCase)) > 0;
+        bool removed = Load().UnbanAddress(address);
         if (removed) Save();
         return removed;
     }
 
     public static void SetMuted(string name, bool muted)
     {
-        if (string.IsNullOrWhiteSpace(name) || IsMuted(name) == muted) return;
-
-        var data = Load();
-        if (muted) AddUnique(data.MutedNames, name);
-        else data.MutedNames.RemoveAll(entry => string.Equals(entry, name, StringComparison.OrdinalIgnoreCase));
+        if (!Load().SetMuted(name, muted)) return;
 
         Save();
         PlayerListNetwork.MarkDirty();
@@ -129,6 +106,7 @@ public static class ServerModeration
     private static ModerationData Load()
     {
         string? folder = World.WorldData?.WorldFolderPath;
+        if (string.IsNullOrEmpty(folder)) folder = ModerationFolder.Resolve(folder, ConfiguredWorldFolder());
         if (folder == _loadedFolder) return _data;
 
         _loadedFolder = folder;
@@ -140,6 +118,7 @@ public static class ServerModeration
         try
         {
             _data = JsonSerializer.Deserialize<ModerationData>(File.ReadAllText(path)) ?? new ModerationData();
+            _data.ApplyMissingDefaults();
         }
         catch (Exception ex)
         {
@@ -152,7 +131,12 @@ public static class ServerModeration
     private static void Save()
     {
         string? path = GetPath(_loadedFolder);
-        if (path == null || GameSession.IsRemoteClient) return;
+        if (GameSession.IsRemoteClient) return;
+        if (path == null)
+        {
+            Debug.Error("[Moderation] No world folder is known, the change is kept only until the server stops");
+            return;
+        }
 
         try
         {
@@ -169,20 +153,9 @@ public static class ServerModeration
         return string.IsNullOrEmpty(folder) ? null : Path.Combine(folder, FileName);
     }
 
-    private static bool Contains(List<string> list, string value)
+    private static string? ConfiguredWorldFolder()
     {
-        if (string.IsNullOrEmpty(value)) return false;
-
-        for (int i = 0; i < list.Count; i++)
-        {
-            if (string.Equals(list[i], value, StringComparison.OrdinalIgnoreCase)) return true;
-        }
-
-        return false;
-    }
-
-    private static void AddUnique(List<string> list, string value)
-    {
-        if (!Contains(list, value)) list.Add(value);
+        var config = GameSession.IsDedicated ? Dedicated.DedicatedServer.Config : null;
+        return config == null ? null : ModerationFolder.DedicatedWorld(Spacebox.Game.GUI.WorldProvisioner.WorldsDirectory, config.WorldName);
     }
 }

@@ -44,9 +44,15 @@ public static class ServerRestart
         Debug.Warning("[Server] Restarting: saving the world");
         FlushPlayersThen(() =>
         {
-            Save("Restart");
-            NetworkSession.Current?.Dispose();
-            _stopping = false;
+            try
+            {
+                Save("Restart");
+                NetworkSession.Current?.Dispose();
+            }
+            finally
+            {
+                _stopping = false;
+            }
             DedicatedServer.Relaunch();
         });
         return true;

@@ -43,6 +43,7 @@ public static class InstalledGameSets
 
         foreach (var folder in folders)
         {
+            if (ModFolderInstaller.IsTransient(folder)) continue;
             var config = ReadConfig(folder);
             if (config != null) result.Add(new InstalledGameSet(folder, config));
         }

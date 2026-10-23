@@ -417,6 +417,8 @@ public sealed class NetworkSession : IDisposable
         player.PlayerObject = _playerSpawner.SpawnPlayer(peer, player.Name, player.SkinColor, _localPlayer.Position, _localPlayer.GetRotation());
     }
 
+    private const string NameTakenReason = "Name is already taken";
+
     private void OnJoinRequest(int sender, JoinRequestMessage message)
     {
         var network = NetworkManager.Instance;
@@ -458,6 +460,16 @@ public sealed class NetworkSession : IDisposable
     {
         var network = NetworkManager.Instance;
         string name = message.Name.Trim();
+        if (PlayerRegistry.TryGetByName(name, out var existing))
+        {
+            if (!IsSameAddress(existing, sender))
+            {
+                RejectJoin(sender, NameTakenReason);
+                return;
+            }
+            ReplaceStalePeer(existing);
+        }
+
         PlayerRegistry.Add(new ConnectedPlayer { Peer = sender, Name = name, SkinColor = SafeSkinColor(message.SkinColor) });
         network.AdmitPeer(sender);
 
@@ -488,12 +500,10 @@ public sealed class NetworkSession : IDisposable
 
     private string ValidateJoin(int sender, JoinRequestMessage message)
     {
-        if (message.GameVersion != Application.Version) return $"Version mismatch: server {Application.Version}, client {message.GameVersion}";
-        string nameError = PlayerNameRules.Validate(message.Name);
-        if (nameError != null) return nameError;
-        if (Moderation.ServerModeration.IsBanned(message.Name.Trim(), NetworkManager.Instance.GetPeerAddress(sender))) return Moderation.ServerModeration.BannedReason;
-        if (string.Equals(message.Name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase) && GameSession.HasLocalPlayer) return "Name is already taken";
-        if (PlayerRegistry.TryGetByName(message.Name.Trim(), out var existing) && !TryReplaceStalePeer(existing, sender)) return "Name is already taken";
+        string requestError = JoinRequestRules.Validate(message, NetworkManager.Instance.GetPeerAddress(sender));
+        if (requestError != null) return requestError;
+        if (string.Equals(message.Name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase) && GameSession.HasLocalPlayer) return NameTakenReason;
+        if (PlayerRegistry.TryGetByName(message.Name.Trim(), out var existing) && !IsSameAddress(existing, sender)) return NameTakenReason;
         if (!_access.IsAllowed(message.Name)) return "You are not on the whitelist of this server";
         return null;
     }
@@ -506,16 +516,19 @@ public sealed class NetworkSession : IDisposable
         return color;
     }
 
-    private bool TryReplaceStalePeer(ConnectedPlayer existing, int sender)
+    private static bool IsSameAddress(ConnectedPlayer existing, int sender)
     {
         var network = NetworkManager.Instance;
         string address = network.GetPeerAddress(sender);
-        if (existing.Peer == network.LocalPeerId || string.IsNullOrEmpty(address) || address != network.GetPeerAddress(existing.Peer)) return false;
+        return existing.Peer != network.LocalPeerId && existing.Peer != sender && !string.IsNullOrEmpty(address) && address == network.GetPeerAddress(existing.Peer);
+    }
 
+    private void ReplaceStalePeer(ConnectedPlayer existing)
+    {
+        var network = NetworkManager.Instance;
         Debug.Log($"[Server] {existing.Name} reconnected from the same address, the old connection (peer {existing.Peer}) is closed");
         OnPeerDisconnected(existing.Peer, "Reconnected");
         network.Kick(existing.Peer, "You connected again from another window");
-        return true;
     }
 
     private void OnClientReady(int sender, ClientReadyMessage message)
