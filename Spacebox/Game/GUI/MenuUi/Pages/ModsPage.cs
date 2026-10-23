@@ -63,7 +63,7 @@ public sealed class ModsPage : MenuPage
             if (Spacebox.Game.Resource.Content.GameSetRoles.IsExtension(mod.Extends))
             {
                 string includes = mod.Includes != null && mod.Includes.Count > 0 ? $", includes {string.Join(", ", mod.Includes)}" : "";
-                row.AddLine($"Extension of '{mod.Extends}'{includes} - pick it when creating a world", "MutedLabel");
+                row.AddLine($"Extension of {Spacebox.Game.Resource.Content.ExtensionTargets.Describe(mod.Extends)}{includes} - pick it when creating a world", "MutedLabel");
             }
             row.Selected += Select;
             row.Activated += r => _menu.OpenGameSetEditor((ModConfig)r.Metadata, "Overview");

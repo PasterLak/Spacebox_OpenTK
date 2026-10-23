@@ -19,6 +19,13 @@ public static class ContentJson
         AllowTrailingCommas = true
     };
 
+    public const string RemoveKey = "Remove";
+
+    public static bool IsRemoval(JsonNode node)
+    {
+        return node is JsonObject obj && Get(obj, RemoveKey) is JsonValue value && value.TryGetValue(out bool remove) && remove;
+    }
+
     public static readonly JsonSerializerOptions Indented = new JsonSerializerOptions
     {
         WriteIndented = true,

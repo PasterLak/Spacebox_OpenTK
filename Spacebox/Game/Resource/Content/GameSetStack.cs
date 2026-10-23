@@ -15,7 +15,12 @@ public sealed class GameSetStack
         Fallbacks = fallbacks ?? Array.Empty<InstalledGameSet>();
 
         var layers = new List<ContentLayer> { baseSet.ToLayer() };
-        foreach (var extension in Extensions) layers.Add(extension.ToLayer());
+        foreach (var extension in Extensions)
+        {
+            layers.Add(extension.ToLayer());
+            string adapter = GameSetFormat.AdapterFolder(extension.Folder, baseSet);
+            if (adapter != null) layers.Add(new ContentLayer(extension.Id, adapter));
+        }
         Layers = layers;
 
         if (Fallbacks.Count > 0) Fallback = Fallbacks[0].ToLayer();
@@ -65,7 +70,12 @@ public sealed class GameSetStack
     public string[] SearchRootsNewestFirst()
     {
         var roots = new List<string>();
-        for (int i = Extensions.Count - 1; i >= 0; i--) roots.Add(Extensions[i].Folder);
+        for (int i = Extensions.Count - 1; i >= 0; i--)
+        {
+            string adapter = GameSetFormat.AdapterFolder(Extensions[i].Folder, Base);
+            if (adapter != null) roots.Add(adapter);
+            roots.Add(Extensions[i].Folder);
+        }
         roots.Add(Base.Folder);
         foreach (var fallback in Fallbacks) roots.Add(fallback.Folder);
         return roots.ToArray();

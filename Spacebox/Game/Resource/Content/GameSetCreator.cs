@@ -74,7 +74,7 @@ public static class GameSetCreator
         try
         {
             Directory.CreateDirectory(folder);
-            File.WriteAllText(Path.Combine(folder, GameSetFormat.ConfigFile), Config(modId, name, request.Author, baseSet?.Id ?? Globals.GameSet.EmptyId).ToJsonString(ContentJson.Indented));
+            File.WriteAllText(Path.Combine(folder, GameSetFormat.ConfigFile), Config(modId, name, request.Author, baseSet).ToJsonString(ContentJson.Indented));
             CopyIcon(baseSet ?? FindEmpty(installed), folder);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -121,17 +121,19 @@ public static class GameSetCreator
         return InstalledGameSets.Find(installed, id) != null;
     }
 
-    private static JsonObject Config(string modId, string name, string author, string extends)
+    private static JsonObject Config(string modId, string name, string author, InstalledGameSet baseSet)
     {
-        return new JsonObject
+        var config = new JsonObject
         {
             ["ModId"] = modId,
             ["ModName"] = name,
             ["Description"] = "",
             ["Author"] = author?.Trim() ?? "",
             ["Version"] = FirstVersion,
-            ["Extends"] = extends
+            ["Extends"] = baseSet?.Id ?? Globals.GameSet.EmptyId
         };
+        if (baseSet != null && !string.IsNullOrWhiteSpace(baseSet.Config.Version)) config["MinBaseVersion"] = baseSet.Config.Version;
+        return config;
     }
 
     private static InstalledGameSet FindBase(string id, IReadOnlyList<InstalledGameSet> installed)

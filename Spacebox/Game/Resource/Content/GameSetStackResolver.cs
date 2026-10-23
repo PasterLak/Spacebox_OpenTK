@@ -35,11 +35,12 @@ public static class GameSetStackResolver
         var baseSet = selected;
         if (selected.IsExtension)
         {
-            baseSet = InstalledGameSets.Find(installed, selected.Config.Extends);
+            var targets = ExtensionTargets.Parse(selected.Config.Extends);
+            baseSet = ExtensionTargets.IsAny(selected.Config.Extends) || targets.Count == 0 ? null : InstalledGameSets.Find(installed, targets[0]);
             requested.Add(selected.Id);
             if (baseSet == null)
             {
-                errors.Add($"Extension '{selected.Id}' extends '{selected.Config.Extends}', which is not installed");
+                errors.Add($"Extension '{selected.Id}' extends '{ExtensionTargets.Describe(selected.Config.Extends)}': pick a base GameSet for it");
                 return new GameSetStackResult(null, errors);
             }
         }

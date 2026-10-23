@@ -1,6 +1,7 @@
 using Engine;
 using Engine.Utils;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Disassembly;
 
@@ -8,14 +9,16 @@ public static class DisassemblySettingsLoader
 {
     public const string FileName = "disassembly.json";
 
-    public static DisassemblySettings Load(string modPath, string modId)
+    private static readonly Dictionary<string, string> KeyedArrays = new Dictionary<string, string> { ["Items"] = "Item" };
+
+    public static DisassemblySettings Load(GameSetFiles files, string modId)
     {
-        string file = Path.Combine(modPath, FileName);
-        if (!File.Exists(file)) return DisassemblySettings.CreateDefault();
+        var file = files.File(FileName, KeyedArrays);
+        if (file == null) return DisassemblySettings.CreateDefault();
 
         try
         {
-            var json = JsonFixer.LoadJsonSafe<DisassemblyJSON>(file);
+            var json = GameSetFiles.Deserialize<DisassemblyJSON>(file.Data);
             return json == null ? DisassemblySettings.CreateDefault() : Create(json, modId);
         }
         catch (Exception ex)

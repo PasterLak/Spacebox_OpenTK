@@ -1,5 +1,6 @@
 using Engine;
 using Engine.Utils;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Ships;
 
@@ -7,16 +8,16 @@ public static class ShipPhysicsSettingsLoader
 {
     public const string FileName = "ships.json";
 
-    public static ShipPhysicsSettings Load(string modPath)
+    public static ShipPhysicsSettings Load(GameSetFiles files)
     {
         var settings = new ShipPhysicsSettings();
-        string file = Path.Combine(modPath, FileName);
+        var file = files.File(FileName);
 
-        if (File.Exists(file))
+        if (file != null)
         {
             try
             {
-                settings = JsonFixer.LoadJsonSafe<ShipPhysicsSettings>(file) ?? settings;
+                settings = GameSetFiles.Deserialize<ShipPhysicsSettings>(file.Data) ?? settings;
             }
             catch (Exception ex)
             {

@@ -77,7 +77,9 @@ public static class GameSetLoader
         }
         ModInfo.ModPath = modPath;
         ModInfo.FolderName = stack.Base.FolderName;
-        var spawnParameters = Spacebox.Game.Player.Respawn.SpawnParameters.TryLoad(modPath);
+        var files = GameSetFiles.For(stack);
+        ApplyExtensionSettings(stack);
+        var spawnParameters = Spacebox.Game.Player.Respawn.SpawnParameters.FromFile(files.File(Spacebox.Game.Player.Respawn.SpawnParameters.RelativePath));
         var extensionConfigs = new List<ModConfig>();
         foreach (var extension in stack.Extensions) extensionConfigs.Add(extension.Config);
         ModInfo.ItemsOnStart = Spacebox.Game.Player.Respawn.SpawnParameters.StartItems(spawnParameters, ModInfo, extensionConfigs);
@@ -88,22 +90,23 @@ public static class GameSetLoader
 
         LoadSounds(assets);
         BlocksLoader.LoadBlocks(Content, stack.SearchRootsNewestFirst());
-        LoadProjectiles(modPath, defaultModPath);
+        LoadProjectiles(files);
         LoadItems(Content);
         SetBlocksDrop();
         LoadRecipes(Content);
         LoadCrafting(Content);
-        DisassemblyRecipes.Initialize(DisassemblySettingsLoader.Load(modPath, ModInfo.ModId));
-        ShipPhysicsSettings.Current = ShipPhysicsSettingsLoader.Load(modPath);
-        LoadLoot(modPath, defaultModPath);
-        MobsLoader.Load(modPath, defaultModPath);
-        GameModesLoader.Load(modPath, defaultModPath);
+        DisassemblyRecipes.Initialize(DisassemblySettingsLoader.Load(files, ModInfo.ModId));
+        ShipPhysicsSettings.Current = ShipPhysicsSettingsLoader.Load(files);
+        LoadLoot(files);
+        MobsLoader.Load(files);
+        GameModesLoader.Load(files);
         MobIconRenderer.ApplyToSpawners();
-        Spacebox.Game.Tutorial.TutorialLoader.Load(modPath, defaultModPath, ModInfo.ModId);
+        Spacebox.Game.Tutorial.TutorialLoader.Load(files, ModInfo.ModId);
         LoadSettings(modPath);
-        foreach (var root in BaseAndFallbackRoots(stack)) if (LoadOptionalFiles(root)) break;
+        LoadLighting(files.File(LightingFile));
 
-        var generator = GenerationLoader.Load(modPath, defaultModPath);
+        var generator = GenerationLoader.Load(files);
+        foreach (var warning in files.Warnings) Debug.Warning($"[GameSetLoader] {warning}");
         generator.PlayerSpawn = Spacebox.Game.Player.Respawn.SpawnParameters.Rules(spawnParameters, generator.PlayerSpawn);
         Generation.World.WorldGenerator = generator;
 
@@ -288,39 +291,21 @@ public static class GameSetLoader
 
 
 
-    private static void LoadProjectiles(string modPath, string defaultModPath)
+    private static void LoadProjectiles(GameSetFiles gameSetFiles)
     {
-        string projDirectory = Path.Combine(modPath, "Projectiles");
-
-        if (!Directory.Exists(projDirectory))
-        {
-            projDirectory = Path.Combine(defaultModPath, "Projectiles");
-            if (!Directory.Exists(projDirectory)) return;
-        }
-
         short internalIdCounter = (short)GameAssets.Projectiles.Count;
 
         try
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                AllowTrailingCommas = true
-            };
-
-            string[] files = Directory.GetFiles(projDirectory, "*.json", SearchOption.AllDirectories);
-
-            foreach (string file in files)
+            foreach (var file in gameSetFiles.Folder("Projectiles"))
             {
                 try
                 {
-                    string json = File.ReadAllText(file);
-                    ProjectileJSON proj = JsonSerializer.Deserialize<ProjectileJSON>(json, options);
+                    ProjectileJSON proj = GameSetFiles.Deserialize<ProjectileJSON>(file.Data);
 
                     if (proj == null) continue;
 
-                    proj.ID = Path.GetFileNameWithoutExtension(file).ToLower();
+                    proj.ID = file.Name.ToLower();
 
                     if (GameAssets.Projectiles.ContainsKey(internalIdCounter))
                     {
@@ -342,7 +327,7 @@ public static class GameSetLoader
                 }
                 catch (Exception ex)
                 {
-                    Debug.Error($"[GamesetLoader] Error loading projectile file '{Path.GetFileName(file)}': {ex.Message}");
+                    Debug.Error($"[GamesetLoader] Error loading projectile file '{file.Source}': {ex.Message}");
                 }
             }
         }
@@ -590,16 +575,8 @@ public static class GameSetLoader
         }
     }
 
-    private static void LoadLoot(string modPath, string defaultModPath)
+    private static void LoadLoot(GameSetFiles gameSetFiles)
     {
-        string lootDirectory = Path.Combine(modPath, "Generation", "Loot");
-
-        if (!Directory.Exists(lootDirectory))
-        {
-            lootDirectory = Path.Combine(defaultModPath, "Generation", "Loot");
-            if (!Directory.Exists(lootDirectory)) return;
-        }
-
         if (GameAssets.LootConfig == null)
         {
             GameAssets.LootConfig = new LootConfig();
@@ -607,22 +584,14 @@ public static class GameSetLoader
 
         try
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                ReadCommentHandling = JsonCommentHandling.Skip
-            };
-
-            string[] files = Directory.GetFiles(lootDirectory, "*.json", SearchOption.AllDirectories);
-
-            foreach (string file in files)
+            foreach (var file in gameSetFiles.Folder("Generation/Loot"))
             {
                 try
                 {
 
-                    string tableName = Path.GetFileNameWithoutExtension(file);
+                    string tableName = file.Name;
 
-                    var items = JsonFixer.LoadJsonSafe<List<LootEntry>>(file);
+                    var items = GameSetFiles.Deserialize<List<LootEntry>>(file.Data);
 
                     if (items != null)
                     {
@@ -631,7 +600,7 @@ public static class GameSetLoader
                 }
                 catch (Exception ex)
                 {
-                    Debug.Error($"[GameSetLoader] Error loading loot file '{Path.GetFileName(file)}': {ex.Message}");
+                    Debug.Error($"[GameSetLoader] Error loading loot file '{file.Source}': {ex.Message}");
                 }
             }
 
@@ -1017,41 +986,26 @@ public static class GameSetLoader
         }
     }
 
-    private static IEnumerable<string> BaseAndFallbackRoots(GameSetStack stack)
-    {
-        yield return stack.Base.Folder;
-        foreach (var folder in stack.FallbackFolders) yield return folder;
-    }
+    private const string LightingFile = "Optional/lighting.json";
 
-    private static bool LoadOptionalFiles(string modPath)
+    private static void ApplyExtensionSettings(GameSetStack stack)
     {
-        string optionalPath = Path.Combine(modPath, "Optional");
-        bool loaded = false;
-
-        if (Directory.Exists(optionalPath))
+        foreach (var extension in stack.Extensions)
         {
-            foreach (string file in Directory.GetFiles(optionalPath))
-            {
-                if (Path.GetFileNameWithoutExtension(file).Equals("lighting", StringComparison.OrdinalIgnoreCase))
-                {
-                    LoadLighting(optionalPath);
-                    loaded = true;
-
-                }
-            }
+            var config = ContentJson.ParseFile(Path.Combine(extension.Folder, GameSetFormat.ConfigFile), null) as System.Text.Json.Nodes.JsonObject;
+            if (config != null && ContentJson.Get(config, nameof(ModConfig.OxygenConsumeInterval)) != null)
+                ModInfo.OxygenConsumeInterval = extension.Config.OxygenConsumeInterval;
         }
-        return loaded;
     }
 
-    private static void LoadLighting(string path)
+    private static void LoadLighting(LayeredFile file)
     {
-        string file = Path.Combine(path, "lighting.json");
-        if (File.Exists(file))
+        if (file != null)
         {
             try
             {
 
-                Modlighting settings = JsonFixer.LoadJsonSafe<Modlighting>(file);
+                Modlighting settings = GameSetFiles.Deserialize<Modlighting>(file.Data);
 
                 if (settings != null)
                 {
@@ -1096,7 +1050,10 @@ public static class GameSetLoader
         public string Author { get; set; } = "";
         public string Version { get; set; } = "0";
         public float OxygenConsumeInterval { get; set; } = 10f;
+        [System.Text.Json.Serialization.JsonConverter(typeof(Spacebox.Game.Resource.Content.StringOrListConverter))]
         public string Extends { get; set; } = "";
+        public string MinBaseVersion { get; set; } = "";
+        public string MaxBaseVersion { get; set; } = "";
         public List<string> Includes { get; set; } = new List<string>();
         [System.Text.Json.Serialization.JsonIgnore]
         public string FolderName { get; set; } = "";

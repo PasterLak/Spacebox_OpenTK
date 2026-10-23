@@ -1,5 +1,6 @@
 using Engine;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Tutorial;
 
@@ -49,31 +50,17 @@ public static class TutorialLoader
         foreach (var child in task.Children) CheckAction(tutorial, step, child, warnings);
     }
 
-    public static void Load(string modPath, string defaultModPath, string modId)
+    public static void Load(GameSetFiles files, string modId)
     {
-        string folder = Path.Combine(modPath ?? "", FolderName);
-        if (!Directory.Exists(folder)) folder = Path.Combine(defaultModPath ?? "", FolderName);
-        if (!Directory.Exists(folder))
-        {
-            TutorialLibrary.Clear();
-            return;
-        }
-
         var warnings = new List<string>();
         var parser = new TutorialParser(new GameAssetsItemResolver(modId), warnings);
         var tutorials = new List<TutorialDefinition>();
 
-        foreach (var file in Directory.GetFiles(folder, "*.json"))
+        foreach (var file in files.Folder(FolderName, false))
         {
-            try
-            {
-                var tutorial = parser.Parse(File.ReadAllText(file), Path.GetFileName(file));
-                if (tutorial != null) tutorials.Add(tutorial);
-            }
-            catch (IOException ex)
-            {
-                warnings.Add($"[Tutorial] {Path.GetFileName(file)}: {ex.Message}");
-            }
+            if (file.Data == null) continue;
+            var tutorial = parser.Parse(file.Data.ToJsonString(), Path.GetFileName(file.Source));
+            if (tutorial != null) tutorials.Add(tutorial);
         }
 
         foreach (var tutorial in tutorials) CheckActions(tutorial, warnings);

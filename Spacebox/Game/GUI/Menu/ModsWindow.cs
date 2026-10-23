@@ -95,7 +95,7 @@ public class ModsWindow : MenuWindow
         if (Spacebox.Game.Resource.Content.GameSetRoles.IsExtension(mod.Extends))
         {
             string includes = mod.Includes != null && mod.Includes.Count > 0 ? $", includes {string.Join(", ", mod.Includes)}" : "";
-            ImGui.TextColored(new Vector4(0.6f, 0.8f, 1f, 1f), $"Extension of '{mod.Extends}'{includes} - pick it when creating a world");
+            ImGui.TextColored(new Vector4(0.6f, 0.8f, 1f, 1f), $"Extension of {Spacebox.Game.Resource.Content.ExtensionTargets.Describe(mod.Extends)}{includes} - pick it when creating a world");
         }
         ImGui.EndGroup();
         ImGui.SetCursorPos(start + new Vector2(0f, rowHeight + ImGui.GetStyle().ItemSpacing.Y + 2f));

@@ -425,9 +425,11 @@
     "Author": "Author name shown in the GameSet list.",
     "Version": "Version text of the GameSet, shown to players. Default: 0.",
     "OxygenConsumeInterval": "Seconds between oxygen losses while the player is outside breathable air. 0 = oxygen is never used up. Default: 10.",
-    "Extends": "Base GameSet id this extension adds to (usually default). Empty = this is a base GameSet.",
+    "Extends": "What this GameSet is built on. \"empty\" = a GameSet of its own built on Empty. Any other id = an extension of that GameSet; \"*\" = an extension for any GameSet; a list [\"default\", \"my_set\"] = an extension for those GameSets.",
     "Includes": "Ids of other extensions that load before this one and are added to the world automatically. Only for extensions.",
-    "ItemsOnStart": "Items given to a new player in survival. Equipment goes to a free equipment slot. Extension start items are added to these."
+    "ItemsOnStart": "Items given to a new player in survival. Equipment goes to a free equipment slot. Extension start items are added to these.",
+    "MinBaseVersion": "Extensions: lowest Version of the base GameSet this extension works with. Older bases are refused. Empty = any.",
+    "MaxBaseVersion": "Extensions: highest Version of the base GameSet this extension works with. Newer bases are refused. Empty = no limit."
   },
   "Modlighting": {
     "AmbientColor": "Base light color of the world (Optional/lighting.json), RGB 0-255. Darker values make unlit areas darker. Default: white.",

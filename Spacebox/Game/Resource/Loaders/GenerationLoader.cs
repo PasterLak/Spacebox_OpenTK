@@ -1,6 +1,7 @@
 ﻿using Engine;
 using Engine.Utils;
 using Spacebox.Game.Generation.Structures;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Resource;
 
@@ -8,20 +9,21 @@ public class GenerationLoader
 {
 
 
-    public static WorldGenerator Load(string modPath, string defaultModPath)
-    {
-        string generationPath = Path.Combine(modPath, "Generation");
-        string defaultGenerationPath = Path.Combine(defaultModPath, "Generation");
+    public const string AsteroidsFolder = "Generation/Asteroids";
+    public const string BiomesFolder = "Generation/Biomes";
+    public const string GeneratorFile = "Generation/generator.json";
 
+    public static WorldGenerator Load(GameSetFiles files)
+    {
         WorldGenerator generator = new WorldGenerator();
 
         Biome.Reset();
         AsteroidData.Reset();
 
-        LoadAsteroids(generationPath, defaultGenerationPath, generator);
+        LoadAsteroids(files.Folder(AsteroidsFolder, false), generator);
         //LoadStructures(generationPath, defaultGenerationPath);
-        LoadBiomes(generationPath, defaultGenerationPath, generator);
-        LoadGenerator(generationPath, defaultGenerationPath, generator);
+        LoadBiomes(files.Folder(BiomesFolder, false), generator);
+        LoadGenerator(files.File(GeneratorFile), generator);
 
         if (generator != null)
         {
@@ -38,10 +40,9 @@ public class GenerationLoader
         return generator;
     }
 
-    private static void LoadGenerator(string modPath, string defaultModPath, WorldGenerator generator)
+    private static void LoadGenerator(LayeredFile file, WorldGenerator generator)
     {
-        var path = GameSetLoader.GetFilePath(modPath, defaultModPath, "generator.json");
-        if (path == null)
+        if (file == null)
         {
             Debug.Error("[GenerationLoader] generator.json not found");
             return;
@@ -49,7 +50,7 @@ public class GenerationLoader
 
         try
         {
-            GeneratorJSON generatorJson = JsonFixer.LoadJsonSafe<GeneratorJSON>(path);
+            GeneratorJSON generatorJson = GameSetFiles.Deserialize<GeneratorJSON>(file.Data);
             if (generatorJson == null)
             {
                 Debug.Error("[GenerationLoader] Failed to parse generator.json");
@@ -96,33 +97,23 @@ public class GenerationLoader
         return null;
     }
 
-    private static void LoadAsteroids(string modPath, string defaultModPath, WorldGenerator generator)
+    private static void LoadAsteroids(IReadOnlyList<LayeredFile> files, WorldGenerator generator)
     {
-        string asteroidPath = Path.Combine(modPath, "Asteroids");
-        string defaultAsteroidPath = Path.Combine(defaultModPath, "Asteroids");
-
-        LoadAsteroidsFromDirectory(Directory.Exists(asteroidPath) ? asteroidPath : defaultAsteroidPath, generator);
+        LoadAsteroidsFromFiles(files, generator);
 
         //Debug.Success($"[GenerationLoader] Loaded {generator.loadedAsteroids.Count} asteroids");
     }
 
-    private static void LoadAsteroidsFromDirectory(string directoryPath, WorldGenerator generator)
+    private static void LoadAsteroidsFromFiles(IReadOnlyList<LayeredFile> files, WorldGenerator generator)
     {
-        if (!Directory.Exists(directoryPath))
-        {
-            Debug.Log($"[GenerationLoader] Asteroid directory not found: {directoryPath}");
-            return;
-        }
-
         try
         {
-            var jsonFiles = Directory.GetFiles(directoryPath, "*.json");
-
-            foreach (var filePath in jsonFiles)
+            foreach (var file in files)
             {
+                string filePath = file.Source;
                 try
                 {
-                    AsteroidJSON asteroidJson = JsonFixer.LoadJsonSafe<AsteroidJSON>(filePath);
+                    AsteroidJSON asteroidJson = GameSetFiles.Deserialize<AsteroidJSON>(file.Data);
                     if (asteroidJson == null)
                     {
                         Debug.Error($"[GenerationLoader] Failed to parse asteroid file: {Path.GetFileName(filePath)}");
@@ -156,7 +147,7 @@ public class GenerationLoader
         }
         catch (Exception ex)
         {
-            Debug.Error($"[GenerationLoader] Error reading asteroid directory {directoryPath}: {ex.Message}");
+            Debug.Error($"[GenerationLoader] Error reading asteroids: {ex.Message}");
         }
     }
 
@@ -180,31 +171,16 @@ public class GenerationLoader
         }
     }
 
-    private static void LoadBiomes(string modPath, string defaultModPath, WorldGenerator generator)
+    private static void LoadBiomes(IReadOnlyList<LayeredFile> files, WorldGenerator generator)
     {
-        string biomePath = Path.Combine(modPath, "Biomes");
-        string defaultBiomePath = Path.Combine(defaultModPath, "Biomes");
-
-        LoadBiomesFromDirectory(Directory.Exists(biomePath) ? biomePath : defaultBiomePath, generator);
-    }
-
-    private static void LoadBiomesFromDirectory(string directoryPath, WorldGenerator generator)
-    {
-        if (!Directory.Exists(directoryPath))
-        {
-            Debug.Log($"[GenerationLoader] Biome directory not found: {directoryPath}");
-            return;
-        }
-
         try
         {
-            var jsonFiles = Directory.GetFiles(directoryPath, "*.json");
-
-            foreach (var filePath in jsonFiles)
+            foreach (var file in files)
             {
+                string filePath = file.Source;
                 try
                 {
-                    BiomeJSON biomeJson = JsonFixer.LoadJsonSafe<BiomeJSON>(filePath);
+                    BiomeJSON biomeJson = GameSetFiles.Deserialize<BiomeJSON>(file.Data);
                     if (biomeJson == null)
                     {
                         Debug.Error($"[GenerationLoader] Failed to parse biome file: {Path.GetFileName(filePath)}");
@@ -243,7 +219,7 @@ public class GenerationLoader
         }
         catch (Exception ex)
         {
-            Debug.Error($"[GenerationLoader] Error reading biome directory {directoryPath}: {ex.Message}");
+            Debug.Error($"[GenerationLoader] Error reading biomes: {ex.Message}");
         }
     }
 

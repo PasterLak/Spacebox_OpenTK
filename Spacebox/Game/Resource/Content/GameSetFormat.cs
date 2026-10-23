@@ -36,17 +36,33 @@ public static class GameSetFormat
         return false;
     }
 
+    public const string AdaptersFolder = "Bases";
+
     public static bool IsIgnoredPath(string root, string path)
     {
         string relative = Path.GetRelativePath(root, path);
         string folder = Path.GetDirectoryName(relative);
         if (string.IsNullOrEmpty(folder)) return false;
 
-        foreach (var segment in folder.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+        var segments = folder.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        if (string.Equals(segments[0], AdaptersFolder, StringComparison.OrdinalIgnoreCase)) return true;
+        foreach (var segment in segments)
         {
             if (segment.StartsWith('_')) return true;
         }
         return false;
+    }
+
+    public static string AdapterFolder(string extensionFolder, InstalledGameSet baseSet)
+    {
+        if (string.IsNullOrEmpty(extensionFolder) || baseSet == null) return null;
+        foreach (var name in new[] { baseSet.Id, baseSet.FolderName })
+        {
+            if (string.IsNullOrWhiteSpace(name)) continue;
+            string path = Path.Combine(extensionFolder, AdaptersFolder, name);
+            if (Directory.Exists(path)) return path;
+        }
+        return null;
     }
 
     public static bool IsInEmissionsFolder(string root, string path)

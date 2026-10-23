@@ -1,6 +1,7 @@
 using Engine;
 using Engine.Utils;
 using Spacebox.Game.Mobs;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Resource;
 
@@ -8,22 +9,21 @@ public static class MobsLoader
 {
     private const string FolderName = "Mobs";
 
-    public static void Load(string modPath, string defaultModPath)
+    public static void Load(GameSetFiles files)
     {
         GameAssets.Mobs.Clear();
 
-        string directory = Path.Combine(modPath, FolderName);
-        if (!Directory.Exists(directory)) directory = Path.Combine(defaultModPath, FolderName);
-        if (!Directory.Exists(directory)) return;
-
-        foreach (var file in Directory.GetFiles(directory, "*.json"))
+        foreach (var file in files.Folder(FolderName, false))
         {
-            var json = JsonFixer.LoadJsonSafe<MobJSON>(file);
+            var json = GameSetFiles.Deserialize<MobJSON>(file.Data);
             if (json == null || string.IsNullOrWhiteSpace(json.Id))
             {
-                Debug.Error($"[MobsLoader] Invalid mob file: {Path.GetFileName(file)}");
+                Debug.Error($"[MobsLoader] Invalid mob file: {file.Source}");
                 continue;
             }
+
+            json.Model = file.ResolvePath(json.Model);
+            json.Texture = file.ResolvePath(json.Texture);
 
             if (!MobBrainFactory.IsRegistered(json.Behaviour))
             {

@@ -85,9 +85,10 @@ public sealed class ExtensionResolver
             return;
         }
 
-        if (!_baseSet.Matches(extension.Config.Extends))
+        string problem = ExtensionCompatibility.Problem(extension, _baseSet);
+        if (problem != null)
         {
-            _errors.Add($"Extension '{extension.Id}' extends '{extension.Config.Extends}', but the base GameSet is '{_baseSet.Id}'");
+            _errors.Add($"Extension '{extension.Id}': {problem}");
             _states[extension] = VisitState.Done;
             return;
         }

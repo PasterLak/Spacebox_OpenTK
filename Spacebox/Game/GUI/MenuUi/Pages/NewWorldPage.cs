@@ -125,10 +125,11 @@ public sealed class NewWorldPage : MenuPage
         if (available.Count == 0) _extensions.AddChild(new Label { Text = "No extensions installed for this GameSet", ThemeTypeVariation = "MutedLabel" });
         foreach (var extension in available)
         {
+            string problem = _menu.ExtensionProblem(extension, baseConfig);
             var check = new CheckBox($"{extension.DisplayName}  v{extension.Config.Version}", Contains(selected, extension.Id))
             {
-                Disabled = readOnly,
-                TooltipText = Tooltip(extension),
+                Disabled = readOnly || problem != null && !Contains(selected, extension.Id),
+                TooltipText = problem ?? Tooltip(extension),
                 Icon = extension.Config.Icon,
                 IconRegion = extension.Config.Icon == null ? null : new Rect2(0f, extension.Config.Icon.Height, extension.Config.Icon.Width, -extension.Config.Icon.Height)
             };
@@ -141,6 +142,7 @@ public sealed class NewWorldPage : MenuPage
                 UpdateExtensionStatus();
             };
             _extensions.AddChild(check);
+            if (problem != null) _extensions.AddChild(new Label { Text = "   " + problem, ThemeTypeVariation = "ErrorLabel", Autowrap = true });
         }
         UpdateExtensionStatus();
     }

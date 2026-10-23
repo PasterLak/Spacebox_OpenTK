@@ -28,6 +28,12 @@ public sealed class KeyedContentList
             return;
         }
 
+        if (ContentJson.IsRemoval(entry.Data))
+        {
+            Remove(entry);
+            return;
+        }
+
         if (!_indices.TryGetValue(entry.Key, out int index))
         {
             _indices.Add(entry.Key, _entries.Count);
@@ -43,9 +49,26 @@ public sealed class KeyedContentList
             return;
         }
 
-        if (_isBase != null && _definedBy.TryGetValue(entry.Key, out var owner) && !_isBase(owner) && !ReferenceEquals(owner, entry.Layer))
+        if (_isBase != null && _definedBy.TryGetValue(entry.Key, out var owner) && !_isBase(owner) && !string.Equals(owner.Id, entry.Layer.Id, StringComparison.OrdinalIgnoreCase))
             _warnings?.Add($"{_kind} '{entry.Key}' from extension '{owner.Id}' is changed by extension '{entry.Layer.Id}'; use your own id prefix if this is a different {_kind.ToLowerInvariant()}");
 
         _entries[index] = existing.PatchedBy(entry);
+    }
+
+    private void Remove(ContentEntry entry)
+    {
+        if (string.IsNullOrEmpty(entry.Key) || !_indices.TryGetValue(entry.Key, out int index))
+        {
+            _warnings?.Add($"{_kind} '{entry.Key}' cannot be removed by '{entry.Layer.Id}': it does not exist");
+            return;
+        }
+
+        _entries.RemoveAt(index);
+        _definedBy.Remove(entry.Key);
+        _indices.Clear();
+        for (int i = 0; i < _entries.Count; i++)
+        {
+            if (!string.IsNullOrEmpty(_entries[i].Key)) _indices[_entries[i].Key] = i;
+        }
     }
 }

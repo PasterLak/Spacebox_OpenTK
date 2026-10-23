@@ -93,7 +93,7 @@ public static class InstalledGameSets
 
         foreach (var gameSet in gameSets)
         {
-            if (gameSet.IsExtension && baseSet.Matches(gameSet.Config.Extends)) result.Add(gameSet);
+            if (gameSet.IsExtension && ExtensionTargets.Matches(gameSet.Config.Extends, baseSet)) result.Add(gameSet);
         }
         return result;
     }

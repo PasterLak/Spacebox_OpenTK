@@ -1,6 +1,7 @@
 using Engine;
 using Engine.Utils;
 using Spacebox.Game.Player.GameModes;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Resource;
 
@@ -8,12 +9,21 @@ public static class GameModesLoader
 {
     public const string FolderName = "GameModes";
 
-    public static void Load(string modPath, string defaultModPath)
+    public static void Load(GameSetFiles files)
     {
-        string directory = Path.Combine(modPath, FolderName);
-        if (!Directory.Exists(directory)) directory = Path.Combine(defaultModPath, FolderName);
+        var modes = new List<GameModeDefinition>();
+        foreach (var file in files.Folder(FolderName, false))
+        {
+            if (TryConvert(GameSetFiles.Deserialize<GameModeJSON>(file.Data), file.Source, out var mode)) modes.Add(mode);
+        }
+        GameModeCatalog.Set(modes);
+    }
 
-        GameModeCatalog.Set(ReadFolder(directory));
+    private static bool TryConvert(GameModeJSON json, string source, out GameModeDefinition mode)
+    {
+        if (GameModeParser.TryConvert(json, out mode, out string error)) return true;
+        Debug.Error($"[GameModes] {Path.GetFileName(source)}: {error}");
+        return false;
     }
 
     public static List<GameModeDefinition> ReadFolder(string directory)
@@ -23,13 +33,7 @@ public static class GameModesLoader
 
         foreach (var file in Directory.GetFiles(directory, "*.json"))
         {
-            var json = JsonFixer.LoadJsonSafe<GameModeJSON>(file);
-            if (!GameModeParser.TryConvert(json, out var mode, out string error))
-            {
-                Debug.Error($"[GameModes] {Path.GetFileName(file)}: {error}");
-                continue;
-            }
-            modes.Add(mode);
+            if (TryConvert(JsonFixer.LoadJsonSafe<GameModeJSON>(file), file, out var mode)) modes.Add(mode);
         }
         return modes;
     }

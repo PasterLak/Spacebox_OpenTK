@@ -102,16 +102,25 @@ An extension adds content to a base GameSet (usually `Default`) without copying 
   "ModName": "My Lamps",
   "Version": "1.0",
   "Extends": "default",
+  "MinBaseVersion": "0.1.5",
   "Includes": [ "my_metals" ]
 }
 ```
+
+- **Which GameSets:** `"Extends": "default"` (one GameSet), `["default", "my_set"]` (only these) or `"*"` (any GameSet; Empty can never be extended).
+- **Versions:** `MinBaseVersion` and optional `MaxBaseVersion` compare against the base GameSet's `Version` number by number (`0.1.10` > `0.1.9`). An extension that does not fit is shown in red with the reason in Create World and cannot be picked; a world or server that uses it does not load. Mods > Create fills in the base's current version.
+- **Everything can be overridden:** an extension can add, patch and remove blocks, items, blueprints, recipes, crafting categories, projectiles, mobs, loot tables, asteroids, biomes, tutorials and game modes, and patch every settings file (`Generation/generator.json`, `ships.json`, `Player/spawn_parameters.json`, `Optional/lighting.json`, `disassembly.json`, `OxygenConsumeInterval` in its `config.json`), plus all textures, sounds, models and pictures.
+  - Files in folders (`Projectiles/`, `Mobs/`, `Generation/Loot/`, `Generation/Asteroids/`, `Generation/Biomes/`, `Tutorials/`, `GameModes/`) are matched by file name: a file with the same name as a base file patches it field by field, a new name adds one.
+  - Settings files are patched field by field; nested objects merge, lists are replaced (copy the whole list, e.g. `Biomes` in generator.json, when you change it). `disassembly.json` `Items` are merged by `Item`.
+  - `"Remove": true` removes an entry: `{ "ID": "glass", "Remove": true }` in a block or item, a folder file containing only `{ "Remove": true }`, or `{ "Item": "pistol", "Remove": true }` in disassembly `Items`. Worlds with a removed block placed show it as unknown.
+- **Adapter folders:** `Bases/<GameSet id>/` inside an extension is loaded right after the extension, only when the world uses that GameSet. It has the normal layout (Blocks/, Items/, Recipes/, Projectiles/, ...). Use it for recipes and patches that need items of one GameSet.
 
 - `Includes` loads other extensions first (they are added automatically when the world uses yours). Cycles, missing extensions and extensions of another base GameSet are reported in the menu and the world does not load.
 - Extensions may contain blocks, items, textures, emission maps, sounds, blueprints, processing recipes and crafting categories, in the folder or the flat format, and `ItemsOnStart` (added to the base start items).
 - Ids share the base GameSet's namespace (`default:my_lamp`), so you can use base items in recipes directly. Prefix your ids (`mylamps_...`) to avoid clashes with other extensions.
 - An entry with an id that already exists patches it: listed fields replace the old values, nested objects are merged, arrays are replaced. Example: `{ "ID": "light_white", "Description": "New text" }` only changes the description. A blueprint with the same product or a recipe with the same machine and ingredient replaces the old one.
 - When an extension changes an entry that another extension added (same id), the log warns about it: use your own id prefix unless you really mean to patch it.
-- Extensions cannot add projectiles, mobs, loot tables, generation (biomes, asteroids), tutorials, `disassembly.json` or `ships.json` settings, and cannot remove base entries; an extension weapon has to use projectiles of the base GameSet.
+- **General packs for every GameSet** (for example a weapons pack): use `"Extends": "*"`, bring everything the pack needs (projectiles, sounds, textures, its own crafting category) and use only your own items in its recipes; put recipes with items of a specific GameSet into `Bases/<id>/`. Recipes and loot entries that still name a missing item are skipped with a message in the log. Start every id with your pack id (`weapons_laser`), because all extensions share the base GameSet's ids; when two extensions define the same id the log names both.
 - Load order: base GameSet, then extensions (includes first, then the order chosen in Create World). Later extensions win.
 - The extension list is chosen when a world is created and saved in the world's `world.nbt` (`Extensions` list; worlds from older builds still have it in `world.json` until they are saved). Blocks and items of a missing extension would be unknown to the world, so the list cannot be changed in the menu and a world whose extensions are not installed does not load.
 - Multiplayer: the server sends its GameSet hash including all extensions; clients without the same files download the server's GameSet and extensions automatically into `Multiplayer/Mods/<server>/`. Dedicated servers use the `Extensions` of their world's `world.json`.

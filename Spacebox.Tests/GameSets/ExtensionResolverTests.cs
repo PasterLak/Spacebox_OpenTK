@@ -83,7 +83,7 @@ public sealed class ExtensionResolverTests : IDisposable
         var resolution = Resolve("for_other");
 
         Assert.False(resolution.Success);
-        Assert.Contains(resolution.Errors, e => e.Contains("extends 'other'"));
+        Assert.Contains(resolution.Errors, e => e.Contains("Made for other"));
     }
 
     [Fact]

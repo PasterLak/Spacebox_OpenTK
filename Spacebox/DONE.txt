@@ -353,6 +353,8 @@ Fixes
 - Empty GameSet: a base GameSet with nothing in it (empty space, no blocks, items, crafting, asteroids, mobs or tutorials) as a start for own GameSets
 - Mods > Create: new GameSet (built on Empty, works from the start) or extension of an existing GameSet, with a short explanation; opens the GameSet editor
 - Empty is the read-only base of every GameSet: Default and new GameSets are built on it ("Extends": "empty") and take missing sounds and files from it; Empty cannot be extended
+- extensions can override everything: projectiles, mobs, loot, asteroids, biomes, tutorials, game modes and all settings files (patched by file name and field by field), "Remove": true removes entries
+- extensions: MinBaseVersion/MaxBaseVersion (outdated or too new bases are refused with a reason), "Extends": "*" or a list for packs that work with several GameSets, Bases/<id>/ adapter folders loaded only with that GameSet
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine

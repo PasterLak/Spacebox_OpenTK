@@ -2,6 +2,7 @@ using Engine;
 using Engine.Utils;
 using Spacebox.Game.Generation.Structures;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Player.Respawn;
 
@@ -29,6 +30,20 @@ public static class SpawnParameters
         catch (Exception ex)
         {
             Debug.Error($"[SpawnParameters] Could not read {path}: {ex.Message}");
+            return null;
+        }
+    }
+
+    public static SpawnParametersJSON FromFile(LayeredFile file)
+    {
+        if (file?.Data == null) return null;
+        try
+        {
+            return GameSetFiles.Deserialize<SpawnParametersJSON>(file.Data);
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[SpawnParameters] Could not read {file.Source}: {ex.Message}");
             return null;
         }
     }

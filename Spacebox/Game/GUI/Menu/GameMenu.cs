@@ -218,6 +218,11 @@ namespace Spacebox.Game.GUI.Menu
             return Spacebox.Game.Resource.Content.InstalledGameSets.ExtensionsFor(installedGameSets, FindInstalled(baseConfig));
         }
 
+        public string ExtensionProblem(InstalledGameSet extension, ModConfig baseConfig)
+        {
+            return Spacebox.Game.Resource.Content.ExtensionCompatibility.Problem(extension, FindInstalled(baseConfig));
+        }
+
         public ExtensionResolution ResolveNewWorldExtensions()
         {
             var baseSet = gameSets.Count > 0 ? FindInstalled(gameSets[Math.Clamp(selectedGameSetIndex, 0, gameSets.Count - 1)]) : null;
