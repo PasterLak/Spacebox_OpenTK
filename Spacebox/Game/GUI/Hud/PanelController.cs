@@ -34,6 +34,12 @@ namespace Spacebox.Game.GUI
         }
         public Action<short> OnSlotChanged;
 
+        private static readonly Predicate<Item> RejectAll = _ => false;
+
+        public int ActiveSlots { get; private set; } = HotbarLayout.DefaultSlotsPerRow;
+        public int SlotsPerRow { get; private set; } = HotbarLayout.DefaultSlotsPerRow;
+        public int Rows { get; private set; } = HotbarLayout.DefaultRows;
+
         private readonly ItemControlsUI _itemControls;
 
         public PanelController(ItemControlsUI itemControls)
@@ -56,6 +62,7 @@ namespace Spacebox.Game.GUI
             scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"), AudioChannel.UI);
             dropAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/dropped.ogg"), AudioChannel.UI);
 
+            ApplyHotbarLayout();
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
 
@@ -192,17 +199,11 @@ namespace Spacebox.Game.GUI
 
             if (Input.MouseScrollDelta.Y < 0)
             {
-                SelectedSlotId++;
-                if (SelectedSlotId > (short)(Storage.SizeY - 1))
-                    SelectedSlotId = 0;
-                SetSelectedSlot(SelectedSlotId);
+                SetSelectedSlot((short)HotbarLayout.Step(SelectedSlotId, 1, ActiveSlots));
             }
             if (Input.MouseScrollDelta.Y > 0)
             {
-                SelectedSlotId--;
-                if (SelectedSlotId < 0)
-                    SelectedSlotId = (short)(Storage.SizeY - 1);
-                SetSelectedSlot(SelectedSlotId);
+                SetSelectedSlot((short)HotbarLayout.Step(SelectedSlotId, -1, ActiveSlots));
             }
             if (Input.IsActionDown("drop_item"))
             {
@@ -217,13 +218,15 @@ namespace Spacebox.Game.GUI
             }
             if (Input.IsKeyDown(Keys.D0))
             {
-                SetSelectedSlot(9);
+                int slot = HotbarLayout.SlotForNumberKey(9, ActiveSlots);
+                if (slot >= 0) SetSelectedSlot((short)slot);
             }
-            for (int i = 0; i <= 9; i++)
+            for (int i = 0; i < 9; i++)
             {
-                if (Input.IsKeyDown(Keys.D1 + i % 10))
+                if (Input.IsKeyDown(Keys.D1 + i))
                 {
-                    SetSelectedSlot((short)(i % Storage.SizeY));
+                    int slot = HotbarLayout.SlotForNumberKey(i, ActiveSlots);
+                    if (slot >= 0) SetSelectedSlot((short)slot);
                     break;
                 }
             }
@@ -319,6 +322,42 @@ namespace Spacebox.Game.GUI
                 player.SetInteraction(new InteractionCameraPoint(ItemModel));
             else
                 player.SetInteraction(new InteractionDefault());
+        }
+
+        public void ApplyHotbarLayout()
+        {
+            if (Player == null || Storage == null) return;
+
+            var rules = Player.GameModeRules;
+            Rows = HotbarLayout.ClampRows(rules.HotbarRows);
+            SlotsPerRow = HotbarLayout.ClampSlotsPerRow(rules.HotbarSlots);
+            ActiveSlots = Math.Min(Rows * SlotsPerRow, Storage.SizeY);
+
+            for (int i = 0; i < Storage.SizeY; i++)
+            {
+                var slot = Storage.GetSlot(0, i);
+                bool active = i < ActiveSlots;
+                slot.Filter = active ? null : RejectAll;
+                slot.IsManualOnly = !active;
+                if (!active && slot.HasItem) MoveOutOfHotbar(slot);
+            }
+
+            int clamped = HotbarLayout.Clamp(SelectedSlotId, ActiveSlots);
+            if (clamped != SelectedSlotId) SetSelectedSlot((short)clamped);
+        }
+
+        private void MoveOutOfHotbar(ItemSlot slot)
+        {
+            var item = slot.Item;
+            byte count = slot.Count;
+            if (Player.Inventory.TryAddItem(item, count, out byte rest) || rest == 0)
+            {
+                slot.Clear();
+                return;
+            }
+
+            slot.Count = rest;
+            DropItem(slot, true);
         }
 
         public void ResetLastSelected()

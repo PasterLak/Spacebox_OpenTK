@@ -61,6 +61,8 @@ public static class PanelUI
 
     public static void ResetLastSelected() => Panel?.ResetLastSelected();
 
+    public static void ApplyHotbarLayout() => Panel?.ApplyHotbarLayout();
+
     public static void SetFlashlight(LocalAstronaut astronaut) => Panel?.SetFlashlight(astronaut);
 
     public static void BlockHands() => Panel?.BlockHands();

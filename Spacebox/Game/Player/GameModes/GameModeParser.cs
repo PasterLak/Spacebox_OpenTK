@@ -13,6 +13,8 @@ public static class GameModeParser
         {
             if (overrideProperty.GetValue(overrides) is bool value) ruleProperty.SetValue(rules, value);
         }
+        if (overrides.HotbarSlots is int slots) rules.HotbarSlots = HotbarLayout.ClampSlotsPerRow(slots);
+        if (overrides.HotbarRows is int rows) rules.HotbarRows = HotbarLayout.ClampRows(rows);
     }
 
     public static bool TryConvert(GameModeJSON json, out GameModeDefinition mode, out string error)

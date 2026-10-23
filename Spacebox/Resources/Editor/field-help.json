@@ -327,7 +327,9 @@
     "FreeFlashlight": "The flashlight works without a flashlight item.",
     "FullRadar": "The radar shows everything without a radar device.",
     "CountStatistics": "Distance and other player statistics are counted.",
-    "StartItems": "New players get the GameSet's start items."
+    "StartItems": "New players get the GameSet's start items.",
+    "HotbarSlots": "Slots in each hotbar row (1-20). The first 10 slots are picked with the number keys, the rest with the mouse wheel.",
+    "HotbarRows": "Number of hotbar rows (1-3). Items in slots that do not exist in this mode move to the inventory or drop."
   },
   "GeneratorJSON": {
     "MinAsteroidsInSector": "Fewest asteroid candidates placed in one sector (8192 blocks per side). Biome Density can keep fewer of them.",

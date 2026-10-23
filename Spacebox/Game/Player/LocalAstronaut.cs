@@ -190,7 +190,7 @@ namespace Spacebox.Game.Player
         private void SetData()
         {
             Inventory = new Inventory(8, 3);
-            Panel = new Storage(1, 10);
+            Panel = new Storage(1, (byte)Spacebox.Game.Player.GameModes.HotbarLayout.MaxSlots);
             BoundingVolume = new BoundingSphere(Position, 0.4f);
             Inventory.Name = "Inventory";
             Panel.Name = "Panel";
@@ -229,6 +229,7 @@ namespace Spacebox.Game.Player
             CollisionEnabled = definition.Rules.Collide;
             _flashlightBinder?.Apply();
             PanelUI.ResetLastSelected();
+            PanelUI.ApplyHotbarLayout();
             PanelUI.SetSelectedSlot(0);
         }
 

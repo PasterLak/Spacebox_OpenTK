@@ -22,6 +22,8 @@ public sealed class GameModeRules
     public bool FullRadar { get; set; }
     public bool CountStatistics { get; set; } = true;
     public bool StartItems { get; set; } = true;
+    public int HotbarSlots { get; set; } = HotbarLayout.DefaultSlotsPerRow;
+    public int HotbarRows { get; set; } = HotbarLayout.DefaultRows;
 
     public static GameModeRules ForBase(GameMode mode)
     {
@@ -39,7 +41,8 @@ public sealed class GameModeRules
                 InstantBreak = true,
                 BreakUnbreakable = true,
                 AreaTools = true,
-                ShipLibrary = true
+                ShipLibrary = true,
+                HotbarSlots = 15
             },
             _ => new GameModeRules
             {

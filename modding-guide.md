@@ -101,6 +101,7 @@ Mods/GameSets/MyMod/
 | `ShipLibrary` | place saved ships | no / yes / no |
 | `FreeFlashlight`, `FullRadar` | flashlight and full radar without items | no / no / yes |
 | `CountStatistics`, `StartItems` | count statistics, give start items | yes / yes / no |
+| `HotbarSlots`, `HotbarRows` | slots per hotbar row (1-20) and rows (1-3); number keys pick the first 10 slots, the mouse wheel all of them; items in slots a mode does not have move to the inventory or drop | 10 / 15 / 10 slots, 1 row |
 
 The base still decides movement (walking/flying, spectator camera), the inventory layout and the interactions; the server checks breaking, placing, shooting, item use, area tools, saved ships and unbreakable blocks with the player's rules. Switch with `gm <id or key>` (e.g. `gm explorer`) or on the dashboard.
 

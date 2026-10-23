@@ -26,6 +26,7 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- hotbar size per game mode (HotbarSlots, HotbarRows up to 3): Creative has one row of 15, number keys pick the first 10, the wheel all; items in removed slots move to the inventory or drop (also on load)
 - creative Fill Tool (bucket): select an area, Alt+click picks the block, Enter fills the empty cells (works in multiplayer)
 - creative Copy Tool: select an area, Enter copies, LMB pastes with a box preview, R rotates (works in multiplayer)
 - radar works: shows nearby ships, players and mobs as they are swept (colours per kind); round display without gray corners; energy use in the title

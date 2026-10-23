@@ -33,4 +33,6 @@ public sealed class GameModeRulesJSON
     public bool? FullRadar { get; set; }
     public bool? CountStatistics { get; set; }
     public bool? StartItems { get; set; }
+    public int? HotbarSlots { get; set; }
+    public int? HotbarRows { get; set; }
 }

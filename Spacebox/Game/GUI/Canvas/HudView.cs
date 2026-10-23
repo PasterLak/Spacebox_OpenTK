@@ -9,10 +9,12 @@ public sealed class HudView : SafeArea
     public const float SlotSize = 43f;
     public const float BottomMargin = 26f;
     private const float BarGap = 10f;
+    private const float MinSlotSize = 20f;
+    private const float SideMargin = 24f;
 
     private readonly VBoxContainer _column = new VBoxContainer();
     private readonly HBoxContainer _bars = new HBoxContainer();
-    private readonly HBoxContainer _hotbar = new HBoxContainer();
+    private readonly VBoxContainer _hotbar = new VBoxContainer();
     private readonly PanelContainer _hotbarPanel = new PanelContainer { Name = "HotbarPanel", ThemeTypeVariation = "HotbarPanel", MouseFilter = MouseFilter.Ignore, SizeFlagsHorizontal = SizeFlags.ShrinkCenter };
     private readonly StatBarControl _health = new StatBarControl(GameCanvasThemes.Health);
     private readonly StatBarControl _oxygen = new StatBarControl(GameCanvasThemes.Oxygen);
@@ -22,6 +24,9 @@ public sealed class HudView : SafeArea
     private readonly Hud.SelectedItemNameControl _itemName;
     private readonly PanelController _panel;
     private Storage _storage;
+    private int _builtSlots = -1;
+    private int _builtPerRow = -1;
+    private float _slotSize = SlotSize;
 
     public HudView(GameUi ui)
     {
@@ -71,7 +76,7 @@ public sealed class HudView : SafeArea
         _hitImage.Image = player?.HitImage;
         bool showHotbar = HudVisibility.ShowHotbar && _panel.Storage != null && GameCanvas.DrawsHotbar;
         bool showBars = HudVisibility.ShowPlayerHud && player != null;
-        Present(showHotbar ? _panel.Storage : null, _panel.SelectedSlotId, showBars);
+        Present(showHotbar ? _panel.Storage : null, _panel.SelectedSlotId, showBars, _panel.ActiveSlots, _panel.SlotsPerRow);
         if (!showBars) return;
 
         SetBar(_health, player.HealthBar.StatsGUI);
@@ -79,12 +84,12 @@ public sealed class HudView : SafeArea
         SetBar(_power, player.PowerBar.StatsGUI);
     }
 
-    public void Present(Storage hotbar, int selectedSlot, bool showBars)
+    public void Present(Storage hotbar, int selectedSlot, bool showBars, int activeSlots = Player.GameModes.HotbarLayout.DefaultSlotsPerRow, int slotsPerRow = Player.GameModes.HotbarLayout.DefaultSlotsPerRow)
     {
         _hotbarPanel.Visible = hotbar != null;
         _bars.Visible = showBars;
         _column.Visible = hotbar != null || showBars;
-        if (hotbar != null) RefreshHotbar(hotbar, selectedSlot);
+        if (hotbar != null) RefreshHotbar(hotbar, selectedSlot, Math.Min(activeSlots, hotbar.SizeY), Math.Max(1, slotsPerRow));
     }
 
     public void SetBars((int Value, int Max, string Text) health, (int Value, int Max, string Text) oxygen, (int Value, int Max, string Text) power)
@@ -100,12 +105,16 @@ public sealed class HudView : SafeArea
         bar.Set(gui.StatsData.Value, gui.StatsData.MaxValue, gui.TextOverride);
     }
 
-    private void RefreshHotbar(Storage storage, int selected)
+    private void RefreshHotbar(Storage storage, int selected, int activeSlots, int slotsPerRow)
     {
-        if (!ReferenceEquals(storage, _storage)) Rebuild(storage);
+        if (!ReferenceEquals(storage, _storage) || activeSlots != _builtSlots || slotsPerRow != _builtPerRow) Rebuild(storage, activeSlots, slotsPerRow);
 
         float spacing = GetThemeConstant("slot_spacing", 0f);
         _hotbar.AddThemeConstantOverride("separation", spacing);
+        for (int i = 0; i < _hotbar.Children.Count; i++)
+            if (_hotbar.Children[i] is HBoxContainer row) row.AddThemeConstantOverride("separation", spacing);
+
+        ApplySlotSize();
         for (int i = 0; i < _slots.Count; i++)
         {
             _slots[i].Selected = i == selected;
@@ -113,18 +122,55 @@ public sealed class HudView : SafeArea
         }
     }
 
-    private void Rebuild(Storage storage)
+    public static float FitSlotSize(float availableWidth, int slotsPerRow, float spacing)
+    {
+        if (availableWidth <= 0f || slotsPerRow <= 0) return SlotSize;
+        float fit = MathF.Floor((availableWidth - spacing * (slotsPerRow - 1)) / slotsPerRow);
+        return Math.Clamp(fit, MinSlotSize, SlotSize);
+    }
+
+    protected override void LayoutChildren()
+    {
+        ApplySlotSize();
+        base.LayoutChildren();
+    }
+
+    private void ApplySlotSize()
+    {
+        if (_builtPerRow <= 0) return;
+
+        float spacing = GetThemeConstant("slot_spacing", 0f);
+        float size = FitSlotSize(Size.X - SideMargin * 2f - 24f, _builtPerRow, spacing);
+        if (size == _slotSize) return;
+
+        _slotSize = size;
+        var minimum = new Vector2(size, size);
+        for (int i = 0; i < _slots.Count; i++) _slots[i].CustomMinimumSize = minimum;
+    }
+
+    private void Rebuild(Storage storage, int activeSlots, int slotsPerRow)
     {
         _storage = storage;
+        _builtSlots = activeSlots;
+        _builtPerRow = slotsPerRow;
         _hotbar.ClearChildren();
         _slots.Clear();
-        for (int column = 0; column < storage.SizeY; column++)
+
+        int rows = (activeSlots + slotsPerRow - 1) / slotsPerRow;
+        var rowBoxes = new HBoxContainer[rows];
+        for (int r = rows - 1; r >= 0; r--)
         {
-            var slot = new Items.ItemSlotControl(SlotSize);
-            slot.Bind(storage.GetSlot(0, column));
+            rowBoxes[r] = new HBoxContainer { MouseFilter = MouseFilter.Ignore, SizeFlagsHorizontal = SizeFlags.ShrinkCenter };
+            _hotbar.AddChild(rowBoxes[r]);
+        }
+
+        for (int index = 0; index < activeSlots; index++)
+        {
+            var slot = new Items.ItemSlotControl(_slotSize);
+            slot.Bind(storage.GetSlot(0, index));
             slot.Clicked += _panel.OnSlotClicked;
             _slots.Add(slot);
-            _hotbar.AddChild(slot);
+            rowBoxes[index / slotsPerRow].AddChild(slot);
         }
     }
 }
