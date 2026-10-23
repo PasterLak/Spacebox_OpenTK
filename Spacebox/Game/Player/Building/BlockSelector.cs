@@ -7,6 +7,7 @@ using Spacebox.Game.Generation.Shapes;
 using Spacebox.Game.Generation.Tools;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
+using Spacebox.Game.Player.Building;
 
 namespace Spacebox.Game;
 
@@ -23,7 +24,7 @@ public class BlockSelector : Node3D
     private const float MagnetTextDuration = 1f;
     private const float MagnetLineThickness = 0.05f;
     private const float NormalLineThickness = 0.1f;
-    private const float MagnetBoxSize = 0.51f;
+    private const float MagnetLift = 0.01f;
     private const string SelectorTexturePath = "Resources/Textures/selector.png";
     private const string ShaderPath = "Resources/Shaders/blockPreview";
 
@@ -52,7 +53,6 @@ public class BlockSelector : Node3D
     private static readonly int[] ReservedAreaPath = { 0, 1, 2, 3, 0, 4, 5, 1, 5, 6, 2, 6, 7, 3, 7, 4 };
     private readonly Vector3[] _reservedCorners = new Vector3[8];
     private Matrix4 _currentTransform = Matrix4.Identity;
-    private Matrix4 _magnetTransform = Matrix4.Identity;
     private Matrix4 _entityRotation = Matrix4.Identity;
     private Vector3 _highlightSize = Vector3.One;
     private Direction _blockDirection = Block.DefaultDirection;
@@ -66,7 +66,11 @@ public class BlockSelector : Node3D
     private bool _transformDirty;
 
     private readonly List<Vector3> _cachedMagnetPoints = new List<Vector3>(5);
-    private readonly Vector4[] _baseCorners;
+    private readonly Vector3[] _magnetCorners = new Vector3[4];
+    private readonly List<MultiblockCell> _boundsCells = new List<MultiblockCell>();
+    private Vector3i _surfaceNormal = Vector3i.UnitY;
+    private Vector3 _cellCorner;
+    private SpaceEntity _entity;
 
     public BlockSelector()
     {
@@ -117,21 +121,12 @@ public class BlockSelector : Node3D
 
         PanelUI.OnSlotChanged += OnSelectedSlotWasChanged;
 
-        _baseCorners = new Vector4[]
-        {
-            new Vector4(-MagnetBoxSize, -MagnetBoxSize, -MagnetBoxSize, 1f),
-            new Vector4(MagnetBoxSize, -MagnetBoxSize, -MagnetBoxSize, 1f),
-            new Vector4(MagnetBoxSize, -MagnetBoxSize, MagnetBoxSize, 1f),
-            new Vector4(-MagnetBoxSize, -MagnetBoxSize, MagnetBoxSize, 1f)
-        };
-
         OnSelectedSlotWasChanged(PanelUI.SelectedSlotId);
     }
 
     public void OnSelectedSlotWasChanged(short slot)
     {
         _currentTransform = Matrix4.Identity;
-        _magnetTransform = Matrix4.Identity;
         _highlightSize = Vector3.One;
         _shapePoseKey = -1;
         HideReservedArea();
@@ -207,7 +202,6 @@ public class BlockSelector : Node3D
         if (CurrentBlockData.Shape != null)
         {
             _currentTransform = Matrix4.Identity;
-            _magnetTransform = BlockRotationHelper.CalculateTransformMatrix(Direction.Up, _blockDirection, _blockRotation);
             UpdateShapeMesh(CurrentBlockData.Shape);
             ApplyBlockTransform();
             _transformDirty = true;
@@ -226,7 +220,6 @@ public class BlockSelector : Node3D
             );
         }
 
-        _magnetTransform = _currentTransform;
         ApplyBlockTransform();
         _transformDirty = true;
     }
@@ -289,8 +282,17 @@ public class BlockSelector : Node3D
         ApplyBlockTransform();
     }
 
+    public void SetSurfaceNormal(Vector3i normal)
+    {
+        if (normal == _surfaceNormal || normal == Vector3i.Zero) return;
+        _surfaceNormal = normal;
+        _transformDirty = true;
+    }
+
     public void UpdatePosition(Vector3 position, Direction direction, Rotation rotation, bool onSurface, SpaceEntity entity = null)
     {
+        _cellCorner = position;
+        _entity = entity;
         Vector3 center = position + Vector3.One * 0.5f;
         Vector3 newPosition = entity != null ? entity.ToWorldSpace(center) : center;
         Matrix4 entityRotation = entity != null && entity.HasRotation ? entity.RotationMatrix : Matrix4.Identity;
@@ -379,7 +381,7 @@ public class BlockSelector : Node3D
     {
         if (!Settings.ShowInterface) return;
 
-        bool showMagnet = EnableMagnet && _onSurface && CurrentBlockData != null && !UIManager.IsUIMode;
+        bool showMagnet = EnableMagnet && _onSurface && CurrentBlockData != null && SimpleBlock.Enabled && !UIManager.IsUIMode;
 
         if (showMagnet)
         {
@@ -416,12 +418,13 @@ public class BlockSelector : Node3D
     {
         _cachedMagnetPoints.Clear();
 
-        Vector3 pos = SimpleBlock.Position;
+        PlacementBounds.Get(CurrentBlockData, _blockDirection, _blockRotation, _shapeSupported, _boundsCells, out var min, out var max);
+        PlacementBounds.GetSurfaceCorners(min, max, _surfaceNormal, MagnetLift, _magnetCorners);
 
-        for (int i = 0; i < _baseCorners.Length; i++)
+        for (int i = 0; i < _magnetCorners.Length; i++)
         {
-            Vector4 transformed = _baseCorners[i] * (_magnetTransform * _entityRotation);
-            _cachedMagnetPoints.Add(transformed.Xyz + pos);
+            var corner = _cellCorner + _magnetCorners[i];
+            _cachedMagnetPoints.Add(_entity != null ? _entity.ToWorldSpace(corner) : corner);
         }
         _cachedMagnetPoints.Add(_cachedMagnetPoints[0]);
 

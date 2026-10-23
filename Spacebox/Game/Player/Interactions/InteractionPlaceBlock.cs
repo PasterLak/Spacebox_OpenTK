@@ -76,6 +76,7 @@ public class InteractionPlaceBlock : InteractionMode
 
         BlockPlacementHelper.CalculateOrientation(entity.ToEntitySpace(player.PositionWorld), selectorPositionWorld, entity.DirectionToEntitySpace(player.Up),
                      hit.normal.ToVector3(), BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.EnableMagnet, BlockSelector.Instance.CurrentBlockData, BlockSelector.Instance.Rotation, out var finalDir, out var finalRot);
+        BlockSelector.Instance.SetSurfaceNormal(new Vector3i(hit.normal.X, hit.normal.Y, hit.normal.Z));
         BlockSelector.Instance.UpdatePosition(selectorPositionWorld, finalDir, finalRot, true, entity);
 
         var previewData = BlockSelector.Instance.CurrentBlockData;

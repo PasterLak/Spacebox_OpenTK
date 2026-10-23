@@ -136,6 +136,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- build preview: the magnet outline covers the real face of multi-cell and shaped blocks and hides when the block can't be placed; the drill selector fits the model of shaped blocks
 - world preview: saving renders a clean world frame (no pause menu, HUD, held item, build preview or outlines)
 - chat input and suggestions are see-through again; gravity generator on/off is a switch; doors open while binding ship parts; hull blocks moved to Building
 - world load: the world no longer flashes before the fade-in; furnace/crusher finish and disassembler sounds now play for multiplayer clients
