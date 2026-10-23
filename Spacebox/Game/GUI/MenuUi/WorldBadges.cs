@@ -4,13 +4,15 @@ using OpenTK.Mathematics;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Game.Resource;
+using Spacebox.Game.Versioning;
 
 namespace Spacebox.Game.GUI.MenuUi;
 
 public sealed class WorldBadges
 {
-    private static readonly Color4 CurrentVersionColor = new Color4(0.55f, 0.55f, 0.58f, 1f);
-    private static readonly Color4 OldVersionColor = new Color4(0.85f, 0.52f, 0.12f, 1f);
+    private static readonly Color4 CurrentVersionColor = new Color4(1f, 0.72f, 0.1f, 1f);
+    private static readonly Color4 OldVersionColor = new Color4(0.55f, 0.55f, 0.58f, 1f);
+    private static readonly Color4 UnsupportedVersionColor = new Color4(0.8f, 0.2f, 0.15f, 1f);
 
     private readonly GameMenu _menu;
     private readonly Dictionary<string, List<GameModeDefinition>> _modes = new Dictionary<string, List<GameModeDefinition>>(StringComparer.OrdinalIgnoreCase);
@@ -25,13 +27,18 @@ public sealed class WorldBadges
     public List<ListBadge> For(WorldInfo world)
     {
         var mode = ModeOf(world);
-        var modeColor = ColorPickerButton.TryParseHex(mode.TagColor, out var parsed) ? parsed : CurrentVersionColor;
-        bool current = world.GameVersion == Application.Version;
+        var modeColor = ColorPickerButton.TryParseHex(mode.TagColor, out var parsed) ? parsed : OldVersionColor;
         return new List<ListBadge>
         {
             new ListBadge(mode.Tag, modeColor),
-            new ListBadge(world.GameVersion ?? "?", current ? CurrentVersionColor : OldVersionColor)
+            new ListBadge(string.IsNullOrEmpty(world.GameVersion) ? "?" : world.GameVersion, VersionColor(world))
         };
+    }
+
+    private static Color4 VersionColor(WorldInfo world)
+    {
+        if (world.GameVersion == Application.Version) return CurrentVersionColor;
+        return VersionConverter.GetSupport(world, out _) == WorldUpgradeStatus.Ok ? OldVersionColor : UnsupportedVersionColor;
     }
 
     private GameModeDefinition ModeOf(WorldInfo world)

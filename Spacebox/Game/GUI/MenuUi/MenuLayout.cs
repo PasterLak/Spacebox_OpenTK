@@ -76,6 +76,18 @@ public static class MenuLayout
         return button;
     }
 
+    public static Button InlineIconButton(GameMenu menu, string iconPath, string tooltip, Action onClick)
+    {
+        var button = Button(menu, "", onClick, false);
+        button.ThemeTypeVariation = "SmallButton";
+        button.Icon = MenuTextures.Load(iconPath);
+        button.IconSize = new Vector2(14f, 14f);
+        button.TooltipText = tooltip;
+        button.CustomMinimumSize = new Vector2(26f, 0f);
+        button.SizeFlagsVertical = SizeFlags.Fill;
+        return button;
+    }
+
     public static Label Caption(string text) => new Label { Text = text, ThemeTypeVariation = "MutedLabel" };
 
     public static VBoxContainer Field(string caption, Control control)
