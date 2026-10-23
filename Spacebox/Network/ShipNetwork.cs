@@ -232,7 +232,10 @@ public static class ShipNetwork
         _movingLastTick.Clear();
         _movingThisTick.Clear();
         _restRepeats.Clear();
+        _commandThrottle.Reset();
     }
+
+    private static readonly CommandSendThrottle _commandThrottle = new CommandSendThrottle();
 
     public static void SubmitCommand(ShipConsoleBlock console, ConsoleCommand command)
     {
@@ -242,7 +245,7 @@ public static class ShipNetwork
         entity.ShipControl.SetCommand(console.LocalCell, command);
 
         var network = NetworkManager.Instance;
-        if (!network.IsRemoteClient) return;
+        if (!network.IsRemoteClient || !_commandThrottle.ShouldSend(command, Time.Total)) return;
 
         network.SendToServer(new ShipCommandMessage
         {

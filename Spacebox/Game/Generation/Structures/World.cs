@@ -255,7 +255,25 @@ public class World : Component, ISpaceStructure
         return false;
     }
 
+    private readonly Dictionary<long, SpaceEntity> _entityLookup = new Dictionary<long, SpaceEntity>();
+
     public bool TryFindEntity(long entityId, out SpaceEntity entity)
+    {
+        if (_entityLookup.TryGetValue(entityId, out entity))
+        {
+            var cachedSector = entity.Sector;
+            if (!entity.IsDisposed && entity.EntityID == entityId && cachedSector != null &&
+                loadedSectors.TryGetValue(cachedSector.PositionIndex, out var loaded) && loaded == cachedSector)
+                return true;
+            _entityLookup.Remove(entityId);
+        }
+
+        if (!ScanForEntity(entityId, out entity)) return false;
+        _entityLookup[entityId] = entity;
+        return true;
+    }
+
+    private bool ScanForEntity(long entityId, out SpaceEntity entity)
     {
         foreach (var sector in loadedSectors.Values)
         {

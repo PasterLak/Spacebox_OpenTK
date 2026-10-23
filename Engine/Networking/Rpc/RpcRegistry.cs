@@ -10,6 +10,7 @@ public sealed class RpcMethod
     public Type[] ParameterTypes { get; }
 
     private readonly MethodInfo _method;
+    private readonly Action<object, object[]> _invoke;
 
     public RpcMethod(MethodInfo method, RpcAttribute attribute)
     {
@@ -19,6 +20,7 @@ public sealed class RpcMethod
         Id = StableHash.Compute(method.DeclaringType.FullName + "." + method.Name);
 
         var parameters = method.GetParameters();
+        _invoke = CompileInvoker(method, parameters);
         ParameterTypes = new Type[parameters.Length];
         for (int i = 0; i < parameters.Length; i++)
         {
@@ -49,12 +51,28 @@ public sealed class RpcMethod
     {
         try
         {
-            _method.Invoke(target, args);
+            _invoke(target, args);
         }
-        catch (TargetInvocationException ex)
+        catch (Exception ex)
         {
-            Debug.Error($"[Rpc] {Name} threw: {ex.InnerException}");
+            Debug.Error($"[Rpc] {Name} threw: {ex}");
         }
+    }
+
+    private static Action<object, object[]> CompileInvoker(MethodInfo method, ParameterInfo[] parameters)
+    {
+        var target = System.Linq.Expressions.Expression.Parameter(typeof(object), "target");
+        var args = System.Linq.Expressions.Expression.Parameter(typeof(object[]), "args");
+        var arguments = new System.Linq.Expressions.Expression[parameters.Length];
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            var item = System.Linq.Expressions.Expression.ArrayIndex(args, System.Linq.Expressions.Expression.Constant(i));
+            arguments[i] = System.Linq.Expressions.Expression.Convert(item, parameters[i].ParameterType);
+        }
+
+        var instance = System.Linq.Expressions.Expression.Convert(target, method.DeclaringType);
+        var call = System.Linq.Expressions.Expression.Call(instance, method, arguments);
+        return System.Linq.Expressions.Expression.Lambda<Action<object, object[]>>(call, target, args).Compile();
     }
 }
 
