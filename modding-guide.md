@@ -8,7 +8,7 @@ Spacebox content is data: JSON files plus PNG textures and OGG/WAV sounds. There
 | Extension GameSet | `Mods/Extensions/<Name>/` with `"Extends"` in `config.json` | per world (Extensions list in Create World) | yes (`Extensions`) |
 | Texture pack | `Mods/TexturePacks/<Name>/` | globally in Mods -> Texture packs | no |
 
-Examples shipped with the game: `Mods/Extensions/ExampleExtension` and `Mods/TexturePacks/ExamplePack`. A `.zip` or `.rar` dropped into `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start (extensions always end up in `Mods/Extensions/`).
+Examples shipped with the game: `Mods/Extensions/ExampleExtension` and `Mods/TexturePacks/ExamplePack`. `Mods/GameSets/Empty` is a base GameSet with nothing in it (no blocks, items, crafting, asteroids, mobs or tutorials; worlds are empty space): copy it, change `ModId` and `ModName` and build your own GameSet from scratch. A base GameSet without a content folder (`Projectiles`, `Mobs`, `Tutorials`, `GameModes`, `Generation/Asteroids`, `Generation/Biomes`, `Generation/Loot`) or without blocks, items, crafting or recipes uses Default's; an existing folder, even an empty one, or an empty `blocks.json`/`items.json` list keeps it empty. A `.zip` or `.rar` dropped into `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start (extensions always end up in `Mods/Extensions/`).
 
 ## GameSet layout (folder format)
 

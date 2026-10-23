@@ -136,6 +136,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- new worlds without asteroids no longer crash when the player spawns (start at the sector center); a GameSet's own Biomes folder no longer also loads Default's biomes
 - interface hidden with F8: the hotbar shows while an item window (inventory, storage, crafting, machines) is open
 - sound follows the system output: switching from headphones to speakers (or unplugging a device) moves game audio to the new default device without losing sounds
 - game window showed no icon in the taskbar: the icon is now set when the window is created, in 16-256 px sizes
@@ -348,7 +349,8 @@ Fixes
 - new interface system for the game: hotbar and health, oxygen and power bars rebuilt; Options > Interface: Design (Classic or Modern) and UI Scale
 - main menu rebuilt on the new interface system (Classic and Modern designs): worlds, new world, GameSets, texture packs, multiplayer with server info, ship viewer with export, all options with key bindings, world conversion, joining and login
 - world list: small tags for game mode (Tag and TagColor in GameModes/*.json) and game version (orange when the world needs converting); icon buttons for random seed and delete; GameSet icon in the GameSet box
-- GameSet editor: Player page with Spawn and Game modes (add, duplicate and edit modes, rules, tag and tag colour)
+- GameSet editor: Player page with Spawn and Game modes (add, duplicate and edit modes, rules, tag and tag colour) (tag colour with a colour picker)
+- Empty GameSet: a base GameSet with nothing in it (empty space, no blocks, items, crafting, asteroids, mobs or tutorials) as a start for own GameSets
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine

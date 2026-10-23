@@ -185,8 +185,7 @@ public class GenerationLoader
         string biomePath = Path.Combine(modPath, "Biomes");
         string defaultBiomePath = Path.Combine(defaultModPath, "Biomes");
 
-        LoadBiomesFromDirectory(biomePath, generator);
-        LoadBiomesFromDirectory(defaultBiomePath, generator);
+        LoadBiomesFromDirectory(Directory.Exists(biomePath) ? biomePath : defaultBiomePath, generator);
     }
 
     private static void LoadBiomesFromDirectory(string directoryPath, WorldGenerator generator)

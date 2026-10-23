@@ -158,6 +158,31 @@ public sealed class ColorFieldWidget : IFieldWidget
     private static int ToByte(float value) => (int)MathF.Round(Math.Clamp(value, 0f, 1f) * 255f);
 }
 
+public sealed class HexColorFieldWidget : IFieldWidget
+{
+    private readonly Func<FieldContext, bool> _matches;
+
+    public HexColorFieldWidget(Func<FieldContext, bool> matches)
+    {
+        _matches = matches;
+    }
+
+    public bool CanEdit(FieldContext context) => _matches(context) && (context.Value == null || context.Value is JsonValue value && value.TryGetValue(out string _));
+
+    public Control Create(FieldContext context, Action<JsonNode> commit)
+    {
+        string text = context.Value is JsonValue value && value.TryGetValue(out string hex) ? hex : "";
+        var picker = new ColorPickerButton
+        {
+            Color = ColorPickerButton.TryParseHex(text, out var color) ? color : Color4.White,
+            SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
+            CustomMinimumSize = new Vector2(80f, 18f)
+        };
+        picker.ColorChanged += changed => commit(JsonValue.Create(ColorPickerButton.ToHex(changed)));
+        return picker;
+    }
+}
+
 public sealed class VectorFieldWidget : IFieldWidget
 {
     private static readonly string[] Keys = { "x", "y", "z" };

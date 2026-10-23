@@ -1,0 +1,9 @@
+{
+    "MinAsteroidsInSector": 0,
+    "MaxAsteroidsInSector": 0,
+    "RejectionSamples": 5,
+    "MinDistanceBetweenAsteroids": 128,
+    "BiomesMapNoiseFrequency": 0.001,
+    "Biomes": [],
+    "FallbackBiome": ""
+}

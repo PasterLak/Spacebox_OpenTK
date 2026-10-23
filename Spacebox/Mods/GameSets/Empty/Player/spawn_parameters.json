@@ -1,0 +1,13 @@
+{
+    "GiveItemsOnStart": [],
+    "SpawnSettings": {
+        "PreferredSpawnBiome": "",
+        "MinDistanceFromCenter": 0,
+        "MaxDistanceFromCenter": 0,
+        "MinAsteroidRadius": 0,
+        "ExcludedAsteroids": [],
+        "HealthOnSpawn": 100,
+        "PowerOnSpawn": 100,
+        "OxygenOnSpawn": 100
+    }
+}

@@ -460,7 +460,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         var rules = PlayerSpawnRules.Current;
         var asteroidIndex = rules.PickIndex(candidates, random);
 
-        player.SetPosition(GetRandomPositionNearAsteroid(random, asteroidsDataList[asteroidIndex]));
+        player.SetPosition(asteroidIndex < 0 ? PositionWorld + new Vector3(SizeBlocksHalf) : GetRandomPositionNearAsteroid(random, asteroidsDataList[asteroidIndex]));
         player.SpawnPosition = player.Position;
 
     }

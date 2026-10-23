@@ -19,6 +19,7 @@ public sealed class FieldWidgetRegistry
     {
         var widgets = new FieldWidgetRegistry();
         widgets.Add(new ColorFieldWidget());
+        widgets.Add(new HexColorFieldWidget(c => c.Scope == EditorScopes.GameModes && c.NameIs("TagColor") && IsTopLevel(c)));
         widgets.Add(new VectorFieldWidget());
         widgets.Add(new NumberRangeFieldWidget(c => c.Scope == EditorScopes.Asteroids && c.NameIs("MinRadius", "MaxRadius"), AsteroidRadius.Min, AsteroidRadius.Max));
 

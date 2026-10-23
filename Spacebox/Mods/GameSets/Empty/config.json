@@ -1,0 +1,8 @@
+{
+    "ModId": "empty",
+    "ModName": "Empty",
+    "Description": "Starting point for your own GameSet: an empty world without blocks, items or asteroids",
+    "Author": "PasterLak",
+    "Version": "1.0",
+    "OxygenConsumeInterval": 10
+}

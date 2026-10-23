@@ -1,0 +1,14 @@
+{
+  "Id": 1,
+  "Key": "creative",
+  "Name": "Creative",
+  "Tag": "C",
+  "TagColor": "#3F7CC4",
+  "Rules": {
+    "BreakBlocks": true,
+    "PlaceBlocks": true,
+    "UseWeapons": true,
+    "TakeDamage": false,
+    "NeedOxygen": false
+  }
+}
