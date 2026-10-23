@@ -4,6 +4,7 @@ namespace Engine.CanvasUI;
 
 public class LineEdit : TextEditBase
 {
+    private const float IconGap = 4f;
     private float _scroll;
     private string _mask = "";
 
@@ -18,6 +19,8 @@ public class LineEdit : TextEditBase
 
     public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
     public bool Secret { get; set; }
+    public Texture2D Icon { get; set; }
+    public Rect2? IconRegion { get; set; }
     public char SecretCharacter { get; set; } = '*';
 
     protected override ICanvasClipboard Clipboard => Secret ? new PasteOnlyClipboard(base.Clipboard) : base.Clipboard;
@@ -55,6 +58,12 @@ public class LineEdit : TextEditBase
         float lineHeight = font.GetLineHeight(size);
         float y = MathF.Floor(inner.Y + (inner.Height - lineHeight) * 0.5f);
         float origin = TextOrigin(font, size, inner);
+
+        if (Icon != null)
+        {
+            float iconSize = MathF.Floor(lineHeight);
+            renderer.DrawTexture(Icon, new Rect2(inner.X - iconSize - IconGap, MathF.Floor(inner.Y + (inner.Height - iconSize) * 0.5f), iconSize, iconSize), CanvasDraw.UvOf(Icon, IconRegion), Color4.White);
+        }
 
         renderer.PushClip(inner);
         string text = DisplayText;
@@ -111,7 +120,13 @@ public class LineEdit : TextEditBase
     {
         var style = GetThemeStyleBox("normal");
         var rect = style == null ? LocalRect : style.ContentRect(LocalRect);
-        return new Rect2(rect.X, rect.Y, MathF.Max(0f, rect.Width - RightPadding), rect.Height);
+        float left = 0f;
+        if (Icon != null)
+        {
+            var font = GetThemeFont();
+            left = MathF.Floor(font?.GetLineHeight(GetThemeFontSize()) ?? 12f) + IconGap;
+        }
+        return new Rect2(rect.X + left, rect.Y, MathF.Max(0f, rect.Width - RightPadding - left), rect.Height);
     }
 
     private float TextOrigin(CanvasFont font, float size, Rect2 inner)

@@ -37,6 +37,7 @@ public class ComboBox : Control
     public bool AllowCustomText { get; set; } = true;
     public bool IsOpen => _popup.Visible && _popup.Parent != null;
     public float PopupMinWidth { get; set; } = 160f;
+    public bool ShowSelectedIcon { get; set; } = true;
 
     public event Action<string> ValueChanged;
 
@@ -70,6 +71,19 @@ public class ComboBox : Control
         var item = new ListItem { Text = text ?? "", Icon = icon, IconRegion = region, Metadata = metadata };
         _options.Add(item);
         return item;
+    }
+
+    public override void Process(float deltaTime)
+    {
+        base.Process(deltaTime);
+        ListItem selected = null;
+        if (ShowSelectedIcon)
+        {
+            for (int i = 0; i < _options.Count; i++)
+                if (string.Equals(_options[i].Text, _edit.Text, StringComparison.OrdinalIgnoreCase)) { selected = _options[i]; break; }
+        }
+        _edit.Icon = selected?.Icon;
+        _edit.IconRegion = selected?.IconRegion;
     }
 
     public override Vector2 GetMinimumSize() => _edit.GetCombinedMinimumSize() + new Vector2(ArrowWidth, 0f);

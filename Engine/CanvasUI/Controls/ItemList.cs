@@ -15,6 +15,21 @@ public sealed class ListItem
     public bool Disabled { get; set; }
     public int Indent { get; set; }
     public object Metadata { get; set; }
+    public List<ListBadge> Badges { get; set; }
+}
+
+public sealed class ListBadge
+{
+    public ListBadge(string text, Color4 color)
+    {
+        Text = text ?? "";
+        Color = color;
+    }
+
+    public string Text { get; }
+    public Color4 Color { get; }
+
+    public Color4 TextColor => Color.R * 0.3f + Color.G * 0.59f + Color.B * 0.11f > 0.55f ? new Color4(0.12f, 0.12f, 0.12f, 1f) : Color4.White;
 }
 
 public class ItemList : Control
@@ -213,6 +228,7 @@ public class ItemList : Control
             }
 
             if (font == null) continue;
+            if (item.Badges != null) x = DrawBadges(renderer, font, item.Badges, x, y, row - gap, size);
             float ty = MathF.Floor(y + (row - gap - lineHeight) * 0.5f);
             var color = item.IsHeader ? headerColor : item.Disabled ? secondaryColor : item.TextColor ?? textColor;
             string text = TextFit.Ellipsize(font, item.Text, size, MathF.Max(0f, width - x - 4f));
@@ -234,6 +250,22 @@ public class ItemList : Control
             float thumbY = (Size.Y - thumb) * _scroll / MaxScroll;
             renderer.DrawRect(new Rect2(track.X, MathF.Floor(thumbY), scrollbar, MathF.Floor(thumb)), GetThemeColor("scroll_thumb", new Color4(1f, 1f, 1f, 0.35f)));
         }
+    }
+
+    private float DrawBadges(ICanvasRenderer renderer, CanvasFont font, List<ListBadge> badges, float x, float y, float rowHeight, float fontSize)
+    {
+        float size = MathF.Max(6f, MathF.Round(fontSize * GetThemeConstant("badge_font_scale", 0.8f)));
+        float height = MathF.Floor(font.GetLineHeight(size) + 2f);
+        float by = MathF.Floor(y + (rowHeight - height) * 0.5f);
+        for (int i = 0; i < badges.Count; i++)
+        {
+            var badge = badges[i];
+            float width = MathF.Ceiling(font.MeasureWidth(badge.Text, size) + 6f);
+            renderer.DrawRect(new Rect2(x, by, width, height), badge.Color);
+            CanvasDraw.Text(renderer, font, new Vector2(x + 3f, by + 1f), badge.Text, size, badge.TextColor);
+            x += width + 3f;
+        }
+        return x + 2f;
     }
 
     public string TooltipAt(Vector2 localPosition)

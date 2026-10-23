@@ -41,8 +41,7 @@ public sealed class NewWorldPage : MenuPage
 
         var seedRow = new HBoxContainer();
         seedRow.AddChild(_seed);
-        _random = MenuLayout.Button(_menu, "Random", () => _seed.Text = new Random().Next().ToString(), false);
-        _random.TooltipText = "Pick a random seed";
+        _random = MenuLayout.IconButton(_menu, "Resources/Textures/UI/dice.png", "Pick a random seed", () => _seed.Text = new Random().Next().ToString());
         seedRow.AddChild(_random);
         body.AddChild(MenuLayout.Field("Seed", seedRow));
 

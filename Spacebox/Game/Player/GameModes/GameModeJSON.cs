@@ -6,6 +6,8 @@ public sealed class GameModeJSON
     public string Key { get; set; } = "";
     public string Name { get; set; } = "";
     public string Base { get; set; } = "survival";
+    public string Tag { get; set; } = "";
+    public string TagColor { get; set; } = "";
     public GameModeRulesJSON Rules { get; set; } = new GameModeRulesJSON();
 }
 

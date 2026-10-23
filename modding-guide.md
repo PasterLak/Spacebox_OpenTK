@@ -70,12 +70,14 @@ Mods/GameSets/MyMod/
   "Id": 3,
   "Key": "explorer",
   "Name": "Explorer",
+  "Tag": "E",
+  "TagColor": "#C08A2E",
   "Base": "survival",
   "Rules": { "BreakBlocks": false, "PlaceBlocks": false }
 }
 ```
 
-Rules: `BreakBlocks`, `PlaceBlocks`, `UseWeapons`, `TakeDamage`, `NeedOxygen`. The server checks breaking, placing and shooting with the player's mode. Switch with `gm <id or key>` (e.g. `gm explorer`) or on the dashboard.
+`Tag` (up to 3 letters, default: first letter of the name) and `TagColor` (`#RRGGBB`, default by base) mark worlds of this mode in the world list. Rules: `BreakBlocks`, `PlaceBlocks`, `UseWeapons`, `TakeDamage`, `NeedOxygen`. The server checks breaking, placing and shooting with the player's mode. Switch with `gm <id or key>` (e.g. `gm explorer`) or on the dashboard.
 
 ## Extensions
 

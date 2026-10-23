@@ -2,6 +2,8 @@
   "Id": 0,
   "Key": "survival",
   "Name": "Survival",
+  "Tag": "S",
+  "TagColor": "#4E9A4A",
   "Rules": {
     "BreakBlocks": true,
     "PlaceBlocks": true,

@@ -38,6 +38,7 @@ public sealed class MultiplayerPage : MenuPage
         _dialog = new ServerInfoDialog(Menu, _window);
         var frame = MenuLayout.Window("Multiplayer", Width);
         AddChild(frame.Root);
+        _rows.AddThemeConstantOverride("separation", 0f);
 
         var profile = new HBoxContainer();
         profile.AddThemeConstantOverride("separation", 8f);

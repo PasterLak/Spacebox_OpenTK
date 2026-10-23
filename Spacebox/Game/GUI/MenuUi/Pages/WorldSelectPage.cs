@@ -21,6 +21,7 @@ public sealed class WorldSelectPage : MenuPage
     private readonly Label _extensions = new Label { Autowrap = true };
     private readonly Label _version = new Label();
     private readonly ConfirmDialog _confirm = new ConfirmDialog();
+    private readonly WorldBadges _badges;
     private Button _play;
     private Button _edit;
     private Button _delete;
@@ -30,6 +31,7 @@ public sealed class WorldSelectPage : MenuPage
     public WorldSelectPage(GameMenu menu)
     {
         _menu = menu;
+        _badges = new WorldBadges(menu);
     }
 
     protected override void Build()
@@ -56,9 +58,7 @@ public sealed class WorldSelectPage : MenuPage
         var worldButtons = new HBoxContainer();
         _play = MenuLayout.Button(_menu, "Play", () => _menu.OpenWorld(_menu.selectedWorld));
         _edit = MenuLayout.Button(_menu, "Edit", Edit);
-        _delete = MenuLayout.Button(_menu, "Delete", AskDelete, false);
-        _delete.CustomMinimumSize = new Vector2(90f, MenuLayout.ButtonHeight);
-        _delete.TooltipText = "Delete the world";
+        _delete = MenuLayout.IconButton(_menu, "Resources/Textures/UI/trash.png", "Delete the world", AskDelete);
         worldButtons.AddChild(_play);
         worldButtons.AddChild(_edit);
         worldButtons.AddChild(_delete);
@@ -82,6 +82,7 @@ public sealed class WorldSelectPage : MenuPage
     {
         _shownCount = -1;
         _shownWorld = null;
+        _badges.Clear();
     }
 
     public override void Tick(float deltaTime)
@@ -99,6 +100,7 @@ public sealed class WorldSelectPage : MenuPage
         {
             var world = _menu.Worlds[i];
             var item = _list.AddItem(world.Name, null, world);
+            item.Badges = _badges.For(world);
             if (ReferenceEquals(world, _menu.selectedWorld)) selected = i;
         }
         if (selected >= 0) _list.Select(selected);

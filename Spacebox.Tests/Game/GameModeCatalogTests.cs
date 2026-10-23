@@ -82,4 +82,16 @@ public sealed class GameModeCatalogTests : IDisposable
         Assert.Contains(modes, m => m.Id == GameMode.Spectator && !m.Rules.BreakBlocks);
         Assert.Contains(modes, m => m.Key == "explorer" && m.Base == GameMode.Survival && !m.Rules.PlaceBlocks);
     }
+
+    [Fact]
+    public void Tag_ComesFromJsonOrDefaultsToFirstLetterAndBaseColor()
+    {
+        var tagged = Parse("""{ "Id": 3, "Key": "explorer", "Name": "Explorer", "Base": "survival", "Tag": "Expl", "TagColor": "#C08A2E" }""");
+        Assert.Equal("Exp", tagged.Tag);
+        Assert.Equal("#C08A2E", tagged.TagColor);
+
+        var plain = Parse("""{ "Id": 4, "Key": "builder", "Name": "builder", "Base": "creative" }""");
+        Assert.Equal("B", plain.Tag);
+        Assert.Equal(GameModeTags.DefaultColor(GameMode.Creative), plain.TagColor);
+    }
 }

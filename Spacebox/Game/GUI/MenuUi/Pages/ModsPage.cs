@@ -24,6 +24,7 @@ public sealed class ModsPage : MenuPage
     {
         var frame = MenuLayout.Window("GameSets", Width);
         AddChild(frame.Root);
+        _rows.AddThemeConstantOverride("separation", 0f);
 
         frame.Body.AddChild(MenuLayout.ScrollList(_rows, 250f));
 

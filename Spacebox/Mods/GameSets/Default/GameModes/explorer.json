@@ -2,6 +2,8 @@
   "Id": 3,
   "Key": "explorer",
   "Name": "Explorer",
+  "Tag": "E",
+  "TagColor": "#C08A2E",
   "Base": "survival",
   "Rules": {
     "BreakBlocks": false,

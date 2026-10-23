@@ -355,6 +355,7 @@ namespace Spacebox.Game.GUI.Menu
             {
                 var gameSetInfo = installed.Config;
                 gameSetInfo.Icon = LoadIcon(installed.Folder);
+                gameSetInfo.ModPath = installed.Folder;
 
                 installedGameSets.Add(installed);
                 allGameSets.Add(gameSetInfo);

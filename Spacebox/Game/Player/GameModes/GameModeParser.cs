@@ -31,7 +31,7 @@ public static class GameModeParser
 
         string key = string.IsNullOrWhiteSpace(json.Key) ? id.ToString().ToLowerInvariant() : json.Key.Trim().ToLowerInvariant();
         string name = string.IsNullOrWhiteSpace(json.Name) ? key : json.Name.Trim();
-        mode = new GameModeDefinition(id, key, name, baseMode, rules);
+        mode = new GameModeDefinition(id, key, name, baseMode, rules, GameModeTags.Clamp(json.Tag), json.TagColor);
         return true;
     }
 }

@@ -2,6 +2,8 @@
   "Id": 2,
   "Key": "spectator",
   "Name": "Spectator",
+  "Tag": "V",
+  "TagColor": "#8A8A8A",
   "Rules": {
     "BreakBlocks": false,
     "PlaceBlocks": false,

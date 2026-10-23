@@ -88,6 +88,12 @@ public class Button : BaseButton
         }
     }
 
+    private Color4 IconColor()
+    {
+        var color = GetThemeColor("icon_color", Color4.White);
+        return Disabled ? new Color4(color.R, color.G, color.B, color.A * 0.45f) : color;
+    }
+
     public Texture2D Icon
     {
         get => _icon;
@@ -132,7 +138,7 @@ public class Button : BaseButton
         if (_icon != null)
         {
             float iy = MathF.Floor(inner.Y + (inner.Height - iconSize.Y) * 0.5f);
-            renderer.DrawTexture(_icon, new Rect2(x, iy, iconSize.X, iconSize.Y), CanvasDraw.UvOf(_icon, IconRegion), Color4.White);
+            renderer.DrawTexture(_icon, new Rect2(x, iy, iconSize.X, iconSize.Y), CanvasDraw.UvOf(_icon, IconRegion), IconColor());
             x += iconSize.X + (textSize.X > 0f ? IconSeparation : 0f);
         }
 

@@ -66,6 +66,16 @@ public static class MenuLayout
         return box;
     }
 
+    public static Button IconButton(GameMenu menu, string iconPath, string tooltip, Action onClick)
+    {
+        var button = Button(menu, "", onClick, false);
+        button.Icon = MenuTextures.Load(iconPath);
+        button.IconSize = new Vector2(20f, 20f);
+        button.TooltipText = tooltip;
+        button.CustomMinimumSize = new Vector2(ButtonHeight + 6f, ButtonHeight);
+        return button;
+    }
+
     public static Label Caption(string text) => new Label { Text = text, ThemeTypeVariation = "MutedLabel" };
 
     public static VBoxContainer Field(string caption, Control control)
