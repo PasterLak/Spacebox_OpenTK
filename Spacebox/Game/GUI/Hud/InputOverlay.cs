@@ -1,7 +1,5 @@
 ﻿using Engine;
 using Engine.InputPro;
-using ImGuiNET;
-using System.Numerics;
 
 namespace Spacebox.Game.GUI
 {
@@ -10,11 +8,6 @@ namespace Spacebox.Game.GUI
         private const string ToggleAction = "inputOverlay";
         private const string DebugCategory = "Debug";
         private const int MaxColumns = 3;
-
-        private static readonly Vector4 TitleColor = new Vector4(1f, 0.77f, 0.16f, 1f);
-        private static readonly Vector4 CategoryColor = new Vector4(1f, 0.77f, 0.16f, 1f);
-        private static readonly Vector4 KeyColor = new Vector4(0.45f, 0.85f, 0.95f, 1f);
-        private static readonly Vector4 HintColor = new Vector4(0.6f, 0.62f, 0.68f, 1f);
 
         private static readonly (string Key, string Name)[] DebugKeys =
         {
@@ -30,7 +23,7 @@ namespace Spacebox.Game.GUI
             ("Alt+F4", "Close the game")
         };
 
-        private sealed class Group
+        public sealed class Group
         {
             public string Title;
             public readonly List<(string Key, string Name)> Entries = new List<(string, string)>();
@@ -40,6 +33,12 @@ namespace Spacebox.Game.GUI
         private static readonly List<List<Group>> _columns = new List<List<Group>>();
 
         public static bool IsVisible = false;
+
+        public static int Version { get; private set; }
+
+        public static IReadOnlyList<List<Group>> Columns => _columns;
+
+        public static string ToggleKey => KeyNames.ForAction(ToggleAction) ?? "F6";
 
         public static void Update()
         {
@@ -53,62 +52,9 @@ namespace Spacebox.Game.GUI
             if (IsVisible) Rebuild();
         }
 
-        public static void OnGUI()
+        public static void EnsureBuilt()
         {
-            if (!IsVisible) return;
             if (_groups.Count == 0) Rebuild();
-
-            var io = ImGui.GetIO();
-            ImGui.SetNextWindowPos(io.DisplaySize * 0.5f, ImGuiCond.Always, new Vector2(0.5f, 0.5f));
-            ImGui.SetNextWindowSizeConstraints(Vector2.Zero, io.DisplaySize * 0.95f);
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.06f, 0.08f, 0.11f, 0.9f));
-            ImGui.Begin("InputOverlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-                                        ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoSavedSettings);
-
-            ImGui.TextColored(TitleColor, "CONTROLS");
-            ImGui.SameLine();
-            ImGui.TextColored(HintColor, $"   [{KeyNames.ForAction(ToggleAction) ?? "F6"}] close");
-            ImGui.Separator();
-
-            if (ImGui.BeginTable("InputOverlayColumns", _columns.Count, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.PadOuterX))
-            {
-                ImGui.TableNextRow();
-                for (int c = 0; c < _columns.Count; c++)
-                {
-                    ImGui.TableSetColumnIndex(c);
-                    DrawColumn(_columns[c]);
-                }
-                ImGui.EndTable();
-            }
-
-            ImGui.End();
-            ImGui.PopStyleColor();
-        }
-
-        private static void DrawColumn(List<Group> groups)
-        {
-            float keyWidth = 0f;
-            foreach (var group in groups)
-                foreach (var entry in group.Entries)
-                    keyWidth = MathF.Max(keyWidth, ImGui.CalcTextSize($"[{entry.Key}]").X);
-
-            keyWidth += ImGui.GetStyle().ItemSpacing.X * 2f;
-            float start = ImGui.GetCursorPosX();
-
-            for (int g = 0; g < groups.Count; g++)
-            {
-                if (g > 0) ImGui.Spacing();
-                ImGui.TextColored(CategoryColor, groups[g].Title.ToUpperInvariant());
-
-                foreach (var (key, name) in groups[g].Entries)
-                {
-                    ImGui.TextColored(KeyColor, $"[{key}]");
-                    ImGui.SameLine(start + keyWidth);
-                    ImGui.Text(name);
-                }
-            }
-
-            ImGui.Dummy(new Vector2(keyWidth * 3f, 0f));
         }
 
         private static void Rebuild()
@@ -136,6 +82,7 @@ namespace Spacebox.Game.GUI
             _groups.Add(debug);
 
             BuildColumns();
+            Version++;
         }
 
         private static void BuildColumns()

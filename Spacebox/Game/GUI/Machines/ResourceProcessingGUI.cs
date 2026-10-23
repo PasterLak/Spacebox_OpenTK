@@ -196,7 +196,7 @@ namespace Spacebox.Game.GUI
             }
             else if (processingBlock.IsRunning)
             {
-                status = "Status: " + processingBlock.GetTaskProgress() + "/100";
+                status = "Status: Processing";
             }
             else
             {
@@ -256,6 +256,8 @@ namespace Spacebox.Game.GUI
 
         public static bool IsOpen => UIManager.IsOpen("resourceProcessing") && processingBlock != null;
         public static string Status => status;
+
+        public static float Progress => processingBlock != null && processingBlock.IsRunning ? processingBlock.GetTaskProgress() / 100f : 0f;
         public static ItemSlot InputSlot => InputStorage.GetSlot(0, 0);
         public static ItemSlot OutputSlot => OutputStorage.GetSlot(0, 0);
         public static AtlasSprite InputIcon => inputIcon;
@@ -300,7 +302,7 @@ namespace Spacebox.Game.GUI
             }
 
             if (isVisible && processingBlock != null && processingBlock.IsRunning)
-                status = "Status: " + processingBlock.GetTaskProgress() + "/100";
+                status = "Status: Processing";
         }
 
         public static void MoveItems(ItemSlot slot)

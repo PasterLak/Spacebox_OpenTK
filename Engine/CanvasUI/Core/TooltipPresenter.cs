@@ -12,6 +12,8 @@ internal sealed class TooltipPresenter
     private readonly Label _label = new Label { ThemeTypeVariation = "TooltipLabel" };
     private readonly TextureRect _image = new TextureRect { StretchMode = TextureStretchMode.KeepAspectCentered, IgnoreTextureSize = true, MouseFilter = MouseFilter.Ignore, Visible = false };
 
+    private Control _content;
+
     public PopupPanel Panel { get; } = new PopupPanel { Name = "Tooltip", MouseFilter = MouseFilter.Ignore, ThemeTypeVariation = "TooltipPanel", Visible = false, Gap = 0f };
 
     public TooltipPresenter()
@@ -27,6 +29,7 @@ internal sealed class TooltipPresenter
     {
         if (source == null)
         {
+            SetContent(null);
             Panel.Visible = false;
             return;
         }
@@ -42,10 +45,21 @@ internal sealed class TooltipPresenter
         bool showImage = texture != null && source.TooltipImageSize.X > 0f && source.TooltipImageSize.Y > 0f;
         if (_image.Visible != showImage) _image.Visible = showImage;
         if (showImage && _image.CustomMinimumSize != source.TooltipImageSize) _image.CustomMinimumSize = source.TooltipImageSize;
+        SetContent(source.TooltipContent);
 
         Panel.AnchorRect = new Rect2(MathF.Floor(pointer.X), MathF.Floor(pointer.Y), CursorSize.X, CursorSize.Y);
         Panel.PreferredSide = PopupSide.Below;
         Panel.Visible = true;
+    }
+
+    private void SetContent(Control content)
+    {
+        if (ReferenceEquals(_content, content)) return;
+        if (_content != null && _content.Parent == _column) _column.RemoveChild(_content);
+        _content = content;
+        if (_content == null) return;
+        _content.Parent?.RemoveChild(_content);
+        _column.AddChild(_content);
     }
 
     private static void SetText(Label label, string text)

@@ -68,4 +68,22 @@ public sealed class CanvasStyleExtrasTests
         Assert.Null(root.TooltipText);
         Assert.True(root.TooltipPanel.Visible);
     }
+
+    [Fact]
+    public void Tooltip_ShowsCustomContentAndReleasesItWhenHidden()
+    {
+        var root = CreateRoot();
+        var content = new Label { Text = "Needs 2 iron" };
+        var panel = root.Add(new Panel { TooltipContent = content });
+        panel.SetOffsets(0, 0, 100, 100);
+        root.Layout();
+
+        for (int i = 0; i < 12; i++) root.Update(0.1f, new PointerState { Position = new Vector2(10, 10) });
+        Assert.True(root.TooltipPanel.Visible);
+        Assert.NotNull(content.Parent);
+
+        for (int i = 0; i < 2; i++) root.Update(0.1f, new PointerState { Position = new Vector2(500, 500) });
+        Assert.False(root.TooltipPanel.Visible);
+        Assert.Null(content.Parent);
+    }
 }

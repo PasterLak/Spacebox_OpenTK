@@ -357,10 +357,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Tutorial.UI.TutorialUI.OnGUI();
         WelcomeUI.Update();
         PauseUI.Update();
-        Spacebox.Game.Tutorial.UI.TutorialPromptUI.OnGUI();
         Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
         Spacebox.Game.Ships.Sharing.ShipLibraryUI.OnGUI();
-        if (Settings.ShowInterface) InputOverlay.OnGUI();
         GeneratorUI.Update();
         AnalyzerUI.Update();
         OxygenGeneratorUI.Update();

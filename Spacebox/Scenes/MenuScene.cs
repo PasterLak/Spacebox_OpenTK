@@ -240,7 +240,6 @@ namespace Spacebox.Scenes
             ColorOverlay.OnGUI();
 
             //CenteredText.Hide();
-            InputOverlay.OnGUI();
         }
 
         public override void UnloadContent()

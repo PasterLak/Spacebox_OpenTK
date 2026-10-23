@@ -5,62 +5,140 @@ namespace Spacebox.Game.GUI.Canvas.Windows;
 public sealed class GameWindowsView : SafeArea
 {
     public const float HudReserve = 120f;
+    public const float Gap = 10f;
 
     private readonly List<GameWindow> _windows = new List<GameWindow>();
+    private readonly List<GameWindow> _left = new List<GameWindow>();
+    private readonly List<GameWindow> _middle = new List<GameWindow>();
+    private readonly List<GameWindow> _right = new List<GameWindow>();
+    private readonly List<GameWindow> _leftStack = new List<GameWindow>();
+    private readonly List<GameWindow> _middleStack = new List<GameWindow>();
 
     public GameWindowsView()
     {
         Name = "GameWindows";
-        var margin = AddChild(new MarginContainer { MouseFilter = MouseFilter.Ignore });
-        margin.SetAnchorsPreset(LayoutPreset.FullRect);
-        margin.AddThemeConstantOverride("margin_bottom", HudReserve);
-
-        var center = margin.AddChild(new CenterContainer { MouseFilter = MouseFilter.Ignore });
-        var row = center.AddChild(new HBoxContainer { MouseFilter = MouseFilter.Ignore });
-        row.AddThemeConstantOverride("separation", 10f);
-        Left = row.AddChild(Column());
-        Middle = row.AddChild(Column());
-        Right = row.AddChild(Column());
-
         Inventory = new InventoryWindow();
-        Add(Left, new CreativeWindow());
-        Add(Middle, new StorageWindow());
-        Add(Middle, new CraftingWindow());
-        Add(Middle, new ProcessingWindow());
-        Add(Middle, new OxygenGeneratorWindow());
-        Add(Middle, new DnaReconstructorWindow());
-        Add(Middle, new GeneratorWindow());
-        Add(Middle, new GravityGeneratorWindow());
-        Add(Middle, new AnalyzerWindow());
-        Add(Middle, new DisassemblerWindow());
-        Add(Middle, new ClaimBeaconWindow());
-        Add(Middle, new RadarWindow());
-        Add(Middle, new ShipConsoleWindow());
-        Add(Middle, new SignWindow());
-        Add(Middle, Inventory);
-        Add(Right, new EquipmentWindow());
+        Add(_left, new CreativeWindow());
+        Add(_middle, new StorageWindow());
+        Add(_middle, new CraftingWindow());
+        Add(_middle, new ProcessingWindow());
+        Add(_middle, new OxygenGeneratorWindow());
+        Add(_middle, new DnaReconstructorWindow());
+        Add(_middle, new GeneratorWindow());
+        Add(_middle, new GravityGeneratorWindow());
+        Add(_middle, new AnalyzerWindow());
+        Add(_middle, new DisassemblerWindow());
+        Add(_middle, new ClaimBeaconWindow());
+        Add(_middle, new RadarWindow());
+        Add(_middle, new ShipConsoleWindow());
+        Add(_middle, new SignWindow());
+        Add(null, Inventory);
+        Add(_right, new EquipmentWindow());
     }
 
-    public VBoxContainer Left { get; }
-    public VBoxContainer Middle { get; }
-    public VBoxContainer Right { get; }
     public InventoryWindow Inventory { get; }
 
-    public void Add(VBoxContainer column, GameWindow window)
-    {
-        _windows.Add(window);
-        column.AddChild(window);
-    }
+    public IReadOnlyList<GameWindow> Windows => _windows;
 
     public void Sync()
     {
         for (int i = 0; i < _windows.Count; i++) _windows[i].Sync();
     }
 
-    private static VBoxContainer Column()
+    private void Add(List<GameWindow> side, GameWindow window)
     {
-        var column = new VBoxContainer { MouseFilter = MouseFilter.Ignore, SizeFlagsVertical = SizeFlags.ShrinkEnd };
-        column.AddThemeConstantOverride("separation", 10f);
-        return column;
+        _windows.Add(window);
+        side?.Add(window);
+        AddChild(window);
+    }
+
+    protected override void LayoutChildren()
+    {
+        base.LayoutChildren();
+        var area = ContentRect;
+        var free = new Rect2(area.X, area.Y, area.Width, MathF.Max(0f, area.Height - HudReserve));
+        float centerX = area.X + area.Width * 0.5f;
+
+        Collect(_middle, _middleStack);
+        Collect(_left, _leftStack);
+
+        Rect2 anchor;
+        if (Inventory.Visible)
+        {
+            var size = Inventory.GetCombinedMinimumSize();
+            float y = Math.Clamp(MathF.Round(area.Y + (area.Height - size.Y) * 0.5f), free.Y, MathF.Max(free.Y, free.End.Y - size.Y));
+            anchor = new Rect2(MathF.Round(centerX - size.X * 0.5f), y, size.X, size.Y);
+            Container.FitChildInRect(Inventory, anchor);
+
+            float height = StackHeight(_middleStack);
+            if (height <= anchor.Y - Gap - free.Y)
+            {
+                PlaceStack(_middleStack, centerX, anchor.Y - Gap - height, size.X);
+                float width = StackWidth(_middleStack, size.X);
+                anchor = new Rect2(MathF.Round(centerX - width * 0.5f), anchor.Y, width, anchor.Height);
+            }
+            else _leftStack.AddRange(_middleStack);
+        }
+        else
+        {
+            float width = StackWidth(_middleStack, 0f);
+            float height = StackHeight(_middleStack);
+            float top = MathF.Max(free.Y, MathF.Round(free.Y + (free.Height - height) * 0.5f));
+            anchor = new Rect2(MathF.Round(centerX - width * 0.5f), top, width, height);
+            PlaceStack(_middleStack, centerX, top, width);
+        }
+
+        PlaceSide(_leftStack, anchor, free, true);
+        Collect(_right, _middleStack);
+        PlaceSide(_middleStack, anchor, free, false);
+    }
+
+    private static void Collect(List<GameWindow> source, List<GameWindow> target)
+    {
+        target.Clear();
+        for (int i = 0; i < source.Count; i++)
+            if (source[i].Visible) target.Add(source[i]);
+    }
+
+    private static float StackWidth(List<GameWindow> stack, float minimum)
+    {
+        float width = minimum;
+        for (int i = 0; i < stack.Count; i++) width = MathF.Max(width, stack[i].GetCombinedMinimumSize().X);
+        return width;
+    }
+
+    private static float StackHeight(List<GameWindow> stack)
+    {
+        float height = 0f;
+        for (int i = 0; i < stack.Count; i++) height += stack[i].GetCombinedMinimumSize().Y + (i > 0 ? Gap : 0f);
+        return height;
+    }
+
+    private static void PlaceStack(List<GameWindow> stack, float centerX, float top, float matchWidth)
+    {
+        float y = top;
+        for (int i = 0; i < stack.Count; i++)
+        {
+            var window = stack[i];
+            var size = window.GetCombinedMinimumSize();
+            float width = window.SizeFlagsHorizontal.HasFlag(SizeFlags.Fill) ? MathF.Max(size.X, matchWidth) : size.X;
+            Container.FitChildInRect(window, new Rect2(MathF.Round(centerX - width * 0.5f), y, width, size.Y));
+            y += size.Y + Gap;
+        }
+    }
+
+    private static void PlaceSide(List<GameWindow> stack, Rect2 anchor, Rect2 free, bool left)
+    {
+        if (stack.Count == 0) return;
+        float height = StackHeight(stack);
+        float top = Math.Clamp(anchor.End.Y - height, free.Y, MathF.Max(free.Y, free.End.Y - height));
+        for (int i = 0; i < stack.Count; i++)
+        {
+            var window = stack[i];
+            var size = window.GetCombinedMinimumSize();
+            float x = left ? anchor.X - Gap - size.X : anchor.End.X + Gap;
+            Container.FitChildInRect(window, new Rect2(MathF.Round(x), MathF.Round(top), size.X, size.Y));
+            top += size.Y + Gap;
+        }
     }
 }

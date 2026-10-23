@@ -14,6 +14,7 @@ public sealed class ProcessingWindow : GameWindow
     private readonly ItemSlotControl _input = new ItemSlotControl();
     private readonly ItemSlotControl _output = new ItemSlotControl();
     private readonly VBoxContainer _recipes = new VBoxContainer();
+    private readonly ProgressArrow _arrow = new ProgressArrow(new Vector2(44f, 22f)) { SizeFlagsVertical = SizeFlags.ShrinkCenter };
     private ResourceProcessingBlock _shownBlock;
 
     public ProcessingWindow() : base("Machine")
@@ -28,7 +29,7 @@ public sealed class ProcessingWindow : GameWindow
         var slots = left.AddChild(new HBoxContainer { SizeFlagsVertical = SizeFlags.ExpandFill, Alignment = BoxAlignment.Center });
         slots.AddThemeConstantOverride("separation", 12f);
         slots.AddChild(_input);
-        slots.AddChild(new Label { Text = "->", VerticalAlignment = VerticalAlignment.Center, SizeFlagsVertical = SizeFlags.ShrinkCenter });
+        slots.AddChild(_arrow);
         slots.AddChild(_output);
         _input.Clicked += ResourceProcessingGUI.MoveItems;
         _output.Clicked += ResourceProcessingGUI.MoveItems;
@@ -47,6 +48,7 @@ public sealed class ProcessingWindow : GameWindow
     {
         if (TitleLabel.Text != ResourceProcessingGUI.WindowName) TitleLabel.Text = ResourceProcessingGUI.WindowName;
         StatusText.Set(_status, ResourceProcessingGUI.Status, StatusKind.Normal);
+        _arrow.Progress = ResourceProcessingGUI.Progress;
         ShowEnergy(ResourceProcessingGUI.Block.ConsumptionRate);
 
         if (!ReferenceEquals(_shownBlock, ResourceProcessingGUI.Block))

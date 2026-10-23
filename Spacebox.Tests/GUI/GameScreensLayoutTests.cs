@@ -68,4 +68,12 @@ public class GameScreensLayoutTests
         Assert.True(LayoutHarness.ValidateAll(Root(design, new DeathScreenView()), ScreenProfiles.All, Rules) is var death && death.IsClean, death.Format());
         Assert.True(LayoutHarness.ValidateAll(Root(design, new LoadingScreenView()), ScreenProfiles.All, Rules) is var loading && loading.IsClean, loading.Format());
     }
+
+    [Theory]
+    [MemberData(nameof(Designs))]
+    public void TutorialPrompt_LaysOutCleanly(GameUiDesign design)
+    {
+        var report = LayoutHarness.ValidateAll(Root(design, new TutorialPromptScreen()), ScreenProfiles.All, Rules);
+        Assert.True(report.IsClean, report.Format());
+    }
 }

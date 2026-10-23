@@ -20,8 +20,14 @@ public sealed class CraftItemControl : Control
         ThemeTypeVariation = "Slot";
         MouseFilter = MouseFilter.Stop;
         CustomMinimumSize = new Vector2(size, size);
-        TooltipTitle = data?.item?.Name ?? "";
+        int quantity = data?.blueprint?.Product?.Quantity ?? 1;
+        string name = data?.item?.Name ?? "";
+        TooltipTitle = quantity > 1 ? $"{name} ({quantity})" : name;
+        _tooltip = new CraftTooltip(data);
+        TooltipContent = _tooltip;
     }
+
+    private readonly CraftTooltip _tooltip;
 
     public CraftingCategory.Data Data => _data;
     public event Action<CraftItemControl> Hovered;
@@ -30,6 +36,7 @@ public sealed class CraftItemControl : Control
 
     public void Refresh()
     {
+        if (IsHovered) _tooltip.Refresh();
         _canCraft = CraftingGUI.CanCraft(_data);
         int count = _canCraft ? CraftingGUI.PossibleCount(_data) : 0;
         if (count == _count) return;

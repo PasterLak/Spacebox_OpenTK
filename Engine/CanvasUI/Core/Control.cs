@@ -37,7 +37,8 @@ public class Control : CanvasItem
     public Texture2D TooltipImage { get; set; }
     public Vector2 TooltipImageSize { get; set; }
     public bool TooltipImageFlipV { get; set; }
-    public bool HasTooltip => !string.IsNullOrEmpty(TooltipText) || !string.IsNullOrEmpty(TooltipTitle) || TooltipImage != null;
+    public Control TooltipContent { get; set; }
+    public bool HasTooltip => !string.IsNullOrEmpty(TooltipText) || !string.IsNullOrEmpty(TooltipTitle) || TooltipImage != null || TooltipContent != null;
     public bool IsHovered { get; internal set; }
     public FocusMode FocusMode { get; set; } = FocusMode.None;
     public bool HasFocus => Root != null && Root.FocusOwner == this;

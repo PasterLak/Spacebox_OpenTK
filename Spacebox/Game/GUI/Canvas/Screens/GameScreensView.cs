@@ -12,6 +12,8 @@ public sealed class GameScreensView : ScreenOverlay
         Name = "GameScreens";
         Add(new LoadingScreenView());
         Add(new WelcomeScreen());
+        Add(new TutorialPromptScreen());
+        Add(new ControlsOverlayView());
         Add(new PauseScreen());
         Add(_death);
         Add(new DnaReconstructionView());
