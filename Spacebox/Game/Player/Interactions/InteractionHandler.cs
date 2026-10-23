@@ -69,6 +69,7 @@ public class InteractionHandler
     {
 
         if (!TryGiftHeldItem(player)) Interaction.Update(player);
+        Spacebox.Game.Player.Targeting.BodyHighlight.Update(player, Spacebox.Game.GUI.PanelUI.CurrentSlot()?.Item);
 
         for (int i = 0; i < _passiveInteractions.Count; i++)
         {
