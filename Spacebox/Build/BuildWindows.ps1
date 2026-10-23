@@ -18,8 +18,9 @@ $finalFolderName = "Spacebox_v$version"
 $projectFile = Join-Path $projectRoot "Spacebox.csproj"
 $publishRoot = Join-Path $projectRoot "bin\$configuration\$framework\$runtime"
 $publishDir = Join-Path $publishRoot "publish"
-$finalDir = Join-Path $publishRoot $finalFolderName
-$zipPath = Join-Path $publishRoot "$finalFolderName.zip"
+$outputRoot = Join-Path (Split-Path $projectRoot -Parent) "Final"
+$finalDir = Join-Path $outputRoot "Windows"
+$zipPath = Join-Path $outputRoot "$finalFolderName.zip"
 
 cls
 Remove-Item -Path $publishRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -46,17 +47,17 @@ if (-Not (Test-Path $publishDir)) {
     exit 1
 }
 
-# Step 3: Remove everything in publishRoot except publish folder
-Write-Host "Cleaning up intermediate build files..."
-Get-ChildItem $publishRoot -Exclude "publish" | Remove-Item -Recurse -Force
-
-# Step 4: Rename publish folder
+# Step 3: Move the published files into Final\Windows
+Write-Host "Moving files to $finalDir..."
+New-Item -Path $outputRoot -ItemType Directory -Force | Out-Null
 if (Test-Path $finalDir) {
     Remove-Item $finalDir -Recurse -Force
 }
-Rename-Item -Path $publishDir -NewName $finalFolderName
+Remove-Item -Path $zipPath -Force -ErrorAction SilentlyContinue
+Move-Item -Path $publishDir -Destination $finalDir
+Remove-Item -Path $publishRoot -Recurse -Force -ErrorAction SilentlyContinue
 
-$logPath = Join-Path $publishRoot "log.txt"
+$logPath = Join-Path $outputRoot "log-windows.txt"
 Move-Item -Path $logTemp -Destination $logPath -Force
 
 # Step 4.5: Exclude files listed in exclude.txt (if exists)
@@ -76,7 +77,7 @@ if ($selfContained) {
 
 
 # Step 6: Open folder
-Start-Process "explorer.exe" $publishRoot
+if (-not $env:SPACEBOX_NO_EXPLORER) { Start-Process "explorer.exe" $outputRoot }
 
 cls
 Write-Host "--------------------------------------"

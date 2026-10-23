@@ -55,6 +55,7 @@ dotnet run --project Tools/Spacebox.AssetAudit -- audit . --list   # list assets
 dotnet run --project Tools/Spacebox.GameSetTool -- convert Spacebox/Mods/GameSets/Default   # flat GameSet JSON -> folder format (verified identical); also export-flat, snapshot, check
 
 dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish   # also win-x64 / osx-x64; single-file: only the executable + game folders
+Spacebox/Build/BuildWindows.ps1 ; Spacebox/Build/BuildLinux.ps1   # Final release builds: files directly in Final/Windows and Final/Linux (repo root) plus a zip next to them; SPACEBOX_NO_EXPLORER=1 skips opening Explorer
 ```
 
 - `Engine.Tests`, `Spacebox.Tests` and `Spacebox.Benchmarks` are marked non-buildable in `Release`; use `Debug` for them.

@@ -11,12 +11,14 @@ $finalFolderName = "Spacebox_v$($version)_linux"
 $projectFile = Join-Path $projectRoot "Spacebox.csproj"
 $publishRoot = Join-Path $projectRoot "bin\$configuration\$framework\$runtime"
 $publishDir = Join-Path $publishRoot "publish"
-$finalDir = Join-Path $publishRoot $finalFolderName
-$zipPath = Join-Path $publishRoot "$finalFolderName.zip"
-$logPath = Join-Path $publishRoot "log.txt"
+$outputRoot = Join-Path (Split-Path $projectRoot -Parent) "Final"
+$finalDir = Join-Path $outputRoot "Linux"
+$zipPath = Join-Path $outputRoot "$finalFolderName.zip"
+$logPath = Join-Path $outputRoot "log-linux.txt"
 
 Remove-Item -Path $publishRoot -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -Path $publishRoot -ItemType Directory -Force | Out-Null
+New-Item -Path $outputRoot -ItemType Directory -Force | Out-Null
 
 Write-Host "Publishing project for $runtime..."
 dotnet publish $projectFile -c $configuration -r $runtime --self-contained *> $logPath
@@ -25,15 +27,17 @@ if ($LASTEXITCODE -ne 0 -or -not (Test-Path (Join-Path $publishDir "Spacebox")))
     exit 1
 }
 
-Get-ChildItem $publishRoot -Exclude "publish", "log.txt" | Remove-Item -Recurse -Force
-Rename-Item -Path $publishDir -NewName $finalFolderName
+if (Test-Path $finalDir) { Remove-Item $finalDir -Recurse -Force }
+Remove-Item -Path $zipPath -Force -ErrorAction SilentlyContinue
+Move-Item -Path $publishDir -Destination $finalDir
+Remove-Item -Path $publishRoot -Recurse -Force -ErrorAction SilentlyContinue
 
 Remove-ExcludedFiles $projectRoot $finalDir
 Remove-UnusedAssets $projectRoot $finalDir
 
 New-FlatZip $finalDir $zipPath -UnixExecutables @("Spacebox", "start.sh", "start-server.sh")
 
-Start-Process "explorer.exe" $publishRoot
+if (-not $env:SPACEBOX_NO_EXPLORER) { Start-Process "explorer.exe" $outputRoot }
 
 Write-Host "--------------------------------------"
 Write-Host ">>> Linux build complete! $version"
