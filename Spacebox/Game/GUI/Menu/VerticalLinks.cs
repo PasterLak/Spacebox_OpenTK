@@ -36,19 +36,10 @@ namespace Spacebox.Game.GUI
 
             linkItems = new List<VerticalLinkItem>
             {
-                new VerticalLinkItem("Socials:"), 
-                new VerticalLinkItem("", "https://www.youtube.com/@SpaceboxGame", "Resources/Sprites/UI/youtube.png"),
-                new VerticalLinkItem("", "https://discord.gg/9kY3dweXtY", "Resources/Sprites/UI/discord.png"),
-               
-                new VerticalLinkItem("", "https://pasterlak.itch.io/spacebox", "Resources/Sprites/UI/itchio.png"),
-
+                new VerticalLinkItem("Socials:"),
             };
-            
-            if(Application.IsSystemLanguageOneOf(new string[] { "ru", "uk" , "kk" , "be" }))
-            {
-                linkItems.Add(new VerticalLinkItem("", "https://t.me/spacebox_game", "Resources/Sprites/UI/telegram.png"));
-                linkItems.Add(new VerticalLinkItem("", "https://vk.com/spacebox_official", "Resources/Sprites/UI/vk.png"));
-            }
+            foreach (var link in Spacebox.Game.GUI.MenuUi.SocialLinks.All())
+                linkItems.Add(new VerticalLinkItem("", link.Url, link.IconPath));
 
             foreach (var item in linkItems)
             {

@@ -48,6 +48,6 @@ public sealed class StatBarControl : Control
         var textSize = font.Measure(_text, size);
         var position = new Vector2(MathF.Round((rect.Width - textSize.X) * 0.5f), MathF.Round((rect.Height - textSize.Y) * 0.5f));
         CanvasDraw.Text(renderer, font, position + Vector2.One, _text, size, GetThemeColor("font_shadow_color", Color4.Black));
-        CanvasDraw.Text(renderer, font, position, _text, size, GetThemeColor("font_color", Color4.White));
+        CanvasDraw.Text(renderer, font, position, _text, size, GetThemeColor("hud_text_color", Color4.White));
     }
 }

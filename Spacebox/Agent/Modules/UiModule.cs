@@ -44,6 +44,16 @@ public sealed class UiModule : IAgentModule
         router.PostAsync("/ui/hover", "Move the mouse over ImGui text (tooltips): same parameters as /ui/click", request => PointAsync(request, false));
     }
 
+    private static async Task<Engine.Automation.CanvasTextMatch?> FindOnCanvasAsync(HttpRequest request)
+    {
+        string text = AgentQuery.Text(request, "text");
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        bool exact = AgentQuery.Text(request, "exact", "0") == "1";
+        int index = AgentQuery.Int(request, "index", 0);
+        var matches = await MainThread.Run(() => Engine.Automation.CanvasTextFinder.Find(text, exact));
+        return index >= 0 && index < matches.Count ? matches[index] : null;
+    }
+
     private static async Task<HttpResponse> PointAsync(HttpRequest request, bool click)
     {
         var button = Enum.TryParse(AgentQuery.Text(request, "button", "left"), true, out MouseButton parsed) ? parsed : MouseButton.Left;
@@ -56,6 +66,11 @@ public sealed class UiModule : IAgentModule
         {
             point = new Vector2(AgentQuery.RequiredFloat(request, "x"), AgentQuery.RequiredFloat(request, "y"));
             clicked = null;
+        }
+        else if (await FindOnCanvasAsync(request) is { } canvasMatch)
+        {
+            point = new Vector2(canvasMatch.ScreenCenter.X, canvasMatch.ScreenCenter.Y);
+            clicked = new { window = canvasMatch.Layer, text = canvasMatch.Text, canvas = true };
         }
         else
         {

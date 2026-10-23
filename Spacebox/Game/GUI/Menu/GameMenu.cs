@@ -99,6 +99,14 @@ namespace Spacebox.Game.GUI.Menu
 
 
         bool hide = false;
+
+        public bool IsHidden => hide;
+
+        public Spacebox.Game.GUI.MenuUi.MenuPage PageOf(System.Type windowType)
+        {
+            return windowType != null && windows.TryGetValue(windowType, out var window) ? window.Page : null;
+        }
+
         public void Render()
         {
             if (hide) return;
@@ -121,7 +129,7 @@ namespace Spacebox.Game.GUI.Menu
 
             using (MenuStyle.Begin())
             {
-                if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var wnd))
+                if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var wnd) && wnd.Page == null)
                     wnd.Render();
 
                 if (showDeleteWindow) deleteWindow.Render();
@@ -188,7 +196,11 @@ namespace Spacebox.Game.GUI.Menu
         public List<ModConfig> AllGameSets => allGameSets;
         public IReadOnlyList<InstalledGameSet> InstalledGameSets => installedGameSets;
 
-        public void ShowMessage(string title, string text) => messageWindow.Show(title, text);
+        public void ShowMessage(string title, string text)
+        {
+            if (Spacebox.Game.GUI.MenuUi.MenuCanvas.Current != null) Spacebox.Game.GUI.MenuUi.MenuCanvas.Current.ShowMessage(title, text);
+            else messageWindow.Show(title, text);
+        }
 
         public InstalledGameSet FindInstalled(ModConfig config)
         {
@@ -389,6 +401,44 @@ namespace Spacebox.Game.GUI.Menu
             string newWorldDirectory = Path.Combine(worldsDirectory, info.FolderName);
             if (!Directory.Exists(newWorldDirectory)) Directory.CreateDirectory(newWorldDirectory);
             WorldInfoFiles.Write(newWorldDirectory, info);
+        }
+
+        public bool SubmitWorldForm(bool extensionErrors)
+        {
+            if (IsEditMode)
+            {
+                string finalName = newWorldName;
+                if (selectedWorld != null && finalName != selectedWorld.Name)
+                {
+                    int counter = 1;
+                    string baseName = finalName;
+                    while (!IsNameUnique(finalName))
+                    {
+                        finalName = $"{baseName} {counter}";
+                        counter++;
+                    }
+                }
+                newWorldName = finalName;
+                SetStateToWorldSelect();
+                SaveEditedWorld();
+                return true;
+            }
+
+            if (extensionErrors)
+            {
+                ShowMessage("Extensions", "Fix the extension errors before creating the world");
+                return false;
+            }
+
+            if (!IsNameUnique(NewWorldName))
+            {
+                ShowMessage("World name", "A world with this name already exists");
+                return false;
+            }
+
+            CreateNewWorld();
+            SetStateToWorldSelect();
+            return true;
         }
 
         public void SaveEditedWorld()

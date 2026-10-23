@@ -6,7 +6,25 @@ using System.Numerics;
 
 public abstract class MenuWindow
 {
+    private Spacebox.Game.GUI.MenuUi.MenuPage _page;
+    private bool _pageCreated;
+
     public abstract void Render();
+
+    public Spacebox.Game.GUI.MenuUi.MenuPage Page
+    {
+        get
+        {
+            if (!_pageCreated)
+            {
+                _pageCreated = true;
+                _page = CreatePage();
+            }
+            return _page;
+        }
+    }
+
+    protected virtual Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => null;
     public virtual void OnWindowChanged()
     {
 
@@ -28,6 +46,8 @@ public class MainMenuWindow : MenuWindow
     {
         this.menu = menu;
     }
+
+    protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.MainMenuPage(menu);
 
    
 

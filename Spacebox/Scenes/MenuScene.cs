@@ -26,6 +26,7 @@ namespace Spacebox.Scenes
         private GameMenu menu;
 
         private MenuMusicButton musicButton;
+        private Spacebox.Game.GUI.MenuUi.MenuCanvas menuCanvas;
 
         private Canvas canvas;
 
@@ -68,7 +69,9 @@ namespace Spacebox.Scenes
 
             var music = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/menu.ogg"));
             music.PlayOnStart = false;
-            musicButton = new MenuMusicButton(new MenuMusicController(music.Audio), menu.Click1);
+            var musicController = new MenuMusicController(music.Audio);
+            musicButton = new MenuMusicButton(musicController, menu.Click1);
+            menuCanvas = new Spacebox.Game.GUI.MenuUi.MenuCanvas(menu, musicController, CenteredImageMenu.Texture);
 
             /*var jump = InputManager.Instance.AddAction("inputOverlay", "Jump action");
 
@@ -215,10 +218,13 @@ namespace Spacebox.Scenes
                 return;
             }
             
-            CenteredImageMenu.Draw();
-           
-            VerticalLinks.Draw();
-            musicButton.Draw();
+            menuCanvas?.Render();
+            if (menuCanvas == null)
+            {
+                CenteredImageMenu.Draw();
+                VerticalLinks.Draw();
+                musicButton.Draw();
+            }
             menu.Render();
             //devLogWindow.Render();
             //canvas.Draw();
@@ -233,6 +239,8 @@ namespace Spacebox.Scenes
 
         public override void UnloadContent()
         {
+            menuCanvas?.Dispose();
+            menuCanvas = null;
             menu.Dispose();
             DevLogWindow.Instance = null;
             Settings.ShowInterface = true;
@@ -243,6 +251,7 @@ namespace Spacebox.Scenes
         {
             base.Update();
             CenteredImageMenu.Update();
+            menuCanvas?.Update(Time.Delta);
             InputOverlay.Update();
 
             if(menu.CurrentWindowType == typeof(MultiplayerWindow))

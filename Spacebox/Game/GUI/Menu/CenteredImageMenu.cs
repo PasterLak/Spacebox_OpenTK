@@ -7,6 +7,8 @@ namespace Engine
     public static class CenteredImageMenu
     {
         public static bool ShowText = true;
+        public static bool IsVisible => _isVisible;
+        public static Texture2D Texture => _imageTexture;
         private static Texture2D _imageTexture;
         private static bool _isVisible = true;
         private static float _displayDuration = 0f;

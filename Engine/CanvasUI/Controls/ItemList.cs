@@ -42,6 +42,14 @@ public class ItemList : Control
     public float MaxScroll => MathF.Max(0f, ContentHeight - Size.Y);
     public bool IsScrolledToBottom => _scroll >= MaxScroll - 1f;
 
+    public Rect2? RowRect(int index)
+    {
+        if (index < 0 || index >= _items.Count) return null;
+        float top = index * RowHeight - _scroll;
+        if (top + RowHeight <= 0f || top >= Size.Y) return null;
+        return new Rect2(Rect.X, Rect.Y + top, Size.X, RowHeight);
+    }
+
     public event Action<int> ItemSelected;
     public event Action<int> ItemActivated;
     public event Action<int> ItemRightClicked;
