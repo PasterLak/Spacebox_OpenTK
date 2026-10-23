@@ -105,7 +105,9 @@ public sealed class EditorHost : IDisposable
         main.SetOffsets(6f, 4f, -6f, -4f);
 
         var toolbar = main.AddChild(new HBoxContainer { Name = "Toolbar" });
-        _title.Text = $"GameSet Editor - {_context.Assets.ModId}  ({_context.Project.FolderName}){(_context.Project.IsReadOnly ? "  read-only" : "")}";
+        _title.Text = string.IsNullOrEmpty(_context.CurrentTarget)
+            ? $"GameSet Editor - {_context.Project.ModId}  ({_context.Project.FolderName}){(_context.Project.IsReadOnly ? "  read-only" : "")}"
+            : $"GameSet Editor - {_context.Project.ModId}  (Bases/{_context.CurrentTarget})";
         _title.FontColor = EditorCanvasTheme.Accent;
         _title.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         toolbar.AddChild(_title);
@@ -114,6 +116,7 @@ public sealed class EditorHost : IDisposable
         _saveReload = Toolbar(toolbar, "Save & Reload", "Saves all files and reloads the GameSet (textures, atlases, previews).", () => { Save(); _context.RequestReload(); });
         Toolbar(toolbar, "Reload", "Reloads textures and data from disk without saving.", _context.RequestReload);
         _discard = Toolbar(toolbar, "Discard", "Throws away all unsaved changes and reloads the files from disk.", Discard);
+        BuildTargetSelector(toolbar);
         var spacer = toolbar.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand, MouseFilter = MouseFilter.Ignore });
         spacer.CustomMinimumSize = new Vector2(10f, 0f);
         Toolbar(toolbar, "Back to menu", "Leave the editor. Asks first if there are unsaved changes.", RequestExit);
@@ -179,6 +182,48 @@ public sealed class EditorHost : IDisposable
             _context.Project.DiscardChanges();
             _context.SetStatus("Changes discarded");
         });
+    }
+
+    private ComboBox _target;
+
+    public string CurrentPageTitle => CurrentPage?.Title;
+
+    private void BuildTargetSelector(HBoxContainer toolbar)
+    {
+        var targets = _context.Targets;
+        if (targets.Count < 2) return;
+
+        toolbar.AddChild(new VSeparator());
+        toolbar.AddChild(new Label("Target") { SizeFlagsVertical = SizeFlags.ShrinkCenter, TooltipText = TargetTooltip });
+        _target = toolbar.AddChild(new ComboBox { AllowCustomText = false, Editable = false, CustomMinimumSize = new Vector2(180f, 0f), TooltipText = TargetTooltip });
+        foreach (var target in targets) _target.AddOption(target.Name, null, null, target.Id);
+        _target.Value = NameOf(_context.CurrentTarget);
+        _target.ValueChanged += OnTargetChanged;
+    }
+
+    private const string TargetTooltip = "All GameSets: edits go into the pack itself. Only <GameSet>: edits are saved into Bases/<id>/ and loaded only with that GameSet, e.g. recipes that need its items.";
+
+    private string NameOf(string id)
+    {
+        foreach (var target in _context.Targets)
+            if (string.Equals(target.Id, id ?? "", StringComparison.OrdinalIgnoreCase)) return target.Name;
+        return EditorTargets.AllName;
+    }
+
+    private void OnTargetChanged(string name)
+    {
+        string id = null;
+        foreach (var target in _context.Targets)
+            if (target.Name == name) id = target.Id;
+        if (id == null || string.Equals(id, _context.CurrentTarget, StringComparison.OrdinalIgnoreCase)) return;
+
+        if (_context.Project.DirtyCount > 0)
+        {
+            _target.Value = NameOf(_context.CurrentTarget);
+            _context.SetStatus("Save or discard your changes before switching the target", true);
+            return;
+        }
+        _context.RequestTarget(id);
     }
 
     private void RequestExit()

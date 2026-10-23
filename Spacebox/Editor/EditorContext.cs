@@ -18,6 +18,13 @@ public sealed class EditorContext : IDisposable
     public bool StatusIsError { get; private set; }
     public bool ReloadRequested { get; private set; }
     public bool ExitRequested { get; private set; }
+    public IReadOnlyList<EditorTarget> Targets { get; init; } = Array.Empty<EditorTarget>();
+    public string CurrentTarget { get; init; } = "";
+    public string TargetRequest { get; private set; }
+
+    public void RequestTarget(string target) => TargetRequest = target ?? "";
+
+    public void ClearTargetRequest() => TargetRequest = null;
 
     public EditorContext(GameSetProject project)
     {

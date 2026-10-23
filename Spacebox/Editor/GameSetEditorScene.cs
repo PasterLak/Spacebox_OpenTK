@@ -14,6 +14,7 @@ public struct GameSetEditorArgs
     public string ModId;
     public string ModFolderName;
     public string StartPanel;
+    public string TargetBase;
 }
 
 public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs>
@@ -35,10 +36,11 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
 
         LoadGameSet();
 
-        var project = new GameSetProject(Spacebox.Network.GameSetLocator.FolderPath(_args.ModFolderName), _args.ModId);
+        var targets = EditorTargets.For(_args.ModId);
+        var project = new GameSetProject(EditorTargets.ProjectRoot(Spacebox.Network.GameSetLocator.FolderPath(_args.ModFolderName), _args.TargetBase), _args.ModId);
         project.Mirror = SourceFolderMirror.TryCreate(project.RootPath);
         if (project.Mirror != null) Engine.Debug.Log($"[Editor] Development build: saves also go to {project.Mirror.Root}");
-        _context = new EditorContext(project);
+        _context = new EditorContext(project) { Targets = targets, CurrentTarget = _args.TargetBase ?? "" };
         _context.Assets.Refresh();
         _host = new Spacebox.Editor.Canvas.EditorHost(_context, Spacebox.Editor.Canvas.EditorPages.CreateDefault(project), _args.StartPanel);
         Input.ShowCursor();
@@ -65,6 +67,14 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         }
 
         if (_context.ExitRequested) SceneManager.Load<MenuScene>();
+        else if (_context.TargetRequest != null)
+        {
+            var args = _args;
+            args.TargetBase = _context.TargetRequest;
+            args.StartPanel = _host?.CurrentPageTitle ?? _args.StartPanel;
+            _context.ClearTargetRequest();
+            SceneManager.Load<GameSetEditorScene, GameSetEditorArgs>(args);
+        }
     }
 
     public override void Render()
@@ -91,11 +101,13 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
 
     private void LoadGameSet()
     {
+        bool targeted = !string.IsNullOrEmpty(_args.TargetBase);
         SceneAssetsPreloader.Preload(new SpaceSceneArgs
         {
-            modId = _args.ModId,
+            modId = targeted ? _args.TargetBase : _args.ModId,
+            extensions = targeted ? new[] { _args.ModId } : Array.Empty<string>(),
             applyTexturePacks = false,
-            modfolderName = _args.ModFolderName,
+            modfolderName = targeted ? null : _args.ModFolderName,
             SearchForGameSetInLocalFolder = true
         });
     }
