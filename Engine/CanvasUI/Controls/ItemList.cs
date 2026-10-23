@@ -228,7 +228,7 @@ public class ItemList : Control
             }
 
             if (font == null) continue;
-            if (item.Badges != null) x = DrawBadges(renderer, font, item.Badges, x, y, row - gap, size);
+            if (item.Badges != null) x = BadgeDraw.Draw(renderer, font, item.Badges, x, y, row - gap, BadgeDraw.FontSize(size, GetThemeConstant("badge_font_scale", 0.8f)));
             float ty = MathF.Floor(y + (row - gap - lineHeight) * 0.5f);
             var color = item.IsHeader ? headerColor : item.Disabled ? secondaryColor : item.TextColor ?? textColor;
             string text = TextFit.Ellipsize(font, item.Text, size, MathF.Max(0f, width - x - 4f));
@@ -250,22 +250,6 @@ public class ItemList : Control
             float thumbY = (Size.Y - thumb) * _scroll / MaxScroll;
             renderer.DrawRect(new Rect2(track.X, MathF.Floor(thumbY), scrollbar, MathF.Floor(thumb)), GetThemeColor("scroll_thumb", new Color4(1f, 1f, 1f, 0.35f)));
         }
-    }
-
-    private float DrawBadges(ICanvasRenderer renderer, CanvasFont font, List<ListBadge> badges, float x, float y, float rowHeight, float fontSize)
-    {
-        float size = MathF.Max(6f, MathF.Round(fontSize * GetThemeConstant("badge_font_scale", 0.8f)));
-        float height = MathF.Floor(font.GetLineHeight(size) + 2f);
-        float by = MathF.Floor(y + (rowHeight - height) * 0.5f);
-        for (int i = 0; i < badges.Count; i++)
-        {
-            var badge = badges[i];
-            float width = MathF.Ceiling(font.MeasureWidth(badge.Text, size) + 6f);
-            renderer.DrawRect(new Rect2(x, by, width, height), badge.Color);
-            CanvasDraw.Text(renderer, font, new Vector2(x + 3f, by + 1f), badge.Text, size, badge.TextColor);
-            x += width + 3f;
-        }
-        return x + 2f;
     }
 
     public string TooltipAt(Vector2 localPosition)

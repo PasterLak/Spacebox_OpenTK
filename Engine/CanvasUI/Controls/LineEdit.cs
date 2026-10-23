@@ -21,6 +21,7 @@ public class LineEdit : TextEditBase
     public bool Secret { get; set; }
     public Texture2D Icon { get; set; }
     public Rect2? IconRegion { get; set; }
+    public IReadOnlyList<ListBadge> Badges { get; set; }
     public char SecretCharacter { get; set; } = '*';
 
     protected override ICanvasClipboard Clipboard => Secret ? new PasteOnlyClipboard(base.Clipboard) : base.Clipboard;
@@ -59,11 +60,14 @@ public class LineEdit : TextEditBase
         float y = MathF.Floor(inner.Y + (inner.Height - lineHeight) * 0.5f);
         float origin = TextOrigin(font, size, inner);
 
+        float lead = inner.X - LeadWidth(font, size);
         if (Icon != null)
         {
             float iconSize = MathF.Floor(lineHeight);
-            renderer.DrawTexture(Icon, new Rect2(inner.X - iconSize - IconGap, MathF.Floor(inner.Y + (inner.Height - iconSize) * 0.5f), iconSize, iconSize), CanvasDraw.UvOf(Icon, IconRegion), Color4.White);
+            renderer.DrawTexture(Icon, new Rect2(lead, MathF.Floor(inner.Y + (inner.Height - iconSize) * 0.5f), iconSize, iconSize), CanvasDraw.UvOf(Icon, IconRegion), Color4.White);
+            lead += iconSize + IconGap;
         }
+        BadgeDraw.Draw(renderer, font, Badges, lead, inner.Y, inner.Height, BadgeSize(size));
 
         renderer.PushClip(inner);
         string text = DisplayText;
@@ -120,13 +124,17 @@ public class LineEdit : TextEditBase
     {
         var style = GetThemeStyleBox("normal");
         var rect = style == null ? LocalRect : style.ContentRect(LocalRect);
-        float left = 0f;
-        if (Icon != null)
-        {
-            var font = GetThemeFont();
-            left = MathF.Floor(font?.GetLineHeight(GetThemeFontSize()) ?? 12f) + IconGap;
-        }
+        var font = GetThemeFont();
+        float left = font == null ? 0f : LeadWidth(font, GetThemeFontSize());
         return new Rect2(rect.X + left, rect.Y, MathF.Max(0f, rect.Width - RightPadding - left), rect.Height);
+    }
+
+    private float BadgeSize(float size) => BadgeDraw.FontSize(size, GetThemeConstant("badge_font_scale", 0.8f));
+
+    private float LeadWidth(CanvasFont font, float size)
+    {
+        float width = Icon != null ? MathF.Floor(font.GetLineHeight(size)) + IconGap : 0f;
+        return width + BadgeDraw.Width(font, Badges, BadgeSize(size));
     }
 
     private float TextOrigin(CanvasFont font, float size, Rect2 inner)

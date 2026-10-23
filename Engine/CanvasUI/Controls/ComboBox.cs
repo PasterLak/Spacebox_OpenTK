@@ -84,6 +84,7 @@ public class ComboBox : Control
         }
         _edit.Icon = selected?.Icon;
         _edit.IconRegion = selected?.IconRegion;
+        _edit.Badges = selected?.Badges;
     }
 
     public override Vector2 GetMinimumSize() => _edit.GetCombinedMinimumSize() + new Vector2(ArrowWidth, 0f);
@@ -147,7 +148,8 @@ public class ComboBox : Control
         _filtering = false;
         Fill("");
         if (_popup.Parent == null) Root.Add(_popup, UiLayer.Popup);
-        _popup.CustomMinimumSize = new Vector2(MathF.Max(PopupMinWidth, Size.X), MathF.Min(260f, _list.RowHeight * Math.Max(1, _list.Items.Count) + 8f));
+        float chrome = (_popup.GetThemeStyleBox("panel")?.MinimumSize.Y ?? 0f) + (_list.GetThemeStyleBox("panel")?.MinimumSize.Y ?? 0f);
+        _popup.CustomMinimumSize = new Vector2(MathF.Max(PopupMinWidth, Size.X), MathF.Min(260f, _list.RowHeight * Math.Max(1, _list.Items.Count) + MathF.Max(8f, chrome + 2f)));
         _popup.Popup(Rect, PopupSide.Below);
         int current = _list.IndexOf(item => string.Equals(item.Text, _edit.Text, StringComparison.OrdinalIgnoreCase));
         _filtering = true;
@@ -179,6 +181,7 @@ public class ComboBox : Control
             if (!string.IsNullOrEmpty(filter) && option.Text.IndexOf(filter, StringComparison.OrdinalIgnoreCase) < 0 && option.Secondary.IndexOf(filter, StringComparison.OrdinalIgnoreCase) < 0) continue;
             var copy = _list.AddItem(option.Text, option.Icon, option.Metadata);
             copy.IconRegion = option.IconRegion;
+            copy.Badges = option.Badges;
             copy.Secondary = option.Secondary;
             copy.Tooltip = option.Tooltip;
             copy.IsHeader = option.IsHeader;

@@ -26,11 +26,9 @@ public sealed class WorldBadges
 
     public List<ListBadge> For(WorldInfo world)
     {
-        var mode = ModeOf(world);
-        var modeColor = ColorPickerButton.TryParseHex(mode.TagColor, out var parsed) ? parsed : OldVersionColor;
         return new List<ListBadge>
         {
-            new ListBadge(mode.Tag, modeColor),
+            ModeBadge(world.ModId, world.GameMode),
             new ListBadge(string.IsNullOrEmpty(world.GameVersion) ? "?" : world.GameVersion, VersionColor(world))
         };
     }
@@ -41,13 +39,19 @@ public sealed class WorldBadges
         return VersionConverter.GetSupport(world, out _) == WorldUpgradeStatus.Ok ? OldVersionColor : UnsupportedVersionColor;
     }
 
-    private GameModeDefinition ModeOf(WorldInfo world)
+    public ListBadge ModeBadge(string modId, GameMode gameMode)
     {
-        foreach (var mode in ModesOf(world.ModId))
-            if (mode.Id == world.GameMode) return mode;
+        var mode = ModeOf(modId, gameMode);
+        return new ListBadge(mode.Tag, ColorPickerButton.TryParseHex(mode.TagColor, out var color) ? color : OldVersionColor);
+    }
+
+    private GameModeDefinition ModeOf(string modId, GameMode gameMode)
+    {
+        foreach (var mode in ModesOf(modId))
+            if (mode.Id == gameMode) return mode;
         foreach (var mode in ModesOf("default"))
-            if (mode.Id == world.GameMode) return mode;
-        return GameModeDefinition.BuiltIn(Enum.IsDefined(world.GameMode) ? world.GameMode : GameMode.Survival);
+            if (mode.Id == gameMode) return mode;
+        return GameModeDefinition.BuiltIn(Enum.IsDefined(gameMode) ? gameMode : GameMode.Survival);
     }
 
     private List<GameModeDefinition> ModesOf(string modId)

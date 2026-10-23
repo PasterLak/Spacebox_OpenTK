@@ -16,6 +16,7 @@ public sealed class NewWorldPage : MenuPage
     private readonly LineEdit _author = new LineEdit { MaxLength = 64 };
     private readonly LineEdit _seed = new LineEdit { MaxLength = 32, SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
     private readonly ChoiceBox _gameMode = new ChoiceBox();
+    private WorldBadges _badges;
     private readonly ChoiceBox _gameSet = new ChoiceBox();
     private readonly VBoxContainer _extensions = new VBoxContainer();
     private readonly Label _extensionStatus = new Label { Autowrap = true };
@@ -45,6 +46,7 @@ public sealed class NewWorldPage : MenuPage
         seedRow.AddChild(_random);
         body.AddChild(MenuLayout.Field("Seed", seedRow));
 
+        _badges = new WorldBadges(_menu);
         _gameMode.SetChoices(Enum.GetNames<GameMode>());
         body.AddChild(MenuLayout.Field("Game Mode", _gameMode));
         body.AddChild(MenuLayout.Field("GameSet", _gameSet));
@@ -101,11 +103,20 @@ public sealed class NewWorldPage : MenuPage
         _name.GrabFocus();
     }
 
+    private void UpdateModeBadges()
+    {
+        string modId = _menu.IsEditMode ? _menu.selectedWorld?.ModId : _menu.GameSets.Count > 0 ? _menu.GameSets[Math.Clamp(_menu.SelectedGameSetIndex, 0, _menu.GameSets.Count - 1)].ModId : "default";
+        var modes = Enum.GetValues<GameMode>();
+        var options = _gameMode.Options;
+        for (int i = 0; i < options.Count && i < modes.Length; i++) options[i].Badges = new List<ListBadge> { _badges.ModeBadge(modId, modes[i]) };
+    }
+
     private void RebuildExtensions()
     {
         bool readOnly = _menu.IsEditMode;
         _shownGameSet = _gameSet.SelectedIndex;
         _extensions.ClearChildren();
+        UpdateModeBadges();
 
         var baseConfig = readOnly ? _menu.GetModById(_menu.selectedWorld?.ModId) : _menu.GameSets.Count > 0 ? _menu.GameSets[Math.Clamp(_menu.SelectedGameSetIndex, 0, _menu.GameSets.Count - 1)] : null;
         var available = _menu.ExtensionsFor(baseConfig);
