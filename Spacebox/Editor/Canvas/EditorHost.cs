@@ -114,8 +114,8 @@ public sealed class EditorHost : IDisposable
         _title.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         toolbar.AddChild(_title);
         toolbar.AddChild(new VSeparator());
-        _save = Toolbar(toolbar, "Save", "Saves every changed file (Ctrl+S).", Save);
-        _saveReload = Toolbar(toolbar, "Save & Reload", "Saves all files and reloads the GameSet (textures, atlases, previews).", () => { Save(); _context.RequestReload(); });
+        _save = Toolbar(toolbar, "Save", "Saves every changed file (Ctrl+S).", () => Save());
+        _saveReload = Toolbar(toolbar, "Save & Reload", "Saves all files and reloads the GameSet (textures, atlases, previews).", () => { if (Save()) _context.RequestReload(); });
         Toolbar(toolbar, "Reload", "Reloads textures and data from disk without saving.", _context.RequestReload);
         _discard = Toolbar(toolbar, "Discard", "Throws away all unsaved changes and reloads the files from disk.", Discard);
         BuildTargetSelector(toolbar);
@@ -163,16 +163,18 @@ public sealed class EditorHost : IDisposable
         if (press.Control && press.Key == Keys.S) Save();
     }
 
-    private void Save()
+    private bool Save()
     {
         try
         {
             _context.Project.SaveAll();
             _context.SetStatus("Saved");
+            return true;
         }
         catch (Exception ex)
         {
             _context.SetStatus("Save failed: " + ex.Message, true);
+            return false;
         }
     }
 
@@ -242,8 +244,7 @@ public sealed class EditorHost : IDisposable
         {
             if (result == 0)
             {
-                Save();
-                _context.RequestExit();
+                if (Save()) _context.RequestExit();
             }
             else if (result == 1)
             {

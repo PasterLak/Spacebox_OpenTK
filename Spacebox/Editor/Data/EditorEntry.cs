@@ -25,6 +25,7 @@ public sealed class EntryDefinition
     public Func<JsonNode, string> Label { get; init; }
     public Func<JsonNode> Template { get; init; } = () => new JsonObject();
     public string NewIdPrefix { get; init; } = "new_entry";
+    public Action<JsonNode, IReadOnlyList<EditorEntry>> Prepare { get; init; }
 
     public string GetId(JsonNode node)
     {
@@ -37,6 +38,11 @@ public sealed class EntryDefinition
         if (!string.IsNullOrWhiteSpace(label)) return label;
         var id = GetId(node);
         return string.IsNullOrWhiteSpace(id) ? fallback : id;
+    }
+
+    public void PrepareNew(JsonNode node, IReadOnlyList<EditorEntry> existing)
+    {
+        Prepare?.Invoke(node, existing);
     }
 
     public void SetId(JsonNode node, string id)

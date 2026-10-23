@@ -41,6 +41,7 @@ public sealed class FolderEntrySource : IEntrySource
         var node = Definition.Template();
         var name = MakeFileName(Definition.NewIdPrefix);
         Definition.SetId(node, name);
+        Definition.PrepareNew(node, GetEntries());
         return Create(name, node);
     }
 
@@ -49,6 +50,7 @@ public sealed class FolderEntrySource : IEntrySource
         var node = EditorJson.Clone(entry.Node);
         var name = MakeFileName(Path.GetFileNameWithoutExtension(entry.File.RelativePath));
         if (!string.IsNullOrEmpty(Definition.GetId(node))) Definition.SetId(node, name);
+        Definition.PrepareNew(node, GetEntries());
         return Create(name, node);
     }
 

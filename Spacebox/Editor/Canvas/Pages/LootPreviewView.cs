@@ -41,7 +41,7 @@ public sealed class LootPreviewView : RefreshingEntryView
         {
             entries = JsonSerializer.Deserialize<List<LootEntry>>(entry.Node.ToJsonString());
         }
-        catch (JsonException ex)
+        catch (Exception ex)
         {
             _items.AddChild(new Label($"The table cannot be read: {ex.Message}") { FontColor = EditorCanvasTheme.Error });
             return;

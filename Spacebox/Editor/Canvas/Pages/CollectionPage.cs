@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Engine.CanvasUI;
 using OpenTK.Mathematics;
 using Spacebox.Editor.Canvas.Inspector;
@@ -33,6 +34,9 @@ public sealed class CollectionPage : EditorPage
     private int _shownCount = -1;
     private string _shownFilter = "";
     private string _shownGroup = "";
+    private int _shownVersion = -1;
+    private readonly List<JsonNode> _shownNodes = new List<JsonNode>();
+    private readonly List<string> _shownLabels = new List<string>();
     private EditorEntry _selected;
     private bool _previewShown;
 
@@ -75,7 +79,7 @@ public sealed class CollectionPage : EditorPage
         _details.AddChild(_header);
         _details.AddChild(_path);
         _details.AddChild(_actions);
-        Action(_actions, "Duplicate", "Copies this entry under a new id.", () => Select(_source.Duplicate(_selected)));
+        Action(_actions, "Duplicate", "Copies this entry under a new id.", () => SelectCreated(_source.Duplicate(_selected)));
         Action(_actions, "Delete", "Deletes this entry (asks first). Removed ids turn placed blocks and items in worlds into nothing.", AskDelete);
         if (_source is IReorderableEntrySource reorderable)
         {
@@ -116,7 +120,16 @@ public sealed class CollectionPage : EditorPage
     public override void Tick(float deltaTime)
     {
         var entries = _source.GetEntries();
-        if (!ReferenceEquals(entries, _shownEntries) || entries.Count != _shownCount) RefreshList(false);
+        int version = Editor.Project.Version;
+        if (version != _shownVersion)
+        {
+            _shownVersion = version;
+            if (ListChanged(entries)) RefreshList(true);
+        }
+        else if (!ReferenceEquals(entries, _shownEntries) || entries.Count != _shownCount)
+        {
+            RefreshList(false);
+        }
         ResolveSelection(entries);
         UpdateDetails();
         if (_selected != null)
@@ -146,11 +159,15 @@ public sealed class CollectionPage : EditorPage
         RefreshGroups();
 
         _list.Clear();
+        _shownNodes.Clear();
+        _shownLabels.Clear();
         int shown = 0;
         foreach (var entry in entries)
         {
-            if (!string.IsNullOrEmpty(group) && entry.Group != group) continue;
             string label = _source.Definition.GetLabel(entry.Node, FileLabel(entry));
+            _shownNodes.Add(entry.Node);
+            _shownLabels.Add(label);
+            if (!string.IsNullOrEmpty(group) && entry.Group != group) continue;
             if (!string.IsNullOrEmpty(filter) && label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) < 0) continue;
 
             string display = entry.Group != null && string.IsNullOrEmpty(group) ? $"[{entry.Group}] {label}" : label;
@@ -161,6 +178,27 @@ public sealed class CollectionPage : EditorPage
             shown++;
         }
         _count.Text = shown == entries.Count ? $"{entries.Count} entries" : $"{shown} of {entries.Count}";
+    }
+
+    private bool ListChanged(IReadOnlyList<EditorEntry> entries)
+    {
+        if (!ReferenceEquals(entries, _shownEntries) || entries.Count != _shownNodes.Count) return true;
+        for (int i = 0; i < entries.Count; i++)
+        {
+            if (!ReferenceEquals(entries[i].Node, _shownNodes[i])) return true;
+            if (_source.Definition.GetLabel(entries[i].Node, FileLabel(entries[i])) != _shownLabels[i]) return true;
+        }
+        return false;
+    }
+
+    private void SelectCreated(EditorEntry entry)
+    {
+        if (entry == null)
+        {
+            Editor.SetStatus("The entry could not be added. Fix the parse error in its file first.", true);
+            return;
+        }
+        Select(entry);
     }
 
     private void RefreshGroups()
@@ -230,7 +268,7 @@ public sealed class CollectionPage : EditorPage
         var groups = _source.Groups;
         if (groups.Count == 0)
         {
-            Select(_source.Add(null));
+            SelectCreated(_source.Add(null));
             return;
         }
 
@@ -238,10 +276,10 @@ public sealed class CollectionPage : EditorPage
         foreach (var group in groups)
         {
             string name = group;
-            _newMenu.AddItem("New in " + name, () => Select(_source.Add(name)));
+            _newMenu.AddItem("New in " + name, () => SelectCreated(_source.Add(name)));
         }
         _newMenu.AddSeparator();
-        _newMenu.AddItem("New without group", () => Select(_source.Add(null)));
+        _newMenu.AddItem("New without group", () => SelectCreated(_source.Add(null)));
         _newMenu.Open(Root, new Vector2(anchor.Rect.X, anchor.Rect.End.Y));
     }
 

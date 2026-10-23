@@ -34,4 +34,24 @@ public sealed class LootRollerTests
 
         Assert.Equal(new[] { new LootRoll("known", 1) }, rolls);
     }
+
+    [Fact]
+    public void MinCountAboveMaxCount_IsClampedInsteadOfThrowing()
+    {
+        var rolls = LootRoller.Roll(new[] { Entry("a", 100, 5, 2) }, 3, 255, _ => true);
+
+        Assert.Equal(new[] { new LootRoll("a", 5) }, rolls);
+    }
+
+    [Fact]
+    public void NegativeCounts_AreClampedToZero()
+    {
+        for (int seed = 0; seed < 50; seed++)
+        {
+            var rolls = LootRoller.Roll(new[] { Entry("a", 100, -5, 2), Entry("b", 100, -3, -1) }, seed, 255, _ => true);
+
+            Assert.All(rolls, roll => Assert.InRange(roll.Count, 1, 2));
+            Assert.DoesNotContain(rolls, roll => roll.ItemId == "b");
+        }
+    }
 }

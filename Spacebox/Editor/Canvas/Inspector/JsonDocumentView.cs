@@ -111,12 +111,18 @@ public sealed class JsonDocumentView : VBoxContainer
         try
         {
             var parsed = EditorJsonFile.Parse(_raw.Text);
+            if (parsed == null)
+            {
+                _editor?.SetStatus("Raw JSON must not be null", true);
+                return;
+            }
+
             var root = CurrentRoot();
             if (!ReplaceContents(root, parsed))
             {
                 if (_node == null && _file != null)
                 {
-                    _file.Root = parsed;
+                    _file.Replace(parsed);
                 }
                 else
                 {

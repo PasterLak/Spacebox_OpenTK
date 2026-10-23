@@ -192,9 +192,10 @@ public static class GameSetCatalog
         Schema = _ => typeof(Spacebox.Game.Player.GameModes.GameModeJSON),
         Label = node => NameOf(node),
         NewIdPrefix = "new_mode",
+        Prepare = AssignFreeGameModeId,
         Template = () => new JsonObject
         {
-            ["Id"] = 10,
+            ["Id"] = Spacebox.Game.Player.GameModes.GameModeCatalog.FirstCustomId,
             ["Key"] = "",
             ["Name"] = "New mode",
             ["Tag"] = "N",
@@ -277,6 +278,18 @@ public static class GameSetCatalog
             ["Product"] = new JsonObject { ["Item"] = "", ["Quantity"] = 1 }
         }
     };
+
+    public static void AssignFreeGameModeId(JsonNode node, IReadOnlyList<EditorEntry> existing)
+    {
+        if (node is not JsonObject obj) return;
+        var used = new HashSet<int>();
+        foreach (var entry in existing)
+        {
+            if (entry.Node is JsonObject other && EditorJson.Get(other, "Id") is JsonValue value && EditorJson.TryGetNumber(value, out var number)) used.Add((int)number);
+        }
+        int id = Spacebox.Game.Player.GameModes.GameModeCatalog.LowestFreeCustomId(used);
+        if (id >= 0) EditorJson.Set(obj, "Id", JsonValue.Create(id));
+    }
 
     public static string NameOf(JsonNode node)
     {

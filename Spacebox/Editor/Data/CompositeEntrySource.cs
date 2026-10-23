@@ -90,7 +90,12 @@ public sealed class CompositeEntrySource : IEntrySource, IReorderableEntrySource
     private IEntrySource OwnerOf(EditorEntry entry)
     {
         GetEntries();
-        return _owners.TryGetValue(entry, out var owner) ? owner : _target();
+        if (_owners.TryGetValue(entry, out var owner)) return owner;
+        foreach (var pair in _owners)
+        {
+            if (pair.Key.Node != null && ReferenceEquals(pair.Key.Node, entry.Node)) return pair.Value;
+        }
+        return _target();
     }
 
     private bool Changed(IReadOnlyList<EditorEntry> list, int index)

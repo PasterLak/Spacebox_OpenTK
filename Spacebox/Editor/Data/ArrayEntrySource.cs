@@ -41,6 +41,7 @@ public sealed class ArrayEntrySource : IEntrySource, IReorderableEntrySource
     {
         var node = Definition.Template();
         Definition.SetId(node, MakeId(Definition.NewIdPrefix));
+        Definition.PrepareNew(node, GetEntries());
         return Insert(node, -1);
     }
 
@@ -49,14 +50,15 @@ public sealed class ArrayEntrySource : IEntrySource, IReorderableEntrySource
         var node = EditorJson.Clone(entry.Node);
         var id = Definition.GetId(entry.Node);
         Definition.SetId(node, MakeId(string.IsNullOrEmpty(id) ? Definition.NewIdPrefix : id));
+        Definition.PrepareNew(node, GetEntries());
         return Insert(node, IndexOf(entry) + 1);
     }
 
     public void Remove(EditorEntry entry)
     {
-        var array = EnsureArray();
+        var array = FindArray();
         int index = IndexOf(entry);
-        if (index < 0) return;
+        if (array == null || index < 0) return;
 
         array.RemoveAt(index);
         _project.GetFile(_relativeFile).MarkDirty();
@@ -66,14 +68,15 @@ public sealed class ArrayEntrySource : IEntrySource, IReorderableEntrySource
     {
         int index = IndexOf(entry);
         int target = index + delta;
-        return index >= 0 && target >= 0 && target < EnsureArray().Count;
+        var array = FindArray();
+        return array != null && index >= 0 && target >= 0 && target < array.Count;
     }
 
     public void Move(EditorEntry entry, int delta)
     {
         if (!CanMove(entry, delta)) return;
 
-        var array = EnsureArray();
+        var array = FindArray();
         int index = IndexOf(entry);
         var node = array[index];
         array.RemoveAt(index);
@@ -84,6 +87,7 @@ public sealed class ArrayEntrySource : IEntrySource, IReorderableEntrySource
     private EditorEntry Insert(JsonNode node, int index)
     {
         var array = EnsureArray();
+        if (array == null) return null;
         if (index < 0 || index > array.Count) index = array.Count;
         array.Insert(index, node);
         _project.GetFile(_relativeFile).MarkDirty();
@@ -93,7 +97,8 @@ public sealed class ArrayEntrySource : IEntrySource, IReorderableEntrySource
 
     private int IndexOf(EditorEntry entry)
     {
-        var array = EnsureArray();
+        var array = FindArray();
+        if (array == null) return -1;
         for (int i = 0; i < array.Count; i++)
         {
             if (ReferenceEquals(array[i], entry.Node)) return i;
@@ -101,9 +106,15 @@ public sealed class ArrayEntrySource : IEntrySource, IReorderableEntrySource
         return -1;
     }
 
+    private JsonArray FindArray()
+    {
+        return EditorJson.GetArray(_project.GetFile(_relativeFile).Root, _arrayKey);
+    }
+
     private JsonArray EnsureArray()
     {
         var file = _project.GetFile(_relativeFile);
+        if (file.Error != null) return null;
         if (string.IsNullOrEmpty(_arrayKey))
         {
             if (file.Root is not JsonArray rootArray)

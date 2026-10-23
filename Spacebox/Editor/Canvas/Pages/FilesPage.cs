@@ -87,7 +87,7 @@ public sealed class FilesPage : EditorPage
     private void CreateFile()
     {
         string name = _newFile.Text;
-        if (!IsValidName(name))
+        if (!GameSetProject.IsValidNewFileName(name))
         {
             Editor.SetStatus("File names must end with .json and stay inside the GameSet folder.", true);
             return;
@@ -103,10 +103,5 @@ public sealed class FilesPage : EditorPage
         _newFile.Text = "";
         _shownVersion = -1;
         Select(GameSetProject.Normalize(name));
-    }
-
-    private static bool IsValidName(string name)
-    {
-        return !string.IsNullOrWhiteSpace(name) && name.EndsWith(".json", StringComparison.OrdinalIgnoreCase) && !name.Contains("..");
     }
 }

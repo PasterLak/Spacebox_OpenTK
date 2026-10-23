@@ -19,9 +19,11 @@ public static class LootRoller
 
             if (rng.Next(0, 100) >= entry.Probability) continue;
 
-            int count = entry.MinCount == entry.MaxCount
-                ? entry.MinCount
-                : rng.Next(entry.MinCount, entry.MaxCount + 1);
+            int min = Math.Max(0, entry.MinCount);
+            int max = Math.Max(min, entry.MaxCount);
+            int count = min == max
+                ? min
+                : rng.Next(min, max == int.MaxValue ? max : max + 1);
 
             if (count <= 0) continue;
             if (!itemExists(entry.ItemIdStr)) continue;
