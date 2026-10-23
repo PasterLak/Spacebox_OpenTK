@@ -76,4 +76,12 @@ public class GameScreensLayoutTests
         var report = LayoutHarness.ValidateAll(Root(design, new TutorialPromptScreen()), ScreenProfiles.All, Rules);
         Assert.True(report.IsClean, report.Format());
     }
+
+    [Theory]
+    [MemberData(nameof(Designs))]
+    public void TutorialMenu_LaysOutCleanly(GameUiDesign design)
+    {
+        var report = LayoutHarness.ValidateAll(Root(design, new TutorialMenuScreen()), ScreenProfiles.All, Rules);
+        Assert.True(report.IsClean, report.Format());
+    }
 }
