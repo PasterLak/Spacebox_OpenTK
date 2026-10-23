@@ -99,7 +99,7 @@ Before the window is created the game calls `Platform/GpuSelection.PreferDedicat
 
 - GL calls only on the main thread (buffer/texture/shader creation **and** disposal).
 - Static systems never create GPU objects in static constructors or field initializers: keep their bookkeeping GL-free and create GPU objects in an explicit `InitializeGpu()` called from `EngineWindow.OnLoad` (`ResourceFallbacks`, `LightSystem`, `VisualDebug`). This keeps them testable (`Engine.Tests` covers `SceneManager`, `Resources`, `Scene`) and prevents GL calls from worker threads that first touch a type.
-- `WorkerPoolManager.Enqueue(action, Priority.High|Medium|Low, token)` returns a `Task`; general workers sleep on one semaphore and take the highest-priority item as soon as one is queued (no polling); named dedicated workers via `AddDedicatedWorker` / `EnqueueDedicated`.
+- `WorkerPoolManager.Enqueue(action, Priority.High|Medium|Low, token)` returns a `Task`; general workers sleep on one semaphore and take the highest-priority item as soon as one is queued (no polling). Workers run at below-normal thread priority so the main thread keeps its frame time; jobs are `WorkItem<T>` (`WorkItems.cs`, the item is its own `TaskCompletionSource` with asynchronous continuations), cancelled tokens and jobs queued after `Shutdown` complete as cancelled.
 - Main-thread marshalling inside the engine: `EngineWindow`'s main-thread action queue. (The game's `MainThreadDispatcher` lives in `Spacebox`, not here.)
 - `DisposalManager`: thread-safe queue to defer GL disposal from worker threads; processed by the game scene.
 - `EventBus`: struct events implementing `IEvent`, listeners `IEventListener<T>`, `Publish(ref e)`. Cleared on every scene switch — subscribe again in each scene.

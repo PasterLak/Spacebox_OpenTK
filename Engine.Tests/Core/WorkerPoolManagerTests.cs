@@ -47,4 +47,36 @@ public class WorkerPoolManagerTests
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(TimeSpan.FromSeconds(10)));
     }
+
+    [Fact]
+    public async Task Enqueue_FailedTaskIsFaultedAndCounted()
+    {
+        long failed = WorkerPoolManager.TasksFailed;
+
+        var task = WorkerPoolManager.Enqueue(_ => throw new InvalidOperationException("boom"), WorkerPoolManager.Priority.Medium);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => task.WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.True(WorkerPoolManager.TasksFailed > failed);
+    }
+
+    [Fact]
+    public async Task Enqueue_ContinuationsDoNotRunOnWorkerThreads()
+    {
+        var task = WorkerPoolManager.Enqueue(_ => Thread.CurrentThread.Name, WorkerPoolManager.Priority.Medium);
+        var continuation = task.ContinueWith(_ => Thread.CurrentThread.Name, TaskContinuationOptions.ExecuteSynchronously);
+
+        string worker = await task.WaitAsync(TimeSpan.FromSeconds(10));
+        string after = await continuation.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.StartsWith("WorkerPool-", worker);
+        Assert.False(after != null && after.StartsWith("WorkerPool-"), $"continuation ran on {after}");
+    }
+
+    [Fact]
+    public async Task Workers_RunBelowNormalPriority()
+    {
+        var priority = await WorkerPoolManager.Enqueue(_ => Thread.CurrentThread.Priority, WorkerPoolManager.Priority.High).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal(ThreadPriority.BelowNormal, priority);
+    }
 }

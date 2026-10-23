@@ -83,7 +83,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 | Input | `Engine/Input/InputPro`, `Engine/Input/Input.cs` | Action/binding system (`InputManager`, `KeyBinding`) |
 | Audio | `Engine/Audio` | `AudioDevice` singleton, `AudioClip`, `AudioSource` |
 | Physics | `Engine/Physics` | AABB/OBB/sphere bounds, rays, `Collision` nodes (bounding volume + layer; base of `Model` and `Camera`), collider components, collision layers |
-| Threading | `Engine/Multithreading/WorkerPoolManager` | `ProcessorCount − 1` background workers with priority queue, plus named dedicated workers; `Enqueue(Action<CancellationToken>, Priority)` |
+| Threading | `Engine/Multithreading/WorkerPoolManager` | `ProcessorCount − 1` below-normal priority background workers with a priority queue; `Enqueue(Action<CancellationToken>, Priority)`, one allocation per job (the work item is its own `TaskCompletionSource`), continuations never run on workers |
 | Debug | `Debug`, `VisualDebug`, `Prof`, `Overlay` | Logging, debug drawing, profiler (`PROFILING`), overlay panels (FPS, camera, threads, lighting) |
 | Console commands | `Engine/Commands` + `Spacebox/Game/Commands` | `CommandBase` / `CommandManager`; e.g. help, clear, version, teleport, gamemode, tag, clear inventory |
 | AI | `Engine/AI` | `StateMachine<TContext>` (hierarchical: a machine is itself a `State`, transitions are predicates on a context, any-state transitions, `TimeInState`); voxel pathfinding over `INavigationGrid` (`VoxelPathfinder`: straight line first via `VoxelLine` DDA, else 26-neighbour weighted A* without corner cutting, node budget with partial paths, line-of-sight smoothing; `PathScheduler` runs queued `PathRequest`s with a node budget per frame) |

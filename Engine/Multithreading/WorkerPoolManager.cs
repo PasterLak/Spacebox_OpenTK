@@ -7,31 +7,27 @@ namespace Engine.Multithreading
     {
         public enum Priority { High, Medium, Low }
 
-        static readonly ConcurrentQueue<WorkItem> highQueue = new ConcurrentQueue<WorkItem>();
-        static readonly ConcurrentQueue<WorkItem> medQueue = new ConcurrentQueue<WorkItem>();
-        static readonly ConcurrentQueue<WorkItem> lowQueue = new ConcurrentQueue<WorkItem>();
-        static readonly SemaphoreSlim generalAvailable = new SemaphoreSlim(0);
-        static volatile bool generalAddingCompleted;
-    
-        static readonly ConcurrentDictionary<string, BlockingCollection<WorkItem>> namedQueues = new ConcurrentDictionary<string, BlockingCollection<WorkItem>>();
-        static readonly List<Thread> workers;
-        static readonly ConcurrentDictionary<string, Thread> dedicatedWorkers = new ConcurrentDictionary<string, Thread>();
+        static readonly ConcurrentQueue<IWorkItem> highQueue = new ConcurrentQueue<IWorkItem>();
+        static readonly ConcurrentQueue<IWorkItem> medQueue = new ConcurrentQueue<IWorkItem>();
+        static readonly ConcurrentQueue<IWorkItem> lowQueue = new ConcurrentQueue<IWorkItem>();
+        static readonly SemaphoreSlim available = new SemaphoreSlim(0);
+        static readonly Thread[] workers;
         static readonly CancellationTokenSource cts = new CancellationTokenSource();
+        static volatile bool addingCompleted;
 
-        static long namedPendingCount = 0;
-
+        static long pendingCount = 0;
         static long tasksQueued = 0;
         static long tasksCompleted = 0;
         static long tasksFailed = 0;
 
         static WorkerPoolManager()
         {
-            int count = Math.Max(1, Environment.ProcessorCount - 1 );
-            workers = new List<Thread>(count);
+            int count = Math.Max(1, Environment.ProcessorCount - 1);
+            workers = new Thread[count];
             for (int i = 0; i < count; i++)
             {
-                var thread = new Thread(GeneralWorkerLoop) { IsBackground = true, Name = $"WorkerPool-{i}" };
-                workers.Add(thread);
+                var thread = new Thread(WorkerLoop) { IsBackground = true, Name = $"WorkerPool-{i}", Priority = ThreadPriority.BelowNormal };
+                workers[i] = thread;
                 thread.Start();
             }
         }
@@ -39,208 +35,82 @@ namespace Engine.Multithreading
         public static long TasksQueued => Interlocked.Read(ref tasksQueued);
         public static long TasksCompleted => Interlocked.Read(ref tasksCompleted);
         public static long TasksFailed => Interlocked.Read(ref tasksFailed);
-        public static int ActiveThreads => workers.Count + dedicatedWorkers.Count;
-        public static int PendingTasks => highQueue.Count + medQueue.Count + lowQueue.Count + GetNamedPending();
+        public static int ActiveThreads => workers.Length;
+        public static int PendingTasks => (int)Interlocked.Read(ref pendingCount);
 
         public static Task Enqueue(Action<CancellationToken> action, Priority priority, CancellationToken token = default)
         {
-            
-            Interlocked.Increment(ref tasksQueued);
-            var tcs = new TaskCompletionSource<bool>();
-            var item = new WorkItem
-            {
-                Execute = () =>
-                {
-                    if (token.IsCancellationRequested)
-                    {
-                        tcs.SetCanceled();
-                        return;
-                    }
-                    try
-                    {
-                        action(token);
-                        Interlocked.Increment(ref tasksCompleted);
-                        tcs.SetResult(true);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        tcs.SetCanceled();
-                    }
-                    catch (Exception ex)
-                    {
-                        Interlocked.Increment(ref tasksFailed);
-                        Debug.Error($"[WorkerPool] Task failed: {ex}");
-                        tcs.SetException(ex);
-                    }
-                }
-            };
-            if (!TryAddGeneral(QueueFor(priority), item)) tcs.TrySetCanceled();
-            return tcs.Task;
+            return Schedule(new ActionWorkItem(action, token), priority, token);
         }
 
         public static Task<T> Enqueue<T>(Func<CancellationToken, T> func, Priority priority, CancellationToken token = default)
         {
-         
-            Interlocked.Increment(ref tasksQueued);
-            var tcs = new TaskCompletionSource<T>();
-            var item = new WorkItem
-            {
-                Execute = () =>
-                {
-                    if (token.IsCancellationRequested)
-                    {
-                        tcs.SetCanceled();
-                        return;
-                    }
-                    try
-                    {
-                        var result = func(token);
-                        Interlocked.Increment(ref tasksCompleted);
-                        tcs.SetResult(result);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        tcs.SetCanceled();
-                    }
-                    catch (Exception ex)
-                    {
-                        Interlocked.Increment(ref tasksFailed);
-                        Debug.Error($"[WorkerPool] Task failed: {ex}");
-                        tcs.SetException(ex);
-                    }
-                }
-            };
-            if (!TryAddGeneral(QueueFor(priority), item)) tcs.TrySetCanceled();
-            return tcs.Task;
+            return Schedule(new FuncWorkItem<T>(func, token), priority, token);
         }
 
-        public static void AddDedicatedWorker(string name)
+        internal static void ReportCompleted() => Interlocked.Increment(ref tasksCompleted);
+
+        internal static void ReportFailed(Exception ex)
         {
-            var queue = new BlockingCollection<WorkItem>();
-            if (namedQueues.TryAdd(name, queue))
-            {
-                var thread = new Thread(() => DedicatedWorkerLoop(name)) { IsBackground = true, Name = name };
-                dedicatedWorkers[name] = thread;
-                thread.Start();
-            }
+            Interlocked.Increment(ref tasksFailed);
+            Debug.Error($"[WorkerPool] Task failed: {ex}");
         }
 
-        public static Task EnqueueDedicated(string name, Action<CancellationToken> action, CancellationToken token = default)
+        public static void Shutdown()
         {
-            if (!namedQueues.TryGetValue(name, out var queue)) throw new ArgumentException("No such dedicated worker");
-
-            Interlocked.Increment(ref tasksQueued);
-            Interlocked.Increment(ref namedPendingCount);
-
-            var tcs = new TaskCompletionSource<bool>();
-            var item = new WorkItem
-            {
-                Execute = () =>
-                {
-                    if (token.IsCancellationRequested)
-                    {
-                        tcs.SetCanceled(); return;
-                    }
-                    try
-                    {
-                        action(token);
-                        Interlocked.Increment(ref tasksCompleted);
-                        tcs.SetResult(true);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        tcs.SetCanceled();
-                    }
-                    catch (Exception)
-                    {
-                        Interlocked.Increment(ref tasksFailed);
-                        tcs.SetException(new Exception("Dedicated task failed"));
-                    }
-                }
-            };
-            if (!TryAdd(queue, item))
-            {
-                Interlocked.Decrement(ref namedPendingCount);
-                tcs.TrySetCanceled();
-            }
-            return tcs.Task;
+            addingCompleted = true;
+            cts.Cancel();
+            foreach (var t in workers) t.Join();
+            while (TryTake(out var item)) item.Cancel();
         }
 
-        static ConcurrentQueue<WorkItem> QueueFor(Priority priority) => priority switch
+        static Task<T> Schedule<T>(WorkItem<T> item, Priority priority, CancellationToken token)
+        {
+            Interlocked.Increment(ref tasksQueued);
+            if (addingCompleted || token.IsCancellationRequested)
+            {
+                item.Cancel();
+                return item.Task;
+            }
+
+            Interlocked.Increment(ref pendingCount);
+            QueueFor(priority).Enqueue(item);
+            available.Release();
+            return item.Task;
+        }
+
+        static ConcurrentQueue<IWorkItem> QueueFor(Priority priority) => priority switch
         {
             Priority.High => highQueue,
             Priority.Medium => medQueue,
             _ => lowQueue
         };
 
-        static bool TryAddGeneral(ConcurrentQueue<WorkItem> queue, WorkItem item)
+        static bool TryTake(out IWorkItem item)
         {
-            if (generalAddingCompleted) return false;
-            queue.Enqueue(item);
-            generalAvailable.Release();
-            return true;
-        }
-
-        static bool TryTakeGeneral(out WorkItem item)
-        {
-            return highQueue.TryDequeue(out item) || medQueue.TryDequeue(out item) || lowQueue.TryDequeue(out item);
-        }
-
-        static bool TryAdd(BlockingCollection<WorkItem> queue, WorkItem item)
-        {
-            if (queue.IsAddingCompleted) return false;
-            try
+            if (highQueue.TryDequeue(out item) || medQueue.TryDequeue(out item) || lowQueue.TryDequeue(out item))
             {
-                queue.Add(item);
+                Interlocked.Decrement(ref pendingCount);
                 return true;
             }
-            catch (InvalidOperationException)
-            {
-                return false;
-            }
+            return false;
         }
 
-        public static void Shutdown()
+        static void WorkerLoop()
         {
-            generalAddingCompleted = true;
-            cts.Cancel();
-            foreach (var q in namedQueues.Values) q.CompleteAdding();
-            foreach (var t in workers) t.Join();
-            foreach (var t in dedicatedWorkers.Values) t.Join();
-        }
-
-        static void GeneralWorkerLoop()
-        {
-            while (!cts.IsCancellationRequested)
+            while (true)
             {
                 try
                 {
-                    generalAvailable.Wait(cts.Token);
-                    if (TryTakeGeneral(out var item)) item.Execute();
+                    available.Wait(cts.Token);
                 }
                 catch (OperationCanceledException)
                 {
                     break;
                 }
+
+                if (TryTake(out var item)) item.Execute();
             }
         }
-
-
-        static void DedicatedWorkerLoop(string name)
-        {
-            var queue = namedQueues[name];
-            foreach (var item in queue.GetConsumingEnumerable(cts.Token))
-            {
-                Interlocked.Decrement(ref namedPendingCount);
-                item.Execute();
-            }
-        }
-
-        static int GetNamedPending()
-        {
-            return (int)Interlocked.Read(ref namedPendingCount);
-        }
-
-        class WorkItem { public Action Execute; }
     }
 }
