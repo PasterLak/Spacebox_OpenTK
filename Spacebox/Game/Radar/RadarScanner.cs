@@ -7,7 +7,7 @@ namespace Spacebox.Game.Radar;
 
 public sealed class RadarScanner
 {
-    public const float Range = 500f;
+    public const float Range = 200f;
 
     private readonly List<RadarContact> _visible = new List<RadarContact>();
     private readonly List<RadarContact> _blips = new List<RadarContact>();
