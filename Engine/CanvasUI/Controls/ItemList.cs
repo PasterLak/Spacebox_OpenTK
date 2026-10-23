@@ -40,6 +40,7 @@ public class ItemList : Control
     public float RowHeight => MathF.Max(IconSize, GetThemeFont()?.GetLineHeight(GetThemeFontSize()) ?? 12f) + GetThemeConstant("v_padding", 4f);
     public float ContentHeight => _items.Count * RowHeight;
     public float MaxScroll => MathF.Max(0f, ContentHeight - Size.Y);
+    public bool IsScrolledToBottom => _scroll >= MaxScroll - 1f;
 
     public event Action<int> ItemSelected;
     public event Action<int> ItemActivated;

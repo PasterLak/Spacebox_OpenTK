@@ -57,15 +57,8 @@ namespace Engine
         private static Vector4 infoColor = new Vector4(1, 1, 1, 1);
         private static Vector4 successColor = new Vector4(0, 1, 0, 1);
 
-        private static Vector4 buttonColor = new Vector4(0.3f, 0.3f, 0.3f, 0.5f);
-        private static Vector4 buttonSelectedColor = new Vector4(0.4f, 0.4f, 0.4f, 0.7f);
 
-        private static MessageType showType = MessageType.Info;
 
-        private static bool _selectMode;
-        private static string _selectableText = string.Empty;
-        private static int _selectableCount = -1;
-        private static MessageType _selectableFilter;
 
         private const string DebugFolderPath = "Debug";
         private static readonly string HistoryFilePath = Path.Combine(DebugFolderPath, "command_history.txt");
@@ -73,6 +66,7 @@ namespace Engine
         private static List<CommandBase> _autoCompleteMatches = new List<CommandBase>();
 
         private static readonly object _lock = new object();
+        private static int _version;
 
         public static bool IsVisible => UIManager.IsOpen("debug");
 
@@ -159,6 +153,7 @@ namespace Engine
             {
                 _messages.Add(msg);
                 messageCount++;
+                _version++;
                 if (_messages.Count > MaxStoredMessages + TrimBatch) _messages.RemoveRange(0, _messages.Count - MaxStoredMessages);
             }
         }
@@ -286,6 +281,7 @@ namespace Engine
             lock (_lock)
             {
                 _messages.Clear();
+                _version++;
                 messageCount = 0;
                 warningCount = 0;
                 errorCount = 0;
@@ -293,198 +289,81 @@ namespace Engine
             }
         }
 
-        private static void DrawFilterButton(string label, long count, MessageType type, Vector4 textColor)
+        internal readonly struct ConsoleLine
         {
-            if (count <= 0) return;
-
-            ImGui.SameLine();
-
-            bool isSelected = showType == type;
-
-            if (isSelected)
-                ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
-
-            ImGui.PushStyleColor(ImGuiCol.Text, textColor);
-
-            if (ImGui.Button($" {label}: {count} "))
+            public ConsoleLine(string text, Vector4 color, MessageType type)
             {
-                showType = type;
+                Text = text;
+                Color = color;
+                Type = type;
             }
 
-            ImGui.PopStyleColor(isSelected ? 2 : 1);
+            public string Text { get; }
+            public Vector4 Color { get; }
+            public MessageType Type { get; }
         }
 
-        public static void Render()
+        internal static int MessageVersion
         {
-            if (!IsVisible)
-                return;
-
-            Vector2 windowSize = ImGui.GetIO().DisplaySize;
-
-            ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowSize.X * 0.4f, windowSize.Y), ImGuiCond.Always);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10, 10));
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.8f));
-            ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0f, 0f, 0f, 0.8f));
-
-            ImGui.Begin("Console", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
-
-            ImGui.Text("CONSOLE   ");
-            ImGui.PushStyleColor(ImGuiCol.Button, buttonColor);
-
-            DrawFilterButton("Messages", messageCount, MessageType.Info, infoColor);
-            DrawFilterButton("Success", successCount, MessageType.Success, successColor);
-            DrawFilterButton("Warning", warningCount, MessageType.Warning, waringColor);
-            DrawFilterButton("Error", errorCount, MessageType.Error, errorColor);
-
-            ImGui.SameLine();
-            if (ImGui.Button(" Copy All "))
-                ImGui.SetClipboardText(BuildConsoleText(MessageType.Info));
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Copy every message in the buffer");
-
-            ImGui.SameLine();
-            if (_selectMode) ImGui.PushStyleColor(ImGuiCol.Button, buttonSelectedColor);
-            bool toggleSelect = ImGui.Button(" Select ");
-            if (_selectMode) ImGui.PopStyleColor();
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Show the messages as text that can be selected and copied with Ctrl+C. Right-click a message to copy it");
-            if (toggleSelect)
+            get
             {
-                _selectMode = !_selectMode;
-                _selectableCount = -1;
+                lock (_lock) return _version;
             }
+        }
 
-            ImGui.PopStyleColor();
-            ImGui.Separator();
-
-            float childHeight = ImGui.GetContentRegionAvail().Y - ImGui.GetFrameHeightWithSpacing() - 40f;
-            if (childHeight < 100f)
-                childHeight = 100f;
-
-            ImGui.BeginChild("ScrollingRegion", new Vector2(0, childHeight), ImGuiChildFlags.AlwaysAutoResize);
-
-            if (_selectMode)
-            {
-                DrawSelectableText();
-                ImGui.EndChild();
-                DrawInputLine(windowSize);
-                return;
-            }
-
-            List<ConsoleMessage> messagesToRender;
-
+        internal static long CountOf(MessageType type)
+        {
             lock (_lock)
             {
-                messagesToRender = CollectRendered();
-            }
-
-            foreach (var msg in messagesToRender)
-            {
-                if (showType != MessageType.Info)
+                return type switch
                 {
-                    if (msg.Type != showType)
-                        continue;
-                }
-
-                ImGui.PushStyleColor(ImGuiCol.Text, msg.Color);
-                ImGui.TextWrapped(msg.Text);
-                ImGui.PopStyleColor();
-                if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
-                    ImGui.SetClipboardText(msg.Text);
+                    MessageType.Success => successCount,
+                    MessageType.Warning => warningCount,
+                    MessageType.Error => errorCount,
+                    _ => messageCount
+                };
             }
-
-            if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
-                ImGui.SetScrollHereY(1.0f);
-            ImGui.EndChild();
-
-            DrawInputLine(windowSize);
         }
 
-        private static void DrawInputLine(Vector2 windowSize)
+        internal static void CopyLines(List<ConsoleLine> target, MessageType filter, int max)
         {
-            ImGui.Separator();
-
-            float buttonWidth = windowSize.X * 0.06f;
-            float inputWidth = ImGui.GetContentRegionAvail().X - buttonWidth - ImGui.GetStyle().ItemSpacing.X;
-
-            if (!_selectMode && ImGui.IsWindowFocused(ImGuiFocusedFlags.AnyWindow))
-            {
-                if (ImGui.IsKeyPressed(ImGuiKey.UpArrow))
-                {
-                    NavigateHistory(-1);
-                    _focusInput = true;
-                }
-                if (ImGui.IsKeyPressed(ImGuiKey.DownArrow))
-                {
-                    NavigateHistory(1);
-                    _focusInput = true;
-                }
-                if (ImGui.IsKeyPressed(ImGuiKey.Tab))
-                {
-                    AutoComplete();
-                    _focusInput = true;
-                }
-            }
-
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.7f, 0.5f, 0, 1));
-            if (ImGui.Button("SEND", new Vector2(buttonWidth, 0)))
-            {
-                ProcessCommand(_inputBuffer);
-                _inputBuffer = "";
-                _focusInput = true;
-            }
-            ImGui.PopStyleColor();
-
-            ImGui.SameLine();
-
-            ImGui.SetNextItemWidth(inputWidth);
-            bool inputActivated = ImGui.InputText("##Input", ref _inputBuffer, 256, ImGuiInputTextFlags.EnterReturnsTrue);
-
-            if (_focusInput)
-            {
-                ImGui.SetKeyboardFocusHere(-1);
-                _focusInput = false;
-            }
-
-            if (inputActivated)
-            {
-                ProcessCommand(_inputBuffer);
-                _inputBuffer = "";
-                _focusInput = true;
-            }
-
-            ImGui.End();
-            ImGui.PopStyleColor();
-            ImGui.PopStyleVar();
-        }
-
-        private static List<ConsoleMessage> CollectRendered()
-        {
-            var result = new List<ConsoleMessage>(Math.Min(_messages.Count, MaxRenderedMessages));
-            for (int i = _messages.Count - 1; i >= 0 && result.Count < MaxRenderedMessages; i--)
-            {
-                if (showType == MessageType.Info || _messages[i].Type == showType) result.Add(_messages[i]);
-            }
-            result.Reverse();
-            return result;
-        }
-
-        private static void DrawSelectableText()
-        {
-            int count;
+            target.Clear();
             lock (_lock)
             {
-                count = (int)messageCount;
+                int start = _messages.Count - 1;
+                for (int i = start; i >= 0 && target.Count < max; i--)
+                {
+                    if (filter == MessageType.Info || _messages[i].Type == filter) target.Add(new ConsoleLine(_messages[i].Text, _messages[i].Color, _messages[i].Type));
+                }
             }
+            target.Reverse();
+        }
 
-            if (count != _selectableCount || showType != _selectableFilter)
-            {
-                _selectableText = BuildConsoleText(showType);
-                _selectableCount = count;
-                _selectableFilter = showType;
-            }
+        internal const int MaxShownLines = MaxRenderedMessages;
 
-            ImGui.InputTextMultiline("##ConsoleText", ref _selectableText, (uint)_selectableText.Length + 1,
-                ImGui.GetContentRegionAvail(), ImGuiInputTextFlags.ReadOnly);
+        internal static string ConsoleTextFor(MessageType filter) => BuildConsoleText(filter);
+
+        internal static void Submit(string command) => ProcessCommand(command);
+
+        internal static string StepHistory(string current, int direction)
+        {
+            _inputBuffer = current ?? "";
+            NavigateHistory(direction);
+            return _inputBuffer;
+        }
+
+        internal static string Complete(string current)
+        {
+            _inputBuffer = current ?? "";
+            AutoComplete();
+            return _inputBuffer;
+        }
+
+        internal static bool TakeFocusRequest()
+        {
+            bool requested = _focusInput;
+            _focusInput = false;
+            return requested;
         }
 
         private static string BuildConsoleText(MessageType filter)

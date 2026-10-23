@@ -18,12 +18,21 @@ public sealed class DevPanel : IDisposable
 
     public bool WantsPointer => _layer.Root.WantsPointer;
 
-    public static void Draw()
+    private bool _drawThisFrame;
+
+    public static void Update()
     {
+        if (Instance != null) Instance._drawThisFrame = false;
         if (!Overlay.IsVisible || Application.IsHeadless) return;
 
         Instance ??= new DevPanel();
         Instance.Tick(Time.Delta);
+    }
+
+    public static void Draw()
+    {
+        if (Instance == null || !Instance._drawThisFrame) return;
+        Instance._layer.Render();
     }
 
     public static void Shutdown()
@@ -75,7 +84,7 @@ public sealed class DevPanel : IDisposable
         }
 
         _layer.Update(deltaTime);
-        _layer.Render();
+        _drawThisFrame = true;
     }
 
     private void RefreshAll()

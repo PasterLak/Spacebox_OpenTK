@@ -316,9 +316,9 @@ namespace Engine
             {
             
                 SceneManager.Current.OnGUI();
-                Debug.Render();
+                DevConsole.Update();
                 Overlay.OnGUI();
-                DevPanel.Draw();
+                DevPanel.Update();
                 DrawRenderDebugLabel();
                 //InputOverlay.OnGUI();
 
@@ -332,6 +332,9 @@ namespace Engine
           
             if (Camera.Main != null)
                 _controller.Render();
+
+            DevPanel.Draw();
+            DevConsole.Draw();
 
            
                 ImGuiController.CheckGLError("End of frame");
@@ -547,6 +550,7 @@ namespace Engine
             Debug.SaveMessagesToFile(true);
             Close();
             DevPanel.Shutdown();
+            DevConsole.Shutdown();
             WorkerPoolManager.Shutdown();
             ServiceLocator.Reset();
         }
