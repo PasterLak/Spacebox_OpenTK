@@ -174,7 +174,7 @@ $("#logout").addEventListener("click", async () => {
 $$("#nav button").forEach(button => button.addEventListener("click", () => switchView(button.dataset.view)));
 
 const views = {
-  overview: () => { every(3000, refreshOverview); },
+  overview: () => { loadBackups(); every(3000, refreshOverview); },
   players: () => { every(4000, refreshPlayers); },
   map: () => { spaceMap.show(); every(2000, spaceMap.refresh); },
   player: () => { every(10000, () => state.player && loadPlayer(state.player)); },
@@ -349,10 +349,10 @@ async function refreshPlayers() {
 
   const online = data.online.map(p => el("tr", { class: "clickable", onclick: () => openPlayer(p.name) },
     el("td", {}, el("span", { class: "dot on" }), p.name, p.muted ? el("span", { class: "tag red", text: "muted" }) : null, !p.alive ? el("span", { class: "tag", text: "dead" }) : null),
-    el("td", { text: `${p.ping} ms` }),
-    el("td", { class: "faint", text: p.position ? p.position.join(", ") : "—" }),
-    el("td", { class: "faint", text: p.address }),
-    el("td", {}, gameModeSelect(p.name, p.gameMode)),
+    el("td", { "data-label": "Ping", text: `${p.ping} ms` }),
+    el("td", { "data-label": "Position", class: "faint", text: p.position ? p.position.join(", ") : "—" }),
+    el("td", { "data-label": "Address", class: "faint", text: p.address }),
+    el("td", { "data-label": "Game mode" }, gameModeSelect(p.name, p.gameMode)),
     el("td", {}, playerButtons(p.name, true, p.muted))));
   $("#online-table").replaceChildren(
     el("tr", {}, ...["Name", "Ping", "Position", "Address", "Game mode", ""].map(t => el("th", { text: t }))),
@@ -365,8 +365,8 @@ function renderSaved() {
   const saved = state.players.saved.filter(p => p.name.toLowerCase().includes(filter));
   const rows = saved.map(p => el("tr", { class: "clickable", onclick: () => openPlayer(p.name) },
     el("td", {}, el("span", { class: p.online ? "dot on" : "dot" }), p.name, p.muted ? el("span", { class: "tag red", text: "muted" }) : null),
-    el("td", { class: "faint", text: p.lastSeen }),
-    el("td", {}, gameModeSelect(p.name, p.gameMode)),
+    el("td", { "data-label": "Last save", class: "faint", text: p.lastSeen }),
+    el("td", { "data-label": "Game mode" }, gameModeSelect(p.name, p.gameMode)),
     el("td", {}, playerButtons(p.name, p.online, p.muted))));
   $("#saved-table").replaceChildren(
     el("tr", {}, ...["Name", "Last save", "Game mode", ""].map(t => el("th", { text: t }))),
@@ -608,6 +608,24 @@ async function loadSettings() {
   form.lanDiscovery.checked = info.lanDiscovery;
   loadIcon();
 }
+
+async function loadBackups() {
+  const data = await run(() => api("/backups"));
+  if (!data) return;
+  $("#backup-info").textContent = data.enabled
+    ? `Automatic every ${data.intervalMinutes} min, the last ${data.keepLast} are kept. Files in Worlds/_backups.`
+    : "Automatic backups are off (Backups in serverconfig.json). Files in Worlds/_backups.";
+  $("#backup-now").disabled = data.running;
+  $("#backup-list").replaceChildren(...(data.backups.length
+    ? data.backups.map(b => el("tr", {}, el("td", { text: b.name }), el("td", { class: "faint", text: b.created }), el("td", { class: "faint", text: b.sizeMb >= 0.1 ? `${b.sizeMb} MB` : "< 0.1 MB" })))
+    : [el("tr", {}, el("td", { class: "empty", text: "No backups yet" }))]));
+}
+
+$("#backup-now").addEventListener("click", async () => {
+  $("#backup-now").disabled = true;
+  await run(() => api("/backups", {}), "Backup started");
+  setTimeout(loadBackups, 3000);
+});
 
 async function loadGameplay() {
   const data = await run(() => api("/gameplay"));

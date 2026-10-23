@@ -331,4 +331,29 @@ table.list tr.clickable:hover td { background: #ffffff08; }
 .rule-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .rule-control input[type=number] { width: 96px; }
 .rule-control .switch input { width: 20px; height: 20px; }
-@media (max-width: 520px) { .rule-row { flex-direction: column; align-items: stretch; } .rule-control { justify-content: flex-start; } }
+@media (max-width: 520px) { .rule-row { flex-direction: column; align-items: stretch; } .rule-row:has(.switch) { flex-direction: row; align-items: center; } .rule-control { justify-content: flex-start; } }
+table.backups { margin-top: 10px; font-size: 13px; }
+table.backups td:first-child { word-break: break-all; }
+table.backups td:not(:first-child) { white-space: nowrap; }
+@media (max-width: 800px) {
+  .sidebar { position: sticky; top: 0; z-index: 20; margin: 0; border-radius: 0; border-left: none; border-right: none; border-top: none; padding: 8px 12px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px 10px; }
+  .brand { margin-bottom: 0; }
+  .brand-icon { width: 28px; height: 28px; }
+  .sidebar-footer { margin-top: 0; grid-row: 1; grid-column: 2; }
+  .sidebar-footer #who { display: none; }
+  #nav { grid-column: 1 / -1; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  #nav::-webkit-scrollbar { display: none; }
+  #nav button { flex: none; padding: 8px 12px; }
+  .console { font-size: 12px; }
+  .console .line { gap: 6px; }
+}
+@media (max-width: 600px) {
+  table.list:not(.backups) tr:first-child:has(th) { display: none; }
+  table.list:not(.backups) tr { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 10px 0; border-bottom: 1px solid #ffffff10; }
+  table.list:not(.backups) td { border-bottom: none; padding: 2px 0; }
+  table.list:not(.backups) td:first-child { flex-basis: 100%; font-weight: 600; }
+  table.list:not(.backups) td[data-label]::before { content: attr(data-label) ": "; color: var(--faint); font-size: 12px; }
+  table.list:not(.backups) td:last-child { margin-left: auto; }
+  table.list:not(.backups) td .actions { flex-direction: row; }
+  .rule-row:has(.switch) { flex-direction: row; align-items: center; }
+}
