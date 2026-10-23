@@ -1,0 +1,6 @@
+{
+  "ModId": "mock_child",
+  "ModName": "Mock Child",
+  "Version": "1.0",
+  "Extends": "mock_addon"
+}

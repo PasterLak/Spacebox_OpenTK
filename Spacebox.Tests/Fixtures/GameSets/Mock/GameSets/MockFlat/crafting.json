@@ -1,0 +1,6 @@
+{
+  "Categories": [ { "Id": "flat_tools", "Name": "Flat Tools", "Row": 2 } ],
+  "Blueprints": [
+    { "Product": { "Item": "flat_crate", "Quantity": 1 }, "Ingredients": [ { "Item": "flat_gem", "Quantity": 2 } ] }
+  ]
+}

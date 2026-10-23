@@ -1,0 +1,7 @@
+{
+  "ModId": "mock_addon",
+  "ModName": "Mock Addon",
+  "Version": "1.0",
+  "Extends": "mock_base",
+  "MinBaseVersion": "1.0"
+}

@@ -1,0 +1,6 @@
+{
+  "ID": "mock_lamp",
+  "Name": "Mock Lamp",
+  "Type": "block",
+  "Textures": { "Active": { "All": "mockLamp" } }
+}

@@ -1,0 +1,3 @@
+[
+  { "Type": "furnace", "DurationSec": 5, "Product": { "Item": "mock_ingot", "Quantity": 1 } }
+]

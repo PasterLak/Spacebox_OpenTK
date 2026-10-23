@@ -1,0 +1,7 @@
+{
+  "ModId": "mock_too_new",
+  "ModName": "Mock Too New",
+  "Version": "1.0",
+  "Extends": "mock_base",
+  "MinBaseVersion": "2.0"
+}

@@ -1,0 +1,7 @@
+{
+  "ModId": "mock_default_patch",
+  "ModName": "Mock Default Patch",
+  "Version": "1.0",
+  "Extends": "default",
+  "MinBaseVersion": "0.1.5"
+}

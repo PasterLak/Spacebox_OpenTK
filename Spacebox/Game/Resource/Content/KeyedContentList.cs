@@ -6,14 +6,14 @@ public sealed class KeyedContentList
     private readonly Dictionary<string, int> _indices = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
     private readonly string _kind;
     private readonly ICollection<string> _warnings;
-    private readonly Func<ContentLayer, bool> _isBase;
+    private readonly Func<ContentLayer, ContentLayer, bool> _expectedPatch;
     private readonly Dictionary<string, ContentLayer> _definedBy = new Dictionary<string, ContentLayer>(StringComparer.OrdinalIgnoreCase);
 
-    public KeyedContentList(string kind, ICollection<string> warnings, Func<ContentLayer, bool> isBase = null)
+    public KeyedContentList(string kind, ICollection<string> warnings, Func<ContentLayer, ContentLayer, bool> expectedPatch = null)
     {
         _kind = kind;
         _warnings = warnings;
-        _isBase = isBase;
+        _expectedPatch = expectedPatch;
     }
 
     public IReadOnlyList<ContentEntry> Entries => _entries;
@@ -49,7 +49,7 @@ public sealed class KeyedContentList
             return;
         }
 
-        if (_isBase != null && _definedBy.TryGetValue(entry.Key, out var owner) && !_isBase(owner) && !string.Equals(owner.Id, entry.Layer.Id, StringComparison.OrdinalIgnoreCase))
+        if (_expectedPatch != null && _definedBy.TryGetValue(entry.Key, out var owner) && !_expectedPatch(owner, entry.Layer) && !string.Equals(owner.Id, entry.Layer.Id, StringComparison.OrdinalIgnoreCase))
             _warnings?.Add($"{_kind} '{entry.Key}' from extension '{owner.Id}' is changed by extension '{entry.Layer.Id}'; use your own id prefix if this is a different {_kind.ToLowerInvariant()}");
 
         _entries[index] = existing.PatchedBy(entry);

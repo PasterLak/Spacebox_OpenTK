@@ -1,0 +1,6 @@
+{
+  "ModId": "mock_child_by_folder",
+  "ModName": "Mock Child By Folder",
+  "Version": "1.0",
+  "Extends": "MockAddon"
+}

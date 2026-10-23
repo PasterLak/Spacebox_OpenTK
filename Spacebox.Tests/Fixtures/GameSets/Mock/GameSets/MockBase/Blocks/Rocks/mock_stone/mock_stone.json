@@ -1,0 +1,8 @@
+{
+  "ID": "mock_stone",
+  "Name": "Mock Stone",
+  "Type": "block",
+  "Mass": 2,
+  "Durability": 5,
+  "Textures": { "Active": { "All": "mockStone" } }
+}

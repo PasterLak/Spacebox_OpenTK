@@ -29,6 +29,7 @@ public sealed class WorldFixtureBuilder
     private string _version = Engine.Application.Version;
     private string _modId = "default";
     private string _name = "Fixture";
+    private string[] _extensions = Array.Empty<string>();
     private bool _legacyEntityLayout;
 
     public WorldFixtureBuilder(string folder)
@@ -47,6 +48,12 @@ public sealed class WorldFixtureBuilder
     public WorldFixtureBuilder Mod(string modId)
     {
         _modId = modId;
+        return this;
+    }
+
+    public WorldFixtureBuilder Extensions(params string[] extensions)
+    {
+        _extensions = extensions ?? Array.Empty<string>();
         return this;
     }
 
@@ -142,6 +149,12 @@ public sealed class WorldFixtureBuilder
             ["GameVersion"] = _version,
             ["FolderName"] = Path.GetFileName(_folder)
         };
+        if (_extensions.Length > 0)
+        {
+            var extensions = new JsonArray();
+            foreach (var extension in _extensions) extensions.Add(JsonValue.Create(extension));
+            world["Extensions"] = extensions;
+        }
         File.WriteAllText(Path.Combine(_folder, WorldFileLayout.LegacyWorldFile), world.ToJsonString(options));
 
         foreach (var (file, player) in _players)

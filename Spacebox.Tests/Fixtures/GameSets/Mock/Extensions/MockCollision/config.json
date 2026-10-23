@@ -1,0 +1,6 @@
+{
+  "ModId": "mock_collision",
+  "ModName": "Mock Collision",
+  "Version": "1.0",
+  "Extends": "mock_base"
+}

@@ -15,13 +15,10 @@ public sealed class IdScopes
     public static IdScopes For(GameSetStack stack)
     {
         var scopes = new IdScopes(stack.Base.Id);
-        var byId = new Dictionary<string, InstalledGameSet>(StringComparer.OrdinalIgnoreCase);
-        foreach (var extension in stack.Extensions) byId[extension.Id] = extension;
-
         foreach (var extension in stack.Extensions)
         {
             var search = new List<string> { extension.Id.ToLowerInvariant() };
-            AddParents(extension, byId, search);
+            AddParents(extension, stack.Extensions, search);
             search.Add(scopes.Base);
             scopes._search[extension.Id] = search;
         }
@@ -36,6 +33,13 @@ public sealed class IdScopes
     {
         if (!string.IsNullOrEmpty(ns) && _search.TryGetValue(ns, out var search)) return search;
         return _search[Base];
+    }
+
+    public bool CanSee(string layerId, string ownerId)
+    {
+        foreach (var space in Search(layerId))
+            if (string.Equals(space, ownerId, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
     }
 
     public string Normalize(string fullOrShort)
@@ -67,15 +71,16 @@ public sealed class IdScopes
         return owner == Base ? raw : owner + ":" + raw;
     }
 
-    private static void AddParents(InstalledGameSet extension, Dictionary<string, InstalledGameSet> byId, List<string> search)
+    private static void AddParents(InstalledGameSet extension, IReadOnlyList<InstalledGameSet> extensions, List<string> search)
     {
         var related = new List<string>(ExtensionTargets.Parse(extension.Config.Extends));
         related.AddRange(extension.Includes);
         foreach (var id in related)
         {
-            if (!byId.TryGetValue(id, out var parent) || search.Contains(parent.Id.ToLowerInvariant())) continue;
+            var parent = InstalledGameSets.Find(extensions, id);
+            if (parent == null || search.Contains(parent.Id.ToLowerInvariant())) continue;
             search.Add(parent.Id.ToLowerInvariant());
-            AddParents(parent, byId, search);
+            AddParents(parent, extensions, search);
         }
     }
 }

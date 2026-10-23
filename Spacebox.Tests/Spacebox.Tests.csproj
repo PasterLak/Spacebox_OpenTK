@@ -37,6 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Fixtures\GameSets\Mock\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Spacebox\Spacebox.csproj" />
     <ProjectReference Include="..\Tools\Spacebox.AssetAudit\Spacebox.AssetAudit.csproj" />
   </ItemGroup>

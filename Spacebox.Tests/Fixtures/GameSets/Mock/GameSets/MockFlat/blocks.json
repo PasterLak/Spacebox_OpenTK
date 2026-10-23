@@ -1,0 +1,4 @@
+[
+  { "ID": "flat_rock", "Name": "Flat Rock", "Type": "mineral" },
+  { "ID": "flat_crate", "Name": "Flat Crate", "Type": "storage" }
+]

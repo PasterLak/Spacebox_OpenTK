@@ -1,0 +1,6 @@
+{
+  "ModId": "mock_stack_a",
+  "ModName": "Mock Stack A",
+  "Version": "1.0",
+  "Extends": "mock_base"
+}

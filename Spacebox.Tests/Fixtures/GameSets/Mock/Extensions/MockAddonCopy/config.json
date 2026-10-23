@@ -1,0 +1,6 @@
+{
+  "ModId": "mock_addon",
+  "ModName": "Mock Addon Copy",
+  "Version": "9.0",
+  "Extends": "mock_base"
+}

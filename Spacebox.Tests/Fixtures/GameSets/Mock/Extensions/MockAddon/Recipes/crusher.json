@@ -1,0 +1,6 @@
+{
+  "Type": "crusher",
+  "Recipes": [
+    { "DurationSec": 2, "Ingredient": { "Item": "mock_stone", "Quantity": 1 }, "Product": { "Item": "mock_bulb", "Quantity": 1 } }
+  ]
+}

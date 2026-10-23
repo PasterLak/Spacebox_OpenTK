@@ -1,0 +1,6 @@
+{
+  "ModId": "mock_missing_base",
+  "ModName": "Mock Missing Base",
+  "Version": "1.0",
+  "Extends": "mock_ghost_base"
+}

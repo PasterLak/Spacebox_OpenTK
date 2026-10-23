@@ -1,0 +1,6 @@
+{
+  "ID": "mock_ore",
+  "Name": "Mock Ore",
+  "Type": "mineral",
+  "Durability": 7
+}

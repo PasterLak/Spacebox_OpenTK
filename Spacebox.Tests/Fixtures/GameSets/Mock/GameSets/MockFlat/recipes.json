@@ -1,0 +1,10 @@
+{
+  "RecipeCatalog": [
+    {
+      "Type": "crusher",
+      "Recipes": [
+        { "DurationSec": 3, "Ingredient": { "Item": "flat_rock", "Quantity": 1 }, "Product": { "Item": "flat_gem", "Quantity": 2 } }
+      ]
+    }
+  ]
+}

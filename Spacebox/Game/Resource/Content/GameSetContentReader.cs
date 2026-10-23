@@ -11,11 +11,12 @@ public static class GameSetContentReader
     {
         var warnings = new List<string>();
         Func<ContentLayer, bool> isBase = layer => (layers.Count > 0 && ReferenceEquals(layer, layers[0])) || ReferenceEquals(layer, fallback);
-        var blocks = new KeyedContentList("Block", warnings, isBase);
-        var items = new KeyedContentList("Item", warnings, isBase);
-        var categories = new KeyedContentList("Crafting category", warnings, isBase);
-        var blueprints = new KeyedContentList("Blueprint", warnings, isBase);
-        var recipes = new KeyedContentList("Recipe", warnings, isBase);
+        Func<ContentLayer, ContentLayer, bool> expectedPatch = (owner, patcher) => isBase(owner) || (scopes != null && scopes.CanSee(patcher.Id, owner.Id));
+        var blocks = new KeyedContentList("Block", warnings, expectedPatch);
+        var items = new KeyedContentList("Item", warnings, expectedPatch);
+        var categories = new KeyedContentList("Crafting category", warnings, expectedPatch);
+        var blueprints = new KeyedContentList("Blueprint", warnings, expectedPatch);
+        var recipes = new KeyedContentList("Recipe", warnings, expectedPatch);
 
         var contents = new List<LayerContent>(layers.Count);
         for (int i = 0; i < layers.Count; i++)
