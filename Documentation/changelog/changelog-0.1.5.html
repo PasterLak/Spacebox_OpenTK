@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Spacebox 0.1.5 Changelog</title>
+<style>
+  @font-face { font-family: "StarPixel"; src: url("data:font/ttf;base64,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") format("truetype"); }
+  @page { size: A4; margin: 14mm 14mm 16mm; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font: 10pt/1.4 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #1c2230; margin: 0; }
+  h1, h2 { font-family: "StarPixel", monospace; letter-spacing: .5px; }
+  h2 { font-size: 13.5pt; color: #10141c; border-bottom: 3px solid #ffc428; padding-bottom: 3px; margin: 18px 0 7px; break-after: avoid; page-break-after: avoid; }
+  h2 .n { color: #8a909c; font-size: 9pt; font-family: "Segoe UI", Arial, sans-serif; letter-spacing: 0; margin-left: 6px; }
+  code { font-family: "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace; font-size: 8.6pt; background: #f1f2f5; border: 1px solid #dfe2e8; border-radius: 3px; padding: 0 3px; }
+  ul { margin: 0; padding: 0 0 0 15px; }
+  li { margin: 1.5px 0; break-inside: avoid; page-break-inside: avoid; }
+  li::marker { color: #d9a10f; }
+  ul.cols { column-count: 2; column-gap: 9mm; }
+  .head { background: #10141c; color: #f0f0f0; border-radius: 7px; border: 3px solid #5a6478; padding: 16px 20px 14px; margin-bottom: 6px; }
+  .head h1 { font-size: 30pt; color: #ffc428; margin: 0; text-shadow: 0 3px 0 #000; line-height: 1.1; }
+  .head .sub { font-family: "StarPixel", monospace; color: #6ed2e6; font-size: 13pt; margin-top: 4px; }
+  .head .meta { color: #b9bec8; font-size: 9.5pt; margin-top: 8px; }
+  .hl { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; }
+  .hl li { background: #fff6e0; border-left: 4px solid #e0a400; border-radius: 4px; padding: 5px 9px; margin: 0; }
+  .hl li b { display: block; color: #10141c; }
+  .hl li span { color: #4c5361; font-size: 9pt; }
+  .rules { counter-reset: r; list-style: none; padding: 0; }
+  .rules li { counter-increment: r; position: relative; padding-left: 28px; margin: 5px 0; }
+  .rules li::before { content: counter(r); position: absolute; left: 0; top: 0; width: 20px; height: 20px; border-radius: 4px; background: #ffc428; color: #10141c; font-family: "StarPixel", monospace; font-size: 9pt; text-align: center; line-height: 20px; }
+  .newpage { break-before: page; page-break-before: always; }
+  .small { color: #5f6675; font-size: 8.8pt; }
+  pre { font-family: "Cascadia Mono", Consolas, monospace; font-size: 8.6pt; background: #10141c; color: #f0f0f0; border-left: 4px solid #ffc428; border-radius: 5px; padding: 8px 12px; white-space: pre-wrap; break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>SPACEBOX 0.1.5</h1>
+  <div class="sub">What's new</div>
+  <div class="meta">October 2026 &nbsp;·&nbsp; Includes all changes since 0.1.1 (versions 0.1.2 to 0.1.5)</div>
+</div>
+
+<h2>Highlights<span class="n">10</span></h2>
+<ul class="hl">
+  <li><b>Multiplayer</b><span>Host, LAN and dedicated servers in one game</span></li>
+  <li><b>Player-built ships</b><span>Thrusters, consoles, cannons and cameras</span></li>
+  <li><b>Gravity and oxygen</b><span>Gravity generators, sealed rooms, air supply</span></li>
+  <li><b>New world generation</b><span>Biomes, asteroid shapes, caves and ore veins</span></li>
+  <li><b>Mobs</b><span>The Mineral Parasite lives inside asteroids</span></li>
+  <li><b>Tutorials</b><span>Guided survival and creative tutorials</span></li>
+  <li><b>Equipment</b><span>Armor sets, flashlights, radars and generators</span></li>
+  <li><b>Server dashboard</b><span>Web control panel with map, rules and backups</span></li>
+  <li><b>Claims and protection</b><span>Claim beacons protect ships and bases</span></li>
+  <li><b>Modding</b><span>New GameSet editor, extensions and texture packs</span></li>
+</ul>
+
+<h2>Gameplay<span class="n">34</span></h2>
+<ul class="cols">
+  <li>Oxygen bar; breathing uses oxygen in survival</li>
+  <li>Compressed oxygen refills the tank</li>
+  <li>Low oxygen narrows the view, then hurts 5 HP/s</li>
+  <li>Gravity zones: walk, run and jump</li>
+  <li>Drops and objects fall inside gravity</li>
+  <li>Fall damage in gravity, based on gravity strength</li>
+  <li>Crouch with Left Ctrl, slow walk with Left Alt</li>
+  <li>Footsteps depend on the surface</li>
+  <li>Smoother player physics, sliding along walls</li>
+  <li>Jetpack boost flames</li>
+  <li>DNA reconstructor: respawn there for 1 DNA</li>
+  <li>DNA reconstructors work even when far away</li>
+  <li>Spawn point; respawn moves out of blocks</li>
+  <li>Death screen with death reason</li>
+  <li>Player mood system</li>
+  <li>Game time with day cycle</li>
+  <li>Player statistics</li>
+  <li>Player effects: damage, heal, teleport, overcharge</li>
+  <li>Projectiles can hurt players</li>
+  <li>Weapon recoil and armor penetration</li>
+  <li>Hit, ricochet and explosion volume fades with distance</li>
+  <li>Bombs: cobalt and uranium, with chain reactions</li>
+  <li>Nuclear power blocks explode when destroyed</li>
+  <li>Armor reduces explosion damage</li>
+  <li>Radar needed for markers, flashlight for light</li>
+  <li>Flashlight in hand works without an equipped one</li>
+  <li>Drills use power and glow in their own colour</li>
+  <li>Drills and guns hurt mobs and NPCs</li>
+  <li>Ring marks the target to drill or gift</li>
+  <li>Drop system with physics</li>
+  <li>Drop items by drag and drop or from the hotbar</li>
+  <li>Spacer NPC carries loot and a storage</li>
+  <li>Spacer can be pushed and drops loot on death</li>
+  <li>New game mode Explorer (no breaking or placing)</li>
+</ul>
+
+<h2>Building &amp; Blocks<span class="n">25</span></h2>
+<ul class="cols">
+  <li>Blocks can be rotated</li>
+  <li>Magnet building mode (N)</li>
+  <li>Multi-cell blocks with build preview</li>
+  <li>Blocks with custom 3D shapes</li>
+  <li>Wall torches in eight colours</li>
+  <li>Sliding doors: aluminium, iron, titanium, metal 2x2</li>
+  <li>Doors auto-close, build airlocks, push players</li>
+  <li>Door sounds in three styles</li>
+  <li>Big Window (2x2)</li>
+  <li>Storage block; rename it, name shown on hover</li>
+  <li>Gravity generator: radius, strength presets, on/off</li>
+  <li>Oxygen generator fills closed rooms (water tank)</li>
+  <li>DNA reconstructor block</li>
+  <li>Disassembler needs power, 4x2 slots</li>
+  <li>Ore scanner</li>
+  <li>Repair tool repairs damaged blocks</li>
+  <li>Item pipes: straight, merging, filter slot, side settings</li>
+  <li>Cables turn into angles and hubs automatically</li>
+  <li>Power blocks: Standard and Powerful Cobalt</li>
+  <li>Power blocks: Standard and Powerful Nuclear</li>
+  <li>Signs: Steel Sign, Wide Steel Sign, Info Panel</li>
+  <li>Sign editor: bold, colours, alignment, text size</li>
+  <li>Picture frames (iron, plastic; 1x1, 2x1, 2x2)</li>
+  <li>Damaged blocks show cracks</li>
+  <li>Barrier: invisible creative block for maps</li>
+</ul>
+
+<h2>Ships<span class="n">17</span></h2>
+<ul class="cols">
+  <li>Built structures fly as ships with real mass</li>
+  <li>Four thruster types</li>
+  <li>Five cannons: anti-personnel to anti-frigate</li>
+  <li>Ship console: sit down and pilot</li>
+  <li>Bind thrusters, cannons, cameras by looking at them</li>
+  <li>Key groups with colour outlines</li>
+  <li>Automatic flight: move, roll, mouse steering, brake</li>
+  <li>Speed display while piloting</li>
+  <li>Cannon console and camera block</li>
+  <li>Camera view looks like a security camera feed</li>
+  <li>Ships collide with asteroids and other ships</li>
+  <li>Players stay aboard moving ships</li>
+  <li>Asteroids with thrusters fly too</li>
+  <li>Thruster nozzles keep their space free</li>
+  <li>Consoles remember the last used keys</li>
+  <li>Ship viewer: browse and test ships of all worlds</li>
+  <li>Export ships as <code>.ship</code> files, place them in creative</li>
+</ul>
+
+<h2>Items &amp; Crafting<span class="n">14</span></h2>
+<ul class="cols">
+  <li>New: Dense Ice Rock, Methane Ice, Compressed Methane</li>
+  <li>New: Plastic</li>
+  <li>Thulium processing and thulium recipes</li>
+  <li>Armor sets: aluminium, iron, titanium</li>
+  <li>Flashlights, radars and generators in three tiers</li>
+  <li>Equip with Shift-click or right click</li>
+  <li>30 pixel-art pictures to craft</li>
+  <li>Shift-click crafts 5 items</li>
+  <li>New crafting categories, incl. Tools and Decor</li>
+  <li>Processing machines list their recipes</li>
+  <li>More crusher recycling recipes</li>
+  <li>Cheaper metal blocks</li>
+  <li>Items can glow</li>
+  <li>Short descriptions; values shown in tooltips</li>
+</ul>
+
+<h2>Mobs<span class="n">6</span></h2>
+<ul class="cols">
+  <li>Mineral Parasite eats asteroid blocks</li>
+  <li>Parasites bite survival players and sometimes flee</li>
+  <li>Live in dark medium, heavy and icy asteroids</li>
+  <li>Own sounds and death particles</li>
+  <li>Drop loot when killed</li>
+  <li>Mineral Parasite Larva spawns a parasite</li>
+</ul>
+
+<h2>Generation<span class="n">12</span></h2>
+<ul class="cols">
+  <li>Biomes</li>
+  <li>Improved noise for asteroid surfaces</li>
+  <li>Cave tunnels and round caves</li>
+  <li>Ore veins</li>
+  <li>Loot generation</li>
+  <li>New asteroid shapes: blobs, doubles, donuts, craters</li>
+  <li>Hollow asteroids</li>
+  <li>Biomes and ores change with distance from the center</li>
+  <li>Asteroids have random rotations</li>
+  <li>No floating blocks on new asteroids</li>
+  <li>New players spawn near a large asteroid</li>
+  <li>Old worlds keep generating as before</li>
+</ul>
+
+<h2>Interface<span class="n">23</span></h2>
+<ul class="cols">
+  <li>Sort button in inventory and storage</li>
+  <li>Creative window with categories and search</li>
+  <li>World preview in the menu</li>
+  <li>Double click opens a world; edit button for worlds</li>
+  <li>Loading screen with progress</li>
+  <li>Game, audio and graphics settings</li>
+  <li>Control remapping</li>
+  <li>Interface font and font size</li>
+  <li>Options in the pause menu</li>
+  <li>Unsaved options ask before leaving</li>
+  <li>Graphics: SSAO, brightness, contrast, saturation</li>
+  <li>Graphics: vignette, film grain, FPS counter</li>
+  <li>Compact equipment window with 3D player preview</li>
+  <li>Waypoint window (M)</li>
+  <li>Tutorial panel with tasks and rewards</li>
+  <li>Controls overview (F6)</li>
+  <li>Menu music toggle</li>
+  <li>Block icons show the real shape</li>
+  <li>Better debug console, copyable text</li>
+  <li>Autosave option</li>
+  <li>Save / Don't Save / Cancel when leaving a world</li>
+  <li>Mods menu: GameSets, texture packs, ship viewer</li>
+  <li>Readable pixel font in small windows</li>
+</ul>
+
+<h2>Multiplayer<span class="n">20</span></h2>
+<ul class="cols">
+  <li>Open a single-player world to the network</li>
+  <li>Join by address; LAN servers found automatically</li>
+  <li>Server list with icon, description, ping, players</li>
+  <li>Connection screen shows each join step</li>
+  <li>Server sends its mods and texture packs</li>
+  <li>Accounts with password; whitelist</li>
+  <li>Choose a skin colour in the menu</li>
+  <li>Synced: held item, flashlight, block rotation</li>
+  <li>Synced: ships, doors, machines, mobs, drops, explosions</li>
+  <li>Several players can use one chest or machine</li>
+  <li>PvP with hitboxes, headshots and kill messages</li>
+  <li>Give items and equipment to other players</li>
+  <li>Chat with commands, Tab completion, history</li>
+  <li>Join and leave messages</li>
+  <li>Player list with ping; kick, mute, ban</li>
+  <li>Other players' flashlight beams and glare</li>
+  <li>Claim beacons protect ships and bases</li>
+  <li>Admins can protect asteroids and ships</li>
+  <li>Server checks items, moves and reach (anti-cheat)</li>
+  <li>Admin commands from chat with <code>/</code></li>
+</ul>
+
+<h2>Server &amp; Dashboard<span class="n">22</span></h2>
+<ul class="cols">
+  <li>Dedicated server with start scripts</li>
+  <li>Runs without a window or GPU on every OS</li>
+  <li>Web dashboard: players, console, settings, charts</li>
+  <li>Dashboard map of space around players</li>
+  <li>Dashboard works on phones</li>
+  <li>Automatic HTTPS (DuckDNS, Cloudflare, IP)</li>
+  <li>Server statistics: players per day, play time</li>
+  <li>Gameplay rules: PvP, explosions, friendly mobs</li>
+  <li><code>keep_inventory</code> rule with death drops</li>
+  <li><code>max_ship_speed</code> rule</li>
+  <li><code>gamerule</code> command and dashboard switches</li>
+  <li>Player game modes saved per player</li>
+  <li>Admins list with <code>[ADMIN]</code> tag</li>
+  <li>Claim settings in the config and dashboard</li>
+  <li>Automatic world backups; <code>backup</code> command</li>
+  <li>Sleep mode for empty servers</li>
+  <li>Low update rate while nobody is online</li>
+  <li><code>restart</code> command</li>
+  <li><code>tp</code>, <code>tphere</code>, <code>setspawn</code>, <code>spawn</code></li>
+  <li>Stopping or closing the server saves the world</li>
+  <li>Old worlds upgraded on start</li>
+  <li>Spacebox Server Guide PDF included</li>
+</ul>
+
+<h2>Modding &amp; GameSet editor<span class="n">22</span></h2>
+<ul class="cols">
+  <li>GameSet editor for all content, with 3D previews</li>
+  <li>Editor: biome map, tutorials, sounds pages</li>
+  <li>Tooltips for every editor setting</li>
+  <li>Folder format: one folder per block or item</li>
+  <li>Extension GameSets add or patch content</li>
+  <li>Texture packs, several at once</li>
+  <li>Auto-unpack ZIP and RAR mods</li>
+  <li>GameSet icon</li>
+  <li>All items use string ids</li>
+  <li>Data-driven mobs, game modes and tutorials</li>
+  <li>Start items and spawn settings per GameSet</li>
+  <li>Generation options per GameSet</li>
+  <li>Own texture for each block side</li>
+  <li>Disabled textures and glow maps</li>
+  <li>Custom block models (OBJ)</li>
+  <li>Block drops: other items, drops when shot</li>
+  <li>Unbreakable blocks</li>
+  <li>Custom footstep and door sounds</li>
+  <li>Drills with radius; weapons with ammo</li>
+  <li>Folders for projectiles and loot</li>
+  <li>Changeable UI colours</li>
+  <li>GameSet can override game resources</li>
+</ul>
+
+<h2>Performance<span class="n">8</span></h2>
+<ul class="cols">
+  <li>Chunk meshes built on worker threads</li>
+  <li>Worlds load on worker threads</li>
+  <li>Hidden chunks are not drawn (occlusion culling)</li>
+  <li>Smaller chunk meshes</li>
+  <li>Fewer polygons in held and dropped items</li>
+  <li>Faster joining near changed asteroids</li>
+  <li>Asteroids save only changed chunks</li>
+  <li>Smaller builds: unused assets left out</li>
+</ul>
+
+<h2>Engine<span class="n">12</span></h2>
+<ul class="cols">
+  <li>Revamped lighting: smooth coloured voxel light</li>
+  <li>Post processing and SSAO</li>
+  <li>Procedural skybox</li>
+  <li>New effects system with its own editor</li>
+  <li>3D audio with pitch and mixer channels</li>
+  <li>Audio follows the system output device</li>
+  <li>Sorted transparency for models and particles</li>
+  <li>Scene graph, components, materials</li>
+  <li>Networking with RPCs and synced variables</li>
+  <li>Native Wayland on Linux</li>
+  <li>Laptops use the dedicated GPU</li>
+  <li>System report at the start of the log</li>
+</ul>
+
+<h2>Fixes<span class="n">22</span></h2>
+<ul class="cols">
+  <li>Cursor stays locked when hidden</li>
+  <li>Escape in the inventory</li>
+  <li>White borders on screenshots</li>
+  <li>Faster screenshot saving</li>
+  <li>Missing OpenAL32.dll</li>
+  <li>Game starts without sound if OpenAL is missing</li>
+  <li>Transparent block faces between chunks</li>
+  <li>Light and ambient occlusion between chunks</li>
+  <li>Electricity system bugs</li>
+  <li>Memory leaks: audio, skybox, meshes, shaders</li>
+  <li>Sounds stopped after long play</li>
+  <li>Window mode and VSync settings</li>
+  <li>Releasing zoom ignored the FOV setting</li>
+  <li>Time stayed paused after Go to menu</li>
+  <li>Flashlight white screen on some drivers</li>
+  <li>Missing taskbar icon</li>
+  <li>Inventory slot clicks ran twice</li>
+  <li>Crusher gave too much dust from lenses</li>
+  <li>Crash while saving no longer breaks save files</li>
+  <li>Broken world files no longer crash the menu</li>
+  <li>Numpad Enter left the world without saving</li>
+  <li>Chunks with over 256 block types save correctly</li>
+</ul>
+
+<h2 class="newpage">Rules for DONE.txt</h2>
+<p class="small">For the author: how to write future entries so the next changelog is quick to build.</p>
+<ul class="rules">
+  <li><b>One line per player-visible change.</b> Split lines that list unrelated things.</li>
+  <li><b>Short:</b> about 15 words at most, a phrase, not a sentence.</li>
+  <li><b>Final state, not history.</b> Edit the existing line when a feature changes in the same version.</li>
+  <li><b>No "fix X" for new features.</b> Bugs in a feature added this version are not entries.</li>
+  <li><b>Right header:</b> <code>Game</code> for features, <code>Small</code> for minor changes, <code>Fixes</code> for bugs in released features, <code>Engine</code> for engine work.</li>
+  <li><b>Current version only.</b> Add under <code>Application.Version</code>; never edit older sections.</li>
+  <li><b>No internal work:</b> refactors, tests, tooling and docs stay out.</li>
+  <li><b>Player words:</b> name items, blocks, keys and menus as the game shows them.</li>
+  <li><b>Exact names</b> for config fields, rules and commands, e.g. <code>keep_inventory</code>, <code>/backup</code>.</li>
+  <li><b>No other games</b> and no numbers that change often; keep values in tooltips and docs.</li>
+</ul>
+<pre>Game
+- picture frames: iron and plastic, 1x1 to 2x2
+Small
+- creative window: search field
+Fixes
+- cursor not locked when hidden</pre>
+
+</body>
+</html>
