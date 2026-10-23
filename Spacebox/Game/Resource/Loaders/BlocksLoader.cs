@@ -47,7 +47,7 @@ namespace Spacebox.Game.Resource
                 {
                     var block = Deserialize(entry);
                     if (block == null) continue;
-                    if (!ProcessBlock(block, shapes))
+                    if (!ProcessBlock(block, shapes, entry.Namespace))
                         continue;
                 }
             }
@@ -70,7 +70,7 @@ namespace Spacebox.Game.Resource
             }
         }
 
-        private static bool ProcessBlock(BlockJSON blockJson, BlockShapeResolver shapes)
+        private static bool ProcessBlock(BlockJSON blockJson, BlockShapeResolver shapes, string ns)
         {
             if (string.IsNullOrWhiteSpace(blockJson.ID))
             {
@@ -89,8 +89,9 @@ namespace Spacebox.Game.Resource
             if (!ValidateBlockType(blockJson)) return false;
             FixBlockValues(blockJson);
 
-            var blockId = GameSetLoader.ValidateIdString(GameSetLoader.ModInfo.ModId, blockJson.ID);
-            blockId = GameSetLoader.CombineId(GameSetLoader.ModInfo.ModId, blockId);
+            var (blockNamespace, shortId) = GameSetLoader.DeclaredId(blockJson.ID, ns);
+            var blockId = GameSetLoader.ValidateIdString(blockNamespace, shortId);
+            blockId = GameSetLoader.CombineId(blockNamespace, blockId);
 
             if (GameAssets.HasItem(blockId))
             {

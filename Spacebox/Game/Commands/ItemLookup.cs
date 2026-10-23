@@ -42,6 +42,7 @@ public static class ItemLookup
     {
         item = null;
         string fullId = Resolve(GameAssets.ItemsStr.Keys, query, GameSetLoader.ModInfo?.ModId ?? "");
-        return fullId != null && GameAssets.ItemsStr.TryGetValue(fullId, out item);
+        if (fullId != null) return GameAssets.ItemsStr.TryGetValue(fullId, out item);
+        return !string.IsNullOrWhiteSpace(query) && GameAssets.TryGetItemByFullID(query.Trim(), out item);
     }
 }

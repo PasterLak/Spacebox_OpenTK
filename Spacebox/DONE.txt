@@ -357,6 +357,7 @@ Fixes
 - extensions: MinBaseVersion/MaxBaseVersion (outdated or too new bases are refused with a reason), "Extends": "*" or a list for packs that work with several GameSets, Bases/<id>/ adapter folders loaded only with that GameSet
 - Create window: "Any GameSet (general pack)" option for extensions; dropdowns inside dialogs open above them; the GameSet list updates right after creating
 - extensions can extend other extensions (the parent is turned on and loaded first, versions check the parent, Extends loops are refused)
+- extension ids get the extension's namespace automatically (weapons_pack:laser): packs never clash, short ids resolve to the pack, its parents, then the base; old saves and default:<id> still find extension items
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine

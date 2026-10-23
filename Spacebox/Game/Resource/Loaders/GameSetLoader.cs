@@ -46,6 +46,7 @@ public static class GameSetLoader
         ModInfo = null;
         modPath = null;
         Stack = null;
+        Scopes = null;
         Content = null;
         Spacebox.Game.Tutorial.TutorialLibrary.Clear();
     }
@@ -85,6 +86,7 @@ public static class GameSetLoader
         ModInfo.ItemsOnStart = Spacebox.Game.Player.Respawn.SpawnParameters.StartItems(spawnParameters, ModInfo, extensionConfigs);
 
         Stack = stack;
+        Scopes = IdScopes.For(stack);
         Content = stack.ReadContent();
         foreach (var warning in Content.Warnings) Debug.Warning($"[GameSetLoader] {warning}");
 
@@ -271,7 +273,33 @@ public static class GameSetLoader
 
     public static string CombineId(string modId, string itemId)
     {
-        return $"{modId}:{itemId}";
+        return itemId != null && itemId.Contains(':') ? itemId : $"{modId}:{itemId}";
+    }
+
+    public static IdScopes Scopes { get; private set; }
+
+    public static (string ns, string shortId) DeclaredId(string rawId, string entryNamespace)
+    {
+        string baseNamespace = ModInfo?.ModId ?? "";
+        string id = rawId ?? "";
+        int colon = id.IndexOf(':');
+        if (colon >= 0) return (id.Substring(0, colon).ToLowerInvariant(), id.Substring(colon + 1));
+        return (string.IsNullOrEmpty(entryNamespace) ? baseNamespace : entryNamespace, id);
+    }
+
+    public static string ResolveId(string itemId, string ns)
+    {
+        if (string.IsNullOrEmpty(itemId) || itemId.Contains(':')) return itemId;
+        string baseNamespace = ModInfo?.ModId ?? "";
+        if (Scopes != null)
+        {
+            foreach (var space in Scopes.Search(ns))
+            {
+                string candidate = CombineId(space, itemId);
+                if (GameAssets.HasItem(candidate)) return candidate;
+            }
+        }
+        return CombineId(baseNamespace, itemId);
     }
 
     public static (string modId, string itemId) SplitId(string fullId)
@@ -363,9 +391,9 @@ public static class GameSetLoader
 
                     if (ContentJson.TryGetProperty(itemElement, "ID", out JsonElement idElement))
                     {
-                        idString = idElement.GetString();
-                        idString = ValidateIdString(ModInfo.ModId, idString);
-                        idString = CombineId(ModInfo.ModId, idString);
+                        var (itemNamespace, shortId) = DeclaredId(idElement.GetString(), entry.Namespace);
+                        idString = ValidateIdString(itemNamespace, shortId);
+                        idString = CombineId(itemNamespace, idString);
                         if (GameAssets.HasItem(idString))
                         {
                             Debug.Error($"[GameSetLoader] Item with ID '{idString}' already exists. Skipping duplicate.");
@@ -458,7 +486,7 @@ public static class GameSetLoader
             else
             {
 
-                var fullID = CombineId(ModInfo.ModId, dropIdStr);
+                var fullID = ResolveId(dropIdStr, SplitId(block.Id_string).modId);
 
                 if (fullID == block.Id_string)
                 {
@@ -492,8 +520,8 @@ public static class GameSetLoader
                 var r = entry.Data.Deserialize<RecipeJSON>(ContentJson.CaseInsensitive);
                 if (r == null) continue;
 
-                var ingredientFullId = CombineId(ModInfo.ModId, r.Ingredient.Item);
-                var productFullId = CombineId(ModInfo.ModId, r.Product.Item);
+                var ingredientFullId = ResolveId(r.Ingredient.Item, entry.Namespace);
+                var productFullId = ResolveId(r.Product.Item, entry.Namespace);
 
                 var item = GameAssets.GetItemByFullID(ingredientFullId);
                 var item2 = GameAssets.GetItemByFullID(productFullId);
@@ -769,7 +797,7 @@ public static class GameSetLoader
         {
             EnqueuePostLoadAction(() =>
             {
-                weaponItem.Ammo = GameAssets.GetItemByFullID(CombineId(ModInfo.ModId, data.Ammo));
+                weaponItem.Ammo = GameAssets.GetItemByFullID(ResolveId(data.Ammo, SplitId(weaponItem.Id_string).modId));
             });
         }
 

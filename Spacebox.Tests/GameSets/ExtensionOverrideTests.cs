@@ -113,8 +113,8 @@ public sealed class ExtensionOverrideTests : IDisposable
 
         Assert.Equal(99, GameSetFiles.For(withDefault).Folder("Projectiles").Single(p => p.Key == "plasma").Data!["Damage"]!.GetValue<int>());
         Assert.Equal(30, GameSetFiles.For(withMine).Folder("Projectiles").Single(p => p.Key == "plasma").Data!["Damage"]!.GetValue<int>());
-        Assert.Contains(withDefault.ReadContent().Blocks, b => b.Key == "weapons_forge");
-        Assert.DoesNotContain(withMine.ReadContent().Blocks, b => b.Key == "weapons_forge");
+        Assert.Contains(withDefault.ReadContent().Blocks, b => b.Key == "weapons:weapons_forge");
+        Assert.DoesNotContain(withMine.ReadContent().Blocks, b => b.Key.EndsWith("weapons_forge"));
         Assert.Empty(withDefault.ReadContent().Warnings);
     }
 

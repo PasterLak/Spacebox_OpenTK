@@ -81,7 +81,7 @@ public sealed class GameSetStack
         return roots.ToArray();
     }
 
-    public GameSetContent ReadContent() => GameSetContentReader.Read(Layers, Fallback);
+    public GameSetContent ReadContent() => GameSetContentReader.Read(Layers, Fallback, IdScopes.For(this));
 
     public static bool SameFolder(string a, string b)
     {

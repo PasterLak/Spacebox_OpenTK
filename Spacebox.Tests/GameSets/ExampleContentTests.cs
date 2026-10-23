@@ -21,10 +21,10 @@ public sealed class ExampleContentTests
 
         Assert.Empty(content.Warnings);
         Assert.Equal(DefaultGameSetContent.Content.Blocks.Count + 2, content.Blocks.Count);
-        Assert.Equal("example_striped_panel", content.Blocks[^1].Key);
-        Assert.NotNull(content.FindItem("example_glow_shard"));
-        Assert.Contains(content.Recipes, r => r.Key == "crusher|example_glow_block");
-        Assert.Contains(content.Blueprints, b => b.Key == "example_glow_block");
+        Assert.Equal("example_extension:example_striped_panel", content.Blocks[^1].Key);
+        Assert.NotNull(content.FindItem("example_extension:example_glow_shard"));
+        Assert.Contains(content.Recipes, r => r.Key == "crusher|example_extension:example_glow_block");
+        Assert.Contains(content.Blueprints, b => b.Key == "example_extension:example_glow_block");
         Assert.Contains("patched", ContentJson.GetString(content.FindBlock("light_white").Data, "Description"));
         Assert.Equal("Crimson Wall Torch", ContentJson.GetString(content.FindBlock("light_red").Data, "Name"));
     }

@@ -9,15 +9,21 @@ public sealed class ContentEntry
     public ContentLayer Layer { get; }
     public string Source { get; }
     public IReadOnlyList<string> SearchDirectories { get; }
+    public string Namespace { get; }
 
-    public ContentEntry(string key, JsonObject data, ContentLayer layer, string source, IReadOnlyList<string> searchDirectories)
+    public ContentEntry(string key, JsonObject data, ContentLayer layer, string source, IReadOnlyList<string> searchDirectories, string ns = null)
     {
         Key = key ?? "";
         Data = data;
         Layer = layer;
         Source = source ?? "";
         SearchDirectories = searchDirectories ?? Array.Empty<string>();
+        Namespace = ns;
     }
+
+    public ContentEntry WithKey(string key, string ns) => new ContentEntry(key, Data, Layer, Source, SearchDirectories, ns);
+
+    public ContentEntry WithNamespace(string ns) => ns == Namespace ? this : WithKey(Key, ns);
 
     public static ContentEntry Create(string key, JsonObject data, ContentLayer layer, string source, string entryDirectory)
     {
@@ -34,7 +40,7 @@ public sealed class ContentEntry
         {
             if (!directories.Contains(directory)) directories.Add(directory);
         }
-        return new ContentEntry(Key, ContentJson.Merge(Data, patch.Data), patch.Layer, patch.Source, directories);
+        return new ContentEntry(Key, ContentJson.Merge(Data, patch.Data), patch.Layer, patch.Source, directories, Namespace);
     }
 
     public string ResolveFile(string relativePath)

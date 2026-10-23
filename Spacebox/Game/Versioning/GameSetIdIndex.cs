@@ -56,7 +56,12 @@ public sealed class GameSetIdIndex
     private void AddId(ContentEntry entry, HashSet<string> target)
     {
         string id = ContentJson.GetString(entry.Data, "ID");
-        if (!string.IsNullOrWhiteSpace(id)) target.Add(FullId(id));
+        if (string.IsNullOrWhiteSpace(id)) return;
+        string shortId = id.Trim();
+        int colon = shortId.IndexOf(':');
+        if (colon >= 0) shortId = shortId.Substring(colon + 1);
+        target.Add(string.IsNullOrEmpty(entry.Namespace) ? FullId(shortId) : entry.Namespace + ":" + shortId);
+        if (!string.IsNullOrEmpty(entry.Namespace)) target.Add(FullId(shortId));
     }
 
     public bool IsBlock(string fullId) => _blocks.Contains(fullId ?? "");

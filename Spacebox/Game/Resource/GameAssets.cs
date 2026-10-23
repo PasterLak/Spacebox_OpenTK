@@ -121,9 +121,31 @@ namespace Spacebox.Game
             return ItemsStr.ContainsKey(fullId);
         }
 
+        private static readonly Dictionary<string, string> IdAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        public static string CanonicalId(string idFull)
+        {
+            if (string.IsNullOrEmpty(idFull) || ItemsStr.ContainsKey(idFull) || BlocksStr.ContainsKey(idFull)) return idFull;
+            return IdAliases.TryGetValue(idFull, out var aliased) ? aliased : idFull;
+        }
+
+        public static bool TryGetBlockByFullID(string idFull, out BlockData block)
+        {
+            return BlocksStr.TryGetValue(CanonicalId(idFull), out block);
+        }
+
+        private static void RegisterAlias(string fullId)
+        {
+            string baseNamespace = GameSetLoader.ModInfo?.ModId;
+            int colon = fullId.IndexOf(':');
+            if (string.IsNullOrEmpty(baseNamespace) || colon < 0) return;
+            if (string.Equals(fullId.Substring(0, colon), baseNamespace, StringComparison.OrdinalIgnoreCase)) return;
+            IdAliases.TryAdd(baseNamespace + ":" + fullId.Substring(colon + 1), fullId);
+        }
+
         public static BlockData? GetBlockByFullID(string idFull)
         {
-            if (BlocksStr.TryGetValue(idFull, out var block))
+            if (BlocksStr.TryGetValue(CanonicalId(idFull), out var block))
                 return block;
 
             Debug.Error("[GameAssets] GetBlockByFullID error: Wrong string id - " + idFull);
@@ -132,7 +154,7 @@ namespace Spacebox.Game
 
         public static Item? GetItemByFullID(string idFull)
         {
-            if (ItemsStr.TryGetValue(idFull, out var item))
+            if (ItemsStr.TryGetValue(CanonicalId(idFull), out var item))
                 return item;
 
             Debug.Error("[GameAssets] GetItemByFullID error: Wrong string id - " + idFull);
@@ -141,7 +163,7 @@ namespace Spacebox.Game
 
         public static bool TryGetItemByFullID(string idFull, out Item item)
         {
-            return ItemsStr.TryGetValue(idFull, out item);
+            return ItemsStr.TryGetValue(CanonicalId(idFull), out item);
         }
 
         public static string GetBlockFullId(Block block)
@@ -278,11 +300,13 @@ namespace Spacebox.Game
         public static void AddBlockString(string fullId, BlockData blockData)
         {
             BlocksStr[fullId] = blockData;
+            RegisterAlias(fullId);
         }
 
         public static void AddItemString(string fullId, Item item)
         {
             ItemsStr[fullId] = item;
+            RegisterAlias(fullId);
         }
 
         public static T LoadResource<T>(string path) where T : IResource, new()
@@ -327,6 +351,7 @@ namespace Spacebox.Game
             Items.Clear();
             BlocksStr.Clear();
             ItemsStr.Clear();
+            IdAliases.Clear();
             ItemModels.Clear();
             ItemWorldModels.Clear();
             ItemMuzzles.Clear();

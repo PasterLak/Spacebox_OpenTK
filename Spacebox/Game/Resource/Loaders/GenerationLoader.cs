@@ -324,9 +324,7 @@ public class GenerationLoader
         };
 
         string fullBlockId = GameSetLoader.CombineId(GameSetLoader.ModInfo.ModId, json.FillBlockID);
-        var blockData = GameAssets.BlocksStr.ContainsKey(fullBlockId)
-            ? GameAssets.BlocksStr[fullBlockId]
-            : null;
+        var blockData = GameAssets.TryGetBlockByFullID(fullBlockId, out var fillBlock) ? fillBlock : null;
 
         if (blockData != null)
         {
@@ -362,9 +360,7 @@ public class GenerationLoader
         };
 
         string fullBlockId = GameSetLoader.CombineId(GameSetLoader.ModInfo.ModId, json.BlockId);
-        var blockData = GameAssets.BlocksStr.ContainsKey(fullBlockId)
-            ? GameAssets.BlocksStr[fullBlockId]
-            : null;
+        var blockData = GameAssets.TryGetBlockByFullID(fullBlockId, out var veinBlock) ? veinBlock : null;
 
         if (blockData != null)
         {
