@@ -9,13 +9,15 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Generation.Blocks;
 
-public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlockListener
+public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlockListener, INetworkStateBlock
 {
     private readonly DisassemblerBlockData _data;
     private readonly DisassemblerInventory _inventory = new DisassemblerInventory(DisassemblyRecipes.TryGet);
     private readonly Action _startTicker;
 
     private SpaceEntity _entity;
+    private Vector3i _cell;
+    private bool _sentWorking;
     private TickTask _ticker;
     private DisassemblyRecipe _recipe;
     private bool _keepProgress;
@@ -66,6 +68,7 @@ public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlock
     {
         this.chunk = chunk;
         _entity = chunk.SpaceEntity;
+        _cell = localCell;
         Wake();
     }
 
@@ -102,6 +105,10 @@ public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlock
         if (disassembled) OnDisassembled?.Invoke(this);
     }
 
+    public void WriteNetworkState(NetWriter writer) => WriteContainerState(writer);
+
+    public void ReadNetworkState(NetReader reader) => ReadContainerState(reader);
+
     public void ResetSyncedState()
     {
         _syncedCompletedCount = -1;
@@ -121,6 +128,7 @@ public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlock
     protected override void OnActiveStateChanged(bool isActive)
     {
         base.OnActiveStateChanged(isActive);
+        PublishWorkingState();
         if (isActive) Wake();
     }
 
@@ -152,6 +160,15 @@ public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlock
     {
         _ticker?.Stop();
         _ticker = null;
+        PublishWorkingState();
+    }
+
+    private void PublishWorkingState()
+    {
+        bool working = IsActive && RequiredTicks > 0;
+        if (working == _sentWorking) return;
+        _sentWorking = working;
+        Spacebox.Network.BlockStateNetwork.MarkDirty(_entity, _cell, this);
     }
 
     private void Tick()
@@ -175,6 +192,7 @@ public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlock
         if (!_inventory.TryProcess(_recipe)) return;
 
         _completedCount++;
+        Spacebox.Network.BlockStateNetwork.MarkDirty(_entity, _cell, this);
         OnDisassembled?.Invoke(this);
     }
 
@@ -198,6 +216,7 @@ public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlock
         RequiredTicks = Math.Max(1, (int)(recipe.DurationTicks / Math.Max(0.01f, _data.Efficiency)));
         Progress = Math.Min(Progress, RequiredTicks - 1);
         CurrentItemId = recipe.Input.Id;
+        PublishWorkingState();
         return true;
     }
 

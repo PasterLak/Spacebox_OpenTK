@@ -25,6 +25,8 @@ public sealed class ProcessingComponent : BlockComponent, IContainerComponent, I
     private StorageComponent _buffer;
     private bool _isRunning;
     private bool _syncedPower;
+    private byte _craftedCount;
+    private int _syncedCraftedCount = -1;
     private bool _exchanging;
     private short _loadedTicks;
 
@@ -147,6 +149,7 @@ public sealed class ProcessingComponent : BlockComponent, IContainerComponent, I
         writer.Write(CurrentTick);
         writer.Write(CraftTicks);
         writer.Write(HasPower);
+        writer.Write(_craftedCount);
     }
 
     public void ReadContainerState(NetReader reader)
@@ -155,8 +158,12 @@ public sealed class ProcessingComponent : BlockComponent, IContainerComponent, I
         CurrentTick = reader.ReadShort();
         CraftTicks = reader.ReadShort();
         _syncedPower = reader.ReadBool();
+        byte crafted = reader.ReadByte();
+        bool finished = _syncedCraftedCount >= 0 && crafted != _syncedCraftedCount;
+        _syncedCraftedCount = crafted;
         if (running != IsRunning) IsRunning = running;
         else Host.SetEmission(_isRunning && HasPower, true);
+        if (finished) OnCrafted?.Invoke(this);
     }
 
     public void WriteNetworkState(NetWriter writer) => WriteContainerState(writer);
@@ -308,6 +315,8 @@ public sealed class ProcessingComponent : BlockComponent, IContainerComponent, I
             ProcessedItems += recipe.Product.Quantity;
         }
 
+        _craftedCount++;
+        Host.MarkStateDirty();
         OnCrafted?.Invoke(this);
 
         if (!HasInput()) Reset();

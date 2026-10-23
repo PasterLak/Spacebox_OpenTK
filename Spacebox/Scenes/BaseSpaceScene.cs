@@ -66,6 +66,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     private Spacebox.Game.Rendering.BodyOutlineRenderer _bodyOutlines;
     
 
+    private const float WorldRevealFade = 1f;
+
     public void Initialize(SpaceSceneArgs param)
     {
         SceneArgs = param;
@@ -177,7 +179,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Camera.Main = localPlayer;
 
         world.PreloadAroundPlayer();
-        ui.Loading.Begin(localPlayer);
+        ui.Loading.Begin(localPlayer, () => ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 0), 1f, WorldRevealFade));
 
         ui.Welcome.OnPlayerSpawned(World.WorldData.Info.ShowWelcomeWindow);
         AttachComponent(new SpheresPool());
@@ -238,7 +240,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Time.HandleTicks();
 
         base.Update();
-        _gameCanvas?.Update(localPlayer, Time.Delta);
 
         MainThreadDispatcher.Instance.ExecutePending(StreamingBudget.DispatcherBudgetMs);
         _networkSession?.Update();
@@ -246,6 +247,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ui.Loading.Tick();
         if (!WorldSaveState.IsTracking && !ui.Loading.IsActive) World.Instance?.StartTrackingChanges();
         ui.DnaReconstruction.Tick();
+        _gameCanvas?.Update(localPlayer, Time.Delta);
         Spacebox.Game.Rendering.CameraFeedController.Update();
         Spacebox.Game.Rendering.FlashlightGlareController.Update(localPlayer);
         Spacebox.Game.Protection.ClaimRegistry.Update(Time.Delta);

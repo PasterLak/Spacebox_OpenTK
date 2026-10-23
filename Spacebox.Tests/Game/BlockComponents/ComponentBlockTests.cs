@@ -125,7 +125,7 @@ public class ComponentBlockTests
     }
 
     [Fact]
-    public void ProcessingNetworkState_RoundTripsWithTheOldLayout()
+    public void ProcessingNetworkState_RoundTrips()
     {
         using var assets = new ComponentTestAssets();
         var server = (StatefulContainerComponentBlock)ComponentBlocks.Create(ComponentTestAssets.Data("furnace"), new BlockComponentDefinition[] { ComponentTestAssets.Processing() });
@@ -136,7 +136,7 @@ public class ComponentBlockTests
 
         var writer = new NetWriter(16);
         server.WriteNetworkState(writer);
-        Assert.Equal(1 + 2 + 2 + 1, writer.Length);
+        Assert.Equal(1 + 2 + 2 + 1 + 1, writer.Length);
 
         var client = (StatefulContainerComponentBlock)ComponentBlocks.Create(ComponentTestAssets.Data("furnace"), new BlockComponentDefinition[] { ComponentTestAssets.Processing() });
         client.ReadNetworkState(new NetReader(writer.Span.ToArray()));
@@ -165,6 +165,38 @@ public class ComponentBlockTests
         Assert.Equal(assets.Ingot.Id, processing.OutputStorage.GetSlot(0, 0).Item.Id);
         Assert.False(processing.IsRunning);
         Assert.False(block.IsActive);
+    }
+
+    [Fact]
+    public void ProcessingClient_RaisesCraftedWhenTheServerFinishesAnItem()
+    {
+        using var assets = new ComponentTestAssets(recipeTicks: 3);
+        var server = (StatefulContainerComponentBlock)ComponentBlocks.Create(ComponentTestAssets.Data("furnace"), new BlockComponentDefinition[] { ComponentTestAssets.Processing() });
+        server.TryGet<ProcessingComponent>(out var serverProcessing);
+        serverProcessing.InputStorage.SetSlot(0, 0, assets.Ore, 2);
+        Assert.True(serverProcessing.TryStartTask(out var task));
+
+        var client = (StatefulContainerComponentBlock)ComponentBlocks.Create(ComponentTestAssets.Data("furnace"), new BlockComponentDefinition[] { ComponentTestAssets.Processing() });
+        client.TryGet<ProcessingComponent>(out var clientProcessing);
+        int crafted = 0;
+        clientProcessing.OnCrafted += _ => crafted++;
+
+        Sync(server, client);
+        Assert.Equal(0, crafted);
+
+        for (int i = 0; i < 3; i++) task.Update();
+        Sync(server, client);
+        Sync(server, client);
+
+        Assert.Equal(1, crafted);
+        serverProcessing.StopTask();
+    }
+
+    private static void Sync(StatefulContainerComponentBlock server, StatefulContainerComponentBlock client)
+    {
+        var writer = new NetWriter(16);
+        server.WriteNetworkState(writer);
+        client.ReadNetworkState(new NetReader(writer.Span.ToArray()));
     }
 
     [Fact]
