@@ -182,7 +182,8 @@ public sealed class ItemSlotControl : Control, ISlotDropTarget
         }
 
         TooltipTitle = _slot.Item.Name;
-        string details = ItemTooltipText.Details(_slot.Item, ShowsStackSize, ShowsDescription, ShowsId).Trim();
+        bool showsId = ShowsId || PanelUI.Player?.GameModeRules.CreativeInventory == true;
+        string details = ItemTooltipText.Details(_slot.Item, ShowsStackSize, ShowsDescription, showsId).Trim();
         TooltipText = string.IsNullOrEmpty(_hint) ? details : (details.Length > 0 ? details + "\n" : "") + _hint;
         ItemTooltipPicture.Apply(this, _slot.Item, (Size.Y > 0f ? Size.Y : DefaultSize) * TooltipImageScale);
     }

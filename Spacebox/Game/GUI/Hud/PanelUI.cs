@@ -63,6 +63,8 @@ public static class PanelUI
 
     public static void ApplyHotbarLayout() => Panel?.ApplyHotbarLayout();
 
+    public static int ActiveSlots => Panel?.ActiveSlots ?? Spacebox.Game.Player.GameModes.HotbarLayout.DefaultSlotsPerRow;
+
     public static void SetFlashlight(LocalAstronaut astronaut) => Panel?.SetFlashlight(astronaut);
 
     public static void BlockHands() => Panel?.BlockHands();

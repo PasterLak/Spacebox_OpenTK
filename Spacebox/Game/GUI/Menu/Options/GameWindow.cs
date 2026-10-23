@@ -25,6 +25,9 @@ namespace Spacebox.Game.GUI.Menu
                 new SliderRow("Mouse Sensitivity", "How fast the camera turns when you move the mouse. 100% is the default speed.", 10, 300, () => Settings.Gameplay.MouseSensitivity, v => Apply(g => g.MouseSensitivity = v), SliderRow.Suffix("%")),
                 new CheckRow("Invert Mouse Y", "Moving the mouse up looks down, like in flight controls.", () => Settings.Gameplay.InvertMouseY, v => Apply(g => g.InvertMouseY = v)),
                 new CheckRow("Camera Sway", "The view sways slightly while you move. Turn it off if it makes you dizzy.", () => Settings.Gameplay.CameraSway, v => Settings.Gameplay.CameraSway = v),
+                new SectionRow("Movement"),
+                new CheckRow("Auto Sprint", "Moving forward always sprints, without holding the sprint key. Sprinting uses power while flying.", () => Settings.Gameplay.AutoSprint, v => Settings.Gameplay.AutoSprint = v),
+                new CheckRow("Auto Jump", "In gravity you jump onto one block high steps automatically when you walk into them.", () => Settings.Gameplay.AutoJump, v => Settings.Gameplay.AutoJump = v),
                 new SectionRow("Saving"),
                 new CheckRow("Autosave", "Saves your own worlds (single player and hosted games) automatically. Without it only the Save button in the pause menu saves.", () => Settings.Gameplay.Autosave, v => Settings.Gameplay.Autosave = v),
                 new SliderRow("Autosave Interval", "Minutes between automatic saves.", GameplaySettings.MinAutosaveMinutes, GameplaySettings.MaxAutosaveMinutes, () => Settings.Gameplay.AutosaveMinutes, v => Settings.Gameplay.AutosaveMinutes = v, SliderRow.Suffix(" min"))

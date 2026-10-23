@@ -31,7 +31,7 @@ Tools/agent/game.sh stop                  # quit and wait for the process to exi
 | `look` / `lookat x y z` / `turn yaw pitch` / `turnby dyaw dpitch` | crosshair raycast; turn the camera (yaw 0 = -Z, 90 = +X; pitch up positive) |
 | `goto x y z [speed]`, `nav`, `navstop` | fly along an A* path through free cells (kinematic, ignores physics; solid goal → nearest free cell, state `partial`) |
 | `block x y z`, `blocks [radius] [idFilter]`, `entities [radius]` | block at a point; non-air blocks around the player (counts by id + nearest list with world centers); asteroids/ships nearest first |
-| `inv`, `select <0-9>` | hotbar and inventory contents; select hotbar slot |
+| `inv`, `select <slot>` | hotbar and inventory contents; select hotbar slot |
 | `ui [window]`, `uiflat` | all text ImGui drew this frame per window (top window first), with screen rects |
 | `canvas [1]`, `winsize <w> <h>` | CanvasUI (retained UI) layers with the headless layout check (issues with control paths and rects; `1` lists every control), and window resizing to check other resolutions; start the UI showcase with `game.sh menu --ui-showcase` |
 | `click <text> [window] [index]`, `hover <text>`, `clickxy x y` | click/hover ImGui text (exact match first, then contains); needs a UI open (cursor not grabbed) |

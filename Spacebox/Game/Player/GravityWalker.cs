@@ -124,7 +124,7 @@ public sealed class GravityWalker
         if (_isGrounded || wish != Vector3.Zero)
             horizontal = MoveTowards(horizontal, wish * speed, acceleration * deltaTime);
 
-        if (_isGrounded && canMove && Input.IsActionDown("up"))
+        if (_isGrounded && canMove && (Input.IsActionDown("up") || ShouldAutoJump(wish)))
         {
             vertical = _up * MathF.Max(JumpSpeed, MathF.Sqrt(2f * gravity.Length * MinJumpHeight));
             _isGrounded = false;
@@ -177,12 +177,41 @@ public sealed class GravityWalker
         return block != null && !block.IsAir;
     }
 
+    private const float AutoJumpProbe = 0.15f;
+    private const float StepHeight = 1.05f;
+
+    private bool ShouldAutoJump(Vector3 wish)
+    {
+        if (!Settings.Gameplay.AutoJump || wish == Vector3.Zero || _entity == null) return false;
+
+        var local = _entity.DirectionToEntitySpace(wish);
+        int a = (_upAxis + 1) % 3;
+        int b = (_upAxis + 2) % 3;
+        int axis = MathF.Abs(local[a]) >= MathF.Abs(local[b]) ? a : b;
+        float direction = MathF.Sign(local[axis]);
+        if (direction == 0f) return false;
+
+        GetBox(_localPosition, out var min, out var max);
+        float ahead = MathF.Abs(EntityBoxCollider.Sweep(_entity, min, max, axis, direction * AutoJumpProbe));
+        bool blocked = ahead < AutoJumpProbe - 1e-4f;
+        bool clear = false;
+        if (blocked && MathF.Abs(EntityBoxCollider.Sweep(_entity, min, max, _upAxis, _upSign * StepHeight)) >= StepHeight - 1e-4f)
+        {
+            var raised = _localPosition;
+            raised[_upAxis] += _upSign * StepHeight;
+            GetBox(raised, out var raisedMin, out var raisedMax);
+            clear = MathF.Abs(EntityBoxCollider.Sweep(_entity, raisedMin, raisedMax, axis, direction * AutoJumpProbe)) > ahead + 0.05f;
+        }
+
+        return MovementAssists.ShouldAutoJump(true, _isGrounded, true, _stance.IsCrouching, blocked, clear);
+    }
+
     private float MoveSpeed(bool canMove)
     {
         IsSlowWalking = canMove && !_stance.IsCrouching && Input.IsAction("slow_walk");
         if (_stance.IsCrouching) return CrouchSpeed;
         if (IsSlowWalking) return SlowWalkSpeed;
-        return canMove && Input.IsAction("sprint") ? RunSpeed : WalkSpeed;
+        return canMove && MovementAssists.WantsSprint() ? RunSpeed : WalkSpeed;
     }
 
     private void UpdateStance(LocalAstronaut player, bool wantsCrouch, float deltaTime)

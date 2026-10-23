@@ -180,6 +180,8 @@ namespace Spacebox.Game
         [JsonPropertyName("mouse_sensitivity")] public int MouseSensitivity { get; set; } = 100;
         [JsonPropertyName("invert_mouse_y")] public bool InvertMouseY { get; set; } = false;
         [JsonPropertyName("camera_sway")] public bool CameraSway { get; set; } = true;
+        [JsonPropertyName("auto_sprint")] public bool AutoSprint { get; set; } = false;
+        [JsonPropertyName("auto_jump")] public bool AutoJump { get; set; } = false;
         [JsonPropertyName("autosave")] public bool Autosave { get; set; } = DefaultAutosave;
         [JsonPropertyName("autosave_minutes")] public int AutosaveMinutes { get; set; } = 5;
 

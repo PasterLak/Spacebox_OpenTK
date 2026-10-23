@@ -19,11 +19,12 @@ public sealed class InventoryModule : IAgentModule
             });
         });
 
-        router.Post("/inventory/select", "Select a hotbar slot: ?slot=0..9", request =>
+        router.Post("/inventory/select", "Select a hotbar slot: ?slot=0..(hotbar slots - 1)", request =>
         {
             AgentGame.RequirePlayer();
             int slot = AgentQuery.Int(request, "slot", -1);
-            if (slot < 0 || slot > 9) throw new AgentRequestException("slot must be 0..9");
+            int slots = PanelUI.ActiveSlots;
+            if (slot < 0 || slot >= slots) throw new AgentRequestException($"slot must be 0..{slots - 1}");
             PanelUI.SetSelectedSlot((short)slot);
             return AgentJson.Response(new { selectedSlot = PanelUI.SelectedSlotId, heldItem = AgentGame.DescribeItem(PanelUI.HeldItem, PanelUI.CurrentSlot()?.Count ?? 0) });
         });
