@@ -254,82 +254,85 @@ namespace Engine
 
         public void SetBool(string name, bool data)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform1(_uniformLocations[name], data ? 1 : 0);
+            GL.Uniform1(location, data ? 1 : 0);
         }
         public void SetInt(string name, int data)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform1(_uniformLocations[name], data);
+            GL.Uniform1(location, data);
         }
         public void SetFloat(string name, float data)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform1(_uniformLocations[name], data);
+            GL.Uniform1(location, data);
         }
         public void SetMatrix4(string name, Matrix4 data, bool transpose = true)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.UniformMatrix4(_uniformLocations[name], transpose, ref data);
+            GL.UniformMatrix4(location, transpose, ref data);
         }
         public void SetMatrix3(string name, Matrix3 data, bool transpose = true)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.UniformMatrix3(_uniformLocations[name], transpose, ref data);
+            GL.UniformMatrix3(location, transpose, ref data);
         }
         public void SetVector2(string name, Vector2 data)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform2(_uniformLocations[name], data);
+            GL.Uniform2(location, data);
         }
         public void SetVector3(string name, Vector3 data)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform3(_uniformLocations[name], data);
+            GL.Uniform3(location, data);
         }
         public void SetVector3Array(string name, Vector3[] values)
         {
             if (values == null || values.Length == 0) return;
             string key = name + "[0]";
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(key))
+            if (!TryGetUniformLocation(key, out int location))
                 return;
             Use();
-            var data = new float[values.Length * 3];
-            for (int i = 0; i < values.Length; i++)
+            GL.Uniform3(location, values.Length, ref values[0].X);
+        }
+
+        private bool TryGetUniformLocation(string name, out int location)
+        {
+            if (_isReloadingShader || Handle == 0)
             {
-                data[i * 3] = values[i].X;
-                data[i * 3 + 1] = values[i].Y;
-                data[i * 3 + 2] = values[i].Z;
+                location = -1;
+                return false;
             }
-            GL.Uniform3(_uniformLocations[key], values.Length, data);
+            return _uniformLocations.TryGetValue(name, out location);
         }
         public void SetVector4(string name, Vector4 data)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform4(_uniformLocations[name], data);
+            GL.Uniform4(location, data);
         }
         public void SetVector4(string name, Color4 data)
         {
-            if (_isReloadingShader || Handle == 0 || !_uniformLocations.ContainsKey(name))
+            if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform4(_uniformLocations[name], data);
+            GL.Uniform4(location, data);
         }
         public void Dispose()
         {

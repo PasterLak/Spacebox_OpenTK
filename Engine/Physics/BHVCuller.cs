@@ -27,24 +27,17 @@ namespace Engine
                 point.X <= Max.X && point.Y <= Max.Y && point.Z <= Max.Z;
         }
 
-        private static readonly Dictionary<Node3D, Bounds> cache = new();
         public static bool DebugGroups = true;
         public static Color4 DebugColor = new(1f, 0f, 1f, 1f);
 
         public static int VisibleObjects, CulledObjects;
 
-        static readonly Prof.Token T_SceneBVH = Prof.RegisterTimer("BVH.Build");
-
         public static void Render(Node3D root, Camera cam)
         {
             if (root == null || cam == null) return;
 
-            cache.Clear();
-            using(Prof.Time(T_SceneBVH))
-            Build(root, cam);
-
             VisibleObjects = CulledObjects = 0;
-            Draw(root, cam);
+            Draw(root, cam, false);
 
            // foreach (var n in visibleNames)
             //    Debug.Log(n);
@@ -52,35 +45,18 @@ namespace Engine
            
         }
 
-        /* ---------- Build -------------------------------------------------- */
-
-        private static void Build(Node3D node, Camera cam)
-        {
-            if (ReferenceEquals(node, cam)) return;
-
-            bool hasBox = TryGetNodeBounds(node, out var box);
-            if (!hasBox)
-            {
-                foreach (var ch in node.Children) Build(ch, cam);
-                return;
-            }
-            if (DebugGroups && VisualDebug.Enabled) VisualDebug.DrawBoundingBox(BoundingBox.CreateFromMinMax(box.Min, box.Max), DebugColor);
-            cache[node] = box;
-
-            
-
-            foreach (var ch in node.Children) Build(ch, cam);
-        }
-
         /* ---------- Draw --------------------------------------------------- */
 
-        private static void Draw(Node3D node, Camera cam)
+        private static void Draw(Node3D node, Camera cam, bool underCamera)
         {
-            bool hasCol = cache.TryGetValue(node, out var box);
+            underCamera |= ReferenceEquals(node, cam);
+            Bounds box = default;
+            bool hasCol = !underCamera && TryGetNodeBounds(node, out box);
             bool inside = true;
 
             if (hasCol)
             {
+                if (DebugGroups && VisualDebug.Enabled) VisualDebug.DrawBoundingBox(BoundingBox.CreateFromMinMax(box.Min, box.Max), DebugColor);
                 inside = box.Contains(cam.Position) || cam.Frustum.IsBoxInFrustum(box.Min, box.Max);
                 if (inside && node is IOcclusionCullable cullable) inside = PassesOcclusion(cullable, box, cam);
                 //if (DebugGroups) VisualDebug.DrawBoundingBox(box, DebugColor);
@@ -99,11 +75,13 @@ namespace Engine
                 CulledObjects++;
             }
 
-            foreach (var ch in node.Children)
+            var children = node.Children;
+            for (int i = 0; i < children.Count; i++)
             {
+                var ch = children[i];
                 if (ch.Enabled)
                 {
-                    Draw(ch, cam);
+                    Draw(ch, cam, underCamera);
                 }
             }
         }

@@ -47,10 +47,21 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
     private int _quadCount;
     private int _texture;
     private Transform2D _screen = Transform2D.Identity;
+    private Transform2D _transform = Transform2D.Identity;
+    private Transform2D _screenTransform = Transform2D.Identity;
     private Vector2 _screenSize;
     private bool _drawing;
 
-    public Transform2D Transform { get; set; } = Transform2D.Identity;
+    public Transform2D Transform
+    {
+        get => _transform;
+        set
+        {
+            _transform = value;
+            _screenTransform = _screen * value;
+        }
+    }
+
     public Color4 Modulate { get; set; } = Color4.White;
     public int DrawCalls { get; private set; }
     public int Quads { get; private set; }
@@ -122,7 +133,7 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
 
     public void PushClip(Rect2 rect)
     {
-        var screen = (_screen * Transform).TransformAxisAligned(rect);
+        var screen = _screenTransform.TransformAxisAligned(rect);
         if (_clips.Count > 0) screen = screen.Intersection(_clips.Peek());
         Flush();
         _clips.Push(screen);
@@ -160,7 +171,7 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
         float r = color.R * m.R, g = color.G * m.G, b = color.B * m.B, a = color.A * m.A;
         if (a <= 0f) return;
 
-        var t = _screen * Transform;
+        var t = _screenTransform;
         var p0 = t.Apply(rect.Position);
         var p1 = t.Apply(new Vector2(rect.End.X, rect.Y));
         var p2 = t.Apply(rect.End);
