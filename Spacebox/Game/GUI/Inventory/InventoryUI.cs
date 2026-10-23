@@ -4,7 +4,6 @@ using Engine;
 using Engine.Audio;
 
 using Spacebox.Game.Player;
-using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player.GameModes;
 using Engine.InputPro;
 
@@ -12,11 +11,20 @@ namespace Spacebox.Game.GUI
 {
     public static class InventoryUI
     {
-        private static float SlotSize = 64.0f;
-
         public static LocalAstronaut Player;
         public static Vector2 WindowPosition { get; private set; }
         public static Vector2 WindowSize { get; private set; }
+
+        public static void SetWindowRect(Vector2 position, Vector2 size)
+        {
+            WindowPosition = position;
+            WindowSize = size;
+        }
+
+        public static void Update()
+        {
+            HandleInput();
+        }
 
         public static AudioSource splitAudio;
 
@@ -33,7 +41,7 @@ namespace Spacebox.Game.GUI
             {
                 if (Player.IsAlive == false) return;
                 if (Chat.FocusInput) return; 
-                if (ImGui.GetIO().WantCaptureKeyboard) return;
+                if (ImGui.GetIO().WantCaptureKeyboard || Spacebox.Game.GUI.Canvas.GameCanvas.WantsKeyboard) return;
 
                 if (!UIManager.IsUIMode)
                 {
@@ -71,59 +79,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void OnGUI(Storage storage)
-        {
-            HandleInput();
-
-            if (!UIManager.IsOpen("inventory")) return;
-
-            if (storage == null) return;
-
-            var displaySize = ImGui.GetIO().DisplaySize;
-            var style = ImGui.GetStyle();
-
-            float titleBarHeight = ImGui.GetFontSize() + style.FramePadding.Y * 2;
-
-            SlotSize = InventoryUIHelper.SlotSize;
-
-            float windowWidth = storage.SizeX * SlotSize;
-            float windowHeight = storage.SizeY * SlotSize;
-
-            Vector2 windowPos = new Vector2(
-                (displaySize.X - windowWidth) / 2f,
-                (displaySize.Y - windowHeight) / 1.6f
-            );
-
-            var padding = SlotSize * 0.1f;
-            var paddingV = new Vector2(padding, padding);
-
-            WindowPosition = windowPos;
-            WindowSize = new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV;
-
-            ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(WindowSize);
-            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
-                                           ImGuiWindowFlags.NoCollapse |
-                                           ImGuiWindowFlags.NoDecoration |
-                                           ImGuiWindowFlags.NoScrollbar |
-                                           ImGuiWindowFlags.NoResize |
-                                           ImGuiWindowFlags.NoScrollWithMouse;
-
-            ImGui.Begin("Inventory", windowFlags);
-
-            GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
-
-            ImGui.SetCursorPos(paddingV);
-            ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), "Inventory");
-            InventoryUIHelper.SortStorageButtons(windowWidth, padding, storage);
-
-            ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
-            InventoryUIHelper.RenderStorage(storage, OnSlotClicked, storage.SizeX);
-
-            ImGui.End();
-        }
-
-        private static void OnSlotClicked(ItemSlot slot)
+        public static void OnSlotClicked(ItemSlot slot)
         {
             if (slot.HasItem)
             {

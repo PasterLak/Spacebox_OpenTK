@@ -11,7 +11,11 @@ namespace Spacebox.Game.GUI
 {
     public static class InventoryUIHelper
     {
-        public static event Action<ItemSlot, Item, int> ItemsDraggedOut;
+        public static event Action<ItemSlot, Item, int> ItemsDraggedOut
+        {
+            add => SlotTransfer.ItemsDraggedOut += value;
+            remove => SlotTransfer.ItemsDraggedOut -= value;
+        }
 
         public static float SlotSize = 64.0f;
         public static AtlasSprite SlotSprite => UIAtlas.Get("slot");
@@ -128,19 +132,8 @@ namespace Spacebox.Game.GUI
 
                     if (!ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow))
                     {
-
-                        var cam = Camera.Main;
-
-                        if (cam != null && Spacebox.Network.Containers.ContainerNetwork.CanDropFrom(slot))
-                        {
-
-                            var dropPosition = cam.Position + cam.Front * 0.5f;
-
-                            World.DropEffectManager.DropItemSlot(dropPosition, cam.Front, 6f, slot, 2, 4);
-
-                            slot.Clear();
-
-                        }
+                        if (Spacebox.Game.GUI.Canvas.GameCanvas.Current == null || !Spacebox.Game.GUI.Canvas.GameCanvas.Current.TryAcceptImGuiDrop(slot))
+                            SlotTransfer.DropInWorld(slot);
 
 
                         IsDragging = false;
@@ -163,15 +156,7 @@ namespace Spacebox.Game.GUI
 
                     if (startStorage != null && startSlot != null)
                     {
-                        if (startSlot != slot)
-                        {
-                            var draggedItem = startSlot.Item;
-                            int draggedCount = startSlot.Count;
-                            var source = startSlot;
-                            source.SwapWith(slot);
-                            int moved = Spacebox.Game.Player.PlayerStatistics.CountMovedFrom(draggedItem, draggedCount, source.Item, source.Count);
-                            if (moved > 0) ItemsDraggedOut?.Invoke(source, draggedItem, moved);
-                        }
+                        if (startSlot != slot) SlotTransfer.Move(startSlot, slot);
 
                         IsDragging = false;
                         startSlot = null;
@@ -181,6 +166,9 @@ namespace Spacebox.Game.GUI
 
                 ImGui.EndDragDropTarget();
             }
+
+            if (Spacebox.Game.GUI.Canvas.Items.SlotDrag.PendingImGuiDrop != null && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenBlockedByActiveItem))
+                SlotTransfer.Move(Spacebox.Game.GUI.Canvas.Items.SlotDrag.TakePendingImGuiDrop(), slot);
 
             ImDrawListPtr drawList = ImGui.GetWindowDrawList();
             Vector2 pos = ImGui.GetItemRectMin();

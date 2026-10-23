@@ -1,9 +1,7 @@
-using System.Numerics;
 using Engine;
 using Engine.Components;
 using Engine.Graphics;
 using Engine.Light;
-using ImGuiNET;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.Armor;
 using Vector3 = OpenTK.Mathematics.Vector3;
@@ -48,33 +46,29 @@ public sealed class PlayerPreview : IDisposable
 
     public static float ClampPitch(float pitch) => Math.Clamp(pitch, -MaxPitch, MaxPitch);
 
-    public bool Show(LocalAstronaut player, PlayerEquipment equipment, Item heldItem, Vector2 size)
+    public int TextureHandle => _target?.ColorTexture ?? 0;
+
+    public bool Prepare(LocalAstronaut player, PlayerEquipment equipment, Item heldItem, OpenTK.Mathematics.Vector2 size)
     {
         if (Application.IsHeadless || player == null || size.X < 8f || size.Y < 8f) return false;
 
         Ensure();
         Sync(player, equipment, heldItem);
         _target.Resize((int)size.X, (int)size.Y);
-
-        var start = ImGui.GetCursorScreenPos();
-        ImGui.Image(_target.ColorTexture, size, new Vector2(0f, 1f), new Vector2(1f, 0f));
-        ImGui.SetCursorScreenPos(start);
-        ImGui.InvisibleButton("##playerPreview", size);
-
-        if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left, 0f))
-        {
-            var delta = ImGui.GetIO().MouseDelta;
-            _yaw = NormalizeYaw(_yaw + delta.X * RotateSpeed);
-            _pitch = ClampPitch(_pitch + delta.Y * RotateSpeed);
-        }
-        if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
-        {
-            _yaw = StartYaw;
-            _pitch = 0f;
-        }
-
         _visible = true;
         return true;
+    }
+
+    public void Rotate(OpenTK.Mathematics.Vector2 delta)
+    {
+        _yaw = NormalizeYaw(_yaw + delta.X * RotateSpeed);
+        _pitch = ClampPitch(_pitch + delta.Y * RotateSpeed);
+    }
+
+    public void ResetView()
+    {
+        _yaw = StartYaw;
+        _pitch = 0f;
     }
 
     public void Render()

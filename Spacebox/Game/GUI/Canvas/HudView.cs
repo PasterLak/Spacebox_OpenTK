@@ -16,7 +16,7 @@ public sealed class HudView : SafeArea
     private readonly StatBarControl _health = new StatBarControl(GameCanvasThemes.Health);
     private readonly StatBarControl _oxygen = new StatBarControl(GameCanvasThemes.Oxygen);
     private readonly StatBarControl _power = new StatBarControl(GameCanvasThemes.Power);
-    private readonly List<HudSlotControl> _slots = new List<HudSlotControl>();
+    private readonly List<Items.ItemSlotControl> _slots = new List<Items.ItemSlotControl>();
     private readonly Hud.HitImageControl _hitImage = new Hud.HitImageControl();
     private readonly Hud.SelectedItemNameControl _itemName = new Hud.SelectedItemNameControl();
     private Storage _storage;
@@ -112,7 +112,7 @@ public sealed class HudView : SafeArea
         _slots.Clear();
         for (int column = 0; column < storage.SizeY; column++)
         {
-            var slot = new HudSlotControl { CustomMinimumSize = new Vector2(SlotSize, SlotSize) };
+            var slot = new Items.ItemSlotControl(SlotSize);
             slot.Bind(storage.GetSlot(0, column));
             slot.Clicked += PanelUI.OnSlotClicked;
             _slots.Add(slot);

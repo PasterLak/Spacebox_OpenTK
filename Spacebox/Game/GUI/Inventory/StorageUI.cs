@@ -1,23 +1,16 @@
-﻿using Engine.Graphics.Atlas;
-using Engine;
+﻿using Engine;
 using Engine.Audio;
-using ImGuiNET;
 using Spacebox.Game.Generation.Blocks;
-using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using System;
-using System.Numerics;
-using System.Text;
 
 namespace Spacebox.Game.GUI
 {
     public static class StorageUI
     {
-        private static float SlotSize = 64.0f;
-        private static AtlasSprite PencilSprite => UIAtlas.Get("pencil");
-        private static Storage? Storage;
-        private static StorageBlock? StorageBlock;
+        public static Storage? Storage { get; private set; }
+        public static StorageBlock? StorageBlock { get; private set; }
         private static LocalAstronaut? Astronaut;
         private static bool _wasVisible = false;
 
@@ -25,8 +18,6 @@ namespace Spacebox.Game.GUI
         private static AudioSource closeSound;
         private static AudioSource splitAudio;
 
-        private static bool editingName = false;
-        private static byte[] buffer = new byte[32];
 
         public static void Initialize()
         {
@@ -69,128 +60,27 @@ namespace Spacebox.Game.GUI
                 Astronaut.Panel.ConnectStorage(Astronaut.Inventory, true);
                 Astronaut = null;
             }
-            editingName = false;
-            buffer = new byte[32];
         }
 
-        public static void OnGUI()
+        public static void Update()
         {
             bool isVisible = UIManager.IsOpen("storage");
+            if (isVisible == _wasVisible) return;
 
-            if (isVisible != _wasVisible)
+            if (isVisible) openSound?.Play();
+            else
             {
-                if (isVisible)
-                {
-                    openSound?.Play();
-                }
-                else
-                {
-                    closeSound?.Play();
-                    CloseStorage();
-                }
-                _wasVisible = isVisible;
+                closeSound?.Play();
+                CloseStorage();
             }
-
-            if (!isVisible || Storage == null) return;
-
-            var io = ImGui.GetIO();
-            var displaySize = io.DisplaySize;
-            var style = ImGui.GetStyle();
-
-            SlotSize = InventoryUIHelper.SlotSize;
-
-            float windowWidth = Storage.SizeX * SlotSize;
-            float windowHeight = Storage.SizeY * SlotSize;
-
-            Vector2 windowPos = new Vector2(
-                (displaySize.X - windowWidth) / 2f,
-                (displaySize.Y - windowHeight) / 4f);
-
-            var padding = SlotSize * 0.1f;
-            var paddingV = new Vector2(padding, padding);
-
-            ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV);
-            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
-                                           ImGuiWindowFlags.NoCollapse |
-                                           ImGuiWindowFlags.NoDecoration |
-                                           ImGuiWindowFlags.NoScrollbar |
-                                           ImGuiWindowFlags.NoScrollWithMouse;
-
-            ImGui.Begin("Storage", windowFlags);
-
-            GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight + padding * 4) + paddingV + paddingV, displaySize.Y);
-
-            if (Storage.SizeX >= 2)
-            {
-                ImGui.SetCursorPos(paddingV);
-
-                if (!editingName)
-                {
-                    var stb = StorageBlock;
-                    ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), stb?.Name ?? Storage.Name);
-                    ImGui.SameLine();
-                    if (stb != null && PencilSprite.ImageButton("##edit", paddingV * 4))
-                    {
-                        StartNameEdit();
-                    }
-
-                    if (ImGui.IsItemHovered())
-                    {
-                        ImGui.BeginTooltip();
-                        ImGui.Text("Rename");
-                        ImGui.EndTooltip();
-                    }
-                }
-                else
-                {
-                    float buttonWidth = ImGui.CalcTextSize("Save").X + style.FramePadding.X * 2;
-                    ImGui.SetNextItemWidth(windowWidth - buttonWidth - windowWidth / 2f);
-                    bool enterPressed = ImGui.InputText("##storageName", buffer, (uint)buffer.Length, ImGuiInputTextFlags.EnterReturnsTrue);
-                    ImGui.SameLine();
-                    if (ImGui.SmallButton("Save") || enterPressed)
-                    {
-                        SaveName();
-                    }
-                }
-            }
-
-            if (Storage.SizeX >= 3)
-            {
-                ImGui.SameLine();
-                InventoryUIHelper.SortStorageButtons(windowWidth, padding, Storage);
-            }
-
-            ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 4));
-            InventoryUIHelper.RenderStorage(Storage, OnSlotClicked, Storage.SizeX);
-
-            ImGui.End();
+            _wasVisible = isVisible;
         }
 
-        private static void StartNameEdit()
+        public static void Rename(string name)
         {
             if (StorageBlock == null) return;
-            editingName = true;
-            Array.Clear(buffer, 0, buffer.Length);
-            var bytes = Encoding.UTF8.GetBytes(StorageBlock.Name);
-            Array.Copy(bytes, buffer, Math.Min(bytes.Length, buffer.Length - 1));
-            ImGui.SetKeyboardFocusHere();
-        }
-
-        private static void SaveName()
-        {
-            if (StorageBlock == null) return;
-
-            int len = Array.IndexOf(buffer, (byte)0);
-            if (len < 0) len = buffer.Length;
-
-            string newName = Encoding.UTF8.GetString(buffer, 0, len).Trim();
-            if (!string.IsNullOrWhiteSpace(newName))
-            {
-                Spacebox.Network.Containers.StorageNameNetwork.Rename(StorageBlock, newName);
-            }
-
-            editingName = false;
+            string newName = (name ?? "").Trim();
+            if (!string.IsNullOrWhiteSpace(newName)) Spacebox.Network.Containers.StorageNameNetwork.Rename(StorageBlock, newName);
         }
 
         private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)
@@ -204,7 +94,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        private static void OnSlotClicked(ItemSlot slot)
+        public static void OnSlotClicked(ItemSlot slot)
         {
             if (!slot.HasItem) return;
 

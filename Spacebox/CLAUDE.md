@@ -27,7 +27,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/Inventory/` | `Item` + `BlockItem`, `DrillItem`, `WeaponItem`, `ConsumableItem`, tool items; `Inventory`, `Storage`, `ItemSlot`, item models |
 | `Game/GUI/` | Static ImGui UIs; root: `UIManager`, `UIAtlas`, `Theme`, `GUIHelper`, `KeyNames` |
 | `Game/GUI/Hud/` | In-game HUD state: `PanelUI` hotbar, health/power/oxygen bars, `CenteredText`, `HitMarkerUI`, `RepairTargetUI`, `ItemControlsUI`, `GravityIndicatorUI`, `HudVisibility`; drawn by CanvasUI controls in `Game/GUI/Canvas/` (`GameCanvas` → `HudView`, overlays in `Canvas/Hud/` derive from `HudOverlayControl` : `ScreenOverlay`) |
-| `Game/GUI/Inventory/` | Inventory, equipment (`PlayerPreview`), storage, creative window |
+| `Game/GUI/Inventory/` | Inventory, equipment (`PlayerPreview`), storage and creative controllers (input, sounds, data); `SlotTransfer` (slot swaps, drops into the world, `ItemsDraggedOut`). Their windows are CanvasUI: `Game/GUI/Canvas/Windows/` (`GameWindow` base, `GameWindowsView` places windows in left/middle/right columns above the HUD) with slots from `Canvas/Items/` (`ItemSlotControl`, `StorageGridControl`, drag and drop through `SlotDrag` + `ISlotDropTarget`, bridged to the ImGui windows not migrated yet) |
 | `Game/GUI/Crafting/` | Crafting window, categories, crafting logic |
 | `Game/GUI/Machines/` | Block windows: analyzer, disassembler, DNA reconstructor, generators, oxygen generator, processing machines, radar, ship console |
 | `Game/GUI/Screens/` | Full screens and dialogs: pause, death, loading, connection, welcome, chat, statistics, player list, auth, update |

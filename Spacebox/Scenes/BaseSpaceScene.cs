@@ -351,10 +351,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         CraftingGUI.OnGUI();
 
 
-        InventoryUI.OnGUI(localPlayer.Inventory);
-        EquipmentUI.OnGUI(localPlayer);
-        StorageUI.OnGUI();
-        CreativeWindowUI.OnGUI();
+        InventoryUI.Update();
+        StorageUI.Update();
         Chat.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialUI.OnGUI();
         WelcomeUI.OnGUI();

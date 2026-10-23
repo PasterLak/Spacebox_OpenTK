@@ -371,6 +371,7 @@ Fixes
 - dashboard: average session, average time per player and top 10 played; players list with played time, sessions and average session (sortable), session time of online players; claim payments picked from item drop downs; backup settings; console keeps 5000 lines and stops following while you scroll up
 - GameSet editor: block, item, mob behaviour and tutorial task types show descriptions in their drop downs; more drop downs instead of text: block models, door directions, pipe sides, sign align/font/color, cable textures, frame pictures, armor model/texture, pictures, mob model/texture/behaviour, extends, recipe types, all sounds, tutorial stats/windows/toggles/machines/slots/game modes/icons
 - in-game UI on CanvasUI, phase 1 HUD: crosshair and use prompts, hit marker, damage flash, repair info, gravity icon, item hints and name, FPS counter (also in the menu), camera feed frame
+- in-game UI on CanvasUI, phase 2: inventory, storage (rename), creative inventory (search, categories), equipment with the 3D figure; drag and drop, right click split, hotbar usable while the inventory is open
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine
