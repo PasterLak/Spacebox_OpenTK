@@ -1,4 +1,4 @@
-using ImGuiNET;
+using Engine.CanvasUI;
 using System.Numerics;
 
 namespace Spacebox.Game.Tutorial.UI;
@@ -34,10 +34,9 @@ public static class TutorialToasts
         _toasts.Clear();
     }
 
-    public static void Draw(ImDrawListPtr drawList, Vector2 anchorTopRight, float width, float baseSize, float now)
+    public static void Draw(TutorialCanvas drawList, Vector2 anchorTopRight, Vector2 display, float width, float baseSize, float now)
     {
-        var font = ImGui.GetFont();
-        var display = ImGui.GetIO().DisplaySize;
+        var font = drawList.Font;
         float y = anchorTopRight.Y;
 
         for (int i = 0; i < _toasts.Count; i++)
@@ -57,7 +56,7 @@ public static class TutorialToasts
         }
     }
 
-    private static float DrawSmall(ImDrawListPtr drawList, ImFontPtr font, Toast toast, Vector2 topRight, float width, float baseSize, float alpha, float age)
+    private static float DrawSmall(TutorialCanvas drawList, CanvasFont font, Toast toast, Vector2 topRight, float width, float baseSize, float alpha, float age)
     {
         float pad = baseSize * 0.55f;
         float lineH = baseSize * 1.25f;
@@ -68,16 +67,16 @@ public static class TutorialToasts
         var min = new Vector2(topRight.X - width + slide, topRight.Y);
         var max = min + new Vector2(width, height);
 
-        drawList.AddRectFilled(min, max, TutorialDraw.WithAlpha(TutorialDraw.PanelBackground, alpha), baseSize * 0.35f);
-        drawList.AddRectFilled(min, new Vector2(min.X + baseSize * 0.25f, max.Y), TutorialDraw.WithAlpha(TutorialDraw.Green, alpha), baseSize * 0.35f, ImDrawFlags.RoundCornersLeft);
+        drawList.RectFilled(min, max, TutorialDraw.WithAlpha(TutorialDraw.PanelBackground, alpha), baseSize * 0.35f);
+        drawList.RectFilled(min, new Vector2(min.X + baseSize * 0.25f, max.Y), TutorialDraw.WithAlpha(TutorialDraw.Green, alpha));
 
         var cursor = min + new Vector2(pad * 1.4f, pad);
-        drawList.AddText(font, baseSize * 1.05f, cursor, TutorialDraw.WithAlpha(TutorialDraw.Green, alpha), toast.Title);
+        drawList.Text(baseSize * 1.05f, cursor, TutorialDraw.WithAlpha(TutorialDraw.Green, alpha), toast.Title);
         cursor.Y += lineH;
 
         if (!string.IsNullOrEmpty(toast.Subtitle))
         {
-            drawList.AddText(font, baseSize, cursor, TutorialDraw.WithAlpha(TutorialDraw.TextDim, alpha), TutorialDraw.Truncate(font, baseSize, toast.Subtitle, width - pad * 3f));
+            drawList.Text(baseSize, cursor, TutorialDraw.WithAlpha(TutorialDraw.TextDim, alpha), TutorialDraw.Truncate(font, baseSize, toast.Subtitle, width - pad * 3f));
             cursor.Y += lineH;
         }
 
@@ -85,7 +84,7 @@ public static class TutorialToasts
         return height;
     }
 
-    private static void DrawBig(ImDrawListPtr drawList, ImFontPtr font, Toast toast, Vector2 display, float baseSize, float alpha, float age)
+    private static void DrawBig(TutorialCanvas drawList, CanvasFont font, Toast toast, Vector2 display, float baseSize, float alpha, float age)
     {
         float titleSize = baseSize * 1.9f;
         float scale = 0.85f + 0.15f * TutorialDraw.EaseOut(age / 0.4f);
@@ -98,8 +97,7 @@ public static class TutorialToasts
         var min = new Vector2((display.X - width) * 0.5f, display.Y * 0.16f);
         var max = min + new Vector2(width, height);
 
-        drawList.AddRectFilled(min, max, TutorialDraw.WithAlpha(TutorialDraw.PanelBackground, alpha), baseSize * 0.6f);
-        drawList.AddRect(min, max, TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), baseSize * 0.6f, ImDrawFlags.None, MathF.Max(2f, baseSize * 0.15f));
+        drawList.Panel(min, max, TutorialDraw.WithAlpha(TutorialDraw.PanelBackground, alpha), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), baseSize * 0.6f, MathF.Max(2f, baseSize * 0.15f));
 
         float x = min.X + baseSize * 1.5f;
         float y = min.Y + baseSize * 1.3f;
@@ -109,16 +107,16 @@ public static class TutorialToasts
             x += iconSize + baseSize;
         }
 
-        drawList.AddText(font, titleSize * scale, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), toast.Title);
-        drawList.AddText(font, baseSize * 1.1f, new Vector2(x, y + titleSize * scale * 1.15f), TutorialDraw.WithAlpha(TutorialDraw.TextBright, alpha), toast.Subtitle ?? "");
+        drawList.Text(titleSize * scale, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), toast.Title);
+        drawList.Text(baseSize * 1.1f, new Vector2(x, y + titleSize * scale * 1.15f), TutorialDraw.WithAlpha(TutorialDraw.TextBright, alpha), toast.Subtitle ?? "");
 
         if (toast.Rewards.Count > 0)
             DrawRewards(drawList, font, toast.Rewards, new Vector2(x, y + iconSize + baseSize * 0.6f), baseSize * 1.8f, baseSize * 1.05f, alpha);
     }
 
-    private static void DrawRewards(ImDrawListPtr drawList, ImFontPtr font, IReadOnlyList<TutorialReward> rewards, Vector2 position, float iconSize, float textSize, float alpha)
+    private static void DrawRewards(TutorialCanvas drawList, CanvasFont font, IReadOnlyList<TutorialReward> rewards, Vector2 position, float iconSize, float textSize, float alpha)
     {
-        drawList.AddText(font, textSize, position + new Vector2(0, (iconSize - textSize) * 0.5f), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), "Reward:");
+        drawList.Text(textSize, position + new Vector2(0, (iconSize - textSize) * 0.5f), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), "Reward:");
         float x = position.X + TutorialDraw.Measure(font, textSize, "Reward:") + textSize * 0.6f;
 
         for (int i = 0; i < rewards.Count; i++)
@@ -126,7 +124,7 @@ public static class TutorialToasts
             TutorialDraw.Icon(drawList, new TutorialIcon(rewards[i].ItemId, null), new Vector2(x, position.Y), iconSize, alpha);
             x += iconSize + textSize * 0.2f;
             string count = "x" + rewards[i].Count;
-            drawList.AddText(font, textSize, new Vector2(x, position.Y + (iconSize - textSize) * 0.5f), TutorialDraw.WithAlpha(TutorialDraw.TextBright, alpha), count);
+            drawList.Text(textSize, new Vector2(x, position.Y + (iconSize - textSize) * 0.5f), TutorialDraw.WithAlpha(TutorialDraw.TextBright, alpha), count);
             x += TutorialDraw.Measure(font, textSize, count) + textSize * 0.8f;
         }
     }

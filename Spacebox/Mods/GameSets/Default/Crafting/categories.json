@@ -3,7 +3,14 @@
     {
       "Id": "building",
       "Name": "Building",
-      "Icon": "iron_block_heavy",
+      "Icon": "iron_block_medium",
+      "Row": 1,
+      "Group": "Blocks"
+    },
+    {
+      "Id": "lights",
+      "Name": "Lights",
+      "Icon": "light_white",
       "Row": 1,
       "Group": "Blocks"
     },
@@ -24,23 +31,72 @@
     {
       "Id": "logistics",
       "Name": "Logistics",
+      "Icon": "item_pipe",
+      "Row": 1,
+      "Group": "Blocks"
+    },
+    {
+      "Id": "storage",
+      "Name": "Storage",
       "Icon": "basic_aluminium_crate",
       "Row": 1,
       "Group": "Blocks"
     },
     {
+      "Id": "other",
+      "Name": "Devices",
+      "Icon": "oxygen_generator",
+      "Row": 1,
+      "Group": "Blocks"
+    },
+    {
+      "Id": "decor",
+      "Name": "Decor",
+      "Icon": "picture_retro_cactus",
+      "Row": 1,
+      "Group": "Blocks"
+    },
+    {
       "Id": "ships",
-      "Name": "Ships",
+      "Name": "Controls",
       "Icon": "ship_console",
       "Row": 1,
       "Group": "Ships"
     },
     {
-      "Id": "other",
-      "Name": "Other",
-      "Icon": "oxygen_generator",
+      "Id": "thrusters",
+      "Name": "Thrusters",
+      "Icon": "thruster_standard",
       "Row": 1,
-      "Group": "Blocks"
+      "Group": "Ships"
+    },
+    {
+      "Id": "cannons",
+      "Name": "Cannons",
+      "Icon": "cannon_light_assault",
+      "Row": 1,
+      "Group": "Ships"
+    },
+    {
+      "Id": "hull",
+      "Name": "Hull",
+      "Icon": "titanium_block_heavy",
+      "Row": 1,
+      "Group": "Ships"
+    },
+    {
+      "Id": "windows",
+      "Name": "Windows",
+      "Icon": "reinforced_window",
+      "Row": 1,
+      "Group": "Ships"
+    },
+    {
+      "Id": "doors",
+      "Name": "Doors",
+      "Icon": "iron_door",
+      "Row": 1,
+      "Group": "Ships"
     },
     {
       "Id": "drills",
@@ -64,15 +120,29 @@
       "Group": "Items"
     },
     {
-      "Id": "equipment",
-      "Name": "Equipment",
+      "Id": "explosives",
+      "Name": "Explosives",
+      "Icon": "cobalt_bomb",
+      "Row": 2,
+      "Group": "Items"
+    },
+    {
+      "Id": "armor",
+      "Name": "Armor",
       "Icon": "aluminium_helmet",
       "Row": 2,
       "Group": "Items"
     },
     {
+      "Id": "equipment",
+      "Name": "Equipment",
+      "Icon": "basic_generator",
+      "Row": 2,
+      "Group": "Items"
+    },
+    {
       "Id": "items",
-      "Name": "Items",
+      "Name": "Components",
       "Icon": "microchip",
       "Row": 2,
       "Group": "Items"
@@ -83,13 +153,6 @@
       "Icon": "med_kit",
       "Row": 2,
       "Group": "Items"
-    },
-    {
-      "Id": "decor",
-      "Name": "Decor",
-      "Icon": "picture_retro_cactus",
-      "Row": 1,
-      "Group": "Blocks"
     }
   ]
 }

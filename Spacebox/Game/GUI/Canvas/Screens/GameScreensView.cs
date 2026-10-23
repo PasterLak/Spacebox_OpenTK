@@ -15,6 +15,7 @@ public sealed class GameScreensView : ScreenOverlay
         Add(new TutorialPromptScreen());
         Add(new ControlsOverlayView());
         Add(new PauseScreen());
+        Add(new TutorialMenuScreen());
         Add(_death);
         Add(new DnaReconstructionView());
         Add(new FadeOverlayView());

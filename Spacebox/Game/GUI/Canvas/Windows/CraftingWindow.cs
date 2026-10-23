@@ -50,6 +50,12 @@ public sealed class CraftingWindow : GameWindow
             CraftingGUI.PlayClick();
             ShowCategories();
         };
+        back.MouseEntered += _ =>
+        {
+            if (!_itemsView.Visible) return;
+            CraftingGUI.PlayClick();
+            ShowCategories();
+        };
     }
 
     public override bool IsOpen => CraftingGUI.IsVisible && CraftingGUI.Categories != null;

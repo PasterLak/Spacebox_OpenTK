@@ -3,7 +3,7 @@
   "Name": "Steel Sign",
   "Description": "Plate for a short label, attach it to any block side",
   "Type": "sign",
-  "Category": "building",
+  "Category": "decor",
   "Textures": {
     "Active": {
       "All": "signSteelEdge",

@@ -6,7 +6,7 @@
   "ExplosionProtection": 15,
   "Name": "Titanium Chest Armor",
   "Description": "Light and very strong titanium armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "titanium_chest",
   "MaxStack": 1,
   "ModelDepth": 3.0,

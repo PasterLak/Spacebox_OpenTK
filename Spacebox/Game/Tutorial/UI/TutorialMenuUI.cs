@@ -1,8 +1,5 @@
 using Engine;
-using ImGuiNET;
 using Spacebox.Game.GUI;
-using Spacebox.Game.GUI.Menu;
-using System.Numerics;
 
 namespace Spacebox.Game.Tutorial.UI;
 
@@ -10,7 +7,6 @@ public static class TutorialMenuUI
 {
     public const string WindowId = "tutorialMenu";
 
-    private static readonly Vector4 TitleColor = new Vector4(1f, 0.77f, 0.16f, 1f);
     private static readonly List<(string Label, Action Click)> _buttons = new List<(string, Action)>();
     private static bool _confirmRestart;
     private static bool _confirmStop;
@@ -24,47 +20,20 @@ public static class TutorialMenuUI
         UIManager.Open(WindowId);
     }
 
-    public static void Render()
+    public static IReadOnlyList<(string Label, Action Click)> Buttons => _buttons;
+
+    public static string Description => DescribeState(TutorialService.Runner);
+
+    public static void Refresh()
     {
-        var runner = TutorialService.Runner;
-        var display = ImGui.GetIO().DisplaySize;
-        BuildButtons(runner);
+        BuildButtons(TutorialService.Runner);
+    }
 
-        float windowWidth = display.X * 0.2f;
-        float buttonHeight = display.Y * 0.045f;
-        float spacing = buttonHeight * 0.35f;
-        float textHeight = ImGui.GetTextLineHeightWithSpacing();
-        float headerHeight = textHeight * 5.5f;
-        float windowHeight = headerHeight + _buttons.Count * (buttonHeight + spacing) + spacing * 2f;
-        var windowPos = GameMenu.CenterNextWindow(windowWidth, windowHeight);
-
-        ImGui.SetNextWindowPos(windowPos);
-        ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
-        ImGui.Begin("TutorialMenu", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-        GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), display.Y, 0.005f);
-
-        float padding = windowWidth * 0.06f;
-        ImGui.SetCursorPos(new Vector2(padding, spacing));
-        ImGui.TextColored(TitleColor, "TUTORIAL");
-        ImGui.SetCursorPosX(padding);
-        ImGui.PushTextWrapPos(windowWidth - padding);
-        ImGui.TextWrapped(DescribeState(runner));
-        ImGui.PopTextWrapPos();
-
-        float buttonWidth = windowWidth * 0.9f;
-        float y = headerHeight;
-        foreach (var (label, click) in _buttons)
-        {
-            ImGui.SetCursorPos(new Vector2((windowWidth - buttonWidth) * 0.5f, y));
-            GameMenu.CenterButtonWithBackground(label, buttonWidth, buttonHeight, () =>
-            {
-                TutorialUI.PlayClick();
-                click();
-            });
-            y += buttonHeight + spacing;
-        }
-
-        ImGui.End();
+    public static void Press(int index)
+    {
+        if (index < 0 || index >= _buttons.Count) return;
+        TutorialUI.PlayClick();
+        _buttons[index].Click();
     }
 
     private static void BuildButtons(TutorialRunner runner)

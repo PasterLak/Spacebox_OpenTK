@@ -6,7 +6,7 @@
   "ExplosionProtection": 10,
   "Name": "Titanium Legs Armor",
   "Description": "Light and very strong titanium armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "titanium_legs",
   "MaxStack": 1,
   "ModelDepth": 3.0,

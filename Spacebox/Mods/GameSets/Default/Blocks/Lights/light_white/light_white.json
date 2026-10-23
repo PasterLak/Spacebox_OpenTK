@@ -2,7 +2,7 @@
   "ID": "light_white",
   "Name": "Ivory Wall Torch",
   "Description": "Wall light with a white glow",
-  "Category": "building",
+  "Category": "lights",
   "Model": "torch",
   "LightColor": {
     "r": 255,

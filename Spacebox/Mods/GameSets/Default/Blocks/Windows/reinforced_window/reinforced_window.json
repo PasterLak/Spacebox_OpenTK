@@ -2,7 +2,7 @@
   "ID": "reinforced_window",
   "Name": "Reinforced Window",
   "Description": "A tougher window",
-  "Category": "building",
+  "Category": "windows",
   "Mass": 2,
   "Durability": 10,
   "IsTransparent": true,

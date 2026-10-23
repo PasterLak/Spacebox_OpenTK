@@ -6,7 +6,7 @@
   "ExplosionProtection": 9,
   "Name": "Iron Chest Armor",
   "Description": "Sturdy iron armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "iron_chest",
   "MaxStack": 1,
   "ModelDepth": 3.0,

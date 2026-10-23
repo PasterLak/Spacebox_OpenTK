@@ -6,7 +6,7 @@
   "ExplosionProtection": 3,
   "Name": "Iron Boots",
   "Description": "Sturdy iron armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "iron_boots",
   "MaxStack": 1,
   "ModelDepth": 3.0,

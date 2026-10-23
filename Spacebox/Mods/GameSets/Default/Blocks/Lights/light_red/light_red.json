@@ -2,7 +2,7 @@
   "ID": "light_red",
   "Name": "Crimson Wall Torch",
   "Description": "Wall light with a red glow",
-  "Category": "building",
+  "Category": "lights",
   "Model": "torch",
   "LightColor": {
     "r": 255,

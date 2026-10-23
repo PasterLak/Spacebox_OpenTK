@@ -3,7 +3,7 @@
   "Name": "Aluminium Door",
   "Description": "Sliding door, opens with a click",
   "Type": "door",
-  "Category": "building",
+  "Category": "doors",
   "PowerToDrill": 1,
   "Mass": 2,
   "Durability": 6,

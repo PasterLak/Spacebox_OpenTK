@@ -3,7 +3,7 @@
   "Name": "Iron Door",
   "Description": "Sturdy sliding door",
   "Type": "door",
-  "Category": "building",
+  "Category": "doors",
   "PowerToDrill": 1,
   "Mass": 3,
   "Durability": 12,

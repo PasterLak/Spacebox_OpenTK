@@ -257,7 +257,7 @@
         "ID": "aluminium_block_heavy",
         "Name": "Aluminium Heavy Block",
         "Description": "Thick hull block",
-        "Category": "building",
+        "Category": "hull",
         "PowerToDrill": 3,
         "Mass": 6,
         "Durability": 30,
@@ -314,7 +314,7 @@
         "ID": "iron_block_heavy",
         "Name": "Iron Heavy Block",
         "Description": "Thick iron armor block",
-        "Category": "building",
+        "Category": "hull",
         "PowerToDrill": 4,
         "Mass": 8,
         "Durability": 80,
@@ -371,7 +371,7 @@
         "ID": "titanium_block_heavy",
         "Name": "Titanium Heavy Block",
         "Description": "Thick titanium armor block, the toughest to break",
-        "Category": "building",
+        "Category": "hull",
         "PowerToDrill": 5,
         "Mass": 10,
         "Durability": 120,
@@ -391,7 +391,7 @@
         "ID": "window",
         "Name": "Window",
         "Description": "Lets light through",
-        "Category": "building",
+        "Category": "windows",
         "Mass": 1,
         "Durability": 1,
         "IsTransparent": true,
@@ -418,7 +418,7 @@
         "ID": "reinforced_window",
         "Name": "Reinforced Window",
         "Description": "A tougher window",
-        "Category": "building",
+        "Category": "windows",
         "Mass": 2,
         "Durability": 10,
         "IsTransparent": true,
@@ -445,7 +445,7 @@
         "ID": "big_window",
         "Name": "Big Window",
         "Description": "A large window",
-        "Category": "building",
+        "Category": "windows",
         "Mass": 4,
         "Durability": 4,
         "IsTransparent": true,
@@ -509,7 +509,7 @@
         "Name": "Aluminium Door",
         "Description": "Sliding door, opens with a click",
         "Type": "door",
-        "Category": "building",
+        "Category": "doors",
         "PowerToDrill": 1,
         "Mass": 2,
         "Durability": 6,
@@ -550,7 +550,7 @@
         "Name": "Iron Door",
         "Description": "Sturdy sliding door",
         "Type": "door",
-        "Category": "building",
+        "Category": "doors",
         "PowerToDrill": 1,
         "Mass": 3,
         "Durability": 12,
@@ -591,7 +591,7 @@
         "Name": "Titanium Door",
         "Description": "Fast and very strong sliding door",
         "Type": "door",
-        "Category": "building",
+        "Category": "doors",
         "PowerToDrill": 2,
         "Mass": 3,
         "Durability": 20,
@@ -631,7 +631,7 @@
         "ID": "light_white",
         "Name": "Ivory Wall Torch",
         "Description": "Wall light with a white glow",
-        "Category": "building",
+        "Category": "lights",
         "Model": "torch",
         "LightColor": {
           "r": 255,
@@ -657,7 +657,7 @@
         "ID": "light_red",
         "Name": "Crimson Wall Torch",
         "Description": "Wall light with a red glow",
-        "Category": "building",
+        "Category": "lights",
         "Model": "torch",
         "LightColor": {
           "r": 255,
@@ -683,7 +683,7 @@
         "ID": "light_orange",
         "Name": "Ember Wall Torch",
         "Description": "Wall light with an orange glow",
-        "Category": "building",
+        "Category": "lights",
         "Model": "torch",
         "LightColor": {
           "r": 255,
@@ -709,7 +709,7 @@
         "ID": "light_yellow",
         "Name": "Amber Wall Torch",
         "Description": "Wall light with an amber glow",
-        "Category": "building",
+        "Category": "lights",
         "Model": "torch",
         "LightColor": {
           "r": 255,
@@ -735,7 +735,7 @@
         "ID": "light_green",
         "Name": "Emerald Wall Torch",
         "Description": "Wall light with a green glow",
-        "Category": "building",
+        "Category": "lights",
         "Model": "torch",
         "LightColor": {
           "r": 5,
@@ -761,7 +761,7 @@
         "ID": "light_cyan",
         "Name": "Azure Wall Torch",
         "Description": "Wall light with a cyan glow",
-        "Category": "building",
+        "Category": "lights",
         "Model": "torch",
         "LightColor": {
           "r": 0,
@@ -787,7 +787,7 @@
         "ID": "light_blue",
         "Name": "Cobalt Wall Torch",
         "Description": "Wall light with a blue glow",
-        "Category": "building",
+        "Category": "lights",
         "Model": "torch",
         "LightColor": {
           "r": 45,
@@ -813,7 +813,7 @@
         "ID": "light_pink",
         "Name": "Violet Wall Torch",
         "Description": "Wall light with a violet glow",
-        "Category": "building",
+        "Category": "lights",
         "Model": "torch",
         "LightColor": {
           "r": 178,
@@ -1264,7 +1264,7 @@
         "Name": "Basic Aluminium Crate",
         "Description": "Stores items",
         "Type": "storage",
-        "Category": "logistics",
+        "Category": "storage",
         "PowerToDrill": 1,
         "Mass": 4,
         "Durability": 10,
@@ -1288,7 +1288,7 @@
         "Name": "Basic Iron Crate",
         "Description": "Stores items, tougher than aluminium",
         "Type": "storage",
-        "Category": "logistics",
+        "Category": "storage",
         "PowerToDrill": 2,
         "Mass": 8,
         "Durability": 20,
@@ -1312,7 +1312,7 @@
         "Name": "Basic Titanium Crate",
         "Description": "Stores items, very tough",
         "Type": "storage",
-        "Category": "logistics",
+        "Category": "storage",
         "PowerToDrill": 3,
         "Mass": 6,
         "Durability": 30,
@@ -1336,7 +1336,7 @@
         "Name": "Armored Safe",
         "Description": "Small storage with very strong walls",
         "Type": "storage",
-        "Category": "logistics",
+        "Category": "storage",
         "PowerToDrill": 5,
         "Mass": 50,
         "Durability": 200,
@@ -1696,7 +1696,7 @@
           "DropBlocks": false,
           "DestroyStorageItems": false
         },
-        "Category": "weapons",
+        "Category": "explosives",
         "Mass": 8,
         "Durability": 10,
         "Textures": {
@@ -1730,7 +1730,7 @@
           "DropBlocks": false,
           "DestroyStorageItems": false
         },
-        "Category": "weapons",
+        "Category": "explosives",
         "Mass": 12,
         "Durability": 10,
         "Textures": {
@@ -1758,7 +1758,7 @@
           "Power": 8,
           "NozzleLength": 1
         },
-        "Category": "ships",
+        "Category": "thrusters",
         "PowerToDrill": 2,
         "Mass": 5,
         "Durability": 10,
@@ -1802,7 +1802,7 @@
           "y": 2,
           "z": 1
         },
-        "Category": "ships",
+        "Category": "thrusters",
         "PowerToDrill": 2,
         "Mass": 10,
         "Durability": 20,
@@ -1846,7 +1846,7 @@
           "y": 1,
           "z": 2
         },
-        "Category": "ships",
+        "Category": "thrusters",
         "PowerToDrill": 2,
         "Mass": 20,
         "Durability": 40,
@@ -1891,7 +1891,7 @@
           "y": 2,
           "z": 2
         },
-        "Category": "ships",
+        "Category": "thrusters",
         "PowerToDrill": 2,
         "Mass": 40,
         "Durability": 80,
@@ -2038,7 +2038,7 @@
           "TurnSpeed": 180,
           "Power": 15
         },
-        "Category": "ships",
+        "Category": "cannons",
         "PowerToDrill": 2,
         "Mass": 3,
         "Durability": 20,
@@ -2087,7 +2087,7 @@
           "y": 2,
           "z": 1
         },
-        "Category": "ships",
+        "Category": "cannons",
         "PowerToDrill": 2,
         "Mass": 10,
         "Durability": 40,
@@ -2136,7 +2136,7 @@
           "y": 2,
           "z": 1
         },
-        "Category": "ships",
+        "Category": "cannons",
         "PowerToDrill": 2,
         "Mass": 10,
         "Durability": 40,
@@ -2185,7 +2185,7 @@
           "y": 3,
           "z": 1
         },
-        "Category": "ships",
+        "Category": "cannons",
         "PowerToDrill": 2,
         "Mass": 25,
         "Durability": 60,
@@ -2234,7 +2234,7 @@
           "y": 4,
           "z": 2
         },
-        "Category": "ships",
+        "Category": "cannons",
         "PowerToDrill": 2,
         "Mass": 50,
         "Durability": 120,
@@ -2268,7 +2268,7 @@
         "Name": "Steel Sign",
         "Description": "Plate for a short label, attach it to any block side",
         "Type": "sign",
-        "Category": "building",
+        "Category": "decor",
         "Textures": {
           "Active": {
             "All": "signSteelEdge",
@@ -2294,7 +2294,7 @@
         "Name": "Wide Steel Sign",
         "Description": "Two blocks wide plate for longer labels",
         "Type": "sign",
-        "Category": "building",
+        "Category": "decor",
         "CellPixels": 32,
         "Textures": {
           "Active": {
@@ -2321,7 +2321,7 @@
         "Name": "Info Panel",
         "Description": "Dark wide panel with glowing text, good for spawn and base information",
         "Type": "sign",
-        "Category": "building",
+        "Category": "decor",
         "CellPixels": 32,
         "Textures": {
           "Active": {
@@ -3348,7 +3348,7 @@
         "ExplosionProtection": 1,
         "Name": "Aluminium Helmet",
         "Description": "Light armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "aluminium_helmet",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3366,7 +3366,7 @@
         "ExplosionProtection": 3,
         "Name": "Aluminium Chest Armor",
         "Description": "Light armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "aluminium_chest",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3384,7 +3384,7 @@
         "ExplosionProtection": 2,
         "Name": "Aluminium Shoulders Armor",
         "Description": "Light armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "aluminium_shoulders",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3402,7 +3402,7 @@
         "ExplosionProtection": 1,
         "Name": "Aluminium Arms Armor",
         "Description": "Light armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "aluminium_arms",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3420,7 +3420,7 @@
         "ExplosionProtection": 2,
         "Name": "Aluminium Legs Armor",
         "Description": "Light armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "aluminium_legs",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3438,7 +3438,7 @@
         "ExplosionProtection": 1,
         "Name": "Aluminium Boots",
         "Description": "Light armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "aluminium_boots",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3456,7 +3456,7 @@
         "ExplosionProtection": 3,
         "Name": "Iron Helmet",
         "Description": "Sturdy iron armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "iron_helmet",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3474,7 +3474,7 @@
         "ExplosionProtection": 9,
         "Name": "Iron Chest Armor",
         "Description": "Sturdy iron armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "iron_chest",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3492,7 +3492,7 @@
         "ExplosionProtection": 6,
         "Name": "Iron Shoulders Armor",
         "Description": "Sturdy iron armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "iron_shoulders",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3510,7 +3510,7 @@
         "ExplosionProtection": 3,
         "Name": "Iron Arms Armor",
         "Description": "Sturdy iron armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "iron_arms",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3528,7 +3528,7 @@
         "ExplosionProtection": 6,
         "Name": "Iron Legs Armor",
         "Description": "Sturdy iron armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "iron_legs",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3546,7 +3546,7 @@
         "ExplosionProtection": 3,
         "Name": "Iron Boots",
         "Description": "Sturdy iron armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "iron_boots",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3564,7 +3564,7 @@
         "ExplosionProtection": 5,
         "Name": "Titanium Helmet",
         "Description": "Light and very strong titanium armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "titanium_helmet",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3582,7 +3582,7 @@
         "ExplosionProtection": 15,
         "Name": "Titanium Chest Armor",
         "Description": "Light and very strong titanium armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "titanium_chest",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3600,7 +3600,7 @@
         "ExplosionProtection": 10,
         "Name": "Titanium Shoulders Armor",
         "Description": "Light and very strong titanium armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "titanium_shoulders",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3618,7 +3618,7 @@
         "ExplosionProtection": 5,
         "Name": "Titanium Arms Armor",
         "Description": "Light and very strong titanium armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "titanium_arms",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3636,7 +3636,7 @@
         "ExplosionProtection": 10,
         "Name": "Titanium Legs Armor",
         "Description": "Light and very strong titanium armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "titanium_legs",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -3654,7 +3654,7 @@
         "ExplosionProtection": 5,
         "Name": "Titanium Boots",
         "Description": "Light and very strong titanium armor",
-        "Category": "equipment",
+        "Category": "armor",
         "Sprite": "titanium_boots",
         "MaxStack": 1,
         "ModelDepth": 3.0,
@@ -4338,7 +4338,17 @@
       "Data": {
         "Id": "building",
         "Name": "Building",
-        "Icon": "iron_block_heavy",
+        "Icon": "iron_block_medium",
+        "Row": 1,
+        "Group": "Blocks"
+      }
+    },
+    {
+      "Key": "lights",
+      "Data": {
+        "Id": "lights",
+        "Name": "Lights",
+        "Icon": "light_white",
         "Row": 1,
         "Group": "Blocks"
       }
@@ -4368,7 +4378,37 @@
       "Data": {
         "Id": "logistics",
         "Name": "Logistics",
+        "Icon": "item_pipe",
+        "Row": 1,
+        "Group": "Blocks"
+      }
+    },
+    {
+      "Key": "storage",
+      "Data": {
+        "Id": "storage",
+        "Name": "Storage",
         "Icon": "basic_aluminium_crate",
+        "Row": 1,
+        "Group": "Blocks"
+      }
+    },
+    {
+      "Key": "other",
+      "Data": {
+        "Id": "other",
+        "Name": "Devices",
+        "Icon": "oxygen_generator",
+        "Row": 1,
+        "Group": "Blocks"
+      }
+    },
+    {
+      "Key": "decor",
+      "Data": {
+        "Id": "decor",
+        "Name": "Decor",
+        "Icon": "picture_retro_cactus",
         "Row": 1,
         "Group": "Blocks"
       }
@@ -4377,20 +4417,60 @@
       "Key": "ships",
       "Data": {
         "Id": "ships",
-        "Name": "Ships",
+        "Name": "Controls",
         "Icon": "ship_console",
         "Row": 1,
         "Group": "Ships"
       }
     },
     {
-      "Key": "other",
+      "Key": "thrusters",
       "Data": {
-        "Id": "other",
-        "Name": "Other",
-        "Icon": "oxygen_generator",
+        "Id": "thrusters",
+        "Name": "Thrusters",
+        "Icon": "thruster_standard",
         "Row": 1,
-        "Group": "Blocks"
+        "Group": "Ships"
+      }
+    },
+    {
+      "Key": "cannons",
+      "Data": {
+        "Id": "cannons",
+        "Name": "Cannons",
+        "Icon": "cannon_light_assault",
+        "Row": 1,
+        "Group": "Ships"
+      }
+    },
+    {
+      "Key": "hull",
+      "Data": {
+        "Id": "hull",
+        "Name": "Hull",
+        "Icon": "titanium_block_heavy",
+        "Row": 1,
+        "Group": "Ships"
+      }
+    },
+    {
+      "Key": "windows",
+      "Data": {
+        "Id": "windows",
+        "Name": "Windows",
+        "Icon": "reinforced_window",
+        "Row": 1,
+        "Group": "Ships"
+      }
+    },
+    {
+      "Key": "doors",
+      "Data": {
+        "Id": "doors",
+        "Name": "Doors",
+        "Icon": "iron_door",
+        "Row": 1,
+        "Group": "Ships"
       }
     },
     {
@@ -4424,11 +4504,31 @@
       }
     },
     {
+      "Key": "explosives",
+      "Data": {
+        "Id": "explosives",
+        "Name": "Explosives",
+        "Icon": "cobalt_bomb",
+        "Row": 2,
+        "Group": "Items"
+      }
+    },
+    {
+      "Key": "armor",
+      "Data": {
+        "Id": "armor",
+        "Name": "Armor",
+        "Icon": "aluminium_helmet",
+        "Row": 2,
+        "Group": "Items"
+      }
+    },
+    {
       "Key": "equipment",
       "Data": {
         "Id": "equipment",
         "Name": "Equipment",
-        "Icon": "aluminium_helmet",
+        "Icon": "basic_generator",
         "Row": 2,
         "Group": "Items"
       }
@@ -4437,7 +4537,7 @@
       "Key": "items",
       "Data": {
         "Id": "items",
-        "Name": "Items",
+        "Name": "Components",
         "Icon": "microchip",
         "Row": 2,
         "Group": "Items"
@@ -4451,16 +4551,6 @@
         "Icon": "med_kit",
         "Row": 2,
         "Group": "Items"
-      }
-    },
-    {
-      "Key": "decor",
-      "Data": {
-        "Id": "decor",
-        "Name": "Decor",
-        "Icon": "picture_retro_cactus",
-        "Row": 1,
-        "Group": "Blocks"
       }
     }
   ],

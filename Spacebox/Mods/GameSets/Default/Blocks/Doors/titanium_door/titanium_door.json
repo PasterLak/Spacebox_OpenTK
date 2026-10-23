@@ -3,7 +3,7 @@
   "Name": "Titanium Door",
   "Description": "Fast and very strong sliding door",
   "Type": "door",
-  "Category": "building",
+  "Category": "doors",
   "PowerToDrill": 2,
   "Mass": 3,
   "Durability": 20,

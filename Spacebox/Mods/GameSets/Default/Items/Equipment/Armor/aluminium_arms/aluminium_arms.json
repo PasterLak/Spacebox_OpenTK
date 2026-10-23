@@ -6,7 +6,7 @@
   "ExplosionProtection": 1,
   "Name": "Aluminium Arms Armor",
   "Description": "Light armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "aluminium_arms",
   "MaxStack": 1,
   "ModelDepth": 3.0,

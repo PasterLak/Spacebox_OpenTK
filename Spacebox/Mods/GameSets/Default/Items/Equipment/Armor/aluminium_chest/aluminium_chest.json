@@ -6,7 +6,7 @@
   "ExplosionProtection": 3,
   "Name": "Aluminium Chest Armor",
   "Description": "Light armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "aluminium_chest",
   "MaxStack": 1,
   "ModelDepth": 3.0,

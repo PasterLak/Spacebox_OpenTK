@@ -2,7 +2,7 @@
   "ID": "light_orange",
   "Name": "Ember Wall Torch",
   "Description": "Wall light with an orange glow",
-  "Category": "building",
+  "Category": "lights",
   "Model": "torch",
   "LightColor": {
     "r": 255,

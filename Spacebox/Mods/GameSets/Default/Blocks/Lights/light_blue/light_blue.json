@@ -2,7 +2,7 @@
   "ID": "light_blue",
   "Name": "Cobalt Wall Torch",
   "Description": "Wall light with a blue glow",
-  "Category": "building",
+  "Category": "lights",
   "Model": "torch",
   "LightColor": {
     "r": 45,

@@ -6,7 +6,7 @@
   "ExplosionProtection": 5,
   "Name": "Titanium Helmet",
   "Description": "Light and very strong titanium armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "titanium_helmet",
   "MaxStack": 1,
   "ModelDepth": 3.0,

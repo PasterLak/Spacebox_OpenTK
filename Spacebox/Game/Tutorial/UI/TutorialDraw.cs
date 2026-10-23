@@ -1,4 +1,4 @@
-using ImGuiNET;
+using Engine.CanvasUI;
 using Spacebox.Game.GUI;
 using System.Numerics;
 
@@ -42,12 +42,12 @@ public static class TutorialDraw
         return result;
     }
 
-    public static float Measure(ImFontPtr font, float size, string text)
+    public static float Measure(CanvasFont font, float size, string text)
     {
-        return string.IsNullOrEmpty(text) ? 0f : font.CalcTextSizeA(size, float.MaxValue, 0f, text).X;
+        return string.IsNullOrEmpty(text) || font == null ? 0f : font.MeasureWidth(text, TutorialCanvas.SnapSize(size));
     }
 
-    public static void Wrap(ImFontPtr font, float size, string text, float width, List<string> lines)
+    public static void Wrap(CanvasFont font, float size, string text, float width, List<string> lines)
     {
         lines.Clear();
         if (string.IsNullOrEmpty(text)) return;
@@ -74,7 +74,7 @@ public static class TutorialDraw
         }
     }
 
-    public static string Truncate(ImFontPtr font, float size, string text, float width)
+    public static string Truncate(CanvasFont font, float size, string text, float width)
     {
         if (Measure(font, size, text) <= width) return text;
 
@@ -86,40 +86,35 @@ public static class TutorialDraw
         return "...";
     }
 
-    public static void Diamond(ImDrawListPtr drawList, Vector2 center, float radius, uint color)
+    public static void Diamond(TutorialCanvas canvas, Vector2 center, float radius, uint color)
     {
-        drawList.AddQuadFilled(
-            center + new Vector2(0, -radius),
-            center + new Vector2(radius, 0),
-            center + new Vector2(0, radius),
-            center + new Vector2(-radius, 0),
-            color);
+        canvas.Diamond(center, radius, color);
     }
 
-    public static void CheckBox(ImDrawListPtr drawList, Vector2 min, float size, bool done, bool optional, float alpha)
+    public static void CheckBox(TutorialCanvas drawList, Vector2 min, float size, bool done, bool optional, float alpha)
     {
         var max = min + new Vector2(size);
         if (done)
         {
-            drawList.AddRectFilled(min, max, WithAlpha(Green, alpha), size * 0.15f);
+            drawList.RectFilled(min, max, WithAlpha(Green, alpha), size * 0.15f);
             float thickness = MathF.Max(1.5f, size * 0.14f);
             uint mark = WithAlpha(Rgba(20, 50, 20, 255), alpha);
-            drawList.AddLine(min + new Vector2(size * 0.2f, size * 0.52f), min + new Vector2(size * 0.42f, size * 0.75f), mark, thickness);
-            drawList.AddLine(min + new Vector2(size * 0.42f, size * 0.75f), min + new Vector2(size * 0.8f, size * 0.25f), mark, thickness);
+            drawList.Line(min + new Vector2(size * 0.2f, size * 0.52f), min + new Vector2(size * 0.42f, size * 0.75f), mark, thickness);
+            drawList.Line(min + new Vector2(size * 0.42f, size * 0.75f), min + new Vector2(size * 0.8f, size * 0.25f), mark, thickness);
             return;
         }
 
-        drawList.AddRect(min, max, WithAlpha(optional ? Cyan : BoxBorder, alpha), size * 0.15f, ImDrawFlags.None, MathF.Max(1f, size * 0.08f));
+        drawList.Rect(min, max, WithAlpha(optional ? Cyan : BoxBorder, alpha), MathF.Max(1f, size * 0.08f));
     }
 
-    public static void Icon(ImDrawListPtr drawList, TutorialIcon icon, Vector2 min, float size, float alpha)
+    public static void Icon(TutorialCanvas drawList, TutorialIcon icon, Vector2 min, float size, float alpha)
     {
         if (icon.IsEmpty) return;
 
         var sprite = icon.IsItem
             ? GameAssets.TryGetItemById(icon.ItemId, out var item) && item != null ? item.Icon : Engine.Graphics.Atlas.AtlasSprite.None
             : UIAtlas.Get(icon.UiName);
-        sprite.Draw(drawList, min, min + new Vector2(size), WithAlpha(0xFFFFFFFF, alpha));
+        drawList.Sprite(sprite, min, size, alpha);
     }
 
     public static float EaseOut(float t)

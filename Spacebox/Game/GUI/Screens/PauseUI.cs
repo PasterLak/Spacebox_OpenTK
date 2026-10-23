@@ -66,7 +66,6 @@ namespace Spacebox.Game.GUI
             }
 
             UpdateOptionsState();
-            if (isVisible && !IsOptionsOpen && IsTutorialOpen) Spacebox.Game.Tutorial.UI.TutorialMenuUI.Render();
         }
 
         public static void Continue()

@@ -3,7 +3,7 @@
   "Name": "Basic Aluminium Crate",
   "Description": "Stores items",
   "Type": "storage",
-  "Category": "logistics",
+  "Category": "storage",
   "PowerToDrill": 1,
   "Mass": 4,
   "Durability": 10,

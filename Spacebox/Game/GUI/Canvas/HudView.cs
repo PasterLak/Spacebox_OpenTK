@@ -28,6 +28,7 @@ public sealed class HudView : SafeArea
         MouseFilter = MouseFilter.Ignore;
         AddOverlay(new Hud.CameraFeedControl());
         AddOverlay(new Hud.TagsOverlayControl());
+        AddOverlay(new Hud.TutorialPanelControl());
         AddOverlay(_hitImage);
         AddOverlay(new Hud.CrosshairControl());
         AddOverlay(new Hud.HitMarkerControl());

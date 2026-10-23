@@ -3,7 +3,7 @@
   "Name": "Basic Titanium Crate",
   "Description": "Stores items, very tough",
   "Type": "storage",
-  "Category": "logistics",
+  "Category": "storage",
   "PowerToDrill": 3,
   "Mass": 6,
   "Durability": 30,

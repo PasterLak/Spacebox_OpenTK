@@ -2,7 +2,7 @@
   "ID": "window",
   "Name": "Window",
   "Description": "Lets light through",
-  "Category": "building",
+  "Category": "windows",
   "Mass": 1,
   "Durability": 1,
   "IsTransparent": true,

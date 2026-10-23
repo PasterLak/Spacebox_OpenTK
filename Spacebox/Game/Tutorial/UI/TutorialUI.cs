@@ -1,7 +1,7 @@
 using Engine;
 using Engine.Audio;
 using Engine.InputPro;
-using ImGuiNET;
+using Engine.CanvasUI;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Tutorial.Tasks;
 using System.Numerics;
@@ -98,7 +98,9 @@ public static class TutorialUI
 
     public static void Update()
     {
-        if (!_initialized || !TutorialService.IsAttached) return;
+        if (!_initialized) return;
+        _clock += Time.Delta;
+        if (!TutorialService.IsAttached) return;
 
         if (TutorialService.NeedsJoinPrompt && !_promptShown && !UIManager.IsUIMode && !WorldLoadingScreen.IsActive)
         {
@@ -114,16 +116,12 @@ public static class TutorialUI
         }
     }
 
-    public static void OnGUI()
+    public static bool IsShown => _initialized && Settings.ShowInterface && !WorldLoadingScreen.IsActive;
+
+    public static void Draw(TutorialCanvas drawList, Vector2 display, float baseSize)
     {
-        if (!_initialized) return;
+        if (!IsShown) return;
 
-        _clock += ImGui.GetIO().DeltaTime;
-        if (!Settings.ShowInterface || WorldLoadingScreen.IsActive) return;
-
-        var drawList = ImGui.GetBackgroundDrawList();
-        var display = ImGui.GetIO().DisplaySize;
-        float baseSize = ImGui.GetFontSize();
         float width = MathF.Max(display.X * WidthRatio, baseSize * MinWidthInLines);
         float margin = baseSize * 0.9f;
         float top = margin + (Chat.IsShownOnRight ? display.Y * 0.5f : 0f);
@@ -139,12 +137,12 @@ public static class TutorialUI
                 : DrawPanel(drawList, runner, topLeft, width, baseSize, alpha);
         }
 
-        TutorialToasts.Draw(drawList, new Vector2(display.X - margin, bottom + baseSize * 0.5f), width, baseSize, _clock);
+        TutorialToasts.Draw(drawList, new Vector2(display.X - margin, bottom + baseSize * 0.5f), display, width, baseSize, _clock);
     }
 
-    private static float DrawPanel(ImDrawListPtr drawList, TutorialRunner runner, Vector2 topLeft, float width, float baseSize, float alpha)
+    private static float DrawPanel(TutorialCanvas drawList, TutorialRunner runner, Vector2 topLeft, float width, float baseSize, float alpha)
     {
-        var font = ImGui.GetFont();
+        var font = drawList.Font;
         float pad = baseSize * 0.7f;
         float inner = width - pad * 2f;
         EnsureLayout(runner, font, inner, baseSize);
@@ -154,13 +152,12 @@ public static class TutorialUI
         float pulse = 1f - Math.Clamp((_clock - _stepCompletedAt) / PulseTime, 0f, 1f);
         uint border = TutorialDraw.Lerp(TutorialDraw.PanelBorder, TutorialDraw.Gold, pulse);
 
-        drawList.AddRectFilled(topLeft, max, TutorialDraw.WithAlpha(TutorialDraw.PanelBackground, alpha), baseSize * 0.45f);
-        drawList.AddRect(topLeft, max, TutorialDraw.WithAlpha(border, alpha), baseSize * 0.45f, ImDrawFlags.None, MathF.Max(1f, baseSize * (0.08f + 0.12f * pulse)));
+        drawList.Panel(topLeft, max, TutorialDraw.WithAlpha(TutorialDraw.PanelBackground, alpha), TutorialDraw.WithAlpha(border, alpha), baseSize * 0.45f, MathF.Max(1f, MathF.Round(baseSize * (0.08f + 0.12f * pulse))));
         Layout(drawList, runner, font, topLeft, width, baseSize, alpha, true);
         return max.Y;
     }
 
-    private static float Layout(ImDrawListPtr drawList, TutorialRunner runner, ImFontPtr font, Vector2 topLeft, float width, float baseSize, float alpha, bool draw)
+    private static float Layout(TutorialCanvas drawList, TutorialRunner runner, CanvasFont font, Vector2 topLeft, float width, float baseSize, float alpha, bool draw)
     {
         float pad = baseSize * 0.7f;
         float smallSize = baseSize * 0.9f;
@@ -178,8 +175,8 @@ public static class TutorialUI
             string counter = $"{Math.Min(completed + 1, total)} / {total}";
             float counterWidth = TutorialDraw.Measure(font, smallSize, counter);
             string chapterTitle = TutorialDraw.Truncate(font, smallSize, (chapter?.Title ?? "").ToUpperInvariant(), right - x - smallSize * 1.2f - counterWidth - pad);
-            drawList.AddText(font, smallSize, new Vector2(x + smallSize * 1.1f, y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), chapterTitle);
-            drawList.AddText(font, smallSize, new Vector2(right - counterWidth, y), TutorialDraw.WithAlpha(TutorialDraw.TextFaint, alpha), counter);
+            drawList.Text(smallSize, new Vector2(x + smallSize * 1.1f, y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), chapterTitle);
+            drawList.Text(smallSize, new Vector2(right - counterWidth, y), TutorialDraw.WithAlpha(TutorialDraw.TextFaint, alpha), counter);
         }
         y += smallSize * 1.35f;
 
@@ -189,9 +186,9 @@ public static class TutorialUI
             float fraction = total > 0 ? Math.Clamp((completed + runner.GetCurrentStepFraction()) / total, 0f, 1f) : 0f;
             var barMin = new Vector2(x, y);
             var barMax = new Vector2(right, y + barHeight);
-            drawList.AddRectFilled(barMin, barMax, TutorialDraw.WithAlpha(TutorialDraw.BarBackground, alpha), barHeight * 0.5f);
+            drawList.RectFilled(barMin, barMax, TutorialDraw.WithAlpha(TutorialDraw.BarBackground, alpha), barHeight * 0.5f);
             if (fraction > 0f)
-                drawList.AddRectFilled(barMin, new Vector2(x + (right - x) * fraction, barMax.Y), TutorialDraw.WithAlpha(TutorialDraw.Lerp(TutorialDraw.Gold, TutorialDraw.Green, fraction), alpha), barHeight * 0.5f);
+                drawList.RectFilled(barMin, new Vector2(x + (right - x) * fraction, barMax.Y), TutorialDraw.WithAlpha(TutorialDraw.Lerp(TutorialDraw.Gold, TutorialDraw.Green, fraction), alpha), barHeight * 0.5f);
         }
         y += barHeight + pad * 0.8f;
 
@@ -210,14 +207,14 @@ public static class TutorialUI
         float titleTop = y;
         for (int i = 0; i < _titleLines.Count; i++)
         {
-            if (draw) drawList.AddText(font, titleSize, new Vector2(titleX, y), TutorialDraw.WithAlpha(TutorialDraw.TextBright, fade), _titleLines[i]);
+            if (draw) drawList.Text(titleSize, new Vector2(titleX, y), TutorialDraw.WithAlpha(TutorialDraw.TextBright, fade), _titleLines[i]);
             y += titleSize * 1.2f;
         }
         y = MathF.Max(y, titleTop + (step.Icon.IsEmpty ? 0f : iconSize)) + baseSize * 0.25f;
 
         for (int i = 0; i < _textLines.Count; i++)
         {
-            if (draw) drawList.AddText(font, baseSize, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.TextDim, fade), _textLines[i]);
+            if (draw) drawList.Text(baseSize, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.TextDim, fade), _textLines[i]);
             y += line * 0.92f;
         }
         if (_textLines.Count > 0) y += baseSize * 0.4f;
@@ -231,7 +228,7 @@ public static class TutorialUI
             y += baseSize * 0.3f;
             for (int i = 0; i < _hintLines.Count; i++)
             {
-                if (draw) drawList.AddText(font, smallSize, new Vector2(x, y), TutorialDraw.WithAlpha(i == 0 ? TutorialDraw.Gold : TutorialDraw.TextFaint, fade * 0.9f), _hintLines[i]);
+                if (draw) drawList.Text(smallSize, new Vector2(x, y), TutorialDraw.WithAlpha(i == 0 ? TutorialDraw.Gold : TutorialDraw.TextFaint, fade * 0.9f), _hintLines[i]);
                 y += smallSize * 1.25f;
             }
         }
@@ -242,7 +239,7 @@ public static class TutorialUI
             if (draw)
             {
                 string footer = $"[{KeyName(ToggleAction)}] hide   |   Esc > Tutorial: options";
-                drawList.AddText(font, smallSize * 0.9f, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.TextFaint, fade * 0.8f), TutorialDraw.Truncate(font, smallSize * 0.9f, footer, right - x));
+                drawList.Text(smallSize * 0.9f, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.TextFaint, fade * 0.8f), TutorialDraw.Truncate(font, smallSize * 0.9f, footer, right - x));
             }
             y += smallSize * 1.1f;
         }
@@ -250,7 +247,7 @@ public static class TutorialUI
         return y - topLeft.Y + pad * 0.6f;
     }
 
-    private static float DrawTask(ImDrawListPtr drawList, ImFontPtr font, ITutorialTask task, TaskLayout layout, float x, float right, float y, float baseSize, float alpha, bool draw)
+    private static float DrawTask(TutorialCanvas drawList, CanvasFont font, ITutorialTask task, TaskLayout layout, float x, float right, float y, float baseSize, float alpha, bool draw)
     {
         float line = baseSize * 1.3f;
         float box = baseSize * 0.85f;
@@ -267,7 +264,7 @@ public static class TutorialUI
         if (sinceDone < FlashTime)
         {
             float flash = 1f - sinceDone / FlashTime;
-            drawList.AddRectFilled(new Vector2(x - baseSize * 0.25f, y - baseSize * 0.1f), new Vector2(right + baseSize * 0.25f, y + rowHeight), TutorialDraw.WithAlpha(TutorialDraw.DarkGreen, alpha * flash * 0.6f), baseSize * 0.25f);
+            drawList.RectFilled(new Vector2(x - baseSize * 0.25f, y - baseSize * 0.1f), new Vector2(right + baseSize * 0.25f, y + rowHeight), TutorialDraw.WithAlpha(TutorialDraw.DarkGreen, alpha * flash * 0.6f), baseSize * 0.25f);
         }
 
         TutorialDraw.CheckBox(drawList, new Vector2(x, y + (line - box) * 0.4f), box, done, task.Definition.Optional, alpha);
@@ -278,12 +275,12 @@ public static class TutorialUI
         float lineY = y;
         for (int i = 0; i < layout.Lines.Count; i++)
         {
-            drawList.AddText(font, baseSize, new Vector2(textX, lineY), TutorialDraw.WithAlpha(color, alpha), layout.Lines[i]);
+            drawList.Text(baseSize, new Vector2(textX, lineY), TutorialDraw.WithAlpha(color, alpha), layout.Lines[i]);
             if (strike > 0f)
             {
                 float lineWidth = TutorialDraw.Measure(font, baseSize, layout.Lines[i]);
                 float middle = lineY + baseSize * 0.55f;
-                drawList.AddLine(new Vector2(textX - baseSize * 0.1f, middle), new Vector2(textX + (lineWidth + baseSize * 0.2f) * strike, middle), TutorialDraw.WithAlpha(TutorialDraw.Green, alpha), MathF.Max(1.5f, baseSize * 0.1f));
+                drawList.Line(new Vector2(textX - baseSize * 0.1f, middle), new Vector2(textX + (lineWidth + baseSize * 0.2f) * strike, middle), TutorialDraw.WithAlpha(TutorialDraw.Green, alpha), MathF.Max(1.5f, baseSize * 0.1f));
             }
             lineY += line;
         }
@@ -291,7 +288,7 @@ public static class TutorialUI
         if (!done && task.ShowsCounter)
         {
             string counter = $"{TutorialText.FormatNumber(MathF.Floor(task.Current))} / {TutorialText.FormatNumber(task.Target)}";
-            drawList.AddText(font, baseSize, new Vector2(right - TutorialDraw.Measure(font, baseSize, counter), y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), counter);
+            drawList.Text(baseSize, new Vector2(right - TutorialDraw.Measure(font, baseSize, counter), y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), counter);
         }
 
         float bottom = y + rowHeight;
@@ -300,8 +297,8 @@ public static class TutorialUI
             float barHeight = MathF.Max(2f, baseSize * 0.18f);
             var min = new Vector2(textX, bottom + baseSize * 0.02f);
             var max = new Vector2(right, min.Y + barHeight);
-            drawList.AddRectFilled(min, max, TutorialDraw.WithAlpha(TutorialDraw.BarBackground, alpha), barHeight);
-            drawList.AddRectFilled(min, new Vector2(min.X + (max.X - min.X) * (task.Current / task.Target), max.Y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), barHeight);
+            drawList.RectFilled(min, max, TutorialDraw.WithAlpha(TutorialDraw.BarBackground, alpha), barHeight);
+            drawList.RectFilled(min, new Vector2(min.X + (max.X - min.X) * (task.Current / task.Target), max.Y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), barHeight);
             bottom += baseSize * 0.35f;
         }
 
@@ -313,33 +310,33 @@ public static class TutorialUI
         return !task.IsDone && !task.ShowsCounter && task.Target > 1f && task.Current > 0f;
     }
 
-    private static float DrawCollapsed(ImDrawListPtr drawList, TutorialRunner runner, Vector2 topLeft, float width, float baseSize, float alpha)
+    private static float DrawCollapsed(TutorialCanvas drawList, TutorialRunner runner, Vector2 topLeft, float width, float baseSize, float alpha)
     {
-        var font = ImGui.GetFont();
+        var font = drawList.Font;
         float pad = baseSize * 0.5f;
         float height = baseSize * 1.3f + pad * 2f;
         var max = topLeft + new Vector2(width, height);
         runner.GetChapterProgress(out int completed, out int total);
 
-        drawList.AddRectFilled(topLeft, max, TutorialDraw.WithAlpha(TutorialDraw.PanelBackground, alpha), baseSize * 0.4f);
+        drawList.RectFilled(topLeft, max, TutorialDraw.WithAlpha(TutorialDraw.PanelBackground, alpha), baseSize * 0.4f);
         float x = topLeft.X + pad;
         float y = topLeft.Y + pad;
         TutorialDraw.Diamond(drawList, new Vector2(x + baseSize * 0.4f, y + baseSize * 0.6f), baseSize * 0.35f, TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha));
 
         string counter = $"{Math.Min(completed + 1, total)}/{total}";
         x += baseSize * 1.1f;
-        drawList.AddText(font, baseSize, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), counter);
+        drawList.Text(baseSize, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.Gold, alpha), counter);
         x += TutorialDraw.Measure(font, baseSize, counter) + baseSize * 0.6f;
 
         string title = runner.IsStepVisible ? Format(runner.CurrentStep.Title, 0f) : "...";
         string progress = $"{(int)MathF.Round(runner.GetCurrentStepFraction() * 100f)}%";
         float progressWidth = TutorialDraw.Measure(font, baseSize, progress);
-        drawList.AddText(font, baseSize, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.TextBright, alpha), TutorialDraw.Truncate(font, baseSize, title, max.X - pad - progressWidth - baseSize * 0.6f - x));
-        drawList.AddText(font, baseSize, new Vector2(max.X - pad - progressWidth, y), TutorialDraw.WithAlpha(TutorialDraw.Green, alpha), progress);
+        drawList.Text(baseSize, new Vector2(x, y), TutorialDraw.WithAlpha(TutorialDraw.TextBright, alpha), TutorialDraw.Truncate(font, baseSize, title, max.X - pad - progressWidth - baseSize * 0.6f - x));
+        drawList.Text(baseSize, new Vector2(max.X - pad - progressWidth, y), TutorialDraw.WithAlpha(TutorialDraw.Green, alpha), progress);
         return max.Y;
     }
 
-    private static void EnsureLayout(TutorialRunner runner, ImFontPtr font, float width, float baseSize)
+    private static void EnsureLayout(TutorialRunner runner, CanvasFont font, float width, float baseSize)
     {
         var step = runner.CurrentStep;
         if (step == null) return;

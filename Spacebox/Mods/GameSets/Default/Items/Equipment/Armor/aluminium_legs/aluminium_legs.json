@@ -6,7 +6,7 @@
   "ExplosionProtection": 2,
   "Name": "Aluminium Legs Armor",
   "Description": "Light armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "aluminium_legs",
   "MaxStack": 1,
   "ModelDepth": 3.0,

@@ -2,7 +2,7 @@
   "ID": "light_cyan",
   "Name": "Azure Wall Torch",
   "Description": "Wall light with a cyan glow",
-  "Category": "building",
+  "Category": "lights",
   "Model": "torch",
   "LightColor": {
     "r": 0,

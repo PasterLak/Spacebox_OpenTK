@@ -3,7 +3,7 @@
   "Name": "Info Panel",
   "Description": "Dark wide panel with glowing text, good for spawn and base information",
   "Type": "sign",
-  "Category": "building",
+  "Category": "decor",
   "CellPixels": 32,
   "Textures": {
     "Active": {

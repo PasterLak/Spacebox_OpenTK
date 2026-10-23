@@ -3,7 +3,7 @@
   "Name": "Basic Iron Crate",
   "Description": "Stores items, tougher than aluminium",
   "Type": "storage",
-  "Category": "logistics",
+  "Category": "storage",
   "PowerToDrill": 2,
   "Mass": 8,
   "Durability": 20,

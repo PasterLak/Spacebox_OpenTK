@@ -6,7 +6,7 @@
   "ExplosionProtection": 6,
   "Name": "Iron Legs Armor",
   "Description": "Sturdy iron armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "iron_legs",
   "MaxStack": 1,
   "ModelDepth": 3.0,

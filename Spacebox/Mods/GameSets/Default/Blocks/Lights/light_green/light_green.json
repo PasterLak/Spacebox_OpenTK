@@ -2,7 +2,7 @@
   "ID": "light_green",
   "Name": "Emerald Wall Torch",
   "Description": "Wall light with a green glow",
-  "Category": "building",
+  "Category": "lights",
   "Model": "torch",
   "LightColor": {
     "r": 5,

@@ -3,7 +3,7 @@
   "Name": "Wide Steel Sign",
   "Description": "Two blocks wide plate for longer labels",
   "Type": "sign",
-  "Category": "building",
+  "Category": "decor",
   "CellPixels": 32,
   "Textures": {
     "Active": {

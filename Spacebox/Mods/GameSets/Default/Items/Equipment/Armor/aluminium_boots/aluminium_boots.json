@@ -6,7 +6,7 @@
   "ExplosionProtection": 1,
   "Name": "Aluminium Boots",
   "Description": "Light armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "aluminium_boots",
   "MaxStack": 1,
   "ModelDepth": 3.0,

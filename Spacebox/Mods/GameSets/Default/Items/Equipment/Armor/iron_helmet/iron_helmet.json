@@ -6,7 +6,7 @@
   "ExplosionProtection": 3,
   "Name": "Iron Helmet",
   "Description": "Sturdy iron armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "iron_helmet",
   "MaxStack": 1,
   "ModelDepth": 3.0,

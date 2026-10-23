@@ -2,7 +2,7 @@
   "ID": "big_window",
   "Name": "Big Window",
   "Description": "A large window",
-  "Category": "building",
+  "Category": "windows",
   "Mass": 4,
   "Durability": 4,
   "IsTransparent": true,

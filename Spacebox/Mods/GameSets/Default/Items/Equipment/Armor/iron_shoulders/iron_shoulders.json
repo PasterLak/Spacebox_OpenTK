@@ -6,7 +6,7 @@
   "ExplosionProtection": 6,
   "Name": "Iron Shoulders Armor",
   "Description": "Sturdy iron armor",
-  "Category": "equipment",
+  "Category": "armor",
   "Sprite": "iron_shoulders",
   "MaxStack": 1,
   "ModelDepth": 3.0,

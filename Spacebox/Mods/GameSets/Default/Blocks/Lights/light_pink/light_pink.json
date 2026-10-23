@@ -2,7 +2,7 @@
   "ID": "light_pink",
   "Name": "Violet Wall Torch",
   "Description": "Wall light with a violet glow",
-  "Category": "building",
+  "Category": "lights",
   "Model": "torch",
   "LightColor": {
     "r": 178,

@@ -3,7 +3,7 @@
   "Name": "Armored Safe",
   "Description": "Small storage with very strong walls",
   "Type": "storage",
-  "Category": "logistics",
+  "Category": "storage",
   "PowerToDrill": 5,
   "Mass": 50,
   "Durability": 200,

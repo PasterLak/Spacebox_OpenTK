@@ -14,7 +14,7 @@
     "DropBlocks": false,
     "DestroyStorageItems": false
   },
-  "Category": "weapons",
+  "Category": "explosives",
   "Mass": 8,
   "Durability": 10,
   "Textures": {
