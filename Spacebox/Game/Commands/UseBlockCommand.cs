@@ -3,6 +3,7 @@ using Engine.Commands;
 using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.Interactions;
+using Spacebox.Network.Admin;
 
 namespace Spacebox.Game.Commands;
 
@@ -21,6 +22,7 @@ internal sealed class UseBlockCommand : CommandBase
 
     public override void Execute(string[] args)
     {
+        if (ChatCommands.RefusesRemoteSender(Name)) return;
         if (_player == null || !BlockUseTarget.TryFind(_player, out var block, out var hit))
         {
             Debug.Warning("No usable block under the crosshair");

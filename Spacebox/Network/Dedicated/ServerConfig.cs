@@ -56,37 +56,67 @@ public sealed class ServerConfig
 
     public int GetClampedUpdateRate() => Math.Clamp(UpdateRate, MinUpdateRate, MaxUpdateRate);
 
-    public static ServerConfig LoadOrCreate()
+    public static ServerConfig LoadOrCreate() => LoadOrCreate(FilePath);
+
+    public static ServerConfig LoadOrCreate(string path)
     {
-        string path = FilePath;
         var options = new JsonSerializerOptions { WriteIndented = true };
 
         if (File.Exists(path))
         {
+            ServerConfig loaded = null;
+            string error = "the file is empty";
             try
             {
-                var loaded = JsonSerializer.Deserialize<ServerConfig>(File.ReadAllText(path));
-                if (loaded != null)
-                {
-                    loaded.Claims ??= new Spacebox.Game.Protection.ClaimSettings();
-                    loaded.TexturePacks ??= new List<string>();
-                    loaded.Gameplay ??= new Spacebox.Game.Rules.ServerRules();
-                    loaded.Claims.Validate();
-                    loaded.Gameplay.Validate();
-                    Save(loaded, path, options);
-                    return loaded;
-                }
+                loaded = JsonSerializer.Deserialize<ServerConfig>(File.ReadAllText(path));
             }
             catch (Exception ex)
             {
-                Debug.Error($"[Server] Failed to read {FileName}: {ex.Message}. Using defaults.");
+                error = ex.Message;
             }
+
+            if (loaded == null)
+            {
+                KeepBrokenCopy(path);
+                Debug.Error($"[Server] Failed to read {FileName}: {error}. Using defaults; the file was not changed, a copy is saved as {Path.GetFileName(path)}{BrokenSuffix}");
+                return CreateNew();
+            }
+
+            loaded.ApplyMissingDefaults();
+            Save(loaded, path, options);
+            return loaded;
         }
 
         var config = CreateNew();
         if (Save(config, path, options)) Debug.Warning($"[Server] Created default {FileName}");
 
         return config;
+    }
+
+    public const string BrokenSuffix = ".broken";
+
+    public void ApplyMissingDefaults()
+    {
+        Claims ??= new Spacebox.Game.Protection.ClaimSettings();
+        TexturePacks ??= new List<string>();
+        Gameplay ??= new Spacebox.Game.Rules.ServerRules();
+        Admins ??= new List<string>();
+        Whitelist ??= new List<string>();
+        Backups ??= new ServerBackupSettings();
+        Claims.Validate();
+        Gameplay.Validate();
+    }
+
+    private static void KeepBrokenCopy(string path)
+    {
+        try
+        {
+            File.Copy(path, path + BrokenSuffix, true);
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[Server] Failed to copy {FileName} to {FileName}{BrokenSuffix}: {ex.Message}");
+        }
     }
 
     public static ServerConfig CreateNew()

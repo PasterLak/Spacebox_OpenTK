@@ -22,6 +22,14 @@ public static class ChatCommands
         return !GameSession.HasLocalPlayer || !string.Equals(name.Trim(), GameSession.PlayerName, StringComparison.OrdinalIgnoreCase);
     }
 
+    public static bool RefusesRemoteSender(string commandName)
+    {
+        if (RemoteSender == null) return false;
+
+        Debug.Error($"{commandName} works only for the host's own player");
+        return true;
+    }
+
     public static bool IsCommand(string text) => !string.IsNullOrEmpty(text) && text.Length > 1 && text[0] == Prefix && !char.IsWhiteSpace(text[1]);
 
     public static bool IsCommandStart(string text) => !string.IsNullOrEmpty(text) && text[0] == Prefix && (text.Length == 1 || !char.IsWhiteSpace(text[1]));

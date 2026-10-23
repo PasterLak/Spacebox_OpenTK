@@ -42,6 +42,7 @@ internal static class GameSetsUnpacker
 
         foreach (var archivePath in archiveFiles)
         {
+            string tempExtractPath = null;
             try
             {
 
@@ -51,8 +52,7 @@ internal static class GameSetsUnpacker
                     continue;
                 }
 
-                string tempExtractPath = Path.Combine(gameSetsPath, $"temp_{Guid.NewGuid()}");
-                Directory.CreateDirectory(tempExtractPath);
+                tempExtractPath = ModFolderInstaller.CreateTempFolder(gameSetsPath);
 
                 Debug.Log($"[GameSetsUnpacker] Processing archive: {archivePath}");
                 Debug.Log($"[GameSetsUnpacker] Temp extract path: {tempExtractPath}");
@@ -85,36 +85,25 @@ internal static class GameSetsUnpacker
                 if (modFolder == null)
                 {
                     Debug.Error($"[GameSetsUnpacker] No valid mod folder found in {archivePath}");
-                    Directory.Delete(tempExtractPath, true);
                     continue;
                 }
 
-                string modName = useModNameAsFolder ? GetModNameFromConfig(modFolder) : null;
+                var configNode = ReadConfigNode(modFolder);
+                string modName = useModNameAsFolder ? ModArchiveConfig.ModName(configNode) : null;
                 string targetFolderName = ModInstallTarget.SafeFolderName(modName, Path.GetFileNameWithoutExtension(archivePath));
                 var config = InstalledGameSets.ReadConfig(modFolder);
                 bool isExtension = Spacebox.Game.Resource.Content.GameSetRoles.IsExtension(config?.Extends);
                 string targetRoot = folders.FolderFor(isExtension);
                 Directory.CreateDirectory(targetRoot);
-                string targetFolder = ModInstallTarget.Resolve(targetRoot, targetFolderName, config?.ModId, folder => InstalledGameSets.ReadConfig(folder)?.ModId, out bool replaces);
+                string installId = ModArchiveConfig.InstallId(configNode, targetFolderName);
+                string targetFolder = ModInstallTarget.Resolve(targetRoot, targetFolderName, installId, folder => InstalledGameSets.ReadConfig(folder)?.ModId, out bool replaces);
 
                 Debug.Log($"[GameSetsUnpacker] Mod folder found: {modFolder}");
                 Debug.Log($"[GameSetsUnpacker] Target folder: {targetFolder}");
 
-                if (replaces)
-                {
-                    Debug.Log($"[GameSetsUnpacker] Updating the installed mod in {targetFolder}");
-                    Directory.Delete(targetFolder, true);
-                }
+                if (replaces) Debug.Log($"[GameSetsUnpacker] Updating the installed mod in {targetFolder}");
 
-                if (!modFolder.Equals(tempExtractPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    Directory.Move(modFolder, targetFolder);
-                    Directory.Delete(tempExtractPath, true);
-                }
-                else
-                {
-                    Directory.Move(tempExtractPath, targetFolder);
-                }
+                ModFolderInstaller.Install(modFolder, targetFolder, replaces);
 
                 File.Delete(archivePath);
                 Debug.Success($"[GameSetsUnpacker] Successfully processed: {archivePath}");
@@ -124,7 +113,29 @@ internal static class GameSetsUnpacker
                 Debug.Error($"[GameSetsUnpacker] Error processing {Path.GetFileName(archivePath)}: {ex.Message}");
                 Debug.Error($"[GameSetsUnpacker] Stack trace: {ex.StackTrace}");
             }
+            finally
+            {
+                DeleteTempFolder(tempExtractPath);
+            }
         }
+    }
+
+    private static void DeleteTempFolder(string tempExtractPath)
+    {
+        try
+        {
+            ModFolderInstaller.DeleteIfExists(tempExtractPath);
+        }
+        catch (Exception ex)
+        {
+            Debug.Error($"[GameSetsUnpacker] Could not delete {tempExtractPath}: {ex.Message}");
+        }
+    }
+
+    private static System.Text.Json.Nodes.JsonNode ReadConfigNode(string modFolder)
+    {
+        string configPath = Path.Combine(modFolder, GameSetFormat.ConfigFile);
+        return File.Exists(configPath) ? ContentJson.ParseFile(configPath, null) : null;
     }
 
     private static string FindModFolder(string directory)
@@ -139,21 +150,5 @@ internal static class GameSetsUnpacker
         }
 
         return null;
-    }
-
-    private static string GetModNameFromConfig(string modFolder)
-    {
-        try
-        {
-            string configPath = Path.Combine(modFolder, "config.json");
-            if (!File.Exists(configPath)) return null;
-
-            var config = JsonSerializer.Deserialize<GameSetLoader.ModConfig>(File.ReadAllText(configPath));
-            return config?.ModName?.Trim();
-        }
-        catch
-        {
-            return null;
-        }
     }
 }

@@ -45,9 +45,10 @@ public sealed class ServerSleepScene : Scene
     private void OnJoinRequest(int sender, JoinRequestMessage message)
     {
         var network = NetworkManager.Instance;
-        network.Send(sender, new JoinRejectedMessage { Reason = ServerSleep.WakingReason });
-        network.Kick(sender, ServerSleep.WakingReason);
-        if (_wakeTimer < 0f) _wakeTimer = WakeDelay;
+        string reason = JoinRequestRules.Validate(message, network.GetPeerAddress(sender));
+        network.Send(sender, new JoinRejectedMessage { Reason = reason ?? ServerSleep.WakingReason });
+        network.Kick(sender, reason ?? ServerSleep.WakingReason);
+        if (reason == null && _wakeTimer < 0f) _wakeTimer = WakeDelay;
     }
 
     public override void UnloadContent()

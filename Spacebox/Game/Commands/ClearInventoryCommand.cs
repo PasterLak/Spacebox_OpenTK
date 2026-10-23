@@ -22,6 +22,7 @@ namespace Spacebox.Game.Commands
         }
         public override void Execute(string[] args)
         {
+            if (Spacebox.Network.Admin.ChatCommands.RefusesRemoteSender(Name)) return;
 
 
             if (Astronaut == null)

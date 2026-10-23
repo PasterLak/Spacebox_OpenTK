@@ -23,14 +23,14 @@ public sealed class ModerationModule : IDashboardModule
 
         router.Map("GET", DashboardContext.Api("/moderation"), guard.Admin(async (_, _) =>
         {
-            var data = await MainThread.Run(ServerModeration.Snapshot);
+            var snapshot = await MainThread.Run(() => (Data: ServerModeration.Snapshot(), WhitelistEnabled: config.WhitelistEnabled, Whitelist: new List<string>(config.Whitelist ?? new List<string>())));
             return HttpResponse.Json(new
             {
-                bannedNames = data.BannedNames,
-                bannedAddresses = data.BannedAddresses,
-                mutedNames = data.MutedNames,
-                whitelistEnabled = config.WhitelistEnabled,
-                whitelist = config.Whitelist
+                bannedNames = snapshot.Data.BannedNames,
+                bannedAddresses = snapshot.Data.BannedAddresses,
+                mutedNames = snapshot.Data.MutedNames,
+                whitelistEnabled = snapshot.WhitelistEnabled,
+                whitelist = snapshot.Whitelist
             });
         }));
 

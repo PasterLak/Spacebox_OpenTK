@@ -17,6 +17,7 @@ public static class DashboardService
     private static AutoCertificateService _autoCertificate;
     private static ServerConfig _config;
     private static DashboardAccessPolicy _access;
+    private static bool _stopOnExitSubscribed;
 
     public static string HttpsStatus
     {
@@ -92,7 +93,11 @@ public static class DashboardService
 
         _metrics.Start();
         _autoCertificate?.Start();
-        AppDomain.CurrentDomain.ProcessExit += (_, _) => Stop();
+        if (!_stopOnExitSubscribed)
+        {
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Stop();
+            _stopOnExitSubscribed = true;
+        }
 
         if (AutoCertificateService.IsConfigured(config) && _certificate.Current == null)
             Debug.Log($"[Dashboard] HTTPS for https://{_autoCertificate.Domain}:{port}{DashboardPaths.Route} is being set up automatically ({HttpsMethodSelector.Describe(_autoCertificate.Method, config)}), until then use http://<server address>:{port}{DashboardPaths.Route} from the local network");

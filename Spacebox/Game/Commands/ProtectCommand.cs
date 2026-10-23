@@ -31,6 +31,12 @@ public sealed class ProtectCommand : CommandBase
     {
         if (ServerCommandForwarder.TryForward(Name, args)) return;
 
+        if (!ProtectionNetwork.CanSenderEdit(ChatCommands.RemoteSender))
+        {
+            Debug.Error($"Only admins can use {Name}");
+            return;
+        }
+
         if (!CommandIssuer.TryGetPosition(_player, out var position))
         {
             Debug.Error($"{Name} works only from the game chat");

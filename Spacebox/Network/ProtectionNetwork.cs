@@ -53,6 +53,12 @@ public static class ProtectionNetwork
         return ServerAdmins.IsAdmin(PlayerRegistry.GetName(peer));
     }
 
+    public static bool CanSenderEdit(string sender)
+    {
+        if (sender == null) return true;
+        return PlayerRegistry.TryGetByName(sender, out var player) && CanPeerEdit(player.Peer);
+    }
+
     public static bool BlocksPeer(int peer, SpaceEntity entity, Vector3i cell) => !ProtectionRules.CanEdit(PlayerRegistry.GetName(peer), CanPeerEdit(peer), entity, cell);
 
     public static bool BlocksPeerBox(int peer, SpaceEntity entity, Vector3i min, Vector3i max) => !ProtectionRules.CanEditBox(PlayerRegistry.GetName(peer), CanPeerEdit(peer), entity, min, max);

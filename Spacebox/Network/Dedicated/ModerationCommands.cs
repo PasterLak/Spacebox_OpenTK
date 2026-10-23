@@ -17,8 +17,8 @@ public sealed class BanCommand : CommandBase, Engine.Commands.IArgumentSuggestio
     public override void Execute(string[] args)
     {
         if (args.Length == 0) return;
-        ServerModeration.BanName(args[0]);
-        Debug.Log($"Banned {args[0]}");
+        if (ServerModeration.BanName(args[0])) Debug.Log($"Banned {args[0]}");
+        else Debug.Error($"{args[0]} cannot be banned");
     }
 }
 
