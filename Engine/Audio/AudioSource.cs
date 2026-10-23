@@ -39,6 +39,7 @@ namespace Engine.Audio
         }
 
         public bool HasClip => _clip != null;
+        public bool Is3D => _is3D;
         public bool IsDisposed => isDisposed;
         public bool IsPlaying => isPlaying && HasClip;
 

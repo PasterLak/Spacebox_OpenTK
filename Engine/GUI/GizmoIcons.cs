@@ -14,7 +14,8 @@ public enum GizmoIcon : byte
     SpotLight,
     Thruster,
     Cannon,
-    SpawnPoint
+    SpawnPoint,
+    Audio
 }
 
 public static class GizmoIcons
@@ -155,6 +156,15 @@ public static class GizmoIcons
                 drawList.AddCircle(c, s * 0.7f, color, 16, 2f);
                 drawList.AddLine(new System.Numerics.Vector2(c.X - s, c.Y), new System.Numerics.Vector2(c.X + s, c.Y), color, 2f);
                 drawList.AddLine(new System.Numerics.Vector2(c.X, c.Y - s), new System.Numerics.Vector2(c.X, c.Y + s), color, 2f);
+                break;
+            case GizmoIcon.Audio:
+                drawList.AddRectFilled(new System.Numerics.Vector2(c.X - s * 0.75f, c.Y - s * 0.25f), new System.Numerics.Vector2(c.X - s * 0.35f, c.Y + s * 0.25f), color);
+                drawList.AddTriangleFilled(new System.Numerics.Vector2(c.X - s * 0.35f, c.Y - s * 0.25f), new System.Numerics.Vector2(c.X + s * 0.1f, c.Y - s * 0.65f), new System.Numerics.Vector2(c.X + s * 0.1f, c.Y + s * 0.65f), color);
+                drawList.AddTriangleFilled(new System.Numerics.Vector2(c.X - s * 0.35f, c.Y + s * 0.25f), new System.Numerics.Vector2(c.X - s * 0.35f, c.Y - s * 0.25f), new System.Numerics.Vector2(c.X + s * 0.1f, c.Y + s * 0.65f), color);
+                drawList.PathArcTo(c, s * 0.45f, -0.7f, 0.7f, 8);
+                drawList.PathStroke(color, ImDrawFlags.None, 1.5f);
+                drawList.PathArcTo(c, s * 0.75f, -0.7f, 0.7f, 10);
+                drawList.PathStroke(color, ImDrawFlags.None, 1.5f);
                 break;
             case GizmoIcon.SpawnPoint:
                 drawList.AddLine(new System.Numerics.Vector2(c.X - s * 0.4f, c.Y + s * 0.85f), new System.Numerics.Vector2(c.X - s * 0.4f, c.Y - s * 0.85f), color, 2f);

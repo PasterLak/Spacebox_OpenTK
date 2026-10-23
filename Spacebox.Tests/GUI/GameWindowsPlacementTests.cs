@@ -85,4 +85,19 @@ public class GameWindowsPlacementTests
         var report = Engine.CanvasUI.Validation.LayoutHarness.ValidateAll(root, Engine.CanvasUI.Validation.ScreenProfiles.All, new Engine.CanvasUI.Validation.LayoutRules { MinHitTargetPixels = 12f });
         Assert.True(report.IsClean, report.Format());
     }
+
+    [Fact]
+    public void BlockWindowSound_WinsOverSilentWindowsOpenedInTheSameFrame()
+    {
+        var (_, view) = Build();
+        var sounds = new GameWindowSounds();
+        var creative = Window<CreativeWindow>(view);
+        var processing = Window<ProcessingWindow>(view);
+        creative.Visible = true;
+        processing.Visible = true;
+        sounds.Track(creative, false);
+        sounds.Track(view.Inventory, false);
+        sounds.Track(processing, false);
+        Assert.Same(processing, sounds.PendingOpen);
+    }
 }

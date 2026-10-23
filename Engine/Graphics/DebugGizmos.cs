@@ -29,6 +29,22 @@ public static class DebugGizmos
 
         var particles = ParticleSystem.All;
         for (int i = 0; i < particles.Count; i++) DrawParticles(particles[i]);
+
+        DrawAudio();
+    }
+
+    private static readonly List<Engine.Audio.AudioSource> _audio = new List<Engine.Audio.AudioSource>();
+    private static readonly Color4 AudioColor = new Color4(0.55f, 0.85f, 1f, 1f);
+
+    private static void DrawAudio()
+    {
+        Engine.Audio.AudioMixer.CollectPlaying3D(_audio);
+        for (int i = 0; i < _audio.Count; i++)
+        {
+            var source = _audio[i];
+            GizmoIcons.Add(source.Position, GizmoIcon.Audio, AudioColor, source.Clip?.Name);
+        }
+        _audio.Clear();
     }
 
     private static void Collect(Node3D node)

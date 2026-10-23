@@ -66,6 +66,16 @@
             Refresh();
         }
 
+        public static void CollectPlaying3D(List<AudioSource> result)
+        {
+            result.Clear();
+            lock (SourcesLock)
+            {
+                foreach (var source in Sources)
+                    if (source.Is3D && source.IsPlaying) result.Add(source);
+            }
+        }
+
         internal static void Register(AudioSource source)
         {
             lock (SourcesLock) Sources.Add(source);

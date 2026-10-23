@@ -12,6 +12,8 @@ public sealed class GameWindowSounds
     private GameWindow _noPowerWindow;
     private float _noPowerAt;
 
+    public GameWindow PendingOpen => _opened;
+
     public void Track(GameWindow window, bool wasVisible)
     {
         bool visible = window.Visible;
@@ -19,9 +21,9 @@ public sealed class GameWindowSounds
 
         if (visible)
         {
-            if (_opened == null || window.SoundPriority > _opened.SoundPriority) _opened = window;
+            if (!window.OpenSound.IsEmpty && (_opened == null || window.SoundPriority > _opened.SoundPriority)) _opened = window;
         }
-        else if (_closed == null || window.SoundPriority > _closed.SoundPriority)
+        else if (!window.CloseSound.IsEmpty && (_closed == null || window.SoundPriority > _closed.SoundPriority))
         {
             _closed = window;
         }

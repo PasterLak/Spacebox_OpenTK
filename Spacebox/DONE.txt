@@ -389,6 +389,7 @@ Fixes
 - crafting: hovering a group tab opens it, category tiles fill the width with equal size and start at the bottom; the outline also wraps blocky models (spacer, players)
 - crafting categories reorganized: Ships has Controls, Thrusters, Cannons, Hull, Windows, Doors; Blocks gets Lights and Storage; Items gets Explosives and Armor; hovering Back returns to the categories
 - crafting: the window title shows the category, Back works by click only; Hull moved to Blocks, new Cameras category under Ships; chat without background again
+- fixed: block windows opened in creative mode played no open sound (the silent creative window took the sound slot)
 - tutorial panel, step toasts and the tutorial menu (pause > Tutorial) on CanvasUI; waypoint names snap to screen pixels so they move smoothly
 - chat and ship library window on CanvasUI; menu and editor fades without ImGui
 - new sounds: button hover, denied, no power, waypoint added, low oxygen beeps, furnace/crusher/disassembler working loops, disassembler finish, generator hum (tab, craft, split and furnace finish sounds stay the old ones; every block window, crates included, uses the crafting table open/close sound; no drill, equip or slot drag sound)
@@ -411,6 +412,7 @@ Engine
 - CanvasUI: LineEdit password mode (Secret, never copied), HSlider DragEnded, ItemList row badges and row styles (item, item_hover, item_selected), LineEdit icon, ComboBox shows the icon of the selected option, button icon_color
 - CanvasUI: CanvasShapes (lines, circles)
 - CanvasUI: Control.TooltipContent (custom controls in tooltips)
+- F4 visual debug shows playing 3D audio sources as speaker icons with the clip name
 - CanvasUI theme lookups and minimum sizes cached (UI draw about 17x, layout about 15x faster), worker pool wakes jobs immediately by priority, net messages without allocations, single-pass BVH culling
 - WAV sounds load from read-only installs (files opened read-only and shared)
 - console log keeps the last 5000 messages, draws the last 400, thread-safe for every log call; no log line per disposed GL object
