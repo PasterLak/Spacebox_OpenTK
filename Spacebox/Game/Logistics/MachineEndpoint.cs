@@ -1,13 +1,13 @@
 using OpenTK.Mathematics;
-using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 
 namespace Spacebox.Game.Logistics;
 
 public sealed class MachineEndpoint : IItemTransferEndpoint
 {
-    private readonly ResourceProcessingBlock _machine;
+    private readonly ProcessingComponent _machine;
 
-    public MachineEndpoint(ResourceProcessingBlock machine)
+    public MachineEndpoint(ProcessingComponent machine)
     {
         _machine = machine;
     }
@@ -15,7 +15,25 @@ public sealed class MachineEndpoint : IItemTransferEndpoint
     public ItemSlot? FindExtractable(Predicate<Item> accept)
     {
         var output = _machine.OutputStorage.GetSlot(0, 0);
-        return output.HasItem && accept(output.Item) ? output : null;
+        if (output.HasItem && accept(output.Item)) return output;
+        return FindInBuffer(accept);
+    }
+
+    private ItemSlot? FindInBuffer(Predicate<Item> accept)
+    {
+        var buffer = _machine.BufferStorage;
+        if (buffer == null) return null;
+
+        for (int x = 0; x < buffer.SizeX; x++)
+        {
+            for (int y = 0; y < buffer.SizeY; y++)
+            {
+                var slot = buffer.GetSlot(x, y);
+                if (slot.HasItem && accept(slot.Item) && !GameAssets.TryGetRecipe(_machine.RecipeType, slot.Item.Id, out _)) return slot;
+            }
+        }
+
+        return null;
     }
 
     public void OnExtracted()
@@ -25,7 +43,7 @@ public sealed class MachineEndpoint : IItemTransferEndpoint
 
     public bool CanInsert(Item item, Vector3i fromSide)
     {
-        if (!GameAssets.TryGetRecipe(_machine.BlockType, item.Id, out _)) return false;
+        if (!GameAssets.TryGetRecipe(_machine.RecipeType, item.Id, out _)) return false;
 
         var input = _machine.InputStorage.GetSlot(0, 0);
         return !input.HasItem || (input.Item.Id == item.Id && input.Count < item.StackSize);

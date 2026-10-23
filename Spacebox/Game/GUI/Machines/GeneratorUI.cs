@@ -8,7 +8,7 @@ namespace Spacebox.Game.GUI
 {
     public class GeneratorUI
     {
-        private static GeneratorBlock generatorBlock;
+        private static ElectricalBlock generatorBlock;
 
         public static void Reset()
         {
@@ -19,7 +19,7 @@ namespace Spacebox.Game.GUI
         static string blockName = "Generator";
 
         public static bool IsOpen => UIManager.IsOpen("generator") && generatorBlock != null;
-        public static GeneratorBlock Block => generatorBlock;
+        public static ElectricalBlock Block => generatorBlock;
         public static string BlockName => blockName;
         public static int NetworkPower => power;
         public static int NetworkConsumption => consum;
@@ -29,7 +29,7 @@ namespace Spacebox.Game.GUI
 
         }
 
-        public static void Open(GeneratorBlock block, Astronaut astronaut, ref HitInfo hit)
+        public static void Open(ElectricalBlock block, Astronaut astronaut, ref HitInfo hit)
         {
             generatorBlock = block;
             var pos = hit.blockPositionEntity;

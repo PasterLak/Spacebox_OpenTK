@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 using Spacebox.Game.Generation.Oxygen;
 using Spacebox.Game.Generation.Doors;
 
@@ -14,7 +15,7 @@ namespace Spacebox.Game.Generation.Tools
         private static readonly Dictionary<Type, IBlockSerializer> Serializers = new Dictionary<Type, IBlockSerializer>
         {
             { typeof(StorageBlock), new StorageBlockSerializer() },
-            { typeof(ResourceProcessingBlock), new ResourceProcessingSerializer() },
+            { typeof(ComponentBlock), new ComponentBlockSerializer() },
             { typeof(DisassemblerBlock), new DisassemblerSerializer() },
             { typeof(AnalyzerBlock), new AnalyzerSerializer() },
             { typeof(OxygenGeneratorBlock), new OxygenGeneratorSerializer() },

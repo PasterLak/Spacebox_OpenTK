@@ -33,6 +33,8 @@ public sealed class FieldWidgetRegistry
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.NameIs("Type") && IsTopLevel(c), _ => EditorOptions.BlockTypes(), describe: Describe(FieldHelp.BlockTypes)));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Items && c.NameIs("Type") && IsTopLevel(c), _ => GameSetCatalog.ItemTypeNames.ToArray(), describe: Describe(FieldHelp.ItemTypes)));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.NameIs("Model") && IsTopLevel(c), EditorOptions.BlockModels));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.PathContains("Components"), _ => EditorOptions.BlockComponents(), describe: Describe(FieldHelp.BlockComponents)));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.PathContains("Processing") && c.NameIs("RecipeType"), e => e.Assets.RecipeTypes));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.NameIs("MoveDirection"), _ => EditorOptions.Directions));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && (c.PathContains("InputSides") || c.PathContains("OutputSides")), _ => EditorOptions.Directions));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.PathContains("Sign") && c.NameIs("Align"), _ => EditorOptions.SignAlignments));

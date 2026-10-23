@@ -10,6 +10,11 @@ namespace Spacebox.Game.Resource
         {
         }
 
+        public static Vector2Byte ClampSize(Vector2Byte size)
+        {
+            return new Vector2Byte(Math.Max((byte)1, size.X), Math.Max((byte)1, size.Y));
+        }
+
         public StorageBlockData(BlockData baseBlock, Vector2Byte size) : base(baseBlock)
         {
             Size = size;

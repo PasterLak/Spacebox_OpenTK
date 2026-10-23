@@ -814,6 +814,7 @@ namespace Spacebox.Game.Generation
             while (dispatchedThisFrame < maxDispatch && MeshUpdateQueue.TryDequeue(out Chunk chunk, out int priority))
             {
                 if (chunk.IsDisposed) continue;
+                if (chunk.ConsumeRelightRequest()) chunk.CalculateLighting();
 
                 int currentVersion = chunk.MeshVersion;
                 var snapshot = chunk.CreatePaddedSnapshot();

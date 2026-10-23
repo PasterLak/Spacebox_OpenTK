@@ -142,6 +142,21 @@ namespace Spacebox.Game.Generation
             _lightManager.PropagateLight();
         }
 
+        private bool _relightRequested;
+
+        public void RequestRelight()
+        {
+            _relightRequested = true;
+            QueueMeshUpdate(UpdateReason.Lighting);
+        }
+
+        internal bool ConsumeRelightRequest()
+        {
+            if (!_relightRequested) return false;
+            _relightRequested = false;
+            return true;
+        }
+
         [ThreadStatic] private static Chunk[] _snapshotNeighbors;
         private static Block _snapshotAir;
         private static Resource.BlockData _snapshotAirSource;

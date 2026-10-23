@@ -1,7 +1,7 @@
 ﻿using Engine.Graphics.Atlas;
 using Engine;
 using Engine.Audio;
-using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using System;
@@ -21,7 +21,8 @@ namespace Spacebox.Game.GUI
         protected static Storage InputStorage = new Storage(1, 1);
         protected static Storage FuelStorage = new Storage(1, 1);
         protected static Storage OutputStorage = new Storage(1, 1);
-        protected static ResourceProcessingBlock processingBlock;
+        protected static ProcessingComponent processingBlock;
+        protected static Storage BufferStorage;
 
         public static string WindowName = "";
         private static AtlasSprite batteryIcon;
@@ -74,7 +75,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Activate(ResourceProcessingBlock block, LocalAstronaut player)
+        public static void Activate(ProcessingComponent block, LocalAstronaut player)
         {
             Player = player;
             if (!wasInitialized)
@@ -85,7 +86,7 @@ namespace Spacebox.Game.GUI
                 wasInitialized = true;
             }
 
-            var blockData = GameAssets.GetBlockDataById(block.Id);
+            var blockData = GameAssets.GetBlockDataById(block.Host.Id);
             WindowName = blockData.Name;
 
             if (craftedSound == null || craftedSound.IsDisposed)
@@ -116,15 +117,18 @@ namespace Spacebox.Game.GUI
             if (InputStorage != null) InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
             if (OutputStorage != null) OutputStorage.OnDataWasChanged -= OnInputItemWasChanged;
             if (FuelStorage != null) FuelStorage.OnDataWasChanged -= OnInputItemWasChanged;
+            if (BufferStorage != null) BufferStorage.OnDataWasChanged -= OnInputItemWasChanged;
 
             status = "Status: Ready";
             InputStorage.DisconnectStorage();
             FuelStorage.DisconnectStorage();
             OutputStorage.DisconnectStorage();
+            BufferStorage?.DisconnectStorage();
 
             InputStorage = processingBlock.InputStorage;
             FuelStorage = processingBlock.FuelStorage;
             OutputStorage = processingBlock.OutputStorage;
+            BufferStorage = processingBlock.BufferStorage;
 
             block.OnCrafted -= OnCrafted;
             block.OnCrafted += OnCrafted;
@@ -132,6 +136,7 @@ namespace Spacebox.Game.GUI
             InputStorage.ConnectStorage(player.Inventory, true);
             FuelStorage.ConnectStorage(player.Inventory, false);
             OutputStorage.ConnectStorage(player.Inventory, false);
+            BufferStorage?.ConnectStorage(player.Inventory, false);
 
             player.Inventory.ConnectStorage(InputStorage, false);
             player.Panel.ConnectStorage(InputStorage, false);
@@ -139,6 +144,7 @@ namespace Spacebox.Game.GUI
             InputStorage.OnDataWasChanged += OnInputItemWasChanged;
             OutputStorage.OnDataWasChanged += OnInputItemWasChanged;
             FuelStorage.OnDataWasChanged += OnInputItemWasChanged;
+            if (BufferStorage != null) BufferStorage.OnDataWasChanged += OnInputItemWasChanged;
 
             if (block.TryStartTask(out var task))
             {
@@ -152,7 +158,7 @@ namespace Spacebox.Game.GUI
                 UIManager.Open("resourceProcessing", "inventory");
         }
 
-        private static void OnCrafted(ResourceProcessingBlock block)
+        private static void OnCrafted(ProcessingComponent block)
         {
             if (!UIManager.IsOpen("resourceProcessing")) return;
 
@@ -203,9 +209,9 @@ namespace Spacebox.Game.GUI
                 bool isValidIngredient = false;
                 bool hasEnoughQuantity = false;
 
-                if (inputSlot.HasItem && GameAssets.Recipes.ContainsKey(processingBlock.BlockType))
+                if (inputSlot.HasItem && GameAssets.Recipes.ContainsKey(processingBlock.RecipeType))
                 {
-                    foreach (var recipe in GameAssets.Recipes[processingBlock.BlockType].Values)
+                    foreach (var recipe in GameAssets.Recipes[processingBlock.RecipeType].Values)
                     {
                         if (recipe.Ingredient.Item == inputSlot.Item)
                         {
@@ -245,10 +251,12 @@ namespace Spacebox.Game.GUI
             InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
             OutputStorage.OnDataWasChanged -= OnInputItemWasChanged;
             FuelStorage.OnDataWasChanged -= OnInputItemWasChanged;
+            if (BufferStorage != null) BufferStorage.OnDataWasChanged -= OnInputItemWasChanged;
 
             InputStorage = new Storage(1, 1);
             FuelStorage = new Storage(1, 1);
             OutputStorage = new Storage(1, 1);
+            BufferStorage = null;
             processingBlock = null;
             Player = null;
             _wasVisible = false;
@@ -262,13 +270,14 @@ namespace Spacebox.Game.GUI
         public static ItemSlot OutputSlot => OutputStorage.GetSlot(0, 0);
         public static AtlasSprite InputIcon => inputIcon;
         public static AtlasSprite OutputIcon => outputIcon;
-        public static ResourceProcessingBlock Block => processingBlock;
+        public static ProcessingComponent Block => processingBlock;
+        public static Storage Buffer => BufferStorage;
 
         public static IEnumerable<Recipe> Recipes
         {
             get
             {
-                if (processingBlock == null || !GameAssets.Recipes.TryGetValue(processingBlock.BlockType, out var recipes)) return Array.Empty<Recipe>();
+                if (processingBlock == null || !GameAssets.Recipes.TryGetValue(processingBlock.RecipeType, out var recipes)) return Array.Empty<Recipe>();
                 return recipes.Values;
             }
         }
@@ -333,10 +342,17 @@ namespace Spacebox.Game.GUI
 
         private static void CreditProcessedItems(ItemSlot slot, Item item, int moved)
         {
-            if (moved <= 0 || slot.Storage != OutputStorage || Player == null) return;
+            if (moved <= 0 || Player == null || !IsProductSlot(slot, item)) return;
 
             Player.PlayerStatistics.AddProcessedItems(moved);
-            if (item != null) PlayerActivity.Raise(PlayerActivityKind.ItemProcessed, item.Id, moved, processingBlock?.BlockType);
+            if (item != null) PlayerActivity.Raise(PlayerActivityKind.ItemProcessed, item.Id, moved, processingBlock?.RecipeType);
+        }
+
+        private static bool IsProductSlot(ItemSlot slot, Item item)
+        {
+            if (slot.Storage == OutputStorage) return true;
+            if (BufferStorage == null || slot.Storage != BufferStorage || item == null || processingBlock == null) return false;
+            return !GameAssets.TryGetRecipe(processingBlock.RecipeType, item.Id, out _);
         }
 
         private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)

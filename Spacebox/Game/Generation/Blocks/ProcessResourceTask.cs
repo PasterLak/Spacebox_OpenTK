@@ -1,13 +1,13 @@
 ﻿using Engine;
-using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 
 namespace Spacebox.Game
 {
     public class ProcessResourceTask : TickTask
     {
-        private ResourceProcessingBlock _block;
+        private ProcessingComponent _block;
 
-        public ProcessResourceTask(int requiredTicks, ResourceProcessingBlock block) : base(requiredTicks, true)
+        public ProcessResourceTask(int requiredTicks, ProcessingComponent block) : base(requiredTicks, true)
         {
             _block = block;
             base.OnComplete += OnCompleteHandler;
@@ -15,7 +15,7 @@ namespace Spacebox.Game
 
         private void OnCompleteHandler()
         {
-            if (_block == null || _block.Durability == 0 || !_block.IsRunning || _block.IsEntityDisposed)
+            if (_block == null || _block.Host.Durability == 0 || !_block.IsRunning || _block.IsEntityDisposed)
             {
                 base.Stop();
                 return;

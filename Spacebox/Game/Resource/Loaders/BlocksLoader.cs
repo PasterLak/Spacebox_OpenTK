@@ -108,11 +108,7 @@ namespace Spacebox.Game.Resource
 
                 if (blockData.Type == "storage")
                 {
-                    var Size = blockJson.StorageSize;
-                    if (Size.X < 1) Size = new Vector2Byte((byte)1, Size.Y);
-                    if (Size.Y < 1) Size = new Vector2Byte(Size.X, (byte)1);
-
-                    blockData = new StorageBlockData(blockData, Size);
+                    blockData = new StorageBlockData(blockData, StorageBlockData.ClampSize(blockJson.StorageSize));
                 }
                 else if (blockData.Type == "claim")
                 {
@@ -185,6 +181,7 @@ namespace Spacebox.Game.Resource
                     blockData = new OxygenGeneratorBlockData(blockData, blockJson.OxygenGenerator, GameSetLoader.ModInfo.ModId);
                 }
 
+                blockData.Components = BlockComponentRegistry.Resolve(blockData, blockJson);
                 GameAssetsRegister.RegisterBlock(blockData);
                 return true;
             }

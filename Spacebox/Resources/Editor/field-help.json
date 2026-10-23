@@ -129,8 +129,8 @@
     "DropQuantity": "How many items drop when the block is mined (1-255, default 1).",
     "FrontDirection": "Which side of the model counts as the front, as a direction vector (default up: 0,1,0). Used to orient the block, its textures and multi-cell size when placed.",
     "IsTransparent": "If true, light and the faces of neighbouring blocks show through it (glass, windows, thin models). Default false = solid opaque block.",
-    "LightColor": "Light emitted by the block as RGB 0-255. Default black (0,0,0) = gives no light.",
-    "StorageSize": "Inventory size of a storage block as columns x rows of slots (default 3x3, minimum 1). Only used by Type storage.",
+    "LightColor": "Light emitted by the block as RGB 0-255. Default black (0,0,0) = gives no light. With the light component the block only glows while powered.",
+    "StorageSize": "Inventory size as columns x rows of slots (default 3x3, minimum 1). Used by Type storage and by the storage component.",
     "Size": "Size in cells for multi-cell blocks: X width, Y height, Z depth (1-16 each, default 1x1x1). Signs and frames set this from their own sections.",
     "CellPixels": "Texture pixels per block cell on multi-cell blocks. 0 (default) = picked automatically so most textures fit; smaller textures repeat per cell.",
     "TextureFit": "If true, each face texture is stretched once over the whole face of a multi-cell block instead of repeating. Default false.",
@@ -141,13 +141,15 @@
     "Sign": "Settings for a writable sign: width, text limits, colour, font and glow. Only used by Type sign.",
     "Frame": "Settings for a picture frame: picture size and which picture items fit. Only used by Type frame.",
     "Cable": "Optional textures that make a cable change its look by its connections (port, straight, angle, hub). Only used by Type cable.",
-    "Generator": "Power output of a power generator. Only used by Type generator.",
+    "Generator": "Power output of the generator component. Used by Type generator and by blocks with the generator component.",
     "Gravity": "Settings for a gravity generator: radius, strength, power use, fall damage and presets. Only used by Type gravity.",
     "DnaReconstructor": "Settings for the respawn machine: DNA item used, power, revival time and sounds. Only used by Type dnareconstructor.",
     "Explosive": "Explosion settings. Used by Type explosive (bombs). A Type generator with this section explodes when destroyed. Not set by default.",
     "Pipe": "Settings for an item pipe: transfer speed, power and which sides take and give items. Only used by Type pipe.",
     "Disassembler": "Power use of the disassembler. Only used by Type disassembler.",
-    "Processing": "Power use of a furnace or crusher. Power 0 = works without electricity. Only used by Type furnace and crusher.",
+    "Processing": "Settings of the processing component: power use and recipe type. Used by Type furnace and crusher and by blocks with the processing component.",
+    "Components": "Extra behaviours combined on one block: processing, storage, generator, consumer, light. Works on Type modular, furnace, crusher and generator; each component reads its own section (Processing, StorageSize, Generator, Consumer). Default empty.",
+    "Consumer": "Power use of the consumer component, in EU. Only used by blocks with the consumer component.",
     "Thruster": "Settings for a ship thruster: force, power and free space in front of the nozzle. Only used by Type thruster.",
     "Console": "Settings for a ship console: number of key groups, power and what it controls. Only used by Type shipconsole.",
     "Cannon": "Settings for a ship cannon: projectile, reload, aiming limits and power. Only used by Type cannon.",
@@ -183,6 +185,9 @@
     "UseCooldown": "Seconds before the item can be used again. 0 = no wait. Default: 0.",
     "Sound": "Sound played when used. Sound name = audio file name without extension, global for the GameSet. Default: default."
   },
+  "ConsumerJSON": {
+    "Power": "Electricity the block needs while it works, in EU (0-8000, default 20). Adds to other power use of the block."
+  },
   "CraftingCategory": {
     "Id": "Unique id of the crafting tab. Items with this Category are listed in it.",
     "Name": "Tab name shown in the crafting window.",
@@ -201,7 +206,8 @@
     "SlotId": "Hotbar slot for hand or hotbar (0 = first). -1 = first free slot."
   },
   "ProcessingJSON": {
-    "Power": "Power used by the furnace or crusher, in EU (0-8000, default 0 = no electricity needed). It only works while its network has enough power."
+    "Power": "Power used by the processing component, in EU (0-8000, default 0 = no electricity needed). It only works while its network has enough power.",
+    "RecipeType": "Recipe group the machine uses (the Type of its recipes, e.g. furnace or crusher). Default empty = the block Type, so a modular block must set it."
   },
   "DisassemblerJSON": {
     "Power": "Power used while working, in EU (0-8000, default 40). Speed is set by Efficiency."
@@ -707,7 +713,8 @@
     "shipconsole": "Seat to pilot a ship and bind its thrusters, cannons and cameras.",
     "cannon": "Ship weapon that fires projectiles (Cannon section).",
     "shipcamera": "Camera the pilot can look through from the ship console.",
-    "invisible": "Solid block that is not drawn, e.g. an invisible barrier."
+    "invisible": "Solid block that is not drawn, e.g. an invisible barrier.",
+    "modular": "Block built only from Components (processing, storage, generator, consumer, light). Combine them freely, for example a furnace with a storage buffer or a lamp that needs power."
   },
   "ItemTypes": {
     "item": "Plain item: materials, ingredients and other things without an action.",
@@ -749,5 +756,12 @@
     "enter_gravity": "Walk inside a gravity field.",
     "all_of": "Finish all child tasks.",
     "any_of": "Finish one of the child tasks."
+  },
+  "BlockComponents": {
+    "processing": "Machine that turns items with the recipes of Processing.RecipeType. Optional Processing.Power makes it need electricity. Opens the machine window.",
+    "storage": "Item slots of StorageSize. Next to processing it is a buffer: input is pulled from it and products are put into it.",
+    "generator": "Produces Generator.Power EU for the electrical network. Opens the generator window when no machine or storage is on the block.",
+    "consumer": "Uses Consumer.Power EU from the electrical network; the block counts as powered only while the network has enough power.",
+    "light": "The block glows with its LightColor only while powered (or while its machine runs when it uses no power)."
   }
 }
