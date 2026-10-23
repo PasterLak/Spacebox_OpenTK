@@ -1,6 +1,6 @@
 using Engine.CanvasUI;
 using OpenTK.Mathematics;
-using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 using Spacebox.Game.GUI.Canvas.Items;
 
 namespace Spacebox.Game.GUI.Canvas.Windows;
@@ -15,7 +15,8 @@ public sealed class ProcessingWindow : GameWindow
     private readonly ItemSlotControl _output = new ItemSlotControl();
     private readonly VBoxContainer _recipes = new VBoxContainer();
     private readonly ProgressArrow _arrow = new ProgressArrow(new Vector2(44f, 22f)) { SizeFlagsVertical = SizeFlags.ShrinkCenter };
-    private ResourceProcessingBlock _shownBlock;
+    private readonly StorageGridControl _buffer = new StorageGridControl { Visible = false, SizeFlagsHorizontal = SizeFlags.ShrinkCenter };
+    private ProcessingComponent _shownBlock;
 
     public ProcessingWindow() : base("Machine")
     {
@@ -33,6 +34,8 @@ public sealed class ProcessingWindow : GameWindow
         slots.AddChild(_output);
         _input.Clicked += ResourceProcessingGUI.MoveItems;
         _output.Clicked += ResourceProcessingGUI.MoveItems;
+        left.AddChild(_buffer);
+        _buffer.SlotClicked += ResourceProcessingGUI.MoveItems;
 
         row.AddChild(new VSeparator());
         var right = row.AddChild(new VBoxContainer());
@@ -50,7 +53,7 @@ public sealed class ProcessingWindow : GameWindow
         if (ResourceProcessingGUI.Block.HasPower) StatusText.Set(_status, ResourceProcessingGUI.Status, StatusKind.Normal);
         else StatusText.Set(_status, "NO POWER", StatusKind.Bad);
         _arrow.Progress = ResourceProcessingGUI.Progress;
-        ShowEnergy(ResourceProcessingGUI.Block.ConsumptionRate);
+        ShowEnergy(ResourceProcessingGUI.Block.Host.ConsumptionRate);
 
         if (!ReferenceEquals(_shownBlock, ResourceProcessingGUI.Block))
         {
@@ -62,6 +65,8 @@ public sealed class ProcessingWindow : GameWindow
 
         _input.Refresh();
         _output.Refresh();
+        _buffer.Visible = ResourceProcessingGUI.Buffer != null;
+        _buffer.Show(ResourceProcessingGUI.Buffer);
     }
 
     private void BuildRecipes()

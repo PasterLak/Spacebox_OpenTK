@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 using Spacebox.Game.Generation.Shapes;
 using Spacebox.Game.Generation.Tools;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace Spacebox.Game.Resource
         public byte Durability = 0;
         public float Efficiency = 1f;
         public ushort ProcessingPower;
+        public BlockComponentDefinition[] Components;
 
         public bool IsTransparent { get; private set; } = false;
         public Vector3 LightColor { get; private set; } = Vector3.Zero;
@@ -108,6 +110,7 @@ namespace Spacebox.Game.Resource
             Durability = baseBlock.Durability;
             Efficiency = baseBlock.Efficiency;
             ProcessingPower = baseBlock.ProcessingPower;
+            Components = baseBlock.Components;
             IsTransparent = baseBlock.IsTransparent;
             LightColor = baseBlock.LightColor;
             BaseFrontDirection = baseBlock.BaseFrontDirection;

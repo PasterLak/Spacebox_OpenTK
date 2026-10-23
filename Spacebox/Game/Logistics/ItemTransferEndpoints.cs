@@ -1,4 +1,5 @@
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 
 namespace Spacebox.Game.Logistics;
 
@@ -8,7 +9,7 @@ public static class ItemTransferEndpoints
     {
         block => block as IItemTransferEndpoint,
         block => block is StorageBlock storage ? new StorageEndpoint(storage.GetContainerStorages(), true, false) : null,
-        block => block is ResourceProcessingBlock machine ? new MachineEndpoint(machine) : null,
+        block => block is ComponentBlock host && host.TryGet<ProcessingComponent>(out var machine) ? new MachineEndpoint(machine) : null,
         block => block is DisassemblerBlock disassembler ? new DisassemblerEndpoint(disassembler) : null,
         block => block is IContainerBlock container ? new StorageEndpoint(container.GetContainerStorages(), false, true) : null
     };

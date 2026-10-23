@@ -20,6 +20,8 @@ public static class EditorOptions
 
     public static IReadOnlyList<string> BlockTypes() => GameSetCatalog.BlockTypeNames.OrderBy(t => t).ToArray();
 
+    public static IReadOnlyList<string> BlockComponents() => Spacebox.Game.Resource.BlockComponentRegistry.Names.OrderBy(t => t).ToArray();
+
     public static IReadOnlyList<string> BlockModels(EditorContext editor) =>
         ProjectFiles.Union(BlockGeometryLibrary.Names, ProjectFiles.Names(editor.Project.RootPath, "Models/Blocks", ModelExtensions));
 

@@ -1,5 +1,6 @@
 ﻿
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Generation.Blocks.Components;
 using Spacebox.Game.Generation.Oxygen;
 using Spacebox.Game.Generation.Doors;
 
@@ -12,16 +13,16 @@ namespace Spacebox.Game.Resource
             new Dictionary<string, Func<BlockData, Block>>(StringComparer.OrdinalIgnoreCase)
         {
             { "interactive", data => new InteractiveBlock(data) },
-            { "crusher", data => new CrusherBlock(data) },
+            { "crusher", ComponentBlocks.Create },
             { "analyzer", data => new AnalyzerBlock(data) },
             { "mineral", data => new MineralBlock(data) },
-            { "furnace", data => new FurnaceBlock(data) },
+            { "furnace", ComponentBlocks.Create },
             { "disassembler", data => new DisassemblerBlock(data) },
             { "craftingtable", data => new CraftingTableBlock(data) },
             { "radar", data => new RadarBlock(data) },
              { "cable", data => new CableBlock(data) },
              { "block", data => new Block(data) },
-              { "generator", data => new GeneratorBlock(data) },
+              { "generator", ComponentBlocks.Create },
                { "consumer", data => new ConsumerBlock(data) },
                 { "storage", data => new StorageBlock(data as StorageBlockData) },
                 { "oxygengenerator", data => new OxygenGeneratorBlock(data) },
@@ -37,7 +38,8 @@ namespace Spacebox.Game.Resource
                 { "shipconsole", data => new ShipConsoleBlock(data) },
                 { "cannon", data => new CannonBlock(data) },
                 { "shipcamera", data => new ShipCameraBlock(data) },
-                { InvisibleBlock.TypeName, data => new InvisibleBlock(data) }
+                { InvisibleBlock.TypeName, data => new InvisibleBlock(data) },
+                { BlockComponentRegistry.ModularType, ComponentBlocks.Create }
         };
 
         public static Block CreateBlockFromId(short id)

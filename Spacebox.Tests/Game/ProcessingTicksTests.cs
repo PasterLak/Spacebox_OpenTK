@@ -1,5 +1,4 @@
-using Spacebox.Game.Generation.Blocks;
-using Spacebox.Game.Resource;
+using Spacebox.Game.Generation.Blocks.Components;
 using Xunit;
 
 namespace Spacebox.Tests.Game;
@@ -11,16 +10,16 @@ public class ProcessingTicksTests
     [InlineData(0, 1f)]
     public void ProcessingNeverTakesZeroTicks(int basicTicks, float efficiency)
     {
-        var block = new ResourceProcessingBlock(new BlockData("furnace", "furnace") { Efficiency = efficiency });
+        var processing = new ProcessingComponent(new ProcessingComponentDefinition("furnace", 0, efficiency));
 
-        Assert.Equal(1, block.GetTicksWithEfficiency(basicTicks));
+        Assert.Equal(1, processing.GetTicksWithEfficiency(basicTicks));
     }
 
     [Fact]
     public void ProcessingTicksScaleWithEfficiency()
     {
-        var block = new ResourceProcessingBlock(new BlockData("furnace", "furnace") { Efficiency = 2f });
+        var processing = new ProcessingComponent(new ProcessingComponentDefinition("furnace", 0, 2f));
 
-        Assert.Equal(50, block.GetTicksWithEfficiency(100));
+        Assert.Equal(50, processing.GetTicksWithEfficiency(100));
     }
 }

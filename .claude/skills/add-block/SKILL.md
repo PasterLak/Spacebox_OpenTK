@@ -34,12 +34,15 @@ Default uses the folder format (see `modding-guide.md`): create `Spacebox/Mods/G
 - `ID` must be unique, snake_case. The mod id prefix is added by the loader.
 - `Textures.Active` / `Textures.Inactive` accept `All` or per face `Up, Down, Left, Right, Forward, Back`. `Inactive` is used by machines when off.
 - Optional: `Sounds.Footsteps` (list of GameSet sound names played as footsteps in gravity, e.g. `footstepGlass1`-`4`; default stone on natural blocks, metal otherwise), `IsTransparent`, `LightColor {r,g,b}` (emissive), `FrontDirection`, `Efficiency`, `StorageSize` (storage only), `Door { MoveDirection, Speed, OpenTime, AutoClose }` (type `door`), `Generator { Power }` (type `generator`), `Size {x,y,z}` (multi-cell block, 1–16 per axis; x = width, y = height, z = depth relative to the front face). For multi-cell faces, a face-sized texture (e.g. 64×64 px on a 2×2 face of a 32 px block) spans the face and a one-cell texture repeats per cell; the pixels per cell are detected per block from its textures (any resolution works), override with `CellPixels` when every face of the block should repeat a large texture, or set `"TextureFit": true` to stretch each face texture once over the whole face. Electrical multi-cell blocks work (only the origin cell generates/consumes); storage and processing machines are still per cell.
+- Combining existing behaviours needs no code: `"Type": "modular"` with `"Components": ["processing", "storage", "generator", "consumer", "light"]` (any subset; settings in `Processing { Power, RecipeType }`, `StorageSize`, `Generator`, `Consumer { Power }`, `LightColor`). `furnace`, `crusher` and `generator` accept extra `Components` too. See modding-guide.md.
 - `"Unbreakable": true` works on any block: only creative players and commands can remove it. Type `invisible` makes a solid block that is only drawn while a player holds an invisible block (Default `barrier`).
 - Mass and Durability are stored in 8 bits each (0–255).
 
 ## 3. New behaviour (only if needed)
 
-1. Create `Spacebox/Game/Generation/Blocks/<Name>Block.cs` deriving from the closest base (`InteractiveBlock`, `ElectricalBlock`, `ResourceProcessingBlock`, `ConsumerBlock`, …). Follow the constructor pattern of a sibling block (`(BlockJSON data)`).
+Prefer a new block component when the behaviour could be combined with others: a `BlockComponent` subclass + `BlockComponentDefinition` in `Spacebox/Game/Generation/Blocks/Components/` (optional `IContainerComponent`, `INetworkStateComponent`, `ISavedComponent`, declared through `Features`), registered by name in `BlockComponentRegistry` (`Game/Resource/Loaders/`), plus field-help texts (`BlockComponents` group). Otherwise:
+
+1. Create `Spacebox/Game/Generation/Blocks/<Name>Block.cs` deriving from the closest base (`InteractiveBlock`, `ElectricalBlock`, `ConsumerBlock`, …). Follow the constructor pattern of a sibling block (`(BlockJSON data)`).
 2. Register it in `Spacebox/Game/Resource/Loaders/BlockFactory.cs` with a lowercase key: `{ "mytype", data => new MyTypeBlock(data) }`.
 3. If it needs extra JSON fields, add them to a dedicated data class (like `StorageBlockData`) instead of growing `BlockJSON` with type-specific fields.
 4. If it has UI, follow an existing window in `Spacebox/Game/GUI` (e.g. the analyzer UI).

@@ -34,6 +34,7 @@ public sealed class EditorOptionsTests : IDisposable
         var help = Help();
         var missing = new List<string>();
         foreach (var type in GameSetCatalog.BlockTypeNames) if (help.Text(FieldHelp.BlockTypes, type) == null) missing.Add("block " + type);
+        foreach (var name in Spacebox.Game.Resource.BlockComponentRegistry.Names) if (help.Text(FieldHelp.BlockComponents, name) == null) missing.Add("component " + name);
         foreach (var type in GameSetCatalog.ItemTypeNames) if (help.Text(FieldHelp.ItemTypes, type) == null) missing.Add("item " + type);
         foreach (var type in MobBrainFactory.Types) if (help.Text(FieldHelp.MobBehaviours, type) == null) missing.Add("mob " + type);
         foreach (var type in TutorialTaskFactory.Types) if (!type.StartsWith("test", StringComparison.OrdinalIgnoreCase) && help.Text(FieldHelp.TutorialTasks, type) == null) missing.Add("task " + type);

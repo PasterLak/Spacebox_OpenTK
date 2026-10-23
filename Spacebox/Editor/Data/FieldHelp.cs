@@ -7,6 +7,7 @@ public sealed class FieldHelp
 {
     public const string RelativePath = "Resources/Editor/field-help.json";
     public const string BlockTypes = "BlockTypes";
+    public const string BlockComponents = "BlockComponents";
     public const string ItemTypes = "ItemTypes";
     public const string MobBehaviours = "MobBehaviours";
     public const string TutorialTasks = "TutorialTasks";
