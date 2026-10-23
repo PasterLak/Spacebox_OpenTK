@@ -391,7 +391,7 @@ namespace Spacebox.Game.Player
 
             if (health.Value > 0)
             {
-                ColorOverlay.FadeOut(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1 / (10 - Math.Min(damage, 6)));
+                ColorOverlay.FadeOut(new System.Numerics.Vector3(1, 0, 0), 0.1f + 1f / (10 - Math.Min(damage, 6)));
                 HitImage.Show();
             }
             else
@@ -491,7 +491,7 @@ namespace Spacebox.Game.Player
 
         public void SetItemLight(ItemSlot? slot)
         {
-            var item = slot.Item;
+            var item = slot?.Item;
             if (slot != null && item != null && slot.Count > 0 && item.IsLuminous)
             {
                 ItemLight.Diffuse = item.Color.ToVector3();

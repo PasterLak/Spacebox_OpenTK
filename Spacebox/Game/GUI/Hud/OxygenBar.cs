@@ -89,6 +89,7 @@ public class OxygenBar
         IsInfinite = isInfinite;
         StatsGUI.TextOverride = GetTextOverride(isInAir, isInfinite);
         _refillTime = 0f;
+        if (airChanged) _time = 0f;
         if (airChanged) AirChanged?.Invoke(isInAir);
     }
 

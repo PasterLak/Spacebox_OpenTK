@@ -414,7 +414,7 @@ public sealed class NetworkSession : IDisposable
         int peer = NetworkManager.Instance.LocalPeerId;
         var player = new ConnectedPlayer { Peer = peer, Name = GameSession.PlayerName, SkinColor = GameSession.SkinColor };
         PlayerRegistry.Add(player);
-        player.PlayerObject = _playerSpawner.SpawnPlayer(peer, player.Name, player.SkinColor, _localPlayer.Position, _localPlayer.GetRotation());
+        player.PlayerObject = _playerSpawner.SpawnPlayer(peer, player.Name, PlayerSkinStore.Resolve(player.Name, player.SkinColor), _localPlayer.Position, _localPlayer.GetRotation());
     }
 
     private const string NameTakenReason = "Name is already taken";
@@ -542,7 +542,7 @@ public sealed class NetworkSession : IDisposable
         ProtectionNetwork.SendTo(sender);
         ClaimNetwork.SendSettingsTo(sender);
         ServerRulesNetwork.SendTo(sender);
-        player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, player.SkinColor, Vector3.Zero, Quaternion.Identity);
+        player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, PlayerSkinStore.Resolve(player.Name, player.SkinColor), Vector3.Zero, Quaternion.Identity);
         PlayerListNetwork.MarkDirty();
         Statistics.ServerStatisticsService.PlayerJoined(player.Name, PlayerRegistry.All.Count);
         ChatService.Broadcast($"{player.Name} joined the game", Color4.Yellow);

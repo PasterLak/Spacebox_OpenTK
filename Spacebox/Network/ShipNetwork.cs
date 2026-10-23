@@ -232,8 +232,11 @@ public static class ShipNetwork
         _movingLastTick.Clear();
         _movingThisTick.Clear();
         _restRepeats.Clear();
+        _deferredStates.Clear();
         _commandThrottle.Reset();
     }
+
+    private static readonly Dictionary<long, ShipStateMessage> _deferredStates = new Dictionary<long, ShipStateMessage>();
 
     private static readonly CommandSendThrottle _commandThrottle = new CommandSendThrottle();
 
@@ -521,6 +524,33 @@ public static class ShipNetwork
     private static void OnState(int sender, ShipStateMessage message)
     {
         if (NetworkManager.Instance.IsServer) return;
+
+        long id = message.EntityId;
+        if (_deferredStates.ContainsKey(id))
+        {
+            if (World.Instance == null || !World.Instance.TryFindEntity(id, out _))
+            {
+                _deferredStates[id] = message;
+                return;
+            }
+            _deferredStates.Remove(id);
+        }
+        else if (RemoteEntityBacklog.TryDefer(id, () => ApplyDeferredState(id)))
+        {
+            _deferredStates[id] = message;
+            return;
+        }
+
+        ApplyState(message);
+    }
+
+    private static void ApplyDeferredState(long entityId)
+    {
+        if (_deferredStates.Remove(entityId, out var latest)) ApplyState(latest);
+    }
+
+    private static void ApplyState(ShipStateMessage message)
+    {
         if (World.Instance == null || !World.Instance.TryFindEntity(message.EntityId, out var entity) || entity.Ship == null) return;
 
         entity.Ship.ApplySnapshot(message.Position, message.Orientation, message.Velocity, message.AngularVelocity);

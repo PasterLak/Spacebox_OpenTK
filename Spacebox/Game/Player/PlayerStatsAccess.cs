@@ -8,9 +8,13 @@ public static class PlayerStatsAccess
 
     public static void Restore(LocalAstronaut player, PlayerStat stats, int amount)
     {
-        if (player == null) return;
+        if (player == null || !player.IsAlive) return;
 
-        if (stats.HasFlag(PlayerStat.Health)) Set(player.HealthBar?.StatsData, amount);
+        if (stats.HasFlag(PlayerStat.Health))
+        {
+            Set(player.HealthBar?.StatsData, amount);
+            if (player.HealthBar?.StatsData is { Value: <= 0 }) player.Kill(new DeathCase(Spacebox.Network.Players.DeathMessageFormatter.CommandReason));
+        }
         if (stats.HasFlag(PlayerStat.Power)) Set(player.PowerBar?.StatsData, amount);
         if (stats.HasFlag(PlayerStat.Air)) Set(player.OxygenBar?.StatsData, amount);
     }

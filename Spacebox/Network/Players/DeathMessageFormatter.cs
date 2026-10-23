@@ -4,6 +4,7 @@ public static class DeathMessageFormatter
 {
     public const int MaxReasonLength = 80;
     public const string CommandReason = "Killed by the command";
+    public const string HitReason = "Hit by the command";
 
     public static string Format(string victim, string killer, string reason)
     {

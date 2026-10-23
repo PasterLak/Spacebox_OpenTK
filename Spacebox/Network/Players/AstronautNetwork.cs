@@ -28,6 +28,7 @@ public sealed class AstronautNetwork : NetworkTransform
     private readonly NetworkVariable<bool> _isUsingItem;
     private readonly NetworkVariable<bool> _isBoosting;
     private readonly NetworkVariable<short>[] _equipment;
+    private readonly NetworkVariable<byte> _skin;
     private static readonly EquipmentSlotType[] EquipmentSlots = Enum.GetValues<EquipmentSlotType>();
 
     public static AstronautNetwork Local { get; private set; }
@@ -36,6 +37,7 @@ public sealed class AstronautNetwork : NetworkTransform
     private FallImpactSound? _fallSound;
 
     public string PlayerName { get; set; }
+    public string InitialSkin { get; set; }
     public bool IsAlive => _isAlive.Value;
     public bool IsVulnerable => _isAlive.Value && _isVulnerable.Value;
 
@@ -51,6 +53,7 @@ public sealed class AstronautNetwork : NetworkTransform
         _isBoosting = CreateVariable(false, NetworkWritePermission.Owner);
         _equipment = new NetworkVariable<short>[EquipmentSlots.Length];
         for (int i = 0; i < _equipment.Length; i++) _equipment[i] = CreateVariable(NoItem, NetworkWritePermission.Owner);
+        _skin = CreateVariable(AstronautSkins.IndexOf(AstronautSkins.Default), NetworkWritePermission.Server);
     }
 
 
@@ -111,6 +114,10 @@ public sealed class AstronautNetwork : NetworkTransform
         _movement.AllowJump(Time.Total, SpawnGraceSeconds);
 
         if (Owner is not Astronaut astronaut) return;
+
+        if (IsServer) _skin.Value = AstronautSkins.IndexOf(InitialSkin);
+        _skin.Changed += (_, value) => astronaut.SetSkinColor(AstronautSkins.NameAt(value));
+        astronaut.SetSkinColor(AstronautSkins.NameAt(_skin.Value));
 
         if (IsOwner)
         {
@@ -346,6 +353,22 @@ public sealed class AstronautNetwork : NetworkTransform
         SendRpc(nameof(ApplyServerStats), (byte)stats, amount);
     }
 
+    public void SetSkinByServer(string skin)
+    {
+        if (IsServer) _skin.Value = AstronautSkins.IndexOf(skin);
+    }
+
+    public void HitByServer(int damage)
+    {
+        SendRpc(nameof(ApplyServerHit), damage);
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void ApplyServerHit(int damage)
+    {
+        if (Owner is LocalAstronaut local && damage > 0) local.TakeDamage(damage, new DeathCase(DeathMessageFormatter.HitReason));
+    }
+
     public void KillByServer()
     {
         SendRpc(nameof(ApplyServerKill));
@@ -370,7 +393,7 @@ public sealed class AstronautNetwork : NetworkTransform
 
         var restored = (PlayerStat)stats & PlayerStat.All;
         PlayerStatsAccess.Restore(local, restored, amount);
-        Spacebox.Game.GUI.Chat.Write($"The server restored your {PlayerStatsAccess.Describe(restored)}", Color4.Orange);
+        Spacebox.Game.GUI.Chat.Write(amount < 0 ? $"The server restored your {PlayerStatsAccess.Describe(restored)}" : $"The server set your {PlayerStatsAccess.Describe(restored)} to {amount}", Color4.Orange);
     }
 
     [Rpc(RpcTarget.Owner)]

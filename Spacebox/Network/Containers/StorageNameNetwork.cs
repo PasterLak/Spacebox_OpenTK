@@ -63,6 +63,7 @@ public static class StorageNameNetwork
     private static void OnStorageName(int sender, StorageNameMessage message)
     {
         var network = NetworkManager.Instance;
+        if (!network.IsServer && !message.Key.IsObject && RemoteEntityBacklog.TryDefer(message.Key.EntityId, () => OnStorageName(sender, message))) return;
         string name = Sanitize(message.Name);
         if (name == null || !ContainerResolver.TryResolve(message.Key, out var container) || container is not StorageBlock block) return;
         if (network.IsServer && (ProtectionNetwork.BlocksPeerKey(sender, message.Key) || !ContainerServer.IsInReach(sender, message.Key, WorldEditNetwork.MaxEditDistance))) return;

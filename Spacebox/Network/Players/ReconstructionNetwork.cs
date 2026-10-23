@@ -201,6 +201,22 @@ public static class ReconstructionNetwork
         _blocker = string.IsNullOrEmpty(message.Blocker) ? null : message.Blocker;
     }
 
+    private const float MaxReportedOffset = 32f;
+
+    public static bool AcceptsReportedPosition(Vector3 tracked, Vector3 reported)
+    {
+        return NetValidation.IsFinite(reported) && Vector3.DistanceSquared(tracked, reported) <= MaxReportedOffset * MaxReportedOffset;
+    }
+
+    private static bool TryGetDeathPosition(AstronautNetwork player, Vector3 reported, out Vector3 position)
+    {
+        position = reported;
+        if (player.Owner is not Spacebox.Game.Player.Astronaut astronaut) return NetValidation.IsFinite(reported);
+
+        position = astronaut.Position;
+        return AcceptsReportedPosition(position, reported);
+    }
+
     private static void OnRequest(int sender, ReconstructionRequestMessage message)
     {
         var network = NetworkManager.Instance;
@@ -209,13 +225,13 @@ public static class ReconstructionNetwork
         int requestId = message.RequestId;
         var player = AstronautNetwork.Find(sender);
         var token = new object();
-        if (player == null || player.IsAlive || !NetValidation.IsFinite(message.Position) || !_busyPeers.TryAdd(sender, token))
+        if (player == null || player.IsAlive || !TryGetDeathPosition(player, message.Position, out var position) || !_busyPeers.TryAdd(sender, token))
         {
             network.Send(sender, ReconstructionResultMessage.From(requestId, null));
             return;
         }
 
-        DnaReconstructionService.Request(message.Position, sender, grant =>
+        DnaReconstructionService.Request(position, sender, grant =>
         {
             if (!IsCurrent(sender, token)) return;
             _busyPeers.Remove(sender);

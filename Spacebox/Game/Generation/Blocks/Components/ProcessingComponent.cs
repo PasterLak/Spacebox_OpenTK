@@ -102,7 +102,7 @@ public sealed class ProcessingComponent : BlockComponent, IContainerComponent, I
         if (!RequiresPower) return;
         Host.SetEmission(_isRunning && isActive, true);
         if (Spacebox.Network.GameSession.IsRemoteClient) return;
-        if (Task != null)
+        if (Task != null && !Task.IsStopped)
         {
             if (isActive) Task.Continue();
             else Task.Pause();

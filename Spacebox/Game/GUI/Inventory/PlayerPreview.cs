@@ -141,7 +141,7 @@ public sealed class PlayerPreview : IDisposable
 
     private void Sync(LocalAstronaut player, PlayerEquipment equipment, Item heldItem)
     {
-        string skin = GameSessionSkin();
+        string skin = player?.Skin ?? GameSessionSkin();
         if (skin != _skinColor)
         {
             _skinColor = skin;

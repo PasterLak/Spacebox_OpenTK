@@ -107,6 +107,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         if (GameSession.IsRemoteClient) Spacebox.Network.Players.PlayerGameModes.Current.Reset();
         else Spacebox.Network.Players.PlayerGameModes.Current.Load(World.WorldData.WorldFolderPath);
         if (!GameSession.IsRemoteClient && !GameSession.IsDedicated) Spacebox.Game.Rules.WorldRulesStore.Load(World.WorldData.WorldFolderPath);
+        if (!GameSession.IsRemoteClient) Spacebox.Network.Players.PlayerSkinStore.Load(World.WorldData.WorldFolderPath);
         blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks);
         var world = new World(localPlayer, blockMaterial);
         AttachComponent(world);
@@ -161,6 +162,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new StatCommand(localPlayer, "health", PlayerStat.Health));
         Debug.RegisterCommand(new StatCommand(localPlayer, "power", PlayerStat.Power));
         Debug.RegisterCommand(new StatCommand(localPlayer, "air", PlayerStat.Air));
+        Debug.RegisterCommand(new SetStatCommand(localPlayer));
+        Debug.RegisterCommand(new HitCommand(localPlayer));
+        Debug.RegisterCommand(new SkinCommand(localPlayer));
         Debug.RegisterCommand(new ItemsCommand());
         Debug.RegisterCommand(new PositionCommand(localPlayer));
         Debug.RegisterCommand(new SetSpawnCommand(localPlayer));
@@ -383,6 +387,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Protection.ClaimSettings.ClearOverride();
         CreativeTools.Reset();
         Spacebox.Game.Pictures.PictureFrameInteraction.Reset();
+        Spacebox.Network.Players.PlayerSkinStore.Reset();
         if (!GameSession.IsDedicated)
         {
             Spacebox.Game.Rules.ServerRules.ResetSession();

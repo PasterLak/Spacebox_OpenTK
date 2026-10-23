@@ -60,8 +60,11 @@ namespace Spacebox.Game.Player
 
         }
 
+        public string Skin { get; private set; } = AstronautSkins.Default;
+
         protected void CreateModel(int id, string color)
         {
+            Skin = AstronautSkins.Normalize(color);
 
             Texture2D tex = GetAstronautTexture(color);
 
@@ -88,6 +91,7 @@ namespace Spacebox.Game.Player
 
             Texture2D tex = GetAstronautTexture(color);
             if (tex == null) return;
+            Skin = AstronautSkins.Normalize(color);
 
             if (AstBody != null && AstBody.Model != null && AstBody.Model.Material is TextureMaterial bodyMat)
                 bodyMat.MainTexture = tex;

@@ -290,8 +290,8 @@ public class Projectile : Node3D
     {
         if (RaycastVoxels(out var hit))
         {
-            if (TryTriggerReactiveBlock(hit)) return true;
             if (TryRicochet(hit)) return true;
+            if (TryTriggerReactiveBlock(hit)) return true;
 
             HandleVoxelHit(hit);
             return true;
@@ -338,12 +338,15 @@ public class Projectile : Node3D
         OnDespawn?.Invoke(this);
     }
 
+    public static bool ShouldRicochet(float ricochetAngle, int possibleRicochets, int ricochets, float incidentAngle)
+    {
+        if (ricochetAngle <= 0 || ricochets >= possibleRicochets) return false;
+        return incidentAngle <= ricochetAngle;
+    }
+
     private bool TryRicochet(HitInfo hit)
     {
-        if (Parameters.RicochetAngle <= 0 || currentRicochets >= Parameters.PossibleRicochets) return false;
-
-        var angle = Ray.CalculateIncidentAngle(ray, hit.normalWorld);
-        if (angle > Parameters.RicochetAngle) return false;
+        if (!ShouldRicochet(Parameters.RicochetAngle, Parameters.PossibleRicochets, currentRicochets, Ray.CalculateIncidentAngle(ray, hit.normalWorld))) return false;
 
         ray = ray.CalculateRicochetRay(hit.hitPosition, hit.normalWorld, ray.Length);
         PlayRicochetSound(hit.hitPosition);

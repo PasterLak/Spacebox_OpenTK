@@ -44,13 +44,13 @@ public sealed class PlayerSpawnService : IDisposable
 
         if (context.IsOwner && _localPlayer != null)
         {
-            _localPlayer.AttachComponent(new AstronautNetwork { PlayerName = name });
+            _localPlayer.AttachComponent(new AstronautNetwork { PlayerName = name, InitialSkin = skin });
             return _localPlayer;
         }
 
         var remote = new RemoteAstronaut(name, skin, position);
         remote.SetRotation(rotation);
-        remote.AttachComponent(new AstronautNetwork { PlayerName = name });
+        remote.AttachComponent(new AstronautNetwork { PlayerName = name, InitialSkin = skin });
         _root.AddChild(remote);
         return remote;
     }

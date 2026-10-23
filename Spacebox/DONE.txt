@@ -26,6 +26,7 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- commands: /hit [player] <damage>, /set <hp|power|air> <value> [player], /skin <color> [player] (synced, saved per world in skins.nbt)
 - server statistics: most players today and ever, players per day, joins, different players, play time, running time; stats command and dashboard panel
 - GameSet editor rebuilt on the new retained UI: every page (blocks, items, projectiles, recipes, disassembly, loot, mobs, generation with biome map, tutorials, sounds, atlases, all files) with property grid, 3D previews and summaries
 - GameSet editor tutorials: outline of chapters and steps, the editor shows only the selected step or chapter, add/move/duplicate/delete steps and chapters
@@ -137,6 +138,10 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- bullets that ricochet off a bomb no longer make it explode
+- /health 0 or /set hp 0 kills the player instead of leaving them alive at 0 HP; stat commands do nothing on a dead player
+- oxygen use timer restarts when leaving an air zone; damage flash lasts longer for big hits
+- multiplayer: ships that stop while a client is loading them no longer freeze at an old position; storage renames reach clients that are still loading; DNA reconstruction uses the server's position of the player
 - build preview: the magnet outline covers the real face of multi-cell and shaped blocks and hides when the block can't be placed; the drill selector fits the model of shaped blocks
 - world preview: saving renders a clean world frame (no pause menu, HUD, held item, build preview or outlines)
 - chat input and suggestions are see-through again; gravity generator on/off is a switch; doors open while binding ship parts; hull blocks moved to Building

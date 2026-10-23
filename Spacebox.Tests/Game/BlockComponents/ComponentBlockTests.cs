@@ -168,6 +168,33 @@ public class ComponentBlockTests
     }
 
     [Fact]
+    public void PoweredProcessing_RestartsWhenPowerReturnsAfterItFinished()
+    {
+        using var assets = new ComponentTestAssets(recipeTicks: 2);
+        var block = ComponentTestAssets.Modular(ComponentTestAssets.Processing(power: 10));
+        block.TryGet<ProcessingComponent>(out var processing);
+        block.IsActive = true;
+        processing.InputStorage.SetSlot(0, 0, assets.Ore, 1);
+        processing.TryStart();
+        Assert.True(processing.IsRunning);
+
+        var task = processing.Task;
+        for (int i = 0; i < 4 && processing.IsRunning; i++) task.Update();
+        for (int i = 0; i < 4; i++) task.Update();
+        Assert.False(processing.IsRunning);
+
+        block.IsActive = false;
+        processing.InputStorage.SetSlot(0, 0, assets.Ore, 1);
+        processing.TryStart();
+        Assert.False(processing.IsRunning);
+
+        block.IsActive = true;
+
+        Assert.True(processing.IsRunning);
+        processing.StopTask();
+    }
+
+    [Fact]
     public void ProcessingClient_RaisesCraftedWhenTheServerFinishesAnItem()
     {
         using var assets = new ComponentTestAssets(recipeTicks: 3);
