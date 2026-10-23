@@ -212,7 +212,7 @@ Mods/GameSets/Default/
   disassembly.json optional: DefaultReturnPercent (50), DefaultDurationSec (10), Items [ { Item, Disabled, ReturnPercent, DurationSec, InputQuantity, Products [ { Item, Quantity } ] } ]; without the file every item uses the defaults
   ships.json       optional ship physics: MaxSpeed, MaxAngularSpeed, LinearDamping, AngularDamping, LinearSnap, AngularSnap, MaxStep, BoardDistance, LeaveDistance, CollisionBounce
   Emissions/ Sounds/ UI/ Projectiles/ AI/   shared emission maps (both atlases), shared sounds, ...
-  Mobs/            mob definitions (Id, Behaviour, Model, Texture, Health, Min/MaxDamage, speeds, senses, FleeChance %, EatTime, MealIntervalMin/Max, MealNear/FarDistance, EdibleBlocks (empty = natural blocks), Loot (loot table file name), Spawn rules); all fields have defaults
+  Mobs/            mob definitions (Id, Behaviour, Model, Texture, Health, Min/MaxDamage, speeds, senses, FleeChance %, DarkSightRange, WatchChance %, ReturnDistance, EatTime, MealIntervalMin/Max, MealNear/FarDistance, EdibleBlocks (empty = natural blocks), Loot (loot table file name), Spawn rules); all fields have defaults
   Generation/      generator.json, Asteroids/, Biomes/, Loot/, Structures/
   Player/          spawn parameters
   Optional/        lighting.json

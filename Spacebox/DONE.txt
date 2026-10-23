@@ -381,6 +381,14 @@ Fixes
 - waypoint names are drawn under the windows; crafting items fill from the bottom, 3 rows visible, Back and category name at the bottom; hotbar on a rounded panel, rounded bars; inventory one slot lower
 - fixed: inventory key hints stayed on screen after closing the inventory with Escape
 - waypoint window on CanvasUI; console/chat command kill [player]; ship placement keys can be changed in Controls; crafting: Back on the right, always 3 rows with empty slots; bold text has more space between letters
+- Modern interface is the default (existing settings switch once); crafting categories in group tabs (Blocks, Items, Ships) within the inventory width; machine windows as tall as the inventory; equipment slots spaced like the inventory; pause: player list left, statistics right; waypoint list as wide as its button; markers 30% smaller and steadier
+- ship placement turns with the arrow keys and PageUp/PageDown (Alt: fine steps) so movement keys stay free
+- enhanced furnace and crusher need power (30 EU), the basic ones still work without
+- mineral parasite: notices players with the flashlight off only within 3 blocks, sometimes only watches until hurt, flies back home after fleeing
+- aimed mobs and players get a thin model outline instead of a ring
+- fixed: server config with a typo was overwritten (kept as .broken now), unprotect/clear_inventory/spawn/tpa/use from remote chat, same-IP join kicked a logged-in player before the password check, bans lost while the server sleeps, unban kept the IP ban, sleeping server woke for banned/wrong-version joins, mod install leftovers and names, duplicate ids renamed instead of skipped
+- fixed multiplayer: rejected area edits and multi-cell block edits desynced the client, failed placements sent to others, gravity generator button stuck, mob spawner lost when the server refused, door/binding changes lost while an entity loaded, client-sent block damage/repair trusted, fake death messages, ship mount refusal
+- fixed GameSet editor: Save and exit on a failed save, edits lost after folder conversion, adding to a broken JSON file overwrote it, loot preview crash, stale entry list, duplicated game modes replacing others, texture pack page blank, deleted files coming back, blueprint left after deleting an entry, new files outside the GameSet
 - fixed: crash when closing the game (hotbar input after the player was removed)
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
