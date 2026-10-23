@@ -359,6 +359,7 @@ Fixes
 - extensions can extend other extensions (the parent is turned on and loaded first, versions check the parent, Extends loops are refused)
 - extension ids get the extension's namespace automatically (weapons_pack:laser): packs never clash, short ids resolve to the pack, its parents, then the base; old saves and default:<id> still find extension items
 - GameSet editor: Target selector for extensions (All GameSets or only one GameSet, saved into Bases/<id>/)
+- extension projectiles, mobs, loot tables, crafting categories and folder files are namespaced too; --editor accepts extension ids; Mods: Generation editor button removed (Generation is a page of the GameSet editor)
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine

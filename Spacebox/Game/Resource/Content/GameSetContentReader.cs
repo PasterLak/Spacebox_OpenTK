@@ -25,18 +25,23 @@ public static class GameSetContentReader
             contents.Add(content);
         }
 
+        for (int i = 0; i < layers.Count; i++)
+        {
+            string ns = NamespaceOf(layers[i], scopes);
+            AddAll(categories, contents[i].Categories, entry => DefineCategory(entry, ns, scopes, categories.Contains));
+        }
+
         Func<string, bool> exists = key => blocks.Contains(key) || items.Contains(key);
         for (int i = 0; i < layers.Count; i++)
         {
             string ns = NamespaceOf(layers[i], scopes);
-            AddAll(blocks, contents[i].Blocks, entry => Define(entry, ns, scopes, exists));
-            AddAll(items, contents[i].Items, entry => Define(entry, ns, scopes, exists));
+            AddAll(blocks, contents[i].Blocks, entry => WithCategory(Define(entry, ns, scopes, exists), ns, scopes, categories.Contains));
+            AddAll(items, contents[i].Items, entry => WithCategory(Define(entry, ns, scopes, exists), ns, scopes, categories.Contains));
         }
 
         for (int i = 0; i < layers.Count; i++)
         {
             string ns = NamespaceOf(layers[i], scopes);
-            AddAll(categories, contents[i].Categories, entry => entry.WithNamespace(ns));
             AddAll(blueprints, contents[i].Blueprints, entry => Reference(entry, entry.Key, ns, scopes, exists));
             AddAll(recipes, contents[i].Recipes, entry => RecipeReference(entry, ns, scopes, exists));
         }
@@ -74,6 +79,28 @@ public static class GameSetContentReader
         string key = scopes.Define(entry.Key, ns, exists);
         int colon = key.IndexOf(':');
         return entry.WithKey(key, colon < 0 ? null : key.Substring(0, colon));
+    }
+
+    private static ContentEntry DefineCategory(ContentEntry entry, string ns, IdScopes scopes, Func<string, bool> exists)
+    {
+        if (scopes == null || ns == null || string.IsNullOrEmpty(entry.Key)) return entry.WithNamespace(ns);
+        string key = scopes.Define(entry.Key, ns, exists);
+        if (key == entry.Key) return entry.WithNamespace(ns);
+        var data = (System.Text.Json.Nodes.JsonObject)entry.Data.DeepClone();
+        ContentJson.Set(data, "Id", key);
+        return new ContentEntry(key, data, entry.Layer, entry.Source, entry.SearchDirectories, ns);
+    }
+
+    private static ContentEntry WithCategory(ContentEntry entry, string ns, IdScopes scopes, Func<string, bool> categoryExists)
+    {
+        if (scopes == null || ns == null || entry.Data == null) return entry;
+        string category = ContentJson.GetString(entry.Data, "Category");
+        if (string.IsNullOrEmpty(category) || category.Contains(':')) return entry;
+        string resolved = scopes.Resolve(category.ToLowerInvariant(), ns, categoryExists);
+        if (!resolved.Contains(':')) return entry;
+        var data = (System.Text.Json.Nodes.JsonObject)entry.Data.DeepClone();
+        ContentJson.Set(data, "Category", resolved);
+        return new ContentEntry(entry.Key, data, entry.Layer, entry.Source, entry.SearchDirectories, entry.Namespace);
     }
 
     private static ContentEntry Reference(ContentEntry entry, string raw, string ns, IdScopes scopes, Func<string, bool> exists)

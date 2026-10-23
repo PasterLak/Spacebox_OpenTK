@@ -5,17 +5,21 @@ namespace Spacebox.Game.Resource.Content;
 
 public sealed class LayeredFile
 {
-    public LayeredFile(string key, JsonNode data, ContentLayer layer, string source, IReadOnlyList<string> roots)
+    public LayeredFile(string key, JsonNode data, ContentLayer layer, string source, IReadOnlyList<string> roots, string ns = null)
     {
         Key = key;
         Data = data;
         Layer = layer;
         Source = source;
         Roots = roots;
+        Namespace = ns;
     }
 
     public string Key { get; }
-    public string Name => Path.GetFileName(Key);
+    public string Namespace { get; }
+    public string Name => string.IsNullOrEmpty(Namespace) ? Path.GetFileName(Key) : Namespace + ":" + Path.GetFileName(Key.Substring(Namespace.Length + 1));
+
+    public LayeredFile WithKey(string key, string ns) => new LayeredFile(key, Data, Layer, Source, Roots, ns);
     public JsonNode Data { get; }
     public ContentLayer Layer { get; }
     public string Source { get; }
@@ -38,7 +42,7 @@ public sealed class LayeredFile
         foreach (var root in Roots)
             if (!roots.Contains(root)) roots.Add(root);
         var data = Data is JsonObject target && patch.Data is JsonObject changes ? ContentJson.Merge(target, changes) : patch.Data?.DeepClone();
-        return new LayeredFile(Key, data, patch.Layer, patch.Source, roots);
+        return new LayeredFile(Key, data, patch.Layer, patch.Source, roots, Namespace);
     }
 }
 
@@ -53,12 +57,14 @@ public sealed class GameSetFiles
 
     private readonly IReadOnlyList<ContentLayer> _baseCandidates;
     private readonly IReadOnlyList<ContentLayer> _extensions;
+    private readonly IdScopes _scopes;
     private readonly List<string> _warnings = new List<string>();
 
-    public GameSetFiles(IReadOnlyList<ContentLayer> baseCandidates, IReadOnlyList<ContentLayer> extensions)
+    public GameSetFiles(IReadOnlyList<ContentLayer> baseCandidates, IReadOnlyList<ContentLayer> extensions, IdScopes scopes = null)
     {
         _baseCandidates = baseCandidates ?? Array.Empty<ContentLayer>();
         _extensions = extensions ?? Array.Empty<ContentLayer>();
+        _scopes = scopes;
     }
 
     public static GameSetFiles For(GameSetStack stack)
@@ -67,7 +73,7 @@ public sealed class GameSetFiles
         foreach (var fallback in stack.Fallbacks) candidates.Add(fallback.ToLayer());
         var extensions = new List<ContentLayer>();
         for (int i = 1; i < stack.Layers.Count; i++) extensions.Add(stack.Layers[i]);
-        return new GameSetFiles(candidates, extensions);
+        return new GameSetFiles(candidates, extensions, IdScopes.For(stack));
     }
 
     public IReadOnlyList<string> Warnings => _warnings;
@@ -134,6 +140,8 @@ public sealed class GameSetFiles
             string key = Path.ChangeExtension(Path.GetRelativePath(folder, path), null).Replace('\\', '/');
             var file = Read(layer, path, key);
             if (file.Data == null) continue;
+            file = Namespaced(file, files);
+            key = file.Key;
 
             if (ContentJson.IsRemoval(file.Data))
             {
@@ -148,6 +156,15 @@ public sealed class GameSetFiles
                 order.Add(key);
             }
         }
+    }
+
+    private LayeredFile Namespaced(LayeredFile file, Dictionary<string, LayeredFile> files)
+    {
+        if (_scopes == null || !_scopes.IsExtension(file.Layer.Id)) return file;
+        string ns = file.Layer.Id.ToLowerInvariant();
+        string key = _scopes.Define(file.Key, ns, files.ContainsKey);
+        int colon = key.IndexOf(':');
+        return file.WithKey(key, colon < 0 ? null : key.Substring(0, colon));
     }
 
     private LayeredFile Read(ContentLayer layer, string path, string key)

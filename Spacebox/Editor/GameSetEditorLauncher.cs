@@ -9,6 +9,7 @@ public static class GameSetEditorLauncher
 {
     public static bool TryOpen(string gameSetFolder, string startPanel)
     {
+        gameSetFolder = FolderOf(gameSetFolder);
         var configPath = Path.Combine(Spacebox.Network.GameSetLocator.FolderPath(gameSetFolder), "config.json");
         if (!File.Exists(configPath))
         {
@@ -26,5 +27,11 @@ public static class GameSetEditorLauncher
             StartPanel = startPanel
         });
         return true;
+    }
+
+    private static string FolderOf(string idOrFolder)
+    {
+        var installed = Spacebox.Game.Resource.Content.InstalledGameSets.Scan(Spacebox.Game.Resource.Content.ModFolders.Local);
+        return Spacebox.Game.Resource.Content.InstalledGameSets.Find(installed, idOrFolder)?.FolderName ?? idOrFolder;
     }
 }

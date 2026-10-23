@@ -296,7 +296,7 @@ public class GenerationLoader
         {
             if (mob == null || string.IsNullOrWhiteSpace(mob.Mob)) continue;
 
-            string mobId = ShortId(mob.Mob);
+            string mobId = GameSetLoader.ResolveName(BaseShortId(mob.Mob), null, GameAssets.Mobs.ContainsKey, GameAssets.Mobs.Keys);
             if (!GameAssets.Mobs.ContainsKey(mobId))
             {
                 Debug.Warning($"[GenerationLoader] Asteroid {json.Id}: unknown mob '{mob.Mob}'");
@@ -308,10 +308,14 @@ public class GenerationLoader
         return rules.ToArray();
     }
 
-    private static string ShortId(string id)
+    private static string BaseShortId(string id)
     {
-        int colon = id.IndexOf(':');
-        return colon < 0 ? id.Trim() : id.Substring(colon + 1).Trim();
+        string trimmed = id.Trim().ToLowerInvariant();
+        int colon = trimmed.IndexOf(':');
+        if (colon < 0 || GameAssets.Mobs.ContainsKey(trimmed)) return trimmed;
+        string shortId = trimmed.Substring(colon + 1);
+        bool isBase = string.Equals(trimmed.Substring(0, colon), GameSetLoader.ModInfo?.ModId ?? "default", StringComparison.OrdinalIgnoreCase);
+        return isBase ? shortId : trimmed;
     }
 
     private static AsteroidLayer ConvertLayer(AsteroidLayerJSON json)

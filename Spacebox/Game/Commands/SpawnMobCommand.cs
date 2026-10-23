@@ -70,7 +70,7 @@ internal sealed class SpawnMobCommand : CommandBase, Engine.Commands.IArgumentSu
                 return;
         }
 
-        if (!GameAssets.Mobs.TryGetValue(args[0], out var definition))
+        if (!GameAssets.Mobs.TryGetValue(Spacebox.Game.Resource.GameSetLoader.ResolveName(args[0], null, GameAssets.Mobs.ContainsKey, GameAssets.Mobs.Keys) ?? "", out var definition))
         {
             Debug.Error($"Unknown mob '{args[0]}'. Use '{Name} list'");
             return;

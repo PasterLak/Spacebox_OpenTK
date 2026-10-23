@@ -104,4 +104,40 @@ public sealed class PackNamespaceTests : IDisposable
         var blueprint = Assert.Single(content.Blueprints, b => b.Key == "lasers:lens");
         Assert.Equal("weapons:laser", (string)((JsonObject)((JsonArray)blueprint.Data["Ingredients"]!)[0]!)["Item"]!);
     }
+
+    [Fact]
+    public void PackCategories_AreNamespacedAndUsedByThePackItems()
+    {
+        WriteBase();
+        _sets.Write("Default/Crafting/categories.json", "{ \"Categories\": [ { \"Id\": \"tools\", \"Name\": \"Tools\" } ], \"Blueprints\": [] }");
+        _sets.Config("Weapons", "weapons", "*");
+        _sets.Write("Weapons/Crafting/categories.json", "{ \"Categories\": [ { \"Id\": \"weapons\", \"Name\": \"Weapons\" } ] }");
+        _sets.Write("Weapons/Items/laser/laser.json", "{ \"ID\": \"laser\", \"Name\": \"Laser\", \"Category\": \"weapons\" }");
+        _sets.Write("Weapons/Items/wrench/wrench.json", "{ \"ID\": \"wrench\", \"Name\": \"Wrench\", \"Category\": \"tools\" }");
+
+        var content = Read("weapons");
+
+        var category = Assert.Single(content.Categories, c => c.Key.EndsWith("weapons"));
+        Assert.Equal("weapons:weapons", category.Key);
+        Assert.Equal("weapons:weapons", (string)category.Data["Id"]!);
+        Assert.Equal("weapons:weapons", (string)content.Items.Single(i => i.Key == "weapons:laser").Data["Category"]!);
+        Assert.Equal("tools", (string)content.Items.Single(i => i.Key == "weapons:wrench").Data["Category"]!);
+    }
+
+    [Fact]
+    public void PackFolderFiles_WithTheSameNameStaySeparate()
+    {
+        WriteBase();
+        _sets.Config("Weapons", "weapons", "*");
+        _sets.Write("Weapons/Projectiles/laser.json", "{ \"Damage\": 10 }");
+        _sets.Write("Weapons/Generation/Loot/crate.json", "[]");
+        _sets.Config("Guns", "guns", "*");
+        _sets.Write("Guns/Projectiles/laser.json", "{ \"Damage\": 20 }");
+
+        var result = GameSetStackResolver.Resolve(ModFolders.Flat(_sets.Root), "default", new[] { "weapons", "guns" });
+        var files = GameSetFiles.For(result.Stack);
+
+        Assert.Equal(new[] { "guns:laser", "weapons:laser" }, files.Folder("Projectiles").Select(f => f.Name).OrderBy(n => n).ToArray());
+        Assert.Equal("weapons:crate", Assert.Single(files.Folder("Generation/Loot")).Name);
+    }
 }

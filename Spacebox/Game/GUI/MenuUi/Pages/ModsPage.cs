@@ -40,7 +40,6 @@ public sealed class ModsPage : MenuPage
         create.TooltipText = "Create a new GameSet or an extension of an existing one";
         tools.AddChild(create);
         tools.AddChild(MenuLayout.Button(_menu, "GameSet editor", () => OpenEditor("Overview")));
-        tools.AddChild(MenuLayout.Button(_menu, "Generation editor", () => OpenEditor("Generation")));
         frame.Body.AddChild(tools);
 
         frame.Footer.AddChild(MenuLayout.Button(_menu, "Ship viewer", _menu.Open<ShipViewerWindow>));

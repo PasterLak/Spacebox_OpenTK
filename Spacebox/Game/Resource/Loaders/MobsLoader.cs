@@ -22,6 +22,8 @@ public static class MobsLoader
                 continue;
             }
 
+            if (!string.IsNullOrEmpty(file.Namespace) && !json.Id.Contains(':')) json.Id = file.Namespace + ":" + json.Id;
+            json.Loot = ResolveLootName(json.Loot, file.Namespace);
             json.Model = file.ResolvePath(json.Model);
             json.Texture = file.ResolvePath(json.Texture);
 
@@ -87,11 +89,17 @@ public static class MobsLoader
         return result;
     }
 
+    private static string ResolveLootName(string loot, string ns)
+    {
+        if (string.IsNullOrWhiteSpace(loot) || GameAssets.LootConfig == null) return loot;
+        return GameSetLoader.ResolveName(Path.GetFileNameWithoutExtension(loot.Trim()), ns, GameAssets.LootConfig.LootTables.ContainsKey);
+    }
+
     private static string ResolveLoot(string mobId, string loot)
     {
         if (string.IsNullOrWhiteSpace(loot)) return "";
 
-        string table = Path.GetFileNameWithoutExtension(loot.Trim());
+        string table = loot.Contains(':') ? loot.Trim() : Path.GetFileNameWithoutExtension(loot.Trim());
         if (GameAssets.LootConfig == null || !GameAssets.LootConfig.LootTables.ContainsKey(table))
             Debug.Error($"[MobsLoader] Mob '{mobId}': loot table '{table}' not found in Generation/Loot");
         return table;

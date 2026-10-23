@@ -91,8 +91,8 @@ public static class GameSetLoader
         foreach (var warning in Content.Warnings) Debug.Warning($"[GameSetLoader] {warning}");
 
         LoadSounds(assets);
-        BlocksLoader.LoadBlocks(Content, stack.SearchRootsNewestFirst());
         LoadProjectiles(files);
+        BlocksLoader.LoadBlocks(Content, stack.SearchRootsNewestFirst());
         LoadItems(Content);
         SetBlocksDrop();
         LoadRecipes(Content);
@@ -101,6 +101,7 @@ public static class GameSetLoader
         ShipPhysicsSettings.Current = ShipPhysicsSettingsLoader.Load(files);
         LoadLoot(files);
         MobsLoader.Load(files);
+        ResolveSpawnerMobs();
         GameModesLoader.Load(files);
         MobIconRenderer.ApplyToSpawners();
         Spacebox.Game.Tutorial.TutorialLoader.Load(files, ModInfo.ModId);
@@ -277,6 +278,46 @@ public static class GameSetLoader
     }
 
     public static IdScopes Scopes { get; private set; }
+
+    public static string ResolveName(string name, string ns, Func<string, bool> exists, IEnumerable<string> allNames = null)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return name;
+        string trimmed = name.Trim().ToLowerInvariant();
+        if (exists(trimmed)) return trimmed;
+        if (Scopes != null)
+        {
+            string resolved = Scopes.Resolve(Scopes.Normalize(trimmed), ns, exists);
+            if (exists(resolved)) return resolved;
+        }
+        return trimmed.Contains(':') || allNames == null ? trimmed : UniqueNamespaced(trimmed, allNames) ?? trimmed;
+    }
+
+    private static string UniqueNamespaced(string name, IEnumerable<string> allNames)
+    {
+        string found = null;
+        foreach (var candidate in allNames)
+        {
+            if (!candidate.EndsWith(":" + name, StringComparison.OrdinalIgnoreCase)) continue;
+            if (found != null) return null;
+            found = candidate;
+        }
+        return found;
+    }
+
+    public static string NamespaceOf(string fullId)
+    {
+        int colon = fullId?.IndexOf(':') ?? -1;
+        return colon < 0 ? null : fullId.Substring(0, colon);
+    }
+
+    private static void ResolveSpawnerMobs()
+    {
+        foreach (var item in GameAssets.Items.Values)
+        {
+            if (item is MobSpawnerItem spawner)
+                spawner.MobId = ResolveName(spawner.MobId, NamespaceOf(spawner.Id_string), GameAssets.Mobs.ContainsKey);
+        }
+    }
 
     public static (string ns, string shortId) DeclaredId(string rawId, string entryNamespace)
     {
@@ -765,7 +806,7 @@ public static class GameSetLoader
         data.MaxStack = 1;
 
         short projectileID = 0;
-        data.Projectile = data.Projectile.ToLower();
+        data.Projectile = ResolveName(data.Projectile ?? "", NamespaceOf(id), name => GameAssets.TryGetProjectileByName(name, out _));
         if (GameAssets.TryGetProjectileByName(data.Projectile, out var projectile))
         {
             projectileID = projectile.ID;

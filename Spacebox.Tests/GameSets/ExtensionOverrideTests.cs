@@ -51,7 +51,8 @@ public sealed class ExtensionOverrideTests : IDisposable
 
         var projectiles = GameSetFiles.For(Resolve("default", "pack")).Folder("Projectiles");
 
-        Assert.Equal(new[] { "bullet", "plasma" }, projectiles.Select(p => p.Key).ToArray());
+        Assert.Equal(new[] { "bullet", "pack:plasma" }, projectiles.Select(p => p.Key).ToArray());
+        Assert.Equal("pack:plasma", projectiles[1].Name);
         var bullet = (JsonObject)projectiles[0].Data;
         Assert.Equal(20, bullet["Damage"]!.GetValue<int>());
         Assert.Equal(100, bullet["Speed"]!.GetValue<int>());
@@ -111,8 +112,8 @@ public sealed class ExtensionOverrideTests : IDisposable
         var withDefault = Resolve("default", "weapons");
         var withMine = Resolve("mine", "weapons");
 
-        Assert.Equal(99, GameSetFiles.For(withDefault).Folder("Projectiles").Single(p => p.Key == "plasma").Data!["Damage"]!.GetValue<int>());
-        Assert.Equal(30, GameSetFiles.For(withMine).Folder("Projectiles").Single(p => p.Key == "plasma").Data!["Damage"]!.GetValue<int>());
+        Assert.Equal(99, GameSetFiles.For(withDefault).Folder("Projectiles").Single(p => p.Key == "weapons:plasma").Data!["Damage"]!.GetValue<int>());
+        Assert.Equal(30, GameSetFiles.For(withMine).Folder("Projectiles").Single(p => p.Key == "weapons:plasma").Data!["Damage"]!.GetValue<int>());
         Assert.Contains(withDefault.ReadContent().Blocks, b => b.Key == "weapons:weapons_forge");
         Assert.DoesNotContain(withMine.ReadContent().Blocks, b => b.Key.EndsWith("weapons_forge"));
         Assert.Empty(withDefault.ReadContent().Warnings);

@@ -74,7 +74,7 @@ public class CannonBlockData : BlockData, IBlockTooltip
     public CannonBlockData(BlockData baseBlock, CannonJSON settings) : base(baseBlock)
     {
         settings ??= new CannonJSON();
-        ProjectileName = (settings.Projectile ?? "").ToLowerInvariant();
+        ProjectileName = GameSetLoader.ResolveName(settings.Projectile ?? "", GameSetLoader.NamespaceOf(Id_string), name => GameAssets.TryGetProjectileByName(name, out _)) ?? "";
         ShotSound = settings.ShotSound ?? "";
         ReloadSeconds = MathF.Max(0.05f, settings.ReloadTime);
         BarrelLength = Math.Max(0.5f, settings.BarrelLength);

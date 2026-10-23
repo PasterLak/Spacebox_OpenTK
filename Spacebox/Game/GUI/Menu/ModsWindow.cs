@@ -59,11 +59,6 @@ public class ModsWindow : MenuWindow
             if (selected != null) _menu.OpenGameSetEditor(selected, "Overview");
         });
 
-        _menu.ButtonWithBackground("Generation editor", new Vector2(buttonWidth, buttonHeight), new Vector2(padding * 3f + buttonWidth * 2f, y), () =>
-        {
-            if (selected != null) _menu.OpenGameSetEditor(selected, "Generation");
-        });
-
         _menu.ButtonWithBackground("Ship viewer", new Vector2(buttonWidth, buttonHeight), new Vector2(padding, y + buttonHeight + padding * 0.5f), _menu.Open<ShipViewerWindow>);
 
         _menu.ButtonWithBackground("Back", new Vector2(buttonWidth, buttonHeight), new Vector2((width - buttonWidth) * 0.5f, y + buttonHeight + padding * 0.5f), _menu.SetStateToMain);
