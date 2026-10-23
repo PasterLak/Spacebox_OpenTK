@@ -77,6 +77,7 @@ public static class DoorNetwork
     private static void OnDoorState(int sender, DoorStateMessage message)
     {
         if (NetworkManager.Instance.IsServer) return;
+        if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnDoorState(sender, message))) return;
 
         var world = World.Instance;
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;

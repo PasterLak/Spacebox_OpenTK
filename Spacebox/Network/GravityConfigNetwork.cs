@@ -34,9 +34,6 @@ public struct GravityConfigMessage : INetMessage
 
 public static class GravityConfigNetwork
 {
-    private static GravityConfigMessage _lastSent;
-    private static bool _hasLastSent;
-
     public static void Register(NetworkManager network)
     {
         network.Messages.Register<GravityConfigMessage>(OnConfig);
@@ -52,21 +49,14 @@ public static class GravityConfigNetwork
 
         if (radius == block.RadiusSetting && strength == block.Strength && enabled == block.IsGravityEnabled && insideOnly == block.InsideOnly) return;
 
-        var message = new GravityConfigMessage
+        NetworkManager.Instance.SendToServer(new GravityConfigMessage
         {
             Key = new ContainerKey(block.Entity.EntityID, block.LocalCell),
             Radius = radius,
             Strength = strength,
             Enabled = enabled,
             InsideOnly = insideOnly
-        };
-
-        if (_hasLastSent && message.Key.Equals(_lastSent.Key) && message.Radius == _lastSent.Radius && message.Strength == _lastSent.Strength &&
-            message.Enabled == _lastSent.Enabled && message.InsideOnly == _lastSent.InsideOnly) return;
-
-        _lastSent = message;
-        _hasLastSent = true;
-        NetworkManager.Instance.SendToServer(message);
+        });
     }
 
     private static void OnConfig(int sender, GravityConfigMessage message)

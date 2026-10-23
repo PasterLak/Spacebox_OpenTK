@@ -580,6 +580,7 @@ public sealed class NetworkSession : IDisposable
 
         _playerDataFlush.Received(peer);
         WorldEditNetwork.ForgetPeer(peer);
+        Combat.CombatNetwork.ForgetPeer(peer);
         ChatService.ForgetPeer(peer);
         ShipSharingNetwork.ForgetPeer(peer);
         Players.ReconstructionNetwork.ForgetPeer(peer);

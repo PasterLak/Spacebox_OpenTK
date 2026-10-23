@@ -20,6 +20,8 @@ public static class CombatNetwork
 
     private static readonly Dictionary<int, float> _lastShotTime = new Dictionary<int, float>();
     private static readonly CombatSounds _sounds = new CombatSounds();
+    private const float AttackerMemorySeconds = 15f;
+    private static readonly RecentAttackers _recentAttackers = new RecentAttackers(AttackerMemorySeconds);
 
     public static void Register(NetworkManager network)
     {
@@ -33,8 +35,15 @@ public static class CombatNetwork
     {
         _lastShotTime.Clear();
         _sounds.Clear();
+        _recentAttackers.Clear();
         PlayerHitboxes.Clear();
     }
+
+    public static void ForgetPeer(int peer) => _recentAttackers.ForgetPeer(peer);
+
+    public static void ForgetAttackersOf(int victimPeer) => _recentAttackers.ForgetVictim(victimPeer);
+
+    public static bool WasRecentlyHitBy(int victimPeer, int attackerPeer) => _recentAttackers.WasRecentlyHitBy(victimPeer, attackerPeer, Time.Total);
 
     public static Projectile FireLocal(LocalAstronaut shooter, WeaponItem weapon, ProjectileParameters parameters, Ray ray)
     {
@@ -73,6 +82,7 @@ public static class CombatNetwork
 
         int finalDamage = (int)MathF.Round(damage * (headshot ? HeadshotMultiplier : 1f));
         var message = new PlayerDamageMessage { AttackerPeer = attackerPeer, Damage = finalDamage, Headshot = headshot };
+        _recentAttackers.Register(victimPeer, attackerPeer, Time.Total);
 
         if (victimPeer == network.LocalPeerId)
             OnPlayerDamage(network.LocalPeerId, message);

@@ -341,15 +341,36 @@ public static class ShipNetwork
 
     private static void OnMount(int sender, ShipMountMessage message)
     {
-        if (!NetworkManager.Instance.IsServer) return;
+        var network = NetworkManager.Instance;
+        if (!network.IsServer)
+        {
+            OnMountRefused(message);
+            return;
+        }
 
         ReleasePilot(sender);
-        if (!message.Mount || IsDead(sender)) return;
-        if (!TryGetConsole(message.EntityId, message.ConsoleCell, out var mountEntity, out var console) || !console.IsPowered) return;
-        if (ProtectionNetwork.BlocksPeerUse(sender, mountEntity)) return;
-        if (!WorldEditNetwork.IsInReach(sender, mountEntity, message.ConsoleCell)) return;
+        if (!message.Mount) return;
+        if (CanMount(sender, message) && _pilots.TryTake(sender, new PilotSeat(message.EntityId, message.ConsoleCell))) return;
 
-        _pilots.TryTake(sender, new PilotSeat(message.EntityId, message.ConsoleCell));
+        network.Send(sender, new ShipMountMessage { EntityId = message.EntityId, ConsoleCell = message.ConsoleCell, Mount = false });
+    }
+
+    private static bool CanMount(int sender, ShipMountMessage message)
+    {
+        if (IsDead(sender)) return false;
+        if (!TryGetConsole(message.EntityId, message.ConsoleCell, out var mountEntity, out var console) || !console.IsPowered) return false;
+        if (ProtectionNetwork.BlocksPeerUse(sender, mountEntity)) return false;
+        return WorldEditNetwork.IsInReach(sender, mountEntity, message.ConsoleCell);
+    }
+
+    private static void OnMountRefused(ShipMountMessage message)
+    {
+        if (message.Mount) return;
+
+        var console = ShipPilot.Console;
+        if (console?.Entity == null || console.Entity.EntityID != message.EntityId || console.LocalCell != message.ConsoleCell) return;
+
+        ShipPilot.OnConsoleUnavailable(console);
     }
 
     private static bool IsDead(int peer)
@@ -414,6 +435,7 @@ public static class ShipNetwork
     private static void OnBindings(int sender, ShipBindingsMessage message)
     {
         if (NetworkManager.Instance.IsServer || message.Bindings == null) return;
+        if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnBindings(sender, message))) return;
         if (World.Instance == null || !World.Instance.TryFindEntity(message.EntityId, out var entity)) return;
 
         entity.ShipControl.SetBindings(message.ConsoleCell, message.Bindings, false);
