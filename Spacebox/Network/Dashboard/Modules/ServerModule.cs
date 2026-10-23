@@ -123,7 +123,9 @@ public sealed class ServerModule : IDashboardModule
         return error == null;
     }
 
-    private static object Statistics()
+    public const int TopPlayers = 10;
+
+    private static object Statistics(PlayerPlayTimes playTimes)
     {
         var statistics = Spacebox.Network.Statistics.ServerStatisticsService.Current;
         if (statistics == null) return null;
@@ -138,6 +140,10 @@ public sealed class ServerModule : IDashboardModule
             joins = data.TotalJoins,
             uniquePlayers = statistics.UniquePlayers,
             playTime = Spacebox.Network.Statistics.ServerStatisticsReport.Hours(data.PlayerSeconds),
+            averageSession = Spacebox.Network.Statistics.ServerStatisticsReport.Hours(PlayTimeSummary.AverageSession(data.PlayerSeconds, data.TotalJoins)),
+            averagePerPlayer = Spacebox.Network.Statistics.ServerStatisticsReport.Hours(PlayTimeSummary.AveragePerPlayer(data.PlayerSeconds, statistics.UniquePlayers)),
+            topPlayers = PlayTimeSummary.Top(playTimes.All(World.WorldData?.WorldFolderPath), TopPlayers)
+                .Select(player => new { name = player.Name, playSeconds = Math.Round(player.Seconds), sessions = player.Sessions }),
             runningTime = Spacebox.Network.Statistics.ServerStatisticsReport.Hours(data.UptimeSeconds),
             days = statistics.RecentDays(now, 14).Select(day => new { day = day.Key, peak = day.Value })
         };
@@ -160,7 +166,7 @@ public sealed class ServerModule : IDashboardModule
             dashboardPort = config.GetDashboardPort(),
             players = PlayerRegistry.All.Count,
             maxPlayers = config.MaxPlayers,
-            statistics = Statistics(),
+            statistics = Statistics(context.PlayTimes),
             lanDiscovery = config.LanDiscovery,
             autoSaveInterval = config.AutoSaveInterval,
             updateRate = config.UpdateRate,

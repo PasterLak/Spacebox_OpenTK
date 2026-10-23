@@ -16,6 +16,21 @@ public sealed class BackupsModule : IDashboardModule
 
         router.Map("GET", DashboardContext.Api("/backups"), guard.Admin(async (_, _) => HttpResponse.Json(await MainThread.Run(List))));
 
+        router.Map("POST", DashboardContext.Api("/backups/settings"), guard.Admin(async (request, user) =>
+        {
+            var settings = DashboardGuard.Read<Dedicated.ServerBackupSettings>(request);
+            if (settings == null) return HttpResponse.Error("Bad request", 400);
+
+            bool corrected = settings.Validate();
+            await MainThread.Run(() =>
+            {
+                context.Config.Backups = settings;
+                context.Config.Save();
+            });
+            DashboardContext.Audit(user, "changed the backup settings");
+            return HttpResponse.Json(new { ok = true, corrected });
+        }));
+
         router.Map("POST", DashboardContext.Api("/backups"), guard.Admin(async (_, user) =>
         {
             string error = await MainThread.Run(() => Start(user));
@@ -49,6 +64,8 @@ public sealed class BackupsModule : IDashboardModule
             enabled = settings?.Enabled ?? false,
             intervalMinutes = settings?.IntervalMinutes ?? 0,
             keepLast = settings?.KeepLast ?? 0,
+            onStop = settings?.OnStop ?? false,
+            minIntervalMinutes = Dedicated.ServerBackupSettings.MinIntervalMinutes,
             backups
         };
     }

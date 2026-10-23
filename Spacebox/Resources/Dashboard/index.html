@@ -80,6 +80,7 @@
         <div class="grid two hidden" id="statistics-panel">
           <div class="panel"><h3>Statistics</h3><table class="kv" id="statistics-info"></table></div>
           <div class="panel"><h3>Most players per day</h3><canvas id="chart-days" height="160"></canvas></div>
+          <div class="panel"><h3>Most played (top 10)</h3><table class="list" id="top-players"></table></div>
         </div>
         <div class="grid two">
           <div class="panel"><h3>Server</h3><table class="kv" id="server-info"></table></div>
@@ -94,6 +95,13 @@
             <h3>Backups</h3>
             <p class="hint" id="backup-info"></p>
             <button class="btn gold" id="backup-now" type="button">Back up now</button>
+            <form id="backup-form" class="backup-form">
+              <label class="switch"><input type="checkbox" name="enabled"><span>Automatic backups</span></label>
+              <label>Every (minutes, at least 10)<input name="intervalMinutes" type="number" min="10" step="1" required></label>
+              <label>Keep the last (0 = keep all)<input name="keepLast" type="number" min="0" max="1000" step="1" required></label>
+              <label class="switch"><input type="checkbox" name="onStop"><span>Back up when the server stops</span></label>
+              <button class="btn" type="submit">Save backup settings</button>
+            </form>
             <table class="list backups" id="backup-list"></table>
           </div>
         </div>
@@ -270,7 +278,11 @@
           <label>Max claims per player (0 = unlimited)<input name="maxClaimsPerPlayer" type="number" min="0" required></label>
           <label>Max members per claim<input name="maxMembers" type="number" min="0" max="64" required></label>
           <label>No claims near the spawn (meters, 0 = off)<input name="minDistanceFromSpawn" type="number" min="0" required></label>
-          <label>Payment (one per line: item id = minutes)<textarea name="payments" rows="5" spellcheck="false"></textarea></label>
+          <div class="payments">
+            <span class="label">Payment: resources and the protection time each one buys (minutes)</span>
+            <div id="payment-rows"></div>
+            <button class="btn small" id="payment-add" type="button">+ Add resource</button>
+          </div>
           <button class="btn gold" type="submit">Save claim settings</button>
         </form>
       </section>

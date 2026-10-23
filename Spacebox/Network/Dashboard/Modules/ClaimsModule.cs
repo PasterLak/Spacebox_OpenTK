@@ -15,7 +15,8 @@ public sealed class ClaimsModule : IDashboardModule
         {
             settings = config.Claims,
             loaded = ClaimRegistry.Loaded.Count,
-            total = ClaimRegistry.Index.Count
+            total = ClaimRegistry.Index.Count,
+            items = Items()
         }))));
 
         router.Map("POST", DashboardContext.Api("/claims/settings"), guard.Admin(async (request, user) =>
@@ -36,4 +37,18 @@ public sealed class ClaimsModule : IDashboardModule
     }
 
     public static ClaimSettings Parse(HttpRequest request) => DashboardGuard.Read<ClaimSettings>(request);
+
+    private static List<object> Items()
+    {
+        var items = new List<(string Id, string Name)>();
+        foreach (var pair in Spacebox.Game.GameAssets.ItemsStr)
+        {
+            if (pair.Value.Id != 0) items.Add((pair.Key, pair.Value.Name));
+        }
+        items.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
+
+        var result = new List<object>(items.Count);
+        foreach (var item in items) result.Add(new { id = item.Id, name = item.Name });
+        return result;
+    }
 }

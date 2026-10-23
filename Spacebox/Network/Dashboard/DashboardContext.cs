@@ -18,6 +18,7 @@ public sealed class DashboardContext
     public DashboardLog Log { get; init; }
     public DashboardMetrics Metrics { get; init; }
     public DashboardItemIcons Icons { get; init; }
+    public PlayerPlayTimes PlayTimes { get; init; } = new PlayerPlayTimes();
 
     public static string Api(string path) => DashboardPaths.Api + path;
 

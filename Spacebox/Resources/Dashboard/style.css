@@ -233,6 +233,16 @@ table.list tr.clickable:hover td { background: #ffffff08; }
 .slot.empty-slot { border-color: #3a404c; }
 
 .console-panel { position: relative; }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { color: var(--gold); }
+th.sorted::after { content: " \25BE"; }
+th.sorted.up::after { content: " \25B4"; }
+.backup-form { display: grid; gap: 8px; margin: 12px 0; }
+.payments { display: grid; gap: 6px; margin: 8px 0; }
+.payment-row { display: flex; gap: 8px; align-items: center; }
+.payment-row img { width: 24px; height: 24px; image-rendering: pixelated; flex: none; }
+.payment-row select { flex: 1; min-width: 0; }
+.payment-row input { width: 110px; flex: none; }
 .console {
   height: calc(100vh - 230px);
   min-height: 300px;

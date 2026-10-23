@@ -27,7 +27,7 @@ public sealed class PlayersModule : IDashboardModule
     {
         var guard = context.Guard;
 
-        router.Map("GET", DashboardContext.Api("/players"), guard.Admin(async (_, _) => HttpResponse.Json(await MainThread.Run(List))));
+        router.Map("GET", DashboardContext.Api("/players"), guard.Admin(async (_, _) => HttpResponse.Json(await MainThread.Run(() => List(context.PlayTimes)))));
 
         router.Map("GET", DashboardContext.Api("/players/detail"), guard.Admin(async (request, _) =>
         {
@@ -97,7 +97,7 @@ public sealed class PlayersModule : IDashboardModule
         return HttpResponse.Json(new { ok = true });
     }
 
-    private static object List()
+    private static object List(PlayerPlayTimes playTimes)
     {
         var network = NetworkManager.Instance;
         var online = new List<object>();
@@ -117,7 +117,8 @@ public sealed class PlayersModule : IDashboardModule
                 alive = AstronautNetwork.Find(player.Peer)?.IsAlive ?? false,
                 muted = ServerModeration.IsMuted(player.Name),
                 gameMode = (int)PlayerGameModeService.IdOf(player.Name),
-                skin = player.SkinColor
+                skin = player.SkinColor,
+                sessionSeconds = Math.Round(Math.Max(0, (DateTime.UtcNow - player.JoinedAtUtc).TotalSeconds))
             });
         }
 
@@ -127,11 +128,15 @@ public sealed class PlayersModule : IDashboardModule
         {
             foreach (var name in PlayerFiles.SavedPlayerNames(folder))
             {
+                var played = playTimes.Get(folder, name);
                 saved.Add(new
                 {
                     name,
                     online = onlineNames.Contains(name),
                     lastSeen = PlayerFiles.LastSaved(folder, name).ToString("yyyy-MM-dd HH:mm"),
+                    playSeconds = Math.Round(played.Seconds),
+                    sessions = played.Sessions,
+                    averageSessionSeconds = Math.Round(played.AverageSessionSeconds),
                     muted = ServerModeration.IsMuted(name),
                     gameMode = (int)PlayerGameModeService.IdOf(name)
                 });

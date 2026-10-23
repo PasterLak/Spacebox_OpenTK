@@ -6,7 +6,7 @@ public readonly record struct DashboardLogLine(long Id, string Time, string Leve
 
 public sealed class DashboardLog
 {
-    public const int Capacity = 1000;
+    public const int Capacity = 5000;
     public const int MaxBatch = 500;
 
     private readonly DashboardLogLine[] _lines = new DashboardLogLine[Capacity];

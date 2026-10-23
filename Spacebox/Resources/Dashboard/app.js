@@ -2,7 +2,13 @@
 
 const API = "api";
 const HEADER = { "X-Spacebox-Dashboard": "1" };
-const state = { view: "overview", timers: [], commands: [], history: [], historyIndex: -1, lastLine: 0, player: null, players: { online: [], saved: [] } };
+const state = { view: "overview", timers: [], commands: [], history: [], historyIndex: -1, lastLine: 0, player: null, players: { online: [], saved: [] }, sort: { key: "name", dir: 1 }, claimItems: [] };
+
+function formatDuration(seconds) {
+  const total = Math.max(0, Math.round((seconds || 0) / 60));
+  const hours = Math.floor(total / 60);
+  return hours > 0 ? `${hours} h ${total % 60} min` : `${total} min`;
+}
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -252,9 +258,15 @@ function renderStatistics(statistics) {
     ["Most players today", statistics.today],
     ["Most players ever", statistics.allTimeAt ? `${statistics.allTime} (${statistics.allTimeAt})` : statistics.allTime],
     ["Joins", statistics.joins], ["Different players", statistics.uniquePlayers],
-    ["Time played by all players", statistics.playTime], ["Server running time", statistics.runningTime]
+    ["Time played by all players", statistics.playTime], ["Average session", statistics.averageSession],
+    ["Average time per player", statistics.averagePerPlayer], ["Server running time", statistics.runningTime]
   ];
   $("#statistics-info").replaceChildren(...rows.map(([key, value]) => el("tr", {}, el("td", { text: key }), el("td", { text: String(value) }))));
+  const top = (statistics.topPlayers || []).map((p, i) => el("tr", { class: "clickable", onclick: () => openPlayer(p.name) },
+    el("td", { text: `${i + 1}. ${p.name}` }),
+    el("td", { "data-label": "Played", text: formatDuration(p.playSeconds) }),
+    el("td", { "data-label": "Sessions", class: "faint", text: `${p.sessions} sessions` })));
+  $("#top-players").replaceChildren(...(top.length ? top : [el("tr", {}, el("td", { class: "empty", text: "Nobody has played yet" }))]));
   drawBars($("#chart-days"), statistics.days.map(d => d.peak), statistics.days.map(d => d.day.slice(5)));
 }
 
@@ -350,27 +362,45 @@ async function refreshPlayers() {
   const online = data.online.map(p => el("tr", { class: "clickable", onclick: () => openPlayer(p.name) },
     el("td", {}, el("span", { class: "dot on" }), p.name, p.muted ? el("span", { class: "tag red", text: "muted" }) : null, !p.alive ? el("span", { class: "tag", text: "dead" }) : null),
     el("td", { "data-label": "Ping", text: `${p.ping} ms` }),
+    el("td", { "data-label": "Session", text: formatDuration(p.sessionSeconds) }),
     el("td", { "data-label": "Position", class: "faint", text: p.position ? p.position.join(", ") : "—" }),
     el("td", { "data-label": "Address", class: "faint", text: p.address }),
     el("td", { "data-label": "Game mode" }, gameModeSelect(p.name, p.gameMode)),
     el("td", {}, playerButtons(p.name, true, p.muted))));
   $("#online-table").replaceChildren(
-    el("tr", {}, ...["Name", "Ping", "Position", "Address", "Game mode", ""].map(t => el("th", { text: t }))),
-    ...(online.length ? online : [el("tr", {}, el("td", { class: "empty", colspan: "6", text: "Nobody is online" }))]));
+    el("tr", {}, ...["Name", "Ping", "Session", "Position", "Address", "Game mode", ""].map(t => el("th", { text: t }))),
+    ...(online.length ? online : [el("tr", {}, el("td", { class: "empty", colspan: "7", text: "Nobody is online" }))]));
   renderSaved();
 }
 
 function renderSaved() {
   const filter = $("#player-filter").value.trim().toLowerCase();
   const saved = state.players.saved.filter(p => p.name.toLowerCase().includes(filter));
+  const { key, dir } = state.sort;
+  saved.sort((a, b) => {
+    const x = a[key], y = b[key];
+    const order = typeof x === "number" ? x - y : String(x).localeCompare(String(y), undefined, { sensitivity: "base" });
+    return order * dir || a.name.localeCompare(b.name);
+  });
   const rows = saved.map(p => el("tr", { class: "clickable", onclick: () => openPlayer(p.name) },
     el("td", {}, el("span", { class: p.online ? "dot on" : "dot" }), p.name, p.muted ? el("span", { class: "tag red", text: "muted" }) : null),
+    el("td", { "data-label": "Played", text: formatDuration(p.playSeconds) }),
+    el("td", { "data-label": "Sessions", class: "faint", text: String(p.sessions) }),
+    el("td", { "data-label": "Avg session", class: "faint", text: formatDuration(p.averageSessionSeconds) }),
     el("td", { "data-label": "Last save", class: "faint", text: p.lastSeen }),
     el("td", { "data-label": "Game mode" }, gameModeSelect(p.name, p.gameMode)),
     el("td", {}, playerButtons(p.name, p.online, p.muted))));
+  const columns = [["Name", "name", 1], ["Played", "playSeconds", -1], ["Sessions", "sessions", -1], ["Avg session", "averageSessionSeconds", -1], ["Last save", "lastSeen", -1], ["Game mode"], [""]];
   $("#saved-table").replaceChildren(
-    el("tr", {}, ...["Name", "Last save", "Game mode", ""].map(t => el("th", { text: t }))),
-    ...(rows.length ? rows : [el("tr", {}, el("td", { class: "empty", colspan: "4", text: "No saved players" }))]));
+    el("tr", {}, ...columns.map(([title, field, first]) => field
+      ? el("th", { text: title, class: `sortable${key === field ? " sorted" + (dir > 0 ? " up" : "") : ""}`, title: "Sort", onclick: () => sortSaved(field, first) })
+      : el("th", { text: title }))),
+    ...(rows.length ? rows : [el("tr", {}, el("td", { class: "empty", colspan: "7", text: "No saved players" }))]));
+}
+
+function sortSaved(field, firstDirection) {
+  state.sort = state.sort.key === field ? { key: field, dir: -state.sort.dir } : { key: field, dir: firstDirection };
+  renderSaved();
 }
 
 $("#player-filter").addEventListener("input", renderSaved);
@@ -532,9 +562,22 @@ async function pollConsole() {
   const output = $("#console-output");
   output.append(...data.lines.map(line => el("div", { class: `line ${line.level}` }, el("span", { class: "time", text: line.time }), el("span", { text: line.text }))));
   state.lastLine = data.lines[data.lines.length - 1].id;
-  while (output.childElementCount > 2000) output.firstChild.remove();
-  if ($("#console-follow").checked) output.scrollTop = output.scrollHeight;
+  const follow = $("#console-follow").checked;
+  const before = output.scrollHeight - output.scrollTop;
+  while (output.childElementCount > 5000) output.firstChild.remove();
+  if (follow) output.scrollTop = output.scrollHeight;
+  else output.scrollTop = output.scrollHeight - before;
 }
+
+$("#console-output").addEventListener("scroll", () => {
+  const output = $("#console-output");
+  const atBottom = output.scrollHeight - output.scrollTop - output.clientHeight < 24;
+  if ($("#console-follow").checked !== atBottom) $("#console-follow").checked = atBottom;
+});
+
+$("#console-follow").addEventListener("change", event => {
+  if (event.target.checked) $("#console-output").scrollTop = $("#console-output").scrollHeight;
+});
 
 const consoleInput = $("#console-form input");
 let suggestIndex = -1;
@@ -616,10 +659,30 @@ async function loadBackups() {
     ? `Automatic every ${data.intervalMinutes} min, the last ${data.keepLast} are kept. Files in Worlds/_backups.`
     : "Automatic backups are off (Backups in serverconfig.json). Files in Worlds/_backups.";
   $("#backup-now").disabled = data.running;
+  const backupForm = $("#backup-form");
+  if (!backupForm.contains(document.activeElement)) {
+    backupForm.enabled.checked = data.enabled;
+    backupForm.intervalMinutes.value = data.intervalMinutes;
+    backupForm.keepLast.value = data.keepLast;
+    backupForm.onStop.checked = data.onStop;
+  }
   $("#backup-list").replaceChildren(...(data.backups.length
     ? data.backups.map(b => el("tr", {}, el("td", { text: b.name }), el("td", { class: "faint", text: b.created }), el("td", { class: "faint", text: b.sizeMb >= 0.1 ? `${b.sizeMb} MB` : "< 0.1 MB" })))
     : [el("tr", {}, el("td", { class: "empty", text: "No backups yet" }))]));
 }
+
+$("#backup-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const form = event.target;
+  const result = await run(() => api("/backups/settings", {
+    enabled: form.enabled.checked,
+    intervalMinutes: Number(form.intervalMinutes.value),
+    keepLast: Math.round(Number(form.keepLast.value)),
+    onStop: form.onStop.checked
+  }), "Backup settings saved");
+  if (result?.corrected) toast("Some values were out of range and were corrected", true);
+  loadBackups();
+});
 
 $("#backup-now").addEventListener("click", async () => {
   $("#backup-now").disabled = true;
@@ -697,15 +760,42 @@ async function loadClaims() {
   form.maxClaimsPerPlayer.value = s.maxClaimsPerPlayer;
   form.maxMembers.value = s.maxMembers;
   form.minDistanceFromSpawn.value = s.minDistanceFromSpawn;
-  form.payments.value = Object.entries(s.payments || {}).map(([id, minutes]) => `${id} = ${minutes}`).join("\n");
+  state.claimItems = data.items || [];
+  $("#payment-rows").replaceChildren(...Object.entries(s.payments || {}).map(([id, minutes]) => paymentRow(id, minutes)));
   $("#claims-count").textContent = `${data.total} claim(s) in this world, ${data.loaded} loaded.`;
 }
 
-function parsePayments(text) {
+function matchItemId(id) {
+  const lower = id.toLowerCase();
+  const exact = state.claimItems.find(item => item.id.toLowerCase() === lower);
+  if (exact) return exact.id;
+  const short = state.claimItems.find(item => item.id.toLowerCase().endsWith(":" + lower));
+  return short ? short.id : id;
+}
+
+function paymentRow(id = "", minutes = 60) {
+  const value = id ? matchItemId(id) : (state.claimItems[0]?.id || "");
+  const icon = el("img", { alt: "" });
+  const select = el("select", { "aria-label": "Resource" },
+    ...state.claimItems.map(item => el("option", { value: item.id, text: `${item.name} (${item.id})`, selected: item.id === value })));
+  if (value && !state.claimItems.some(item => item.id === value)) select.append(el("option", { value, text: `${value} (unknown)`, selected: true }));
+  const showIcon = () => { icon.src = `${API}/items/icon?id=${encodeURIComponent(select.value)}`; };
+  select.addEventListener("change", showIcon);
+  showIcon();
+  const time = el("input", { type: "number", min: "1", step: "1", value: minutes, "aria-label": "Minutes", title: "Protection minutes per item" });
+  const row = el("div", { class: "payment-row" }, icon, select, time, el("span", { class: "hint", text: "min" }),
+    el("button", { class: "btn small danger", type: "button", text: "Remove", onclick: () => row.remove() }));
+  return row;
+}
+
+$("#payment-add").addEventListener("click", () => $("#payment-rows").append(paymentRow()));
+
+function readPayments() {
   const payments = {};
-  for (const line of text.split("\n")) {
-    const [id, minutes] = line.split("=").map(part => (part || "").trim());
-    if (id && Number(minutes) > 0) payments[id] = Math.round(Number(minutes));
+  for (const row of $$("#payment-rows .payment-row")) {
+    const id = $("select", row).value;
+    const minutes = Number($("input", row).value);
+    if (id && minutes > 0) payments[id] = Math.round(minutes);
   }
   return payments;
 }
@@ -722,7 +812,7 @@ $("#claims-form").addEventListener("submit", async event => {
     maxClaimsPerPlayer: Number(form.maxClaimsPerPlayer.value),
     maxMembers: Number(form.maxMembers.value),
     minDistanceFromSpawn: Number(form.minDistanceFromSpawn.value),
-    payments: parsePayments(form.payments.value)
+    payments: readPayments()
   };
   const result = await run(() => api("/claims/settings", body), "Claim settings saved");
   if (result?.corrected) toast("Some values were out of range and were reset to defaults", true);
