@@ -23,8 +23,8 @@ public sealed class ChatView : GameScreen
     private readonly VBoxContainer _column = new VBoxContainer { MouseFilter = MouseFilter.Ignore };
     private readonly ChatScroll _scroll = new ChatScroll { SizeFlagsVertical = SizeFlags.ExpandFill, MouseFilter = MouseFilter.Ignore };
     private readonly VBoxContainer _lines = new VBoxContainer { Alignment = BoxAlignment.End, MouseFilter = MouseFilter.Ignore };
-    private readonly ConsoleInput _input = new ConsoleInput { Name = "ChatInput", MaxLength = ChatController.MaxInputLength, Visible = false, PlaceholderText = "Message or /command" };
-    private readonly PanelContainer _suggestionPanel = new PanelContainer { Name = "ChatSuggestions", ThemeTypeVariation = "PopupPanel", MouseFilter = MouseFilter.Ignore, Visible = false };
+    private readonly ConsoleInput _input = new ConsoleInput { Name = "ChatInput", ThemeTypeVariation = "ChatField", MaxLength = ChatController.MaxInputLength, Visible = false, PlaceholderText = "Message or /command" };
+    private readonly PanelContainer _suggestionPanel = new PanelContainer { Name = "ChatSuggestions", ThemeTypeVariation = "ChatSuggestionsPanel", MouseFilter = MouseFilter.Ignore, Visible = false };
     private readonly VBoxContainer _suggestionList = new VBoxContainer { MouseFilter = MouseFilter.Ignore };
     private readonly Label _usage = new Label { ThemeTypeVariation = "MutedLabel", Autowrap = true, MouseFilter = MouseFilter.Ignore };
     private readonly Label _help = new Label { Text = HelpText, ThemeTypeVariation = "MutedLabel", Autowrap = true, MouseFilter = MouseFilter.Ignore };

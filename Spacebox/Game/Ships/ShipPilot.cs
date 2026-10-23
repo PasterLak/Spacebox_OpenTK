@@ -109,11 +109,7 @@ public static class ShipPilot
         }
         else if (!UIManager.IsUIMode && Input.IsActionDown("use"))
         {
-            if (ShipBindingTool.IsActive)
-            {
-                ShipBindingTool.TryUseDoor(player);
-            }
-            else
+            if (!ShipBindingTool.IsActive)
             {
                 Unmount(player);
                 return;

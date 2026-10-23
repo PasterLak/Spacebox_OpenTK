@@ -2,7 +2,7 @@
   "ID": "iron_block_heavy",
   "Name": "Iron Heavy Block",
   "Description": "Thick iron armor block",
-  "Category": "hull",
+  "Category": "building",
   "PowerToDrill": 4,
   "Mass": 8,
   "Durability": 80,

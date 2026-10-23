@@ -257,7 +257,7 @@
         "ID": "aluminium_block_heavy",
         "Name": "Aluminium Heavy Block",
         "Description": "Thick hull block",
-        "Category": "hull",
+        "Category": "building",
         "PowerToDrill": 3,
         "Mass": 6,
         "Durability": 30,
@@ -314,7 +314,7 @@
         "ID": "iron_block_heavy",
         "Name": "Iron Heavy Block",
         "Description": "Thick iron armor block",
-        "Category": "hull",
+        "Category": "building",
         "PowerToDrill": 4,
         "Mass": 8,
         "Durability": 80,
@@ -371,7 +371,7 @@
         "ID": "titanium_block_heavy",
         "Name": "Titanium Heavy Block",
         "Description": "Thick titanium armor block, the toughest to break",
-        "Category": "hull",
+        "Category": "building",
         "PowerToDrill": 5,
         "Mass": 10,
         "Durability": 120,
@@ -4427,16 +4427,6 @@
         "Id": "other",
         "Name": "Devices",
         "Icon": "oxygen_generator",
-        "Row": 1,
-        "Group": "Blocks"
-      }
-    },
-    {
-      "Key": "hull",
-      "Data": {
-        "Id": "hull",
-        "Name": "Hull",
-        "Icon": "titanium_block_heavy",
         "Row": 1,
         "Group": "Blocks"
       }

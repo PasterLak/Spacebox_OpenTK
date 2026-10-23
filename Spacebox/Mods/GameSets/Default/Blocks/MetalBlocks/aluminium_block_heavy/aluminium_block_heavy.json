@@ -2,7 +2,7 @@
   "ID": "aluminium_block_heavy",
   "Name": "Aluminium Heavy Block",
   "Description": "Thick hull block",
-  "Category": "hull",
+  "Category": "building",
   "PowerToDrill": 3,
   "Mass": 6,
   "Durability": 30,

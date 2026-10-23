@@ -2,7 +2,7 @@
   "ID": "titanium_block_heavy",
   "Name": "Titanium Heavy Block",
   "Description": "Thick titanium armor block, the toughest to break",
-  "Category": "hull",
+  "Category": "building",
   "PowerToDrill": 5,
   "Mass": 10,
   "Durability": 120,

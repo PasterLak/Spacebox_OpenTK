@@ -50,13 +50,6 @@
       "Group": "Blocks"
     },
     {
-      "Id": "hull",
-      "Name": "Hull",
-      "Icon": "titanium_block_heavy",
-      "Row": 1,
-      "Group": "Blocks"
-    },
-    {
       "Id": "decor",
       "Name": "Decor",
       "Icon": "picture_retro_cactus",

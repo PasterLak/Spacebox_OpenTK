@@ -13,6 +13,22 @@ public class CanvasLayoutFeatureTests
     }
 
     [Fact]
+    public void CheckButton_IsWiderThanACheckBoxAndTogglesOnClick()
+    {
+        var root = CreateRoot();
+        var box = root.Add(new CheckBox("On"));
+        var toggle = root.Add(new CheckButton("On"));
+        toggle.SetOffsets(100, 100, 200, 120);
+        root.Layout();
+
+        Assert.Equal(box.GetMinimumSize().X + box.BoxSize, toggle.GetMinimumSize().X);
+
+        root.Update(0.016f, new PointerState { Position = new Vector2(110, 110), LeftDown = true });
+        root.Update(0.016f, new PointerState { Position = new Vector2(110, 110) });
+        Assert.True(toggle.ButtonPressed);
+    }
+
+    [Fact]
     public void MaximumSize_LimitsStretchedAnchorsAroundTheGrowDirection()
     {
         var root = CreateRoot();

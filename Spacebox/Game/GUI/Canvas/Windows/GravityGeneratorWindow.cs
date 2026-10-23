@@ -9,7 +9,7 @@ public sealed class GravityGeneratorWindow : GameWindow
 {
     private const float ContentWidth = 300f;
 
-    private readonly CheckBox _enabled = new CheckBox("Gravity");
+    private readonly CheckBox _enabled = new CheckButton("Gravity");
     private readonly CheckBox _insideOnly = new CheckBox("Only inside closed rooms");
     private readonly Label _radiusLabel = new Label();
     private readonly HSlider _radius = new HSlider { Step = 1, CustomMinimumSize = new Vector2(ContentWidth, 0f) };

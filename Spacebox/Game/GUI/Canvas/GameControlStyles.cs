@@ -128,6 +128,11 @@ public static class GameControlStyles
         theme.SetStyleBox("ChatPanel", "panel", new StyleBoxEmpty().SetContentMargins(6f));
         theme.SetTypeVariation("ChatPanelClear", "PanelContainer");
         theme.SetStyleBox("ChatPanelClear", "panel", new StyleBoxEmpty().SetContentMargins(6f));
+        theme.SetTypeVariation("ChatField", "LineEdit");
+        theme.SetStyleBox("ChatField", "normal", new StyleBoxEmpty().SetContentMargins(2f));
+        theme.SetStyleBox("ChatField", "focus", new StyleBoxEmpty().SetContentMargins(2f));
+        theme.SetTypeVariation("ChatSuggestionsPanel", "PanelContainer");
+        theme.SetStyleBox("ChatSuggestionsPanel", "panel", new StyleBoxFlat(new Color4(0f, 0f, 0f, 0.45f), 6f));
         theme.SetTypeVariation("ImagePanel", "PanelContainer");
         theme.SetStyleBox("ImagePanel", "panel", Sunken(p, p.List, 2f));
 

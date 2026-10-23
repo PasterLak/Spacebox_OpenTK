@@ -65,9 +65,9 @@ public static class ShipBindingTool
 
         if (UIManager.IsUIMode) return;
 
-        if (Input.IsMouseButtonDown(MouseButton.Right))
+        if (Input.IsActionDown("use"))
         {
-            Exit();
+            if (!TryUseDoor(player)) Exit();
             return;
         }
 
@@ -118,7 +118,7 @@ public static class ShipBindingTool
         labels.Add(new Label(screen, text, new Color4(color.R, color.G, color.B, 1f)));
     }
 
-    public static bool TryUseDoor(LocalAstronaut player)
+    private static bool TryUseDoor(LocalAstronaut player)
     {
         if (!BlockUseTarget.TryFind(player, out var block, out var hit) || block is not DoorBlock) return false;
 

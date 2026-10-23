@@ -41,7 +41,7 @@ public sealed class ShipConsoleUI : IGameUiController
 
             float speed = console.Entity.Ship?.Motion.Velocity.Length ?? 0f;
             return ShipBindingTool.IsActive
-                ? $"BINDING  {ShipBindingTool.DescribeHovered() ?? "Look at a ship block"}\nLMB / wheel: change group   RMB: back to seat"
+                ? $"BINDING  {ShipBindingTool.DescribeHovered() ?? "Look at a ship block"}\nLMB / wheel: change group   RMB: open door or back to seat"
                 : $"Speed {speed:0.0} m/s\nInventory key: console   Use: leave";
         }
     }
