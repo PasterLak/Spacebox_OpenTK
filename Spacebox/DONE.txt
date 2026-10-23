@@ -143,6 +143,7 @@ Small
 Fixes
 - ships: invalid console keys are rejected, pilots lose the seat when the console is destroyed, one pilot per console (host too), ships collide with entities from neighbour sectors, saved ships cannot be placed into blocks, players or foreign claims (red outline), console help shows the real use key
 - server: rejoining before a save keeps the unsaved player data, offline game mode changes are kept on save, /save from chat no longer re-enters the network loop, bans during login apply, restart relaunches even if cleanup fails, gifts are kept when the giver leaves mid-gift, stuck ship states are dropped
+- GameSet editor: safe folder names for new entries, Save keeps going past failed files, safer Convert (rollback, also the source folder), blueprint copies keep their product, wrong-kind files are no longer overwritten, typeless recipe groups editable; one bad processing recipe no longer drops the rest
 - item duplication: remote players' files are written only with the world (no more keeping chest items after "Don't Save" or a crash); the Spacer gives its loot once per world; window/reinforced window crush into 3/4 sand (was a sand loop); exploding blocks no longer drop themselves; players without creative inventory can't deposit into chests unchecked
 - bullets that ricochet off a bomb no longer make it explode
 - /health 0 or /set hp 0 kills the player instead of leaving them alive at 0 HP; stat commands do nothing on a dead player

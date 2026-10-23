@@ -115,6 +115,7 @@ public sealed class GameSetProject
     public EditorJsonFile CreateFile(string relativePath, JsonNode root)
     {
         var key = Normalize(relativePath);
+        if (!IsInsideRoot(GetFullPath(key))) throw new ArgumentException($"'{relativePath}' is outside the GameSet folder", nameof(relativePath));
         _pendingDeletes.Remove(GetFullPath(key));
         var file = EditorJsonFile.Create(GetFullPath(key), RootPath, root);
         _files[key] = file;
@@ -133,20 +134,36 @@ public sealed class GameSetProject
     public void SaveAll()
     {
         if (IsReadOnly) throw new InvalidOperationException(ReadOnlyMessage);
-        foreach (var path in _pendingDeletes)
+        var failures = new List<string>();
+        foreach (var path in _pendingDeletes.ToArray())
         {
-            if (File.Exists(path)) File.Delete(path);
-            Mirror?.Delete(Normalize(Path.GetRelativePath(RootPath, path)));
+            try
+            {
+                if (File.Exists(path)) File.Delete(path);
+                Mirror?.Delete(Normalize(Path.GetRelativePath(RootPath, path)));
+                _pendingDeletes.Remove(path);
+            }
+            catch (Exception ex)
+            {
+                failures.Add($"{Normalize(Path.GetRelativePath(RootPath, path))}: {ex.Message}");
+            }
         }
-        _pendingDeletes.Clear();
 
         foreach (var file in _files.Values)
         {
             if (!file.IsDirty || file.Error != null) continue;
-            file.Save();
-            if (file.Root != null) Mirror?.Write(file.RelativePath, EditorJsonFile.Serialize(file.Root));
+            try
+            {
+                file.Save();
+                if (file.Root != null) Mirror?.Write(file.RelativePath, EditorJsonFile.Serialize(file.Root));
+            }
+            catch (Exception ex)
+            {
+                failures.Add($"{file.RelativePath}: {ex.Message}");
+            }
         }
         _structureVersion = EditorJsonFile.NextStamp();
+        if (failures.Count > 0) throw new IOException($"{failures.Count} file(s) could not be saved: {string.Join("; ", failures)}");
     }
 
     public void ReloadFromDisk()
@@ -196,6 +213,12 @@ public sealed class GameSetProject
     public static string Normalize(string relativePath)
     {
         return relativePath.Replace('\\', '/').TrimStart('/');
+    }
+
+    private bool IsInsideRoot(string fullPath)
+    {
+        string root = Path.GetFullPath(RootPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        return Path.GetFullPath(fullPath).StartsWith(root, StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsInFolder(string relativePath, string folder)

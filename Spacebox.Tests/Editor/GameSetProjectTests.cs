@@ -40,6 +40,64 @@ public sealed class GameSetProjectTests : IDisposable
     }
 
     [Fact]
+    public void SaveAll_SavesTheOtherFilesAndReportsFailures()
+    {
+        Directory.CreateDirectory(Path.Combine(_root, "bad.json"));
+        var project = new GameSetProject(_root, "test");
+        project.CreateFile("bad.json", new JsonArray());
+        project.CreateFile("good.json", new JsonArray());
+
+        var error = Assert.ThrowsAny<IOException>(() => project.SaveAll());
+
+        Assert.Contains("bad.json", error.Message);
+        Assert.True(File.Exists(Path.Combine(_root, "good.json")));
+        Assert.Equal(1, project.DirtyCount);
+    }
+
+    [Fact]
+    public void ArraySource_DoesNotReplaceARootOfTheWrongKind()
+    {
+        File.WriteAllText(Path.Combine(_root, "items.json"), "{ \"ID\": \"keep\" }");
+        var project = new GameSetProject(_root, "test");
+        var source = new ArrayEntrySource(project, "items.json", "", GameSetCatalog.Items);
+
+        Assert.Null(source.Add(null));
+        Assert.Equal(0, project.DirtyCount);
+        Assert.Equal("keep", project.GetFile("items.json").Root!["ID"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public void GroupedSource_DoesNotReplaceARootOfTheWrongKind()
+    {
+        File.WriteAllText(Path.Combine(_root, "recipes.json"), "[ 1 ]");
+        var project = new GameSetProject(_root, "test");
+        var source = new GroupedArrayEntrySource(project, "recipes.json", "RecipeCatalog", "Type", "Recipes", GameSetCatalog.ProcessingRecipes);
+
+        Assert.Null(source.Add("furnace"));
+        Assert.Equal(0, project.DirtyCount);
+        Assert.IsType<JsonArray>(project.GetFile("recipes.json").Root);
+    }
+
+    [Fact]
+    public void GroupedSource_RemovesAndDuplicatesInGroupsWithoutType()
+    {
+        File.WriteAllText(Path.Combine(_root, "recipes.json"), "{ \"RecipeCatalog\": [ { \"Recipes\": [ { \"A\": 1 } ] } ] }");
+        var project = new GameSetProject(_root, "test");
+        var source = new GroupedArrayEntrySource(project, "recipes.json", "RecipeCatalog", "Type", "Recipes", GameSetCatalog.ProcessingRecipes);
+        var entry = Assert.Single(source.GetEntries());
+
+        var copy = source.Duplicate(entry);
+        Assert.Equal(new[] { "group0" }, source.Groups);
+        Assert.Equal(2, source.GetEntries().Count);
+
+        source.Remove(copy);
+        source.Remove(source.GetEntries()[0]);
+
+        Assert.Empty(source.GetEntries());
+        Assert.Single(project.GetFile("recipes.json").Root!["RecipeCatalog"]!.AsArray());
+    }
+
+    [Fact]
     public void SaveAll_WritesDirtyFiles()
     {
         var project = new GameSetProject(_root, "test");

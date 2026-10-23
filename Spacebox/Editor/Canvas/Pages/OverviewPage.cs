@@ -18,6 +18,7 @@ public sealed class OverviewPage : EditorPage
     private JsonDocumentView _config;
     private Button _convert;
     private Texture2D _iconTexture;
+    private string _convertTooltip;
 
     public OverviewPage(FieldWidgetRegistry widgets)
     {
@@ -45,6 +46,7 @@ public sealed class OverviewPage : EditorPage
             info.AddChild(new Label(project.Mirror.Root) { Autowrap = true, FontColor = EditorCanvasTheme.TextDim, MouseFilter = MouseFilter.Stop, TooltipText = "Debug and Release builds run from bin/, which a rebuild overwrites. Every save and delete is copied to the source GameSet folder so your changes are kept." });
         }
 
+        _convertTooltip = "Moves every block and item into its own folder with its textures, blueprints into the entry folders and processing recipes into Recipes/. The loaded content stays identical." + (project.Mirror != null ? " The source GameSet folder is converted too." : "");
         _convert = info.AddChild(new Button("Convert to folder format") { SizeFlagsHorizontal = SizeFlags.ShrinkBegin });
         _convert.Pressed += _ => Convert();
         info.AddChild(new HSeparator());
@@ -66,7 +68,7 @@ public sealed class OverviewPage : EditorPage
         bool dirty = Editor.Project.DirtyCount > 0;
         _convert.Visible = flat && !Editor.Project.IsReadOnly;
         _convert.Disabled = dirty;
-        _convert.TooltipText = dirty ? "Save or discard your changes first" : "Moves every block and item into its own folder with its textures, blueprints into the entry folders and processing recipes into Recipes/. The loaded content stays identical.";
+        _convert.TooltipText = dirty ? "Save or discard your changes first" : _convertTooltip;
     }
 
     public override void Release()
@@ -106,11 +108,19 @@ public sealed class OverviewPage : EditorPage
     private void Convert()
     {
         var project = Editor.Project;
-        var result = GameSetFolderConverter.Convert(project.RootPath);
-        project.ReloadFromDisk();
-        Editor.SetStatus(result.Success ? $"Converted: {result.Summary}" : "Conversion failed: " + string.Join("; ", result.Errors.Concat(result.Differences).Take(3)), !result.Success);
-        foreach (var line in result.Log) Engine.Debug.Log($"[Editor] {line}");
-        if (result.Success) Editor.RequestReload();
+        try
+        {
+            var result = ProjectFolderConversion.Convert(project.RootPath, project.Mirror?.Root);
+            project.ReloadFromDisk();
+            Editor.SetStatus(result.Success ? $"Converted: {result.Root.Summary}" : "Conversion failed: " + string.Join("; ", result.Problems.Take(3)), !result.Success);
+            foreach (var line in result.Log) Engine.Debug.Log($"[Editor] {line}");
+            if (result.Root.Success) Editor.RequestReload();
+        }
+        catch (Exception ex)
+        {
+            Engine.Debug.Error($"[Editor] Conversion failed: {ex}");
+            Editor.SetStatus("Conversion failed: " + ex.Message, true);
+        }
     }
 
     private static void OpenFolder(string path)

@@ -134,10 +134,27 @@ public sealed class EntryFolderSource : IEntrySource
         return RootOf(entry.File.RelativePath) != null;
     }
 
+    public string OwnerId(EditorEntry entry)
+    {
+        string folder = Path.GetDirectoryName(entry.File.RelativePath)?.Replace('\\', '/');
+        if (string.IsNullOrEmpty(folder)) return null;
+
+        string folderName = folder.Substring(folder.LastIndexOf('/') + 1);
+        foreach (var name in new[] { EntryFiles.NamedFile(folderName), GameSetFormat.BlockEntryFile, GameSetFormat.ItemEntryFile })
+        {
+            string path = folder + "/" + name;
+            if (string.Equals(path, entry.File.RelativePath, StringComparison.OrdinalIgnoreCase) || !_project.Exists(path)) continue;
+            string id = EditorJson.GetString(_project.GetFile(path).Root as JsonObject, "ID");
+            if (!string.IsNullOrWhiteSpace(id)) return id;
+        }
+        return null;
+    }
+
     private EditorEntry Create(string id, JsonNode node)
     {
-        string folder = _roots[0].TrimEnd('/') + "/" + id;
-        var file = _project.CreateFile(folder + "/" + EntryFiles.NamedFile(id), node);
+        string name = FolderName(id);
+        string folder = _roots[0].TrimEnd('/') + "/" + name;
+        var file = _project.CreateFile(folder + "/" + EntryFiles.NamedFile(name), node);
         AppendToOrder(id);
         _version = -1;
         foreach (var entry in GetEntries())
@@ -166,9 +183,19 @@ public sealed class EntryFolderSource : IEntrySource
             {
                 if (string.Equals(Definition.GetId(entry.Node), id, StringComparison.OrdinalIgnoreCase)) return true;
             }
-            string folder = _roots[0].TrimEnd('/') + "/" + id + "/";
-            return _project.Exists(folder + EntryFiles.NamedFile(id)) || _project.Exists(folder + _entryFile);
+            string name = FolderName(id);
+            string folder = _roots[0].TrimEnd('/') + "/" + name + "/";
+            return _project.Exists(folder + EntryFiles.NamedFile(name)) || _project.Exists(folder + _entryFile);
         });
+    }
+
+    public static string FolderName(string id)
+    {
+        string shortId = id ?? "";
+        int colon = shortId.LastIndexOf(':');
+        if (colon >= 0) shortId = shortId.Substring(colon + 1);
+        string name = Spacebox.Game.Resource.Content.Conversion.RecipeFilesWriter.SafeFileName(shortId).TrimStart('_');
+        return name.Length == 0 ? "unknown" : name;
     }
 
     private string IdOf(string path)

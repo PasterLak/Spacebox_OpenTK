@@ -531,45 +531,52 @@ public static class GameSetLoader
         }
     }
 
-    private static void LoadRecipes(GameSetContent content)
+    public static void LoadRecipes(GameSetContent content)
     {
-        try
+        for (int i = 0; i < content.Recipes.Count; i++)
         {
-            foreach (var entry in content.Recipes)
+            var entry = content.Recipes[i];
+            try
             {
-                var r = entry.Data.Deserialize<RecipeJSON>(ContentJson.CaseInsensitive);
-                if (r == null) continue;
-
-                var ingredientFullId = ResolveId(r.Ingredient.Item, entry.Namespace);
-                var productFullId = ResolveId(r.Product.Item, entry.Namespace);
-
-                var item = GameAssets.GetItemByFullID(ingredientFullId);
-                var item2 = GameAssets.GetItemByFullID(productFullId);
-
-                if (item == null)
-                {
-                    Debug.Error($"[GameSetLoader] Recipes: ingredient was not found - {r.Ingredient.Item} . This recipe was skipped");
-                    continue;
-                }
-                if (item2 == null)
-                {
-                    Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Product.Item} . This recipe was skipped");
-                    continue;
-                }
-
-                if (item == item2)
-                {
-                    Debug.Error($"[GameSetLoader] Recipes: item <{item.Name}> needs itself for crafting! This recipe was skipped");
-                    continue;
-                }
-
-                GameAssetsRegister.RegisterRecipe(r, item, item2);
+                LoadRecipe(entry);
+            }
+            catch (Exception ex)
+            {
+                string type = ContentJson.GetString(entry.Data, "Type") ?? "unknown";
+                Debug.Error($"[GameSetLoader] Recipes: recipe #{i} of type '{type}' could not be loaded and was skipped: {ex.Message}");
             }
         }
-        catch (Exception ex)
+    }
+
+    private static void LoadRecipe(ContentEntry entry)
+    {
+        var r = entry.Data.Deserialize<RecipeJSON>(ContentJson.CaseInsensitive);
+        if (r == null) return;
+
+        var ingredientFullId = ResolveId(r.Ingredient.Item, entry.Namespace);
+        var productFullId = ResolveId(r.Product.Item, entry.Namespace);
+
+        var item = GameAssets.GetItemByFullID(ingredientFullId);
+        var item2 = GameAssets.GetItemByFullID(productFullId);
+
+        if (item == null)
         {
-            Debug.Error($"[GameSetLoader] Error loading recipes: {ex.Message}");
+            Debug.Error($"[GameSetLoader] Recipes: ingredient was not found - {r.Ingredient.Item} . This recipe was skipped");
+            return;
         }
+        if (item2 == null)
+        {
+            Debug.Error($"[GameSetLoader] Recipes: product was not found - {r.Product.Item} . This recipe was skipped");
+            return;
+        }
+
+        if (item == item2)
+        {
+            Debug.Error($"[GameSetLoader] Recipes: item <{item.Name}> needs itself for crafting! This recipe was skipped");
+            return;
+        }
+
+        GameAssetsRegister.RegisterRecipe(r, item, item2);
     }
 
     private static void LoadCrafting(GameSetContent content)

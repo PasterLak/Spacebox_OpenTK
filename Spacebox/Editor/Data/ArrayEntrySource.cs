@@ -117,26 +117,35 @@ public sealed class ArrayEntrySource : IEntrySource, IReorderableEntrySource
         if (file.Error != null) return null;
         if (string.IsNullOrEmpty(_arrayKey))
         {
-            if (file.Root is not JsonArray rootArray)
-            {
-                rootArray = new JsonArray();
-                file.Root = rootArray;
-            }
-            return rootArray;
+            if (file.Root == null) file.Root = new JsonArray();
+            if (file.Root is JsonArray rootArray) return rootArray;
+            Refuse("its root is not an array");
+            return null;
         }
 
+        if (file.Root == null) file.Root = new JsonObject();
         if (file.Root is not JsonObject obj)
         {
-            obj = new JsonObject();
-            file.Root = obj;
+            Refuse("its root is not an object");
+            return null;
         }
 
-        if (EditorJson.Get(obj, _arrayKey) is not JsonArray array)
+        var existing = EditorJson.Get(obj, _arrayKey);
+        if (existing is JsonArray array) return array;
+        if (existing != null)
         {
-            array = new JsonArray();
-            EditorJson.Set(obj, _arrayKey, array);
+            Refuse($"'{_arrayKey}' is not an array");
+            return null;
         }
+
+        array = new JsonArray();
+        EditorJson.Set(obj, _arrayKey, array);
         return array;
+    }
+
+    private void Refuse(string reason)
+    {
+        Engine.Debug.Warning($"[Editor] {_relativeFile} was not changed because {reason}; fix the file first");
     }
 
     private string MakeId(string baseId)

@@ -73,9 +73,21 @@ public sealed class CompositeEntrySource : IEntrySource, IReorderableEntrySource
         {
             target.Clear();
             foreach (var property in source) target[property.Key] = property.Value?.DeepClone();
+            FillProduct(target, ((EntryFolderSource)owner).OwnerId(entry));
             copy.File.MarkDirty();
         }
         return copy;
+    }
+
+    private static void FillProduct(System.Text.Json.Nodes.JsonObject blueprint, string ownerId)
+    {
+        if (string.IsNullOrWhiteSpace(ownerId)) return;
+        if (EditorJson.Get(blueprint, "Product") is not System.Text.Json.Nodes.JsonObject product)
+        {
+            EditorJson.Set(blueprint, "Product", new System.Text.Json.Nodes.JsonObject { ["Item"] = ownerId, ["Quantity"] = 1 });
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(EditorJson.GetString(product, "Item"))) EditorJson.Set(product, "Item", System.Text.Json.Nodes.JsonValue.Create(ownerId));
     }
 
     public void Remove(EditorEntry entry) => OwnerOf(entry).Remove(entry);

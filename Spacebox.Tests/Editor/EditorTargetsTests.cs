@@ -36,6 +36,20 @@ public sealed class EditorTargetsTests : IDisposable
         Assert.Equal(pack, EditorTargets.ProjectRoot(pack, ""));
         string root = EditorTargets.ProjectRoot(pack, "default");
         Assert.Equal(Path.Combine(pack, "Bases", "default"), root);
-        Assert.True(Directory.Exists(root));
+        Assert.False(Directory.Exists(root));
+    }
+
+    [Fact]
+    public void TargetFolder_IsCreatedOnFirstSave()
+    {
+        string pack = _sets.Folder("Weapons");
+        string root = EditorTargets.ProjectRoot(pack, "default");
+        var project = new Spacebox.Editor.Data.GameSetProject(root, "weapons");
+
+        Assert.Empty(project.ListJsonFiles());
+        project.CreateFile("blocks.json", new System.Text.Json.Nodes.JsonArray());
+        project.SaveAll();
+
+        Assert.True(File.Exists(Path.Combine(root, "blocks.json")));
     }
 }

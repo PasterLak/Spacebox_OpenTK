@@ -48,7 +48,7 @@ public sealed class GroupedArrayEntrySource : IEntrySource
         for (int g = 0; g < groups.Count; g++)
         {
             if (groups[g] is not JsonObject group) continue;
-            var name = EditorJson.GetString(group, _groupNameKey, "group" + g);
+            var name = Label(group, g);
             _groups.Add(name);
 
             if (EditorJson.Get(group, _itemsKey) is not JsonArray items) continue;
@@ -70,7 +70,7 @@ public sealed class GroupedArrayEntrySource : IEntrySource
 
     public EditorEntry Duplicate(EditorEntry entry)
     {
-        var items = EnsureItems(entry.Group);
+        var items = FindItemsContaining(entry.Node) ?? EnsureItems(entry.Group);
         if (items == null) return null;
         var node = EditorJson.Clone(entry.Node);
         int index = IndexOf(items, entry.Node);
@@ -80,7 +80,7 @@ public sealed class GroupedArrayEntrySource : IEntrySource
 
     public void Remove(EditorEntry entry)
     {
-        var items = FindItems(entry.Group);
+        var items = FindItemsContaining(entry.Node);
         int index = items == null ? -1 : IndexOf(items, entry.Node);
         if (index < 0) return;
         items.RemoveAt(index);
@@ -98,14 +98,18 @@ public sealed class GroupedArrayEntrySource : IEntrySource
         return null;
     }
 
-    private JsonArray FindItems(string groupName)
+    private string Label(JsonObject group, int index)
+    {
+        return EditorJson.GetString(group, _groupNameKey, "group" + index);
+    }
+
+    private JsonArray FindItemsContaining(JsonNode node)
     {
         var groups = EditorJson.GetArray(_project.GetFile(_relativeFile).Root, _groupsKey);
-        if (groups == null) return null;
-        foreach (var node in groups)
+        if (groups == null || node == null) return null;
+        foreach (var element in groups)
         {
-            if (node is JsonObject group && string.Equals(EditorJson.GetString(group, _groupNameKey), groupName, StringComparison.OrdinalIgnoreCase))
-                return EditorJson.GetArray(group, _itemsKey);
+            if (element is JsonObject group && EditorJson.Get(group, _itemsKey) is JsonArray items && IndexOf(items, node) >= 0) return items;
         }
         return null;
     }
@@ -114,21 +118,28 @@ public sealed class GroupedArrayEntrySource : IEntrySource
     {
         var file = _project.GetFile(_relativeFile);
         if (file.Error != null) return null;
+        if (file.Root == null) file.Root = new JsonObject();
         if (file.Root is not JsonObject root)
         {
-            root = new JsonObject();
-            file.Root = root;
+            Refuse($"its root is not an object");
+            return null;
         }
 
-        if (EditorJson.Get(root, _groupsKey) is not JsonArray groups)
+        var existing = EditorJson.Get(root, _groupsKey);
+        if (existing != null && existing is not JsonArray)
+        {
+            Refuse($"'{_groupsKey}' is not an array");
+            return null;
+        }
+        if (existing is not JsonArray groups)
         {
             groups = new JsonArray();
             EditorJson.Set(root, _groupsKey, groups);
         }
 
-        foreach (var node in groups)
+        for (int g = 0; g < groups.Count; g++)
         {
-            if (node is JsonObject group && string.Equals(EditorJson.GetString(group, _groupNameKey), groupName, StringComparison.OrdinalIgnoreCase))
+            if (groups[g] is JsonObject group && string.Equals(Label(group, g), groupName, StringComparison.OrdinalIgnoreCase))
                 return EnsureArray(group);
         }
 
@@ -139,10 +150,21 @@ public sealed class GroupedArrayEntrySource : IEntrySource
 
     private JsonArray EnsureArray(JsonObject group)
     {
-        if (EditorJson.Get(group, _itemsKey) is JsonArray items) return items;
+        var existing = EditorJson.Get(group, _itemsKey);
+        if (existing is JsonArray items) return items;
+        if (existing != null)
+        {
+            Refuse($"'{_itemsKey}' of a group is not an array");
+            return null;
+        }
         items = new JsonArray();
         EditorJson.Set(group, _itemsKey, items);
         return items;
+    }
+
+    private void Refuse(string reason)
+    {
+        Engine.Debug.Warning($"[Editor] {_relativeFile} was not changed because {reason}; fix the file first");
     }
 
     private static int IndexOf(JsonArray array, JsonNode node)

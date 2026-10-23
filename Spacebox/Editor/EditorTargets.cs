@@ -32,8 +32,6 @@ public static class EditorTargets
     public static string ProjectRoot(string extensionFolder, string target)
     {
         if (string.IsNullOrEmpty(target)) return extensionFolder;
-        string root = Path.Combine(extensionFolder, GameSetFormat.AdaptersFolder, target);
-        Directory.CreateDirectory(root);
-        return root;
+        return Path.Combine(extensionFolder, GameSetFormat.AdaptersFolder, target);
     }
 }

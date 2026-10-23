@@ -35,11 +35,10 @@ public static class GameSetFolderConverter
         string staging = Path.Combine(parent, "_" + name + ".converting");
         string backup = Path.Combine(parent, "_" + name + ".backup");
 
-        if (Directory.Exists(staging)) Directory.Delete(staging, true);
-        CopyDirectory(root, staging);
-
         try
         {
+            if (Directory.Exists(staging)) Directory.Delete(staging, true);
+            CopyDirectory(root, staging);
             var before = ContentSnapshot.Create(root);
             ConvertInPlace(staging, protectedEmissionNames, result);
             if (result.Errors.Count == 0) result.Differences.AddRange(ContentSnapshot.Differences(before, ContentSnapshot.Create(staging)));
@@ -51,17 +50,67 @@ public static class GameSetFolderConverter
 
         if (!result.Success)
         {
-            Directory.Delete(staging, true);
+            DeleteQuietly(staging);
             result.Log.Add("Conversion failed; the GameSet was not changed");
             return result;
         }
 
-        if (Directory.Exists(backup)) Directory.Delete(backup, true);
-        Directory.Move(root, backup);
-        Directory.Move(staging, root);
-        Directory.Delete(backup, true);
+        if (!ReplaceWithStaging(root, staging, backup, result, Directory.Move)) return result;
         result.Log.Add($"Converted '{name}': {result.Summary}; loaded content is identical");
         return result;
+    }
+
+    public static bool ReplaceWithStaging(string root, string staging, string backup, ConversionResult result, Action<string, string> moveDirectory)
+    {
+        try
+        {
+            if (Directory.Exists(backup)) Directory.Delete(backup, true);
+            moveDirectory(root, backup);
+        }
+        catch (Exception ex)
+        {
+            result.Errors.Add($"Could not move the GameSet aside: {ex.Message}");
+            DeleteQuietly(staging);
+            result.Log.Add("Conversion failed; the GameSet was not changed");
+            return false;
+        }
+
+        try
+        {
+            moveDirectory(staging, root);
+        }
+        catch (Exception ex)
+        {
+            result.Errors.Add($"Could not move the converted GameSet into place: {ex.Message}");
+            try
+            {
+                if (Directory.Exists(root)) Directory.Delete(root, true);
+                moveDirectory(backup, root);
+                result.Log.Add("Conversion failed; the GameSet was restored");
+            }
+            catch (Exception restoreError)
+            {
+                result.Errors.Add($"Could not restore the GameSet; the original is kept in '{backup}': {restoreError.Message}");
+                return false;
+            }
+            DeleteQuietly(staging);
+            return false;
+        }
+
+        DeleteQuietly(backup);
+        return true;
+    }
+
+    private static void DeleteQuietly(string folder)
+    {
+        try
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, true);
+        }
+        catch (Exception ex)
+        {
+            Engine.Debug.Warning($"[GameSetFolderConverter] Could not delete '{folder}': {ex.Message}");
+        }
     }
 
     public static void ConvertInPlace(string root, IEnumerable<string> protectedEmissionNames, ConversionResult result)

@@ -28,6 +28,44 @@ public sealed class GameSetFolderConverterTests : IDisposable
     }
 
     [Fact]
+    public void ReplaceWithStaging_RestoresTheGameSet_WhenTheSecondMoveFails()
+    {
+        _sets.Write("Mod/blocks.json", "[]");
+        _sets.Write("_Mod.converting/Blocks/order.json", "[]");
+        string staging = Path.Combine(_sets.Root, "_Mod.converting");
+        string backup = Path.Combine(_sets.Root, "_Mod.backup");
+        int calls = 0;
+        var result = new ConversionResult();
+
+        bool replaced = GameSetFolderConverter.ReplaceWithStaging(Root, staging, backup, result, (from, to) =>
+        {
+            if (++calls == 2) throw new IOException("locked");
+            Directory.Move(from, to);
+        });
+
+        Assert.False(replaced);
+        Assert.False(result.Success);
+        Assert.True(File.Exists(Path.Combine(Root, "blocks.json")));
+        Assert.False(Directory.Exists(backup));
+        Assert.False(Directory.Exists(staging));
+    }
+
+    [Fact]
+    public void ProjectConversion_ConvertsTheSourceFolderMirrorToo()
+    {
+        WriteFlatMod();
+        string mirror = Path.Combine(_sets.Root, "Source", "Mod");
+        GameSetFolderConverter.CopyDirectory(Root, mirror);
+
+        var result = Spacebox.Editor.Data.ProjectFolderConversion.Convert(Root, mirror);
+
+        Assert.True(result.Success, string.Join("\n", result.Problems));
+        Assert.False(GameSetFolderConverter.HasFlatFiles(Root));
+        Assert.False(GameSetFolderConverter.HasFlatFiles(mirror));
+        Assert.True(File.Exists(Path.Combine(mirror, "Blocks", "Rocks", "stone", "stone.json")));
+    }
+
+    [Fact]
     public void Convert_MovesEntriesTexturesAndRecipesIntoFolders()
     {
         WriteFlatMod();
