@@ -13,6 +13,8 @@ public sealed class EquipmentWindow : GameWindow
 
     private readonly List<(ItemSlotControl Control, EquipmentSlotType Type)> _slots = new List<(ItemSlotControl, EquipmentSlotType)>();
     private readonly PlayerPreviewControl _preview;
+    private readonly List<VBoxContainer> _slotColumns = new List<VBoxContainer>();
+    private float _gap = -1f;
     private PlayerEquipment _equipment;
 
     public EquipmentWindow() : base("Equipment")
@@ -30,6 +32,7 @@ public sealed class EquipmentWindow : GameWindow
 
         var devices = row.AddChild(new VBoxContainer());
         devices.AddThemeConstantOverride("separation", SlotGap);
+        _slotColumns.Add(devices);
         foreach (var type in EquipmentUI.DeviceSlots) devices.AddChild(CreateSlot(type));
     }
 
@@ -46,13 +49,24 @@ public sealed class EquipmentWindow : GameWindow
         }
 
         foreach (var (control, _) in _slots) control.Refresh();
+        ApplySlotGap(GetThemeConstant("slot_spacing", SlotGap));
         EquipmentUI.Preview.Prepare(player, equipment, PanelUI.HeldItem, _preview.PixelSize);
+    }
+
+    private void ApplySlotGap(float gap)
+    {
+        if (gap == _gap) return;
+        _gap = gap;
+        foreach (var column in _slotColumns) column.AddThemeConstantOverride("separation", gap);
+        float slot = ItemSlotControl.DefaultSize;
+        _preview.CustomMinimumSize = new Vector2(_preview.CustomMinimumSize.X, EquipmentUI.Rows * slot + (EquipmentUI.Rows - 1) * gap);
     }
 
     private VBoxContainer Column(int column)
     {
         var box = new VBoxContainer();
         box.AddThemeConstantOverride("separation", SlotGap);
+        _slotColumns.Add(box);
         for (int row = 0; row < EquipmentUI.Rows; row++)
         {
             var placement = Array.Find(EquipmentUI.ArmorLayout, p => p.Column == column && p.Row == row);

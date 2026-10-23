@@ -56,6 +56,14 @@ public abstract class GameWindow : PanelContainer
 
     protected void MatchColumnWidth() => SizeFlagsHorizontal = SizeFlags.Fill;
 
+    public bool MatchesInventoryHeight { get; private set; }
+
+    protected void MatchInventorySize()
+    {
+        MatchColumnWidth();
+        MatchesInventoryHeight = true;
+    }
+
     public const float HeaderHeight = 18f;
     public const float HeaderButtonSize = 18f;
 

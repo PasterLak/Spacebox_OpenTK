@@ -20,7 +20,7 @@ public sealed class ProcessingWindow : GameWindow
     public ProcessingWindow() : base("Machine")
     {
         Name = "Processing";
-        MatchColumnWidth();
+        MatchInventorySize();
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 10f);
 
@@ -47,7 +47,8 @@ public sealed class ProcessingWindow : GameWindow
     protected override void Refresh()
     {
         if (TitleLabel.Text != ResourceProcessingGUI.WindowName) TitleLabel.Text = ResourceProcessingGUI.WindowName;
-        StatusText.Set(_status, ResourceProcessingGUI.Status, StatusKind.Normal);
+        if (ResourceProcessingGUI.Block.HasPower) StatusText.Set(_status, ResourceProcessingGUI.Status, StatusKind.Normal);
+        else StatusText.Set(_status, "NO POWER", StatusKind.Bad);
         _arrow.Progress = ResourceProcessingGUI.Progress;
         ShowEnergy(ResourceProcessingGUI.Block.ConsumptionRate);
 

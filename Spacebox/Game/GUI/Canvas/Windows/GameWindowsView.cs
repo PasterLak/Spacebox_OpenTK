@@ -14,6 +14,7 @@ public sealed class GameWindowsView : SafeArea
     private readonly List<GameWindow> _right = new List<GameWindow>();
     private readonly List<GameWindow> _leftStack = new List<GameWindow>();
     private readonly List<GameWindow> _middleStack = new List<GameWindow>();
+    private float _inventoryHeight;
 
     public GameWindowsView()
     {
@@ -65,6 +66,7 @@ public sealed class GameWindowsView : SafeArea
         Collect(_left, _leftStack);
 
         Rect2 anchor;
+        _inventoryHeight = Inventory.Visible ? Inventory.GetCombinedMinimumSize().Y : 0f;
         if (Inventory.Visible)
         {
             var size = Inventory.GetCombinedMinimumSize();
@@ -102,6 +104,12 @@ public sealed class GameWindowsView : SafeArea
             if (source[i].Visible) target.Add(source[i]);
     }
 
+    private float HeightOf(GameWindow window)
+    {
+        float height = window.GetCombinedMinimumSize().Y;
+        return window.MatchesInventoryHeight && _inventoryHeight > 0f ? MathF.Max(height, _inventoryHeight) : height;
+    }
+
     private static float StackWidth(List<GameWindow> stack, float minimum)
     {
         float width = minimum;
@@ -109,14 +117,14 @@ public sealed class GameWindowsView : SafeArea
         return width;
     }
 
-    private static float StackHeight(List<GameWindow> stack)
+    private float StackHeight(List<GameWindow> stack)
     {
         float height = 0f;
-        for (int i = 0; i < stack.Count; i++) height += stack[i].GetCombinedMinimumSize().Y + (i > 0 ? Gap : 0f);
+        for (int i = 0; i < stack.Count; i++) height += HeightOf(stack[i]) + (i > 0 ? Gap : 0f);
         return height;
     }
 
-    private static void PlaceStack(List<GameWindow> stack, float centerX, float top, float matchWidth)
+    private void PlaceStack(List<GameWindow> stack, float centerX, float top, float matchWidth)
     {
         float y = top;
         for (int i = 0; i < stack.Count; i++)
@@ -124,12 +132,13 @@ public sealed class GameWindowsView : SafeArea
             var window = stack[i];
             var size = window.GetCombinedMinimumSize();
             float width = window.SizeFlagsHorizontal.HasFlag(SizeFlags.Fill) ? MathF.Max(size.X, matchWidth) : size.X;
-            Container.FitChildInRect(window, new Rect2(MathF.Round(centerX - width * 0.5f), y, width, size.Y));
-            y += size.Y + Gap;
+            float height = HeightOf(window);
+            Container.FitChildInRect(window, new Rect2(MathF.Round(centerX - width * 0.5f), y, width, height));
+            y += height + Gap;
         }
     }
 
-    private static void PlaceSide(List<GameWindow> stack, Rect2 anchor, Rect2 free, bool left)
+    private void PlaceSide(List<GameWindow> stack, Rect2 anchor, Rect2 free, bool left)
     {
         if (stack.Count == 0) return;
         float height = StackHeight(stack);
@@ -138,9 +147,10 @@ public sealed class GameWindowsView : SafeArea
         {
             var window = stack[i];
             var size = window.GetCombinedMinimumSize();
+            float windowHeight = HeightOf(window);
             float x = left ? anchor.X - Gap - size.X : anchor.End.X + Gap;
-            Container.FitChildInRect(window, new Rect2(MathF.Round(x), MathF.Round(top), size.X, size.Y));
-            top += size.Y + Gap;
+            Container.FitChildInRect(window, new Rect2(MathF.Round(x), MathF.Round(top), size.X, windowHeight));
+            top += windowHeight + Gap;
         }
     }
 }

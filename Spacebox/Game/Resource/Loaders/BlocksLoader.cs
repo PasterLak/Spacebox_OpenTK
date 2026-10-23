@@ -12,6 +12,8 @@ namespace Spacebox.Game.Resource
 {
     public static class BlocksLoader
     {
+        public const int MaxProcessingPower = 8000;
+
         private static void AddVoidBlock()
         {
             var _void = new BlockData("Void", "block", false);
@@ -260,6 +262,7 @@ namespace Spacebox.Game.Resource
                 Durability = (byte)Math.Clamp(block.Durability, 1, byte.MaxValue),
                 PowerToDrill = (byte)Math.Clamp(block.PowerToDrill, 0, byte.MaxValue),
                 Efficiency = Math.Max(0.1f, block.Efficiency),
+                ProcessingPower = (ushort)Math.Clamp(block.Processing?.Power ?? 0, 0, MaxProcessingPower),
                 Category = block.Category,
                 BaseFrontDirection = Block.GetDirectionFromNormal(block.FrontDirection),
                 Size = new Vector3Byte(ClampSize(block.Size.X), ClampSize(block.Size.Y), ClampSize(block.Size.Z)),

@@ -17,7 +17,7 @@ public sealed class DnaReconstructorWindow : GameWindow
     public DnaReconstructorWindow() : base("DNA Reconstructor")
     {
         Name = "DnaReconstructor";
-        MatchColumnWidth();
+        MatchInventorySize();
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 10f);
         row.AddChild(_slot);

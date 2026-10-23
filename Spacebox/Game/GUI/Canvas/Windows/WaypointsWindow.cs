@@ -9,8 +9,9 @@ namespace Spacebox.Game.GUI.Canvas.Windows;
 
 public sealed class WaypointsWindow : GameWindow
 {
-    private const float ListWidth = 270f;
-    private const float EditorWidth = 210f;
+    private const float ListWidth = 240f;
+    private const float EditorWidth = 240f;
+    private const float ColumnGap = 8f;
     private const float ContentHeight = 250f;
     private const float SwatchSize = 18f;
     private const float MarkerSize = 10f;
@@ -37,7 +38,7 @@ public sealed class WaypointsWindow : GameWindow
         Body.AddChild(StatusText.Create("Only you can see your waypoints.", StatusKind.Muted));
 
         var content = Body.AddChild(new HBoxContainer());
-        content.AddThemeConstantOverride("separation", 10f);
+        content.AddThemeConstantOverride("separation", ColumnGap);
         var listColumn = content.AddChild(new VBoxContainer { CustomMinimumSize = new Vector2(ListWidth, ContentHeight) });
         listColumn.AddChild(MenuLayout.ScrollList(_rows, ContentHeight));
         _rows.AddThemeConstantOverride("separation", 2f);
@@ -85,7 +86,7 @@ public sealed class WaypointsWindow : GameWindow
         _delete.Pressed += _ => WaypointWindowUI.Delete();
 
         var footer = Body.AddChild(new HBoxContainer());
-        footer.AddThemeConstantOverride("separation", 8f);
+        footer.AddThemeConstantOverride("separation", ColumnGap);
         var add = footer.AddChild(new Button { Text = "Add at my position", SizeFlagsHorizontal = SizeFlags.ExpandFill });
         add.Pressed += _ => WaypointWindowUI.AddAtPlayer();
         var close = footer.AddChild(new Button { Text = "Close", SizeFlagsHorizontal = SizeFlags.ExpandFill });

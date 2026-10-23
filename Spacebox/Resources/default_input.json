@@ -302,47 +302,69 @@
                     }
                 ]
             },
-            "ship_place_yaw": {
-                "Name": "Turn ship (yaw)",
-                "Description": "Turn the ship you are placing around its up axis",
+            "ship_place_yaw_left": {
+                "Name": "Turn ship left",
+                "Description": "Turn the ship you are placing to the left",
                 "Category": "Ship placement",
                 "Bindings": [
                     {
                         "Type": "Key",
-                        "Key": "R"
+                        "Key": "Left"
                     }
                 ]
             },
-            "ship_place_pitch": {
-                "Name": "Turn ship (pitch)",
-                "Description": "Tilt the ship you are placing forward",
+            "ship_place_yaw_right": {
+                "Name": "Turn ship right",
+                "Description": "Turn the ship you are placing to the right",
                 "Category": "Ship placement",
                 "Bindings": [
                     {
                         "Type": "Key",
-                        "Key": "Y"
+                        "Key": "Right"
                     }
                 ]
             },
-            "ship_place_roll": {
-                "Name": "Turn ship (roll)",
-                "Description": "Roll the ship you are placing",
+            "ship_place_pitch_up": {
+                "Name": "Tilt ship up",
+                "Description": "Tilt the nose of the ship you are placing up",
                 "Category": "Ship placement",
                 "Bindings": [
                     {
                         "Type": "Key",
-                        "Key": "U"
+                        "Key": "Up"
                     }
                 ]
             },
-            "ship_place_reverse": {
-                "Name": "Turn backwards",
-                "Description": "Hold to turn the ship the other way",
+            "ship_place_pitch_down": {
+                "Name": "Tilt ship down",
+                "Description": "Tilt the nose of the ship you are placing down",
                 "Category": "Ship placement",
                 "Bindings": [
                     {
                         "Type": "Key",
-                        "Key": "LeftShift"
+                        "Key": "Down"
+                    }
+                ]
+            },
+            "ship_place_roll_left": {
+                "Name": "Roll ship left",
+                "Description": "Roll the ship you are placing to the left",
+                "Category": "Ship placement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "PageUp"
+                    }
+                ]
+            },
+            "ship_place_roll_right": {
+                "Name": "Roll ship right",
+                "Description": "Roll the ship you are placing to the right",
+                "Category": "Ship placement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "PageDown"
                     }
                 ]
             },
@@ -353,7 +375,7 @@
                 "Bindings": [
                     {
                         "Type": "Key",
-                        "Key": "LeftControl"
+                        "Key": "LeftAlt"
                     }
                 ]
             },

@@ -7,6 +7,9 @@
   "Durability": 10,
   "Efficiency": 1.2,
   "PowerToDrill": 3,
+  "Processing": {
+    "Power": 30
+  },
   "FrontDirection": {
     "x": 0,
     "y": 0,

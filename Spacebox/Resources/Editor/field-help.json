@@ -147,6 +147,7 @@
     "Explosive": "Explosion settings. Used by Type explosive (bombs). A Type generator with this section explodes when destroyed. Not set by default.",
     "Pipe": "Settings for an item pipe: transfer speed, power and which sides take and give items. Only used by Type pipe.",
     "Disassembler": "Power use of the disassembler. Only used by Type disassembler.",
+    "Processing": "Power use of a furnace or crusher. Power 0 = works without electricity. Only used by Type furnace and crusher.",
     "Thruster": "Settings for a ship thruster: force, power and free space in front of the nozzle. Only used by Type thruster.",
     "Console": "Settings for a ship console: number of key groups, power and what it controls. Only used by Type shipconsole.",
     "Cannon": "Settings for a ship cannon: projectile, reload, aiming limits and power. Only used by Type cannon.",
@@ -186,7 +187,8 @@
     "Id": "Unique id of the crafting tab. Items with this Category are listed in it.",
     "Name": "Tab name shown in the crafting window.",
     "Icon": "Id of the item or block whose icon is shown on the tab.",
-    "Row": "Row of the tab bar the tab is placed in, starting at 1. 0 or a missing row = put in the shortest row. Default: 0."
+    "Row": "Row of the tab bar the tab is placed in, starting at 1. 0 or a missing row = put in the shortest row. Default: 0.",
+    "Group": "Group tab at the top of the crafting window (for example Blocks, Items, Ships) that lists this category. Empty = Blocks for row 1, Items for row 2. Default: empty."
   },
   "CraftingJSON": {
     "Categories": "Tabs of the crafting window. Items join a tab through their Category.",
@@ -197,6 +199,9 @@
     "Count": "How many to give, 1-255. 0 = skipped.",
     "PutIn": "Where the item goes: auto (equipment slot if it fits, else the hotbar), hand (hotbar slot SlotId, selected), hotbar, inventory or equipment.",
     "SlotId": "Hotbar slot for hand or hotbar (0 = first). -1 = first free slot."
+  },
+  "ProcessingJSON": {
+    "Power": "Power used by the furnace or crusher, in EU (0-8000, default 0 = no electricity needed). It only works while its network has enough power."
   },
   "DisassemblerJSON": {
     "Power": "Power used while working, in EU (0-8000, default 40). Speed is set by Efficiency."

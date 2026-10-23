@@ -37,7 +37,7 @@ public sealed class PauseScreen : GameScreen
         var row = column.AddChild(new HBoxContainer { MouseFilter = MouseFilter.Ignore });
         row.AddThemeConstantOverride("separation", 16f);
         row.AddChild(_leftSide);
-        _leftSide.AddChild(_statistics);
+        _leftSide.AddChild(_players);
 
         var frame = MenuLayout.Window(null, MenuWidth);
         frame.Root.Name = "PauseMenu";
@@ -55,7 +55,7 @@ public sealed class PauseScreen : GameScreen
         frame.Body.AddChild(MenuLayout.Button(null, "Exit", PauseUI.RequestExit));
 
         row.AddChild(_rightSide);
-        _rightSide.AddChild(_players);
+        _rightSide.AddChild(_statistics);
     }
 
     public StatisticsPanel Statistics => _statistics;
@@ -92,8 +92,8 @@ public sealed class PauseScreen : GameScreen
 
     private void BalanceSides()
     {
-        float left = _statistics.Visible ? _statistics.GetCombinedMinimumSize().X : 0f;
-        float right = _players.Visible ? _players.GetCombinedMinimumSize().X : 0f;
+        float left = _players.Visible ? _players.GetCombinedMinimumSize().X : 0f;
+        float right = _statistics.Visible ? _statistics.GetCombinedMinimumSize().X : 0f;
         float side = MathF.Max(left, right);
         if (_leftSide.CustomMinimumSize.X != side) _leftSide.CustomMinimumSize = new Vector2(side, 0f);
         if (_rightSide.CustomMinimumSize.X != side) _rightSide.CustomMinimumSize = new Vector2(side, 0f);

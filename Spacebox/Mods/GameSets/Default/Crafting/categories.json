@@ -4,79 +4,92 @@
       "Id": "building",
       "Name": "Building",
       "Icon": "iron_block_heavy",
-      "Row": 1
+      "Row": 1,
+      "Group": "Blocks"
     },
     {
       "Id": "production",
       "Name": "Production",
       "Icon": "crusher",
-      "Row": 1
+      "Row": 1,
+      "Group": "Blocks"
     },
     {
       "Id": "electricity",
       "Name": "Electricity",
       "Icon": "cobalt_power_block",
-      "Row": 1
+      "Row": 1,
+      "Group": "Blocks"
     },
     {
       "Id": "logistics",
       "Name": "Logistics",
       "Icon": "basic_aluminium_crate",
-      "Row": 1
+      "Row": 1,
+      "Group": "Blocks"
     },
     {
       "Id": "ships",
       "Name": "Ships",
       "Icon": "ship_console",
-      "Row": 1
+      "Row": 1,
+      "Group": "Ships"
     },
     {
       "Id": "other",
       "Name": "Other",
       "Icon": "oxygen_generator",
-      "Row": 1
+      "Row": 1,
+      "Group": "Blocks"
     },
     {
       "Id": "drills",
       "Name": "Drills",
       "Icon": "aluminium_drill",
-      "Row": 2
+      "Row": 2,
+      "Group": "Items"
     },
     {
       "Id": "tools",
       "Name": "Tools",
       "Icon": "aluminium_flashlight",
-      "Row": 2
+      "Row": 2,
+      "Group": "Items"
     },
     {
       "Id": "weapons",
       "Name": "Weapons",
       "Icon": "pistol",
-      "Row": 2
+      "Row": 2,
+      "Group": "Items"
     },
     {
       "Id": "equipment",
       "Name": "Equipment",
       "Icon": "aluminium_helmet",
-      "Row": 2
+      "Row": 2,
+      "Group": "Items"
     },
     {
       "Id": "items",
       "Name": "Items",
       "Icon": "microchip",
-      "Row": 2
+      "Row": 2,
+      "Group": "Items"
     },
     {
       "Id": "consumables",
       "Name": "Consumables",
       "Icon": "med_kit",
-      "Row": 2
+      "Row": 2,
+      "Group": "Items"
     },
     {
       "Id": "decor",
       "Name": "Decor",
       "Icon": "picture_retro_cactus",
-      "Row": 1
+      "Row": 1,
+      "Group": "Blocks"
     }
   ]
 }

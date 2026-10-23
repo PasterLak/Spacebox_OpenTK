@@ -10,7 +10,12 @@ public sealed class CraftingWindow : GameWindow
     private const int ScrollSettleFrames = 3;
     private const int DefaultInventoryColumns = 8;
 
-    private readonly GridContainer _categories = new GridContainer();
+    private const float TileGap = 4f;
+
+    private readonly VBoxContainer _categories = new VBoxContainer();
+    private readonly HBoxContainer _tabs = new HBoxContainer();
+    private readonly GridContainer _tiles = new GridContainer();
+    private readonly List<Button> _tabButtons = new List<Button>();
     private readonly VBoxContainer _itemsView = new VBoxContainer { Visible = false };
     private readonly Label _categoryTitle = new Label { ThemeTypeVariation = "SectionLabel", SizeFlagsHorizontal = SizeFlags.ExpandFill, VerticalAlignment = VerticalAlignment.Center };
     private readonly GridContainer _items = new GridContainer();
@@ -23,8 +28,11 @@ public sealed class CraftingWindow : GameWindow
     {
         Name = "Crafting";
         MatchColumnWidth();
-        _categories.AddThemeConstantOverride("h_separation", 4f);
-        _categories.AddThemeConstantOverride("v_separation", 4f);
+        _tabs.AddThemeConstantOverride("separation", 4f);
+        _tiles.AddThemeConstantOverride("h_separation", TileGap);
+        _tiles.AddThemeConstantOverride("v_separation", TileGap);
+        _categories.AddChild(_tabs);
+        _categories.AddChild(_tiles);
         Body.AddChild(_categories);
         Body.AddChild(_itemsView);
 
@@ -62,21 +70,57 @@ public sealed class CraftingWindow : GameWindow
     private void BuildCategories()
     {
         _builtFor = CraftingGUI.Categories;
-        _categories.ClearChildren();
-        _categories.Columns = Math.Max(1, CraftingGUI.CategoryColumns);
-        foreach (var category in _builtFor)
+        _tabs.ClearChildren();
+        _tabButtons.Clear();
+        var groups = CraftingGUI.Groups;
+        for (int i = 0; i < groups.Count; i++)
         {
-            if (category == null)
+            int index = i;
+            var tab = _tabs.AddChild(new Button { Text = groups[i].Name, ToggleMode = true, SizeFlagsHorizontal = SizeFlags.ExpandFill, CustomMinimumSize = new Vector2(0f, 24f) });
+            tab.Pressed += _ =>
             {
-                _categories.AddChild(Spacer(CraftCategoryButton.DefaultSize.X, CraftCategoryButton.DefaultSize.Y));
-                continue;
-            }
-
-            var button = _categories.AddChild(new CraftCategoryButton(category));
-            button.Clicked += ShowItems;
+                CraftingGUI.PlayClick();
+                ShowGroup(index);
+            };
+            _tabButtons.Add(tab);
         }
-
+        _tabs.Visible = groups.Count > 1;
+        ShowGroup(Math.Clamp(CraftingGUI.SelectedGroup, 0, Math.Max(0, groups.Count - 1)));
         ShowCategories();
+    }
+
+    private void ShowGroup(int index)
+    {
+        var groups = CraftingGUI.Groups;
+        CraftingGUI.SelectedGroup = index;
+        for (int i = 0; i < _tabButtons.Count; i++) _tabButtons[i].ButtonPressed = i == index;
+
+        var tile = CraftCategoryButton.DefaultSize;
+        int columns = Math.Max(1, (int)((GridWidth + TileGap) / (tile.X + TileGap)));
+        int rows = 1;
+        foreach (var group in groups) rows = Math.Max(rows, (group.Categories.Count + columns - 1) / columns);
+
+        _tiles.ClearChildren();
+        _tiles.Columns = columns;
+        var categories = index < groups.Count ? groups[index].Categories : new List<CraftingCategory>();
+        for (int i = 0; i < rows * columns; i++)
+        {
+            if (i < categories.Count)
+            {
+                var button = _tiles.AddChild(new CraftCategoryButton(categories[i]));
+                button.Clicked += ShowItems;
+            }
+            else _tiles.AddChild(Spacer(tile.X, tile.Y));
+        }
+    }
+
+    private float GridWidth
+    {
+        get
+        {
+            int columns = InventoryColumns;
+            return columns * ItemSlotControl.DefaultSize + (columns - 1) * GetThemeConstant("slot_spacing", 0f);
+        }
     }
 
     private static int InventoryColumns => Math.Max(1, (int)(InventoryUI.Player?.Inventory?.SizeX ?? DefaultInventoryColumns));
@@ -95,8 +139,7 @@ public sealed class CraftingWindow : GameWindow
         _items.ClearChildren();
         _itemControls.Clear();
         int columns = InventoryColumns;
-        float spacing = GetThemeConstant("slot_spacing", 0f);
-        float gridWidth = columns * ItemSlotControl.DefaultSize + (columns - 1) * spacing;
+        float gridWidth = GridWidth;
         float size = MathF.Floor((gridWidth - GetThemeConstant("scrollbar_width", 8f)) / columns);
         int count = category.Items.Count;
         int rows = Math.Max(VisibleItemRows, (count + columns - 1) / columns);

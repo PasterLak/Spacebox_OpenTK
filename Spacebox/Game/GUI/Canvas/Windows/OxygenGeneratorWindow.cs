@@ -19,7 +19,7 @@ public sealed class OxygenGeneratorWindow : GameWindow
     public OxygenGeneratorWindow() : base("Oxygen Generator")
     {
         Name = "OxygenGenerator";
-        MatchColumnWidth();
+        MatchInventorySize();
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 12f);
         row.AddChild(_tank);

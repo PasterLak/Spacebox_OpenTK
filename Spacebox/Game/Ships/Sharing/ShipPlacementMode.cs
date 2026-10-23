@@ -50,7 +50,7 @@ public static class ShipPlacementMode
         if (_unblockPending) _unblockPending = false;
         else PanelUI.BlockHands();
         _preview?.Show(ship.Entity);
-        Chat.Write($"Placing '{ship.Name}': left click to place, {Key(YawAction, "R")} / {Key(PitchAction, "Y")} / {Key(RollAction, "U")} to turn ({Key(ReverseAction, "Shift")}: the other way, {Key(FineAction, "Ctrl")}: {ShipPlacementRotation.FineStep:0} degrees), {Key(AlignAction, "Backspace")} to line up with you, mouse wheel for distance, right click or Escape to cancel", Color4.LightBlue);
+        Chat.Write($"Placing '{ship.Name}': left click to place, {Key(YawLeftAction, "Left")} / {Key(YawRightAction, "Right")} to turn, {Key(PitchUpAction, "Up")} / {Key(PitchDownAction, "Down")} to tilt, {Key(RollLeftAction, "PageUp")} / {Key(RollRightAction, "PageDown")} to roll ({Key(FineAction, "Alt")}: {ShipPlacementRotation.FineStep:0} degrees), {Key(AlignAction, "Backspace")} to line up with you, mouse wheel for distance, right click or Escape to cancel", Color4.LightBlue);
     }
 
     public static void Cancel()
@@ -100,10 +100,12 @@ public static class ShipPlacementMode
         _preview?.SetPose(_localCenter, _rotation, center);
     }
 
-    public const string YawAction = "ship_place_yaw";
-    public const string PitchAction = "ship_place_pitch";
-    public const string RollAction = "ship_place_roll";
-    public const string ReverseAction = "ship_place_reverse";
+    public const string YawLeftAction = "ship_place_yaw_left";
+    public const string YawRightAction = "ship_place_yaw_right";
+    public const string PitchUpAction = "ship_place_pitch_up";
+    public const string PitchDownAction = "ship_place_pitch_down";
+    public const string RollLeftAction = "ship_place_roll_left";
+    public const string RollRightAction = "ship_place_roll_right";
     public const string FineAction = "ship_place_fine";
     public const string AlignAction = "ship_place_align";
 
@@ -115,11 +117,13 @@ public static class ShipPlacementMode
 
     private static void HandleInput(LocalAstronaut player)
     {
-        float step = (Held(FineAction, Keys.LeftControl) ? ShipPlacementRotation.FineStep : ShipPlacementRotation.CoarseStep)
-                     * (Held(ReverseAction, Keys.LeftShift) ? -1f : 1f);
-        if (Pressed(YawAction, Keys.R)) TurnAround(Vector3.UnitY, step);
-        if (Pressed(PitchAction, Keys.Y)) TurnAround(Vector3.UnitX, step);
-        if (Pressed(RollAction, Keys.U)) TurnAround(Vector3.UnitZ, step);
+        float step = Held(FineAction, Keys.LeftAlt) ? ShipPlacementRotation.FineStep : ShipPlacementRotation.CoarseStep;
+        if (Pressed(YawLeftAction, Keys.Left)) TurnAround(Vector3.UnitY, step);
+        if (Pressed(YawRightAction, Keys.Right)) TurnAround(Vector3.UnitY, -step);
+        if (Pressed(PitchUpAction, Keys.Up)) TurnAround(Vector3.UnitX, step);
+        if (Pressed(PitchDownAction, Keys.Down)) TurnAround(Vector3.UnitX, -step);
+        if (Pressed(RollLeftAction, Keys.PageUp)) TurnAround(Vector3.UnitZ, step);
+        if (Pressed(RollRightAction, Keys.PageDown)) TurnAround(Vector3.UnitZ, -step);
         if (Pressed(AlignAction, Keys.Backspace))
         {
             _rotation = ShipPlacementRotation.AlignedTo(player.Right, player.Up, player.Front, _frame);

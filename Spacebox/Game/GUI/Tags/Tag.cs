@@ -14,8 +14,8 @@ public class Tag
     public bool Visible { get; set; }
     public TagCategory Category { get; set; }
 
-    public const float MinFontShare = 1f / 60f;
-    public const float MaxFontShare = 1f / 40f;
+    public const float MinFontShare = 0.7f / 60f;
+    public const float MaxFontShare = 0.7f / 40f;
 
     private static float MinFontSize;
     private static float MaxFontSize;

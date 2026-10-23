@@ -13,6 +13,7 @@ public class CraftingGUI
 
 
     private static CraftingCategory[] category;
+    private static List<CraftingCategoryGroup> groups;
     private static Storage Inventory;
     private static Storage Panel;
 
@@ -48,6 +49,7 @@ public class CraftingGUI
     public static void Init()
     {
         category = CraftingCategoryLayout.Arrange(GameAssets.CraftingCategories.Values, CategoriesCountY, out CategoriesCountX);
+        groups = CraftingCategoryGroups.Build(GameAssets.CraftingCategories.Values);
 
         var slotSize = CategoriesCountX * 1.5f;
 
@@ -72,6 +74,8 @@ public class CraftingGUI
 
     public static bool IsVisible { get; private set; }
     public static CraftingCategory[] Categories => category;
+    public static IReadOnlyList<CraftingCategoryGroup> Groups => groups;
+    public static int SelectedGroup { get; set; }
     public static int CategoryColumns => CategoriesCountX;
     public static int CategoryRows => CategoriesCountY;
     public static int ItemColumns => ColumnsOfItems;
@@ -244,6 +248,7 @@ public class CraftingGUI
         Panel = null;
         currentPlayer = null;
         category = null;
+        groups = null;
         hovered = -1;
 
     }

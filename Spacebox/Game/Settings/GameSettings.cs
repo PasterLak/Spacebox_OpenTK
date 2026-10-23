@@ -142,7 +142,11 @@ namespace Spacebox.Game
         [JsonPropertyName("font")] public string Font { get; set; } = InterfaceFonts.DefaultId;
         [JsonPropertyName("font_size")] public int FontSize { get; set; } = InterfaceFonts.Find(InterfaceFonts.DefaultId).NativeSize;
         [JsonPropertyName("ui_scale")] public float UiScale { get; set; } = 1f;
-        [JsonPropertyName("design")] public string Design { get; set; } = "classic";
+        [JsonPropertyName("design")] public string Design { get; set; } = ModernDesign;
+        [JsonPropertyName("design_version")] public int DesignVersion { get; set; }
+
+        public const string ModernDesign = "modern";
+        public const int CurrentDesignVersion = 1;
 
         public const float MinUiScale = 0.5f;
         public const float MaxUiScale = 2f;
@@ -152,6 +156,7 @@ namespace Spacebox.Game
             bool changed = false;
             if (!float.IsFinite(UiScale) || UiScale < MinUiScale || UiScale > MaxUiScale) { UiScale = d.UiScale; changed = true; }
             if (!Spacebox.Game.GUI.Canvas.GameUiDesigns.IsKnown(Design)) { Design = d.Design; changed = true; }
+            if (DesignVersion < CurrentDesignVersion) { Design = ModernDesign; DesignVersion = CurrentDesignVersion; changed = true; }
             if (!InterfaceFonts.IsKnown(Font)) { Font = d.Font; FontSize = d.FontSize; changed = true; }
             if (FontSize < InterfaceFonts.MinSize || FontSize > InterfaceFonts.MaxSize) { FontSize = InterfaceFonts.Find(Font).NativeSize; changed = true; }
             return changed;
@@ -231,7 +236,12 @@ namespace Spacebox.Game
         [JsonPropertyName("game")] public GameplaySettings Game { get; set; } = new();
         [JsonPropertyName("texture_packs")] public TexturePackSettings TexturePacks { get; set; } = new();
 
-        public static GameSettings Default() => new();
+        public static GameSettings Default()
+        {
+            var settings = new GameSettings();
+            settings.Interface.DesignVersion = InterfaceSettings.CurrentDesignVersion;
+            return settings;
+        }
 
         public bool ValidateAgainst(GameSettings d, HashSet<string> allowedLanguages = null)
         {

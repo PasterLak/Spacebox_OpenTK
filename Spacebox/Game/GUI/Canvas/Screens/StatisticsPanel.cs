@@ -26,8 +26,8 @@ public sealed class StatisticsPanel : PanelContainer
         AddChild(frame.Root);
         _rows.AddThemeConstantOverride("separation", 3f);
         frame.Body.AddChild(MenuLayout.ScrollList(_rows, ListHeight));
-        frame.Footer.AddChild(MenuLayout.Spacer());
         frame.Footer.AddChild(MenuLayout.Button(null, "Close", PauseUI.ToggleStatistics, false));
+        frame.Footer.AddChild(MenuLayout.Spacer());
     }
 
     public void Sync(float deltaTime)

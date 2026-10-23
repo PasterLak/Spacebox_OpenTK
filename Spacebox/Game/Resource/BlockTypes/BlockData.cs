@@ -30,6 +30,7 @@ namespace Spacebox.Game.Resource
         public byte PowerToDrill = 0;
         public byte Durability = 0;
         public float Efficiency = 1f;
+        public ushort ProcessingPower;
 
         public bool IsTransparent { get; private set; } = false;
         public Vector3 LightColor { get; private set; } = Vector3.Zero;
@@ -106,6 +107,7 @@ namespace Spacebox.Game.Resource
             PowerToDrill = baseBlock.PowerToDrill;
             Durability = baseBlock.Durability;
             Efficiency = baseBlock.Efficiency;
+            ProcessingPower = baseBlock.ProcessingPower;
             IsTransparent = baseBlock.IsTransparent;
             LightColor = baseBlock.LightColor;
             BaseFrontDirection = baseBlock.BaseFrontDirection;

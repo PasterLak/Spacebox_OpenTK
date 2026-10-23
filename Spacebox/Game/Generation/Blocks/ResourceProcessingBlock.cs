@@ -29,10 +29,29 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntit
         {
             bool changed = _isRunning != value;
             _isRunning = value;
-            SetEmission(_isRunning, true);
-            IsActive = _isRunning;
+            SetEmission(_isRunning && HasPower, true);
+            if (!RequiresPower) IsActive = _isRunning;
             if (changed) Spacebox.Network.BlockStateNetwork.MarkDirty(_entity, _cell, this);
         }
+    }
+
+    public ushort Power { get; }
+    public bool RequiresPower => Power > 0;
+    public bool HasPower => !RequiresPower || (Spacebox.Network.GameSession.IsRemoteClient ? _syncedPower : IsActive);
+    private bool _syncedPower;
+
+    protected override void OnActiveStateChanged(bool isActive)
+    {
+        if (!RequiresPower) return;
+        SetEmission(_isRunning && isActive, true);
+        if (Spacebox.Network.GameSession.IsRemoteClient) return;
+        if (Task != null)
+        {
+            if (isActive) Task.Continue();
+            else Task.Pause();
+        }
+        else if (isActive) TryStart();
+        Spacebox.Network.BlockStateNetwork.MarkDirty(_entity, _cell, this);
     }
 
     public void OnAddedToEntity(Chunk chunk, OpenTK.Mathematics.Vector3i localCell)
@@ -69,6 +88,7 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntit
         writer.Write(IsRunning);
         writer.Write(CurrentTick);
         writer.Write(CraftTicks);
+        writer.Write(HasPower);
     }
 
     public void ReadContainerState(NetReader reader)
@@ -76,7 +96,9 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntit
         bool running = reader.ReadBool();
         CurrentTick = reader.ReadShort();
         CraftTicks = reader.ReadShort();
+        _syncedPower = reader.ReadBool();
         if (running != IsRunning) IsRunning = running;
+        else SetEmission(_isRunning && HasPower, true);
     }
 
     public void OnContainerChangedByNetwork()
@@ -129,6 +151,12 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntit
     {
         Efficiency = blockData.Efficiency;
         blockType = blockData.Type;
+        Power = blockData.ProcessingPower;
+        if (RequiresPower)
+        {
+            EFlags = ElectricalFlags.CanConsume;
+            ConsumptionRate = Power;
+        }
         InputStorage.Name = "InputStorage";
         FuelStorage.Name = "FuelStorage";
         OutputStorage.Name = "OutputStorage";
@@ -231,6 +259,7 @@ public class ResourceProcessingBlock : InteractiveBlock, IContainerBlock, IEntit
         task = null;
 
         if (Spacebox.Network.GameSession.IsRemoteClient) return false;
+        if (!HasPower) return false;
         if (!HasInput()) return false;
         if (IsRunning) return false;
 

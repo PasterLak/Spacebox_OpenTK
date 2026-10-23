@@ -14,10 +14,12 @@ public class CommandAndInputTests
     }
 
     [Theory]
-    [InlineData(ShipPlacementMode.YawAction)]
-    [InlineData(ShipPlacementMode.PitchAction)]
-    [InlineData(ShipPlacementMode.RollAction)]
-    [InlineData(ShipPlacementMode.ReverseAction)]
+    [InlineData(ShipPlacementMode.YawLeftAction)]
+    [InlineData(ShipPlacementMode.YawRightAction)]
+    [InlineData(ShipPlacementMode.PitchUpAction)]
+    [InlineData(ShipPlacementMode.PitchDownAction)]
+    [InlineData(ShipPlacementMode.RollLeftAction)]
+    [InlineData(ShipPlacementMode.RollRightAction)]
     [InlineData(ShipPlacementMode.FineAction)]
     [InlineData(ShipPlacementMode.AlignAction)]
     public void ShipPlacementKeys_AreInTheInputFile(string action)
