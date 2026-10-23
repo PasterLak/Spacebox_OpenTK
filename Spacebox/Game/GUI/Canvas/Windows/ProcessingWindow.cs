@@ -47,6 +47,8 @@ public sealed class ProcessingWindow : GameWindow
 
     public override bool IsOpen => ResourceProcessingGUI.IsOpen;
 
+    public override bool LacksPower => ResourceProcessingGUI.Block is { RequiresPower: true, HasPower: false };
+
     protected override void Refresh()
     {
         if (TitleLabel.Text != ResourceProcessingGUI.WindowName) TitleLabel.Text = ResourceProcessingGUI.WindowName;

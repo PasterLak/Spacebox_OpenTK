@@ -85,13 +85,13 @@ public sealed class CraftingWindow : GameWindow
             var tab = _tabs.AddChild(new Button { Text = groups[i].Name, ToggleMode = true, SizeFlagsHorizontal = SizeFlags.ExpandFill, CustomMinimumSize = new Vector2(0f, 24f) });
             tab.Pressed += _ =>
             {
-                CraftingGUI.PlayClick();
+                if (CraftingGUI.SelectedGroup != index) CraftingGUI.PlayTab();
                 ShowGroup(index);
             };
             tab.MouseEntered += _ =>
             {
                 if (CraftingGUI.SelectedGroup == index) return;
-                CraftingGUI.PlayHover(index);
+                CraftingGUI.PlayTab();
                 ShowGroup(index);
             };
             _tabButtons.Add(tab);

@@ -23,6 +23,7 @@ public sealed class GameCanvas : IDisposable
     private readonly HudView _hud = new HudView();
     private readonly Windows.GameWindowsView _windows = new Windows.GameWindowsView();
     private readonly Screens.GameScreensView _screens = new Screens.GameScreensView();
+    private readonly Sounds.ButtonHoverSounds _hoverSounds = new Sounds.ButtonHoverSounds();
     private SkiaCanvasFont _font;
     private GameUiDesign _design = (GameUiDesign)(-1);
     private float _scale = -1f;
@@ -99,6 +100,7 @@ public sealed class GameCanvas : IDisposable
         _layer.InputEnabled = UIManager.IsUIMode || _screens.WantsInput;
         _dialogWasOpen = _layer.Root.TryGetLayer(UiLayer.Modal, out var modal) && modal.HasVisibleContent;
         _layer.Update(deltaTime);
+        _hoverSounds.Update(_layer.Root, UIManager.IsUIMode && _layer.InputEnabled);
     }
 
     public void Render()

@@ -32,5 +32,8 @@
       "Up": "generatorDownOff",
       "Down": "generatorDownOff"
     }
+  },
+  "Sounds": {
+    "Working": "generatorHum"
   }
 }

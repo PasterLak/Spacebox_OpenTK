@@ -854,6 +854,7 @@ public static class GameSetLoader
             Category = data.Category,
             Id_string = id,
             DrillColor = data.DrillColor,
+            Sound = data.Sound ?? "",
         };
         GameAssetsRegister.RegisterItem(drillItem, data.Sprite);
 
@@ -983,6 +984,7 @@ public static class GameSetLoader
             Radar = data.Radar,
             ArmorModelPath = ResolveGameSetFile(data.ArmorModel, entry),
             ArmorTexturePath = ResolveGameSetFile(data.ArmorTexture, entry),
+            EquipSound = Spacebox.Game.Player.EquipSoundNames.Resolve(slot, data.EquipSound),
         };
         GameAssetsRegister.RegisterItem(equipmentItem, data.Sprite);
 

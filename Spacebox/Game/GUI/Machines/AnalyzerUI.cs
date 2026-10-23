@@ -25,24 +25,12 @@ namespace Spacebox.Game.GUI
         private static ulong _lastCheckedMass = ulong.MaxValue;
         private static int _lastBlockCount = 0;
 
-        private static AudioSource openSound;
-        private static AudioSource closeSound;
         private static AudioSource scanSound;
         private static AudioSource finishSound;
         private static AudioSource clickSound;
 
         public static void Initialize()
         {
-            if (openSound == null || openSound.IsDisposed)
-            {
-                openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"), AudioChannel.UI);
-                openSound.Volume = 1f;
-            }
-            if (closeSound == null || closeSound.IsDisposed)
-            {
-                closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"), AudioChannel.UI);
-                closeSound.Volume = 1f;
-            }
             if (scanSound == null || scanSound.IsDisposed)
             {
                 scanSound = new AudioSource(Resources.Load<AudioClip>("analyzer_scanning"), AudioChannel.UI);
@@ -136,12 +124,10 @@ namespace Spacebox.Game.GUI
             {
                 if (isVisible)
                 {
-                    openSound?.Play();
                     _wasScanning = false;
                 }
                 else
                 {
-                    closeSound?.Play();
                     scanSound?.Stop();
                 }
                 _wasVisible = isVisible;

@@ -38,6 +38,8 @@ public sealed class DisassemblerWindow : GameWindow
 
     public override bool IsOpen => DisassemblerUI.IsOpen;
 
+    public override bool LacksPower => DisassemblerUI.Block is { HasPower: false };
+
     protected override void Refresh()
     {
         var block = DisassemblerUI.Block;

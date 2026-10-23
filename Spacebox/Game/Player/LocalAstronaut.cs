@@ -201,6 +201,7 @@ namespace Spacebox.Game.Player
             Equipment = new PlayerEquipment();
             Equipment.Storage.ConnectStorage(Inventory);
             Equipment.Storage.OnDataWasChanged += _ => ApplyArmorVisuals();
+            Equipment.Equipped += EquipmentSounds.Play;
             _equipmentStats = new EquipmentStatsBinder(Equipment, HealthBar.StatsData, PowerBar.StatsData);
         }
 

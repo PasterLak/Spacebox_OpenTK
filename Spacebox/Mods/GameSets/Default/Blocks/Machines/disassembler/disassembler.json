@@ -25,5 +25,9 @@
       "Up": "disassemblerTop2",
       "Down": "bottom"
     }
+  },
+  "Sounds": {
+    "Working": "disassemblerLoop",
+    "Finished": "disassemblerDone"
   }
 }

@@ -164,6 +164,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new ProtectCommand(localPlayer, false));
         Debug.RegisterCommand(new ProtectedListCommand(localPlayer));
 
+        Spacebox.Game.GUI.Sounds.UiSounds.Initialize();
         InventoryUI.Initialize();
         StorageUI.Initialize();
         PanelUI.Initialize(localPlayer);
@@ -254,6 +255,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Rendering.FlashlightGlareController.Update(localPlayer);
         Spacebox.Game.Protection.ClaimRegistry.Update(Time.Delta);
         Spacebox.Game.Rendering.VignetteController.SetWarning(Spacebox.Game.Player.OxygenWarning.For(localPlayer));
+        Spacebox.Game.Player.LowOxygenAlarm.Update(localPlayer, Time.Delta, WorldLoadingScreen.IsActive);
+        Spacebox.Game.Effects.Machines.MachineSounds.Update(Time.Delta);
 
 #if DEBUG
         if (Input.IsKeyDown(Keys.R))
@@ -434,6 +437,10 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Generation.Blocks.BlockDamageVisuals.Instance.Reset();
         Spacebox.Game.Generation.Doors.DoorSounds.Clear();
         Spacebox.Game.Effects.BlockEventSounds.Clear();
+        Spacebox.Game.Effects.Machines.MachineSounds.Clear();
+        Spacebox.Game.Player.LowOxygenAlarm.Reset();
+        Spacebox.Game.Player.EquipmentSounds.Clear();
+        Spacebox.Game.GUI.Sounds.UiSounds.Dispose();
         Spacebox.Game.Player.AirZoneSounds.Clear();
         Spacebox.Game.Player.Footsteps.FootstepSounds.Clear();
         ShipNetwork.Reset();

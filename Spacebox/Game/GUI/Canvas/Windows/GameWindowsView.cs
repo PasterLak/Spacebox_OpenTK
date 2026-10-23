@@ -15,6 +15,7 @@ public sealed class GameWindowsView : SafeArea
     private readonly List<GameWindow> _leftStack = new List<GameWindow>();
     private readonly List<GameWindow> _middleStack = new List<GameWindow>();
     private float _inventoryHeight;
+    private readonly GameWindowSounds _sounds = new GameWindowSounds();
 
     public GameWindowsView()
     {
@@ -46,7 +47,14 @@ public sealed class GameWindowsView : SafeArea
 
     public void Sync()
     {
-        for (int i = 0; i < _windows.Count; i++) _windows[i].Sync();
+        for (int i = 0; i < _windows.Count; i++)
+        {
+            var window = _windows[i];
+            bool wasVisible = window.Visible;
+            window.Sync();
+            _sounds.Track(window, wasVisible);
+        }
+        _sounds.Flush();
     }
 
     private void Add(List<GameWindow> side, GameWindow window)

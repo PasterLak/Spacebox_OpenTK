@@ -254,7 +254,8 @@
     "PowerUsage": "Player power used per mined block (and every second while drilling a creature). The drill stops when power is lower than this. Default: 0.",
     "Range": "How far the drill reaches, in blocks. Default: 6.",
     "Damage": "Damage per second dealt to creatures and other targets hit with the drill. Does not affect mining speed. Default: 1.",
-    "DrillColor": "Color of the drill's light while mining, RGB 0-255. Default: blue (100, 116, 255)."
+    "DrillColor": "Color of the drill's light while mining, RGB 0-255. Default: blue (100, 116, 255).",
+    "Sound": "Sound name of the drill's loop, played softly while the drill runs, slightly lower on harder blocks. Default drillLoop; an unknown name = silent drill."
   },
   "EquipmentJSON": {
     "Slot": "Equipment slot: Helmet, Shoulders, Chest, Arms, Legs, Boots, PowerGenerator, Flashlight or Scanner. An unknown slot skips the item.",
@@ -264,7 +265,8 @@
     "Flashlight": "Makes the item a flashlight when worn or held, with these light settings. Without it the player has no flashlight from this item.",
     "Radar": "Makes the item a scanner when worn: sets how far object markers are shown and whether mass is shown.",
     "ArmorModel": "Path of the .obj model drawn on the player's body, relative to the item folder or GameSet. Needs ArmorTexture too. Empty = not visible.",
-    "ArmorTexture": "Path of the PNG texture for ArmorModel, relative to the item folder or GameSet. Empty = armor not visible."
+    "ArmorTexture": "Path of the PNG texture for ArmorModel, relative to the item folder or GameSet. Empty = armor not visible.",
+    "EquipSound": "Sound name played when the player equips the item. Empty (default) = equipArmor for armor slots, equipDevice for the other slots."
   },
   "ExplosiveJSON": {
     "Radius": "Blast radius in blocks (1-32, default 4). Players and objects take damage inside it.",
@@ -577,7 +579,9 @@
   "SoundGroup": {
     "Place": "Sound name played when the block is placed. Default blockPlaceDefault; unknown names use the default.",
     "Destroy": "Sound name played when the block is destroyed. Default blockDestroyDefault; unknown names use the default.",
-    "Footsteps": "List of sound names for footsteps on this block in gravity, one picked at random. Empty = stone sounds on asteroid blocks, metal on others."
+    "Footsteps": "List of sound names for footsteps on this block in gravity, one picked at random. Empty = stone sounds on asteroid blocks, metal on others.",
+    "Working": "Sound name looped quietly at the machine while it works (furnaces and crushers while processing, disassemblers while busy, generators while producing power). Empty (default) = silent.",
+    "Finished": "Sound name played at the machine each time it finishes an item (processing machines and disassemblers). Empty (default) = none."
   },
   "SpawnParametersJSON": {
     "GiveItemsOnStart": "Items every new player gets, with where they go (hand, hotbar, inventory, equipment). Extensions can add more in their config.json ItemsOnStart.",

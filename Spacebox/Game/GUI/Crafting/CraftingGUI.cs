@@ -1,5 +1,6 @@
 ﻿using Engine;
 using Engine.Audio;
+using Spacebox.Game.GUI.Sounds;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using System;
@@ -9,7 +10,6 @@ namespace Spacebox.Game.GUI;
 
 public class CraftingGUI
 {
-    private static bool _wasVisible = false;
 
 
     private static CraftingCategory[] category;
@@ -19,9 +19,6 @@ public class CraftingGUI
 
     private static AudioSource scrollAudio;
     private static AudioSource clickAudio;
-
-    private static AudioSource openSound;
-    private static AudioSource closeSound;
 
     private static int ColumnsOfItems;
     private static int hovered = -1;
@@ -58,18 +55,6 @@ public class CraftingGUI
 
         scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"), AudioChannel.UI);
         clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"), AudioChannel.UI);
-
-        if (openSound == null || openSound.IsDisposed)
-        {
-            openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"), AudioChannel.UI);
-            openSound.Volume = 1f;
-        }
-
-        if (closeSound == null || closeSound.IsDisposed)
-        {
-            closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"), AudioChannel.UI);
-            closeSound.Volume = 1f;
-        }
     }
 
     public static bool IsVisible { get; private set; }
@@ -83,20 +68,12 @@ public class CraftingGUI
 
     public static void Update()
     {
-        bool isVisible = UIManager.IsOpen("crafting");
-
-        if (isVisible != _wasVisible)
-        {
-            if (isVisible) openSound?.Play();
-            else closeSound?.Play();
-
-            _wasVisible = isVisible;
-        }
-
-        IsVisible = isVisible;
+        IsVisible = UIManager.IsOpen("crafting");
     }
 
     public static void PlayClick() => clickAudio?.Play();
+
+    public static void PlayTab() => UiSounds.Play(UiSound.TabSwitch);
 
     public static void PlayHover(int id)
     {
@@ -132,7 +109,6 @@ public class CraftingGUI
 
     public static void Craft(Blueprint blueprint)
     {
-        clickAudio?.Play();
         OnClick(blueprint);
     }
 
@@ -213,10 +189,11 @@ public class CraftingGUI
 
             currentPlayer.PlayerStatistics.ItemsCrafted += total;
             Spacebox.Game.Player.PlayerActivity.Raise(Spacebox.Game.Player.PlayerActivityKind.ItemCrafted, item.Id, total);
+            UiSounds.Play(UiSound.CraftComplete);
         }
         else
         {
-
+            UiSounds.Play(UiSound.Denied);
         }
     }
 
@@ -233,16 +210,6 @@ public class CraftingGUI
         {
             clickAudio.Dispose();
             clickAudio = null;
-        }
-        if (openSound != null)
-        {
-            openSound.Dispose();
-            openSound = null;
-        }
-        if (closeSound != null)
-        {
-            closeSound.Dispose();
-            closeSound = null;
         }
         Inventory = null;
         Panel = null;

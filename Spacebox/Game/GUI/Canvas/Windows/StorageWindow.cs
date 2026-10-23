@@ -35,6 +35,9 @@ public sealed class StorageWindow : GameWindow
 
     public override bool IsOpen => UIManager.IsOpen("storage") && StorageUI.Storage != null;
 
+    public override Sounds.UiSoundSpec OpenSound => new Sounds.UiSoundSpec("openStorage", 1f, 0.08f);
+    public override Sounds.UiSoundSpec CloseSound => new Sounds.UiSoundSpec("closeStorage", 1f, 0.08f);
+
     protected override void Refresh()
     {
         var storage = StorageUI.Storage;

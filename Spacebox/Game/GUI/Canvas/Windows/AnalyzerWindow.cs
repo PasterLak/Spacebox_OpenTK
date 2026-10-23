@@ -61,6 +61,8 @@ public sealed class AnalyzerWindow : GameWindow
 
     public override bool IsOpen => AnalyzerUI.IsOpen;
 
+    public override bool LacksPower => !AnalyzerUI.HasPower;
+
     protected override void Refresh()
     {
         var block = AnalyzerUI.Block;

@@ -141,3 +141,57 @@ def save(name, x, peak, fade_edges=True):
         w.setframerate(RATE)
         w.writeframes(data.tobytes())
     print(name, f"{len(data) / RATE:.2f}s")
+
+
+def output_to(out_dir):
+    global _out_dir
+    _out_dir = out_dir
+    os.makedirs(out_dir, exist_ok=True)
+
+
+def loudness_peak(x, target_rms, max_peak=0.6):
+    x = x / max(1e-9, np.max(np.abs(x)))
+    rms = math.sqrt(float(np.mean(x ** 2)))
+    return min(max_peak, target_rms / max(1e-9, rms))
+
+
+def highpass(x, cutoff):
+    return x - lowpass(x, cutoff)
+
+
+def sine(freq, n, phase=0.0):
+    freq = np.broadcast_to(freq, (n,)).astype(float)
+    return np.sin(2 * math.pi * np.cumsum(freq) / RATE + phase)
+
+
+def periodic(freq, loop_seconds):
+    return max(1, round(freq * loop_seconds)) / loop_seconds
+
+
+def crossfade_loop(x, loop_n):
+    fade = len(x) - loop_n
+    out = x[:loop_n].copy()
+    if fade <= 0: return out
+    w = np.linspace(0, 1, fade)
+    out[:fade] = x[:fade] * np.sqrt(w) + x[loop_n:loop_n + fade] * np.sqrt(1 - w)
+    return out
+
+
+def loop_filter(x, filter_fn):
+    return filter_fn(np.concatenate([x, x]))[len(x):]
+
+
+def blip(freq_start, freq_end, seconds, attack, decay):
+    n = samples(seconds)
+    t = np.arange(n) / RATE
+    env = (1 - np.exp(-t / attack)) * np.exp(-t / decay)
+    return sine(curve([freq_start, freq_end], n), n) * env
+
+
+def bell(freq, seconds, decay, partials=((1.0, 1.0), (2.76, 0.22), (5.4, 0.06))):
+    n = samples(seconds)
+    t = np.arange(n) / RATE
+    out = np.zeros(n)
+    for ratio, gain in partials:
+        out += np.sin(2 * math.pi * freq * ratio * t) * gain * np.exp(-t / (decay / ratio ** 0.5))
+    return out * (1 - np.exp(-t / 0.002))

@@ -44,6 +44,8 @@ namespace Spacebox.Game.Resource
         public string SoundPlace { get; set; } = "blockPlaceDefault";
         public string SoundDestroy { get; set; } = "blockDestroyDefault";
         public string[] FootstepSounds { get; set; } = Array.Empty<string>();
+        public string WorkingSound { get; set; } = "";
+        public string FinishedSound { get; set; } = "";
 
         private class TextureState
         {
@@ -124,6 +126,8 @@ namespace Spacebox.Game.Resource
             SoundPlace = baseBlock.SoundPlace;
             SoundDestroy = baseBlock.SoundDestroy;
             FootstepSounds = baseBlock.FootstepSounds;
+            WorkingSound = baseBlock.WorkingSound;
+            FinishedSound = baseBlock.FinishedSound;
 
             foreach (var state in baseBlock._texturesByState)
             {

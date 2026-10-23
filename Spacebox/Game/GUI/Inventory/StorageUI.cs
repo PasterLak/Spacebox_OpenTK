@@ -14,16 +14,12 @@ namespace Spacebox.Game.GUI
         private static LocalAstronaut? Astronaut;
         private static bool _wasVisible = false;
 
-        private static AudioSource openSound;
-        private static AudioSource closeSound;
         private static AudioSource splitAudio;
 
 
         public static void Initialize()
         {
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"), AudioChannel.UI);
-            openSound = new AudioSource(Resources.Get<AudioClip>("openStorage"), AudioChannel.UI);
-            closeSound = new AudioSource(Resources.Get<AudioClip>("closeStorage"), AudioChannel.UI);
         }
 
         public static void OpenStorage(StorageBlock storageBlock, LocalAstronaut astronaut)
@@ -65,12 +61,7 @@ namespace Spacebox.Game.GUI
             bool isVisible = UIManager.IsOpen("storage");
             if (isVisible == _wasVisible) return;
 
-            if (isVisible) openSound?.Play();
-            else
-            {
-                closeSound?.Play();
-                CloseStorage();
-            }
+            if (!isVisible) CloseStorage();
             _wasVisible = isVisible;
         }
 
@@ -114,8 +105,6 @@ namespace Spacebox.Game.GUI
 
         public static void Dispose()
         {
-            closeSound?.Dispose();
-            openSound?.Dispose();
             splitAudio?.Dispose();
 
             Storage = null;

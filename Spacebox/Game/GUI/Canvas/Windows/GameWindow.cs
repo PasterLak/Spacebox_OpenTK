@@ -1,5 +1,6 @@
 using Engine.CanvasUI;
 using OpenTK.Mathematics;
+using Spacebox.Game.GUI.Sounds;
 
 namespace Spacebox.Game.GUI.Canvas.Windows;
 
@@ -35,6 +36,11 @@ public abstract class GameWindow : PanelContainer
     protected VBoxContainer Body { get; }
 
     public abstract bool IsOpen { get; }
+
+    public virtual UiSoundSpec OpenSound => UiSoundCatalog.Get(UiSound.WindowOpen);
+    public virtual UiSoundSpec CloseSound => UiSoundCatalog.Get(UiSound.WindowClose);
+    public virtual int SoundPriority => 1;
+    public virtual bool LacksPower => false;
 
     public void Sync()
     {

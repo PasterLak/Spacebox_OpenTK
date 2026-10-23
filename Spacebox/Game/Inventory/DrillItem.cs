@@ -11,6 +11,8 @@ namespace Spacebox.Game
         public float Range = 6;
         public float Damage = 1f;
         public Color3Byte DrillColor;
+        public const string DefaultSound = "drillLoop";
+        public string Sound = DefaultSound;
         public DrillItem(byte stackSize, string name,  float modelDepth) : base(stackSize, name,  modelDepth)
         {
         }

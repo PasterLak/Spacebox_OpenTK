@@ -34,8 +34,6 @@ namespace Spacebox.Game.GUI
         private static bool wasInitialized = false;
 
         private static AudioSource craftedSound;
-        private static AudioSource openSound;
-        private static AudioSource closeSound;
         private static AudioSource pickupSound;
         private static LocalAstronaut Player;
 
@@ -54,9 +52,6 @@ namespace Spacebox.Game.GUI
                 UIManager.Toggle("resourceProcessing", "inventory", "creative");
             else
                 UIManager.Toggle("resourceProcessing", "inventory");
-
-            if (UIManager.IsOpen("resourceProcessing")) openSound?.Play();
-            else closeSound?.Play();
         }
 
         private static void InitIcons()
@@ -93,16 +88,6 @@ namespace Spacebox.Game.GUI
             {
                 craftedSound = new AudioSource(Resources.Load<AudioClip>("crafted"), AudioChannel.UI);
                 craftedSound.Volume = 1f;
-            }
-            if (openSound == null || openSound.IsDisposed)
-            {
-                openSound = new AudioSource(Resources.Load<AudioClip>("openBlock1"), AudioChannel.UI);
-                openSound.Volume = 1f;
-            }
-            if (closeSound == null || closeSound.IsDisposed)
-            {
-                closeSound = new AudioSource(Resources.Load<AudioClip>("openBlock4"), AudioChannel.UI);
-                closeSound.Volume = 1f;
             }
             if (pickupSound == null || pickupSound.IsDisposed)
             {
@@ -161,6 +146,7 @@ namespace Spacebox.Game.GUI
         private static void OnCrafted(ProcessingComponent block)
         {
             if (!UIManager.IsOpen("resourceProcessing")) return;
+            if (!string.IsNullOrEmpty(GameAssets.GetBlockDataById(block.Id).FinishedSound)) return;
 
             if (craftedSound.IsPlaying)
             {
@@ -290,13 +276,8 @@ namespace Spacebox.Game.GUI
 
             if (isVisible != _wasVisible)
             {
-                if (isVisible)
+                if (!isVisible)
                 {
-                    openSound?.Play();
-                }
-                else
-                {
-                    closeSound?.Play();
                     if (Player != null)
                     {
                         Player.Panel.ConnectStorage(Player.Inventory, true);

@@ -43,5 +43,8 @@
       "Up": "wireTopOff",
       "Down": "wireTopOff"
     }
+  },
+  "Sounds": {
+    "Working": "generatorHum"
   }
 }

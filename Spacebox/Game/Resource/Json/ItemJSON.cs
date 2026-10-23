@@ -29,6 +29,7 @@ public class DrillItemJSON : ItemJSON
     public float Range { get; set; } = 6f;
     public float Damage { get; set; } = 1f;
     public Color3Byte DrillColor { get; set; } = new Color3Byte(100, 116, 255);
+    public string Sound { get; set; } = DrillItem.DefaultSound;
 }
 
 public class EquipmentJSON : ItemJSON
@@ -41,6 +42,7 @@ public class EquipmentJSON : ItemJSON
     public RadarSettings? Radar { get; set; }
     public string ArmorModel { get; set; } = "";
     public string ArmorTexture { get; set; } = "";
+    public string EquipSound { get; set; } = "";
 }
 
 public class RepairToolItemJSON : ItemJSON

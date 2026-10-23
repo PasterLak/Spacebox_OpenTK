@@ -24,7 +24,7 @@ Mods/GameSets/MyMod/
       my_lamp.json              one block object, file named like its folder (block.json works too)
       myLamp.png                textures used by Textures in my_lamp.json
       Emissions/myLamp.png      glow map for the texture with the same name
-      myLampPlace.ogg           sounds (Sounds.Place = "myLampPlace")
+      myLampPlace.ogg           sounds (Sounds.Place = "myLampPlace"; machines also Sounds.Working loop and Sounds.Finished)
       blueprint.json            how to craft it (Product defaults to this block)
       recipes.json              machine recipes that use this block as input
   Items/

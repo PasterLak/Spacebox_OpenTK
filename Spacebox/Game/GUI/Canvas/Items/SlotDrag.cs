@@ -1,4 +1,5 @@
 using Engine.CanvasUI;
+using Spacebox.Game.GUI.Sounds;
 
 namespace Spacebox.Game.GUI.Canvas.Items;
 
@@ -10,6 +11,7 @@ public static class SlotDrag
     public static void Begin(ItemSlot slot)
     {
         Source = slot != null && slot.HasItem ? slot : null;
+        if (Source != null) UiSounds.Play(UiSound.SlotPick);
     }
 
     public static void Cancel()
@@ -28,6 +30,7 @@ public static class SlotDrag
         if (target != null)
         {
             target.AcceptDrop(source);
+            SlotDropSounds.Play(target);
             return;
         }
 
