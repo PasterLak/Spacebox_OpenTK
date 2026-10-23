@@ -102,9 +102,4 @@ public class OxygenBar
         _refillTime -= 1f;
         StatsData.Increment(RefillPerSecond);
     }
-
-    public void OnGUI()
-    {
-        StatsGUI.OnGUI();
-    }
 }

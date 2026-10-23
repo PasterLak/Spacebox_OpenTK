@@ -413,16 +413,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Render()
-        {
-            PanelRenderer.Render(Storage, SelectedSlotId);
-
-            if (HudVisibility.ShowPlayerHud)
-            {
-                if (SelectedSlot != null && SelectedSlot.HasItem && _time > 0)
-                    PanelRenderer.DrawItemName(SelectedSlot.Item.Name);
-            }
-        }
+        public static string ShownItemName => HudVisibility.ShowPlayerHud && SelectedSlot != null && SelectedSlot.HasItem && _time > 0 ? SelectedSlot.Item.Name : null;
 
         public static ItemSlot CurrentSlot() => SelectedSlot;
 

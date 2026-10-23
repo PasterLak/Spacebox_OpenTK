@@ -17,9 +17,7 @@ public sealed class GameCanvas : IDisposable
 
     public static GameCanvas Current { get; private set; }
 
-    public static bool DrawsBars => Current != null;
-
-    public static bool DrawsHotbar => Current != null && !UIManager.IsOpen(HudVisibility.ItemWindow);
+    public static bool DrawsHotbar => !UIManager.IsOpen(HudVisibility.ItemWindow);
 
     public CanvasRoot Root => _layer.Root;
     public bool WantsPointer => _layer.Root.WantsPointer;
@@ -54,6 +52,7 @@ public sealed class GameCanvas : IDisposable
     public void Update(LocalAstronaut player, float deltaTime)
     {
         _layer.InputEnabled = UIManager.IsUIMode;
+        HitMarkerUI.Update(deltaTime);
         _hud.Refresh(player);
         _layer.Update(deltaTime);
     }

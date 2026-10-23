@@ -272,6 +272,7 @@ namespace Spacebox.Game.Player
             }
 
             HitImage.Update();
+            GravityIndicatorUI.IsInGravity = Gravity.IsActive;
             DeathScreen.Update();
 
             if (!IsControllingView) return;
@@ -519,14 +520,6 @@ namespace Spacebox.Game.Player
         public override void OnGUI()
         {
             base.OnGUI();
-            if (HudVisibility.ShowPlayerHud && !Spacebox.Game.GUI.Canvas.GameCanvas.DrawsBars)
-            {
-                PowerBar.OnGUI();
-                OxygenBar.OnGUI();
-                HealthBar.OnGUI();
-            }
-            GravityIndicatorUI.Draw(Gravity.IsActive);
-            HitImage.Draw();
             DeathScreen.Render();
         }
     }

@@ -97,6 +97,9 @@ public sealed class MenuCanvas : IDisposable
             _music.Toggle();
         };
         hud.AddChild(_musicButton);
+        var fps = new Spacebox.Game.GUI.Canvas.Hud.FpsCounterControl();
+        fps.SetAnchorsPreset(LayoutPreset.FullRect);
+        hud.AddChild(fps);
         BuildLinks();
     }
 

@@ -17,12 +17,24 @@ public sealed class HudView : SafeArea
     private readonly StatBarControl _oxygen = new StatBarControl(GameCanvasThemes.Oxygen);
     private readonly StatBarControl _power = new StatBarControl(GameCanvasThemes.Power);
     private readonly List<HudSlotControl> _slots = new List<HudSlotControl>();
+    private readonly Hud.HitImageControl _hitImage = new Hud.HitImageControl();
+    private readonly Hud.SelectedItemNameControl _itemName = new Hud.SelectedItemNameControl();
     private Storage _storage;
 
     public HudView()
     {
         Name = "Hud";
         MouseFilter = MouseFilter.Ignore;
+        AddOverlay(new Hud.CameraFeedControl());
+        AddOverlay(_hitImage);
+        AddOverlay(new Hud.CrosshairControl());
+        AddOverlay(new Hud.HitMarkerControl());
+        AddOverlay(new Hud.RepairTargetControl());
+        AddOverlay(new Hud.ItemControlsControl());
+        AddOverlay(new Hud.GravityIndicatorControl());
+        AddOverlay(new Hud.FpsCounterControl());
+        _itemName.Above = _column;
+        AddOverlay(_itemName);
         AddChild(_column);
         _column.SetAnchorsAndOffsetsPreset(LayoutPreset.CenterBottom, BottomMargin);
         _column.GrowVertical = GrowDirection.Begin;
@@ -40,8 +52,15 @@ public sealed class HudView : SafeArea
         _column.AddChild(_hotbar);
     }
 
+    private void AddOverlay(Control overlay)
+    {
+        overlay.SetAnchorsPreset(LayoutPreset.FullRect);
+        AddChild(overlay);
+    }
+
     public void Refresh(LocalAstronaut player)
     {
+        _hitImage.Image = player?.HitImage;
         bool showHotbar = HudVisibility.ShowHotbar && PanelUI.Storage != null && GameCanvas.DrawsHotbar;
         bool showBars = HudVisibility.ShowPlayerHud && player != null;
         Present(showHotbar ? PanelUI.Storage : null, PanelUI.SelectedSlotId, showBars);

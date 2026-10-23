@@ -346,29 +346,22 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         base.OnGUI();
         ColorOverlay.OnGUI();
 
-        if(!UIManager.IsUIMode)
-            CenteredText.OnGUI();
-
         radarWindow?.OnGUI();
         ResourceProcessingGUI.OnGUI();
         CraftingGUI.OnGUI();
 
-        PanelUI.Render();
 
         InventoryUI.OnGUI(localPlayer.Inventory);
         EquipmentUI.OnGUI(localPlayer);
         StorageUI.OnGUI();
         CreativeWindowUI.OnGUI();
         Chat.OnGUI();
-        ItemControlsUI.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialUI.OnGUI();
         WelcomeUI.OnGUI();
         PauseUI.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialPromptUI.OnGUI();
         Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
         Spacebox.Game.Ships.Sharing.ShipLibraryUI.OnGUI();
-        Spacebox.Game.GUI.CameraFeedOverlayUI.OnGUI();
-        Spacebox.Game.GUI.FpsCounterUI.OnGUI();
         if (Settings.ShowInterface) InputOverlay.OnGUI();
         GeneratorUI.OnGUI();
         AnalyzerUI.OnGUI();
@@ -380,8 +373,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipConsoleUI.OnGUI();
         DnaReconstructorUI.OnGUI();
         DnaReconstructionScreen.OnGUI();
-        HitMarkerUI.OnGUI();
-        if (!UIManager.IsUIMode) RepairTargetUI.OnGUI();
 
         if (VisualDebug.Enabled)
         {

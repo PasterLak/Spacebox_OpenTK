@@ -26,7 +26,7 @@ Game project on top of `Engine` (see `Engine/CLAUDE.md`). World hierarchy, GameS
 | `Game/Player/Building/` | `BlockSelector` (build preview, magnet, reserved areas) |
 | `Game/Inventory/` | `Item` + `BlockItem`, `DrillItem`, `WeaponItem`, `ConsumableItem`, tool items; `Inventory`, `Storage`, `ItemSlot`, item models |
 | `Game/GUI/` | Static ImGui UIs; root: `UIManager`, `UIAtlas`, `Theme`, `GUIHelper`, `KeyNames` |
-| `Game/GUI/Hud/` | In-game overlay: `PanelUI` hotbar, health/power/oxygen bars, crosshair hit marker, `HudVisibility`, FPS counter, camera feed overlay |
+| `Game/GUI/Hud/` | In-game HUD state: `PanelUI` hotbar, health/power/oxygen bars, `CenteredText`, `HitMarkerUI`, `RepairTargetUI`, `ItemControlsUI`, `GravityIndicatorUI`, `HudVisibility`; drawn by CanvasUI controls in `Game/GUI/Canvas/` (`GameCanvas` → `HudView`, overlays in `Canvas/Hud/` derive from `HudOverlayControl` : `ScreenOverlay`) |
 | `Game/GUI/Inventory/` | Inventory, equipment (`PlayerPreview`), storage, creative window |
 | `Game/GUI/Crafting/` | Crafting window, categories, crafting logic |
 | `Game/GUI/Machines/` | Block windows: analyzer, disassembler, DNA reconstructor, generators, oxygen generator, processing machines, radar, ship console |

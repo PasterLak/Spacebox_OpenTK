@@ -51,10 +51,5 @@ namespace Spacebox.GUI
                 StatsData.Increment(1);
             }
         }
-
-        public void OnGUI()
-        {
-            StatsGUI.OnGUI();
-        }
     }
 }

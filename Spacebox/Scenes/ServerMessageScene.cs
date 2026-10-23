@@ -199,11 +199,9 @@ namespace Spacebox.Scenes
             Theme.ApplySpaceboxTheme();
             ColorOverlay.OnGUI();
 
-            CenteredText.SetColor(new System.Numerics.Vector4(1,0,0,1));
-            CenteredText.Show();
-            CenteredText.SetText(message);
-            CenteredText.OnGUI();
-            CenteredText.SetColor(new System.Numerics.Vector4(1, 1, 1, 1));
+            var display = ImGui.GetIO().DisplaySize;
+            var size = ImGui.CalcTextSize(message);
+            ImGui.GetForegroundDrawList().AddText((display - size) * 0.5f, ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(1, 0, 0, 1)), message);
         }
 
         public override void UnloadContent()

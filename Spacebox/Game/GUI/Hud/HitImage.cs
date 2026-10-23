@@ -1,5 +1,4 @@
-﻿using ImGuiNET;
-
+﻿
 using Spacebox.Game;
 using System.Numerics;
 using Engine;
@@ -16,7 +15,9 @@ namespace Spacebox.Game.GUI
         private float _fadeDuration = 0.8f;
         private float _fadeElapsed = 0f;
 
-        private const float scale = 0.1f;
+        public bool IsVisible => _isVisible;
+        public float Opacity => _opacity;
+        public Texture2D Texture => _imageTexture;
 
         public HitImage()
         {
@@ -87,53 +88,6 @@ namespace Spacebox.Game.GUI
                     _isFadingOut = false;
                 }
             }
-        }
-
-        public void Draw()
-        {
-            if (!_isVisible) return;
-            if (!Settings.ShowInterface) return;
-            if (_imageTexture == null)
-                return;
-
-            ImGuiIOPtr io = ImGui.GetIO();
-            Vector2 displaySize = io.DisplaySize;
-
-            DrawImage(displaySize);
-        }
-
-        private void DrawImage(Vector2 displaySize)
-        {
-            float maxWidth = displaySize.X * scale;
-            float maxHeight = displaySize.Y * scale;
-            float imageAspect = (float)_imageTexture.Width / _imageTexture.Height;
-            float imageWidth, imageHeight;
-
-            if (maxWidth / imageAspect <= maxHeight)
-            {
-                imageWidth = maxWidth;
-                imageHeight = maxWidth / imageAspect;
-            }
-            else
-            {
-                imageHeight = maxHeight;
-                imageWidth = maxHeight * imageAspect;
-            }
-
-            float posX = (displaySize.X - imageWidth) / 2f;
-            float posY = (displaySize.Y - imageHeight) / 2f;
-
-            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(displaySize, ImGuiCond.Always);
-            ImGui.Begin("CenteredImageWindow",
-                ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | 
-                ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize |
-                ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus);
-
-            Vector4 tintColor = new Vector4(1f, 1f, 1f, _opacity);
-            ImGui.SetCursorPos(new Vector2(posX, posY));
-            ImGui.Image(_imageTexture.Handle, new Vector2(imageWidth, imageHeight), Vector2.Zero, Vector2.One, tintColor, Vector4.Zero);
-            ImGui.End();
         }
 
         public void Dispose()

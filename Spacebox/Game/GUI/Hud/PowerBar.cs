@@ -76,11 +76,6 @@ namespace Spacebox.GUI
                 StatsData.Decrement(1);
             }
         }
-
-        public void OnGUI()
-        {
-            StatsGUI.OnGUI();
-        }
     }
 
 }
