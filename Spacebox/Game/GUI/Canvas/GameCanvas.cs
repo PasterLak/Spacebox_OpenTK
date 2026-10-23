@@ -17,7 +17,9 @@ public sealed class GameCanvas : IDisposable
 
     public static GameCanvas Current { get; private set; }
 
-    public static bool DrawsHud => Current != null;
+    public static bool DrawsBars => Current != null;
+
+    public static bool DrawsHotbar => Current != null && !UIManager.IsOpen(HudVisibility.ItemWindow);
 
     public CanvasRoot Root => _layer.Root;
     public bool WantsPointer => _layer.Root.WantsPointer;

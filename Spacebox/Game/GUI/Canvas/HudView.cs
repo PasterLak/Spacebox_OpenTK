@@ -42,7 +42,7 @@ public sealed class HudView : SafeArea
 
     public void Refresh(LocalAstronaut player)
     {
-        bool showHotbar = HudVisibility.ShowHotbar && PanelUI.Storage != null;
+        bool showHotbar = HudVisibility.ShowHotbar && PanelUI.Storage != null && GameCanvas.DrawsHotbar;
         bool showBars = HudVisibility.ShowPlayerHud && player != null;
         Present(showHotbar ? PanelUI.Storage : null, PanelUI.SelectedSlotId, showBars);
         if (!showBars) return;

@@ -517,7 +517,7 @@ namespace Spacebox.Game.Player
         public override void OnGUI()
         {
             base.OnGUI();
-            if (HudVisibility.ShowPlayerHud && !Spacebox.Game.GUI.Canvas.GameCanvas.DrawsHud)
+            if (HudVisibility.ShowPlayerHud && !Spacebox.Game.GUI.Canvas.GameCanvas.DrawsBars)
             {
                 PowerBar.OnGUI();
                 OxygenBar.OnGUI();
