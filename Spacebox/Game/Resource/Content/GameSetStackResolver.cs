@@ -60,10 +60,11 @@ public static class GameSetStackResolver
 
     private static InstalledGameSet PreviewBase(InstalledGameSet extension, IReadOnlyList<InstalledGameSet> installed, string defaultFolder)
     {
+        var graph = new ExtensionGraph(installed);
         var candidates = new List<InstalledGameSet>();
         foreach (var gameSet in installed)
         {
-            if (ExtensionTargets.Matches(extension.Config.Extends, gameSet)) candidates.Add(gameSet);
+            if (graph.Supports(extension, gameSet)) candidates.Add(gameSet);
         }
 
         foreach (var target in ExtensionTargets.Parse(extension.Config.Extends))

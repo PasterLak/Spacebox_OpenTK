@@ -124,11 +124,19 @@ public sealed class CreateGameSetDialog
         return index > 0 && index <= _bases.Count ? _bases[index - 1].Id : "";
     }
 
+    private bool SelectedIsExtension()
+    {
+        int index = _base.SelectedIndex;
+        return index > 0 && index <= _bases.Count && _bases[index - 1].IsExtension;
+    }
+
     private void UpdateBaseHint()
     {
         _baseHint.Text = _base.SelectedIndex == 0
             ? "Works with every GameSet. Bring your own items, projectiles and sounds, start your ids with the pack id, and put recipes that need items of one GameSet into Bases/<its id>/."
-            : "Adds to this GameSet only and needs its current version or newer.";
+            : SelectedIsExtension()
+                ? "Adds to this extension. Worlds that pick yours get it automatically, on every GameSet it works with."
+                : "Adds to this GameSet only and needs its current version or newer.";
     }
 
     private void SetError(string text)

@@ -57,7 +57,9 @@ public static class GameSetCreator
     {
         var result = new List<InstalledGameSet>();
         foreach (var gameSet in installed)
-            if (!gameSet.IsExtension && !gameSet.IsEmpty) result.Add(gameSet);
+            if (!gameSet.IsEmpty && !gameSet.IsExtension) result.Add(gameSet);
+        foreach (var gameSet in installed)
+            if (gameSet.IsExtension && new ExtensionGraph(installed).Loop(gameSet) == null) result.Add(gameSet);
         return result;
     }
 
@@ -146,7 +148,7 @@ public static class GameSetCreator
     private static InstalledGameSet FindBase(string id, IReadOnlyList<InstalledGameSet> installed)
     {
         var baseSet = string.IsNullOrWhiteSpace(id) ? null : InstalledGameSets.Find(installed, id);
-        return baseSet == null || baseSet.IsExtension || baseSet.IsEmpty ? null : baseSet;
+        return baseSet == null || baseSet.IsEmpty ? null : baseSet;
     }
 
     private static InstalledGameSet FindEmpty(IReadOnlyList<InstalledGameSet> installed)

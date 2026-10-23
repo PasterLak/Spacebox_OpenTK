@@ -90,10 +90,11 @@ public static class InstalledGameSets
     {
         var result = new List<InstalledGameSet>();
         if (baseSet == null) return result;
+        var graph = new ExtensionGraph(gameSets);
 
         foreach (var gameSet in gameSets)
         {
-            if (gameSet.IsExtension && ExtensionTargets.Matches(gameSet.Config.Extends, baseSet)) result.Add(gameSet);
+            if (gameSet.IsExtension && graph.Supports(gameSet, baseSet)) result.Add(gameSet);
         }
         return result;
     }

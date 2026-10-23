@@ -23,13 +23,5 @@ public static class ExtensionTargets
         return false;
     }
 
-    public static bool Matches(string extends, InstalledGameSet baseSet)
-    {
-        if (baseSet == null || baseSet.IsEmpty || baseSet.IsExtension) return false;
-        foreach (var target in Parse(extends))
-            if (target == Any || baseSet.Matches(target)) return true;
-        return false;
-    }
-
     public static string Describe(string extends) => IsAny(extends) ? "any GameSet" : string.Join(", ", Parse(extends));
 }

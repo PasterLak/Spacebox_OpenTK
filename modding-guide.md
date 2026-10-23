@@ -107,7 +107,7 @@ An extension adds content to a base GameSet (usually `Default`) without copying 
 }
 ```
 
-- **Which GameSets:** `"Extends": "default"` (one GameSet), `["default", "my_set"]` (only these) or `"*"` (any GameSet; Empty can never be extended).
+- **Which GameSets:** `"Extends": "default"` (one GameSet), `["default", "my_set"]` (only these) or `"*"` (any GameSet; Empty can never be extended). An extension can also extend another extension (`"Extends": "weapons_pack"`): it works wherever its parent works, the parent is turned on automatically and loads first, and `MinBaseVersion`/`MaxBaseVersion` check the parent's `Version`. Loops (`a` extends `b` extends `a`) are refused.
 - **Versions:** `MinBaseVersion` and optional `MaxBaseVersion` compare against the base GameSet's `Version` number by number (`0.1.10` > `0.1.9`). An extension that does not fit is shown in red with the reason in Create World and cannot be picked; a world or server that uses it does not load. Mods > Create fills in the base's current version.
 - **Everything can be overridden:** an extension can add, patch and remove blocks, items, blueprints, recipes, crafting categories, projectiles, mobs, loot tables, asteroids, biomes, tutorials and game modes, and patch every settings file (`Generation/generator.json`, `ships.json`, `Player/spawn_parameters.json`, `Optional/lighting.json`, `disassembly.json`, `OxygenConsumeInterval` in its `config.json`), plus all textures, sounds, models and pictures.
   - Files in folders (`Projectiles/`, `Mobs/`, `Generation/Loot/`, `Generation/Asteroids/`, `Generation/Biomes/`, `Tutorials/`, `GameModes/`) are matched by file name: a file with the same name as a base file patches it field by field, a new name adds one.

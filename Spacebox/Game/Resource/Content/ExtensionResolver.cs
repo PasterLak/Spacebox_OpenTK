@@ -85,7 +85,7 @@ public sealed class ExtensionResolver
             return;
         }
 
-        string problem = ExtensionCompatibility.Problem(extension, _baseSet);
+        string problem = ExtensionCompatibility.Problem(extension, _baseSet, _available);
         if (problem != null)
         {
             _errors.Add($"Extension '{extension.Id}': {problem}");
@@ -95,6 +95,11 @@ public sealed class ExtensionResolver
 
         _states[extension] = VisitState.Visiting;
         _path.Add(extension);
+
+        foreach (var parent in new ExtensionGraph(_available).Parents(extension))
+        {
+            if (new ExtensionGraph(_available).Supports(parent, _baseSet)) Visit(parent);
+        }
 
         foreach (var includeId in extension.Includes)
         {

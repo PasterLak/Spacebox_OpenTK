@@ -36,7 +36,7 @@ public sealed class ExtensionCompatibilityTests : IDisposable
         WriteBaseSets("0.1.4");
         _sets.Write("Pack/config.json", "{ \"ModId\": \"pack\", \"Extends\": \"default\", \"MinBaseVersion\": \"0.1.5\" }");
 
-        string problem = ExtensionCompatibility.Problem(Find("pack"), Find("default"));
+        string problem = ExtensionCompatibility.Problem(Find("pack"), Find("default"), Installed());
 
         Assert.Contains("0.1.5 or newer", problem);
         var resolution = ExtensionResolver.Resolve(Find("default"), Installed(), new[] { "pack" });
@@ -49,7 +49,7 @@ public sealed class ExtensionCompatibilityTests : IDisposable
         WriteBaseSets("0.2.0");
         _sets.Write("Pack/config.json", "{ \"ModId\": \"pack\", \"Extends\": \"default\", \"MinBaseVersion\": \"0.1.5\", \"MaxBaseVersion\": \"0.1.9\" }");
 
-        Assert.Contains("up to 0.1.9", ExtensionCompatibility.Problem(Find("pack"), Find("default")));
+        Assert.Contains("up to 0.1.9", ExtensionCompatibility.Problem(Find("pack"), Find("default"), Installed()));
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class ExtensionCompatibilityTests : IDisposable
         WriteBaseSets("0.1.6");
         _sets.Write("Pack/config.json", "{ \"ModId\": \"pack\", \"Extends\": \"default\", \"MinBaseVersion\": \"0.1.5\" }");
 
-        Assert.Null(ExtensionCompatibility.Problem(Find("pack"), Find("default")));
+        Assert.Null(ExtensionCompatibility.Problem(Find("pack"), Find("default"), Installed()));
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public sealed class ExtensionCompatibilityTests : IDisposable
         Assert.Equal(new[] { "default", "other" }, ExtensionTargets.Parse(Find("weapons").Config.Extends));
         Assert.Single(InstalledGameSets.ExtensionsFor(installed, Find("default")));
         Assert.Empty(InstalledGameSets.ExtensionsFor(installed, Find("mine")));
-        Assert.Contains("Made for default, other", ExtensionCompatibility.Problem(Find("weapons"), Find("mine")));
+        Assert.Contains("Made for default, other", ExtensionCompatibility.Problem(Find("weapons"), Find("mine"), Installed()));
     }
 
     [Fact]
@@ -99,5 +99,46 @@ public sealed class ExtensionCompatibilityTests : IDisposable
         Assert.True(result.Success, result.ErrorText);
         Assert.Equal("default", result.Stack.Base.Id);
         Assert.Equal("weapons", Assert.Single(result.Stack.Extensions).Id);
+    }
+
+    [Fact]
+    public void ExtensionOfAnExtension_LoadsItsParentFirst()
+    {
+        WriteBaseSets();
+        _sets.Write("Weapons/config.json", "{ \"ModId\": \"weapons\", \"Version\": \"1.2\", \"Extends\": \"*\" }");
+        _sets.Write("Lasers/config.json", "{ \"ModId\": \"lasers\", \"Extends\": \"weapons\", \"MinBaseVersion\": \"1.0\" }");
+        var installed = Installed();
+
+        Assert.Contains(InstalledGameSets.ExtensionsFor(installed, Find("default")), g => g.Id == "lasers");
+        var resolution = ExtensionResolver.Resolve(Find("default"), installed, new[] { "lasers" });
+
+        Assert.True(resolution.Success, resolution.ErrorText);
+        Assert.Equal(new[] { "weapons", "lasers" }, resolution.Order.Select(e => e.Id).ToArray());
+    }
+
+    [Fact]
+    public void ExtensionOfAnExtension_ChecksTheVersionOfItsParent()
+    {
+        WriteBaseSets();
+        _sets.Write("Weapons/config.json", "{ \"ModId\": \"weapons\", \"ModName\": \"Weapons\", \"Version\": \"1.2\", \"Extends\": \"default\" }");
+        _sets.Write("Lasers/config.json", "{ \"ModId\": \"lasers\", \"Extends\": \"weapons\", \"MinBaseVersion\": \"2.0\" }");
+
+        Assert.Contains("Weapons 2.0 or newer", ExtensionCompatibility.Problem(Find("lasers"), Find("default"), Installed()), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Made for", ExtensionCompatibility.Problem(Find("lasers"), Find("mine"), Installed()));
+    }
+
+    [Fact]
+    public void ExtendsLoops_AreRefused()
+    {
+        WriteBaseSets();
+        _sets.Write("A/config.json", "{ \"ModId\": \"a\", \"Extends\": \"b\" }");
+        _sets.Write("B/config.json", "{ \"ModId\": \"b\", \"Extends\": \"a\" }");
+        var installed = Installed();
+
+        string problem = ExtensionCompatibility.Problem(Find("a"), Find("default"), installed);
+        Assert.StartsWith("Extends loop:", problem);
+        Assert.Contains("a -> b", problem);
+        Assert.False(ExtensionResolver.Resolve(Find("default"), installed, new[] { "a" }).Success);
+        Assert.DoesNotContain(GameSetCreator.ExtendableBases(installed), g => g.Id == "a");
     }
 }

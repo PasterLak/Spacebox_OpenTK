@@ -220,7 +220,7 @@ namespace Spacebox.Game.GUI.Menu
 
         public string ExtensionProblem(InstalledGameSet extension, ModConfig baseConfig)
         {
-            return Spacebox.Game.Resource.Content.ExtensionCompatibility.Problem(extension, FindInstalled(baseConfig));
+            return Spacebox.Game.Resource.Content.ExtensionCompatibility.Problem(extension, FindInstalled(baseConfig), installedGameSets);
         }
 
         public ExtensionResolution ResolveNewWorldExtensions()
