@@ -32,6 +32,7 @@ public sealed class GeneratorWindow : GameWindow
     {
         if (TitleLabel.Text != GeneratorUI.BlockName) TitleLabel.Text = GeneratorUI.BlockName;
         SetText(_generating, $"Generating: +{GeneratorUI.Block.GenerationRate} EU");
+        ShowEnergyText($"+{GeneratorUI.Block.GenerationRate} EU");
         SetText(_power, $"Power: {GeneratorUI.NetworkPower} EU");
         SetText(_consumption, $"Consumption: {GeneratorUI.NetworkConsumption} EU");
         _free.Value = GeneratorUI.FreeShare;

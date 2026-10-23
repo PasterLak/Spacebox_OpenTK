@@ -65,6 +65,7 @@ public sealed class AnalyzerWindow : GameWindow
     {
         var block = AnalyzerUI.Block;
         if (TitleLabel.Text != AnalyzerUI.BlockName) TitleLabel.Text = AnalyzerUI.BlockName;
+        ShowEnergy(block.ConsumptionRate);
         SetText(_scanTime, $"Scan time: {AnalyzerUI.ScanSeconds:0.0} s.");
         SetText(_deviation, $"Deviation: {block.DeviationPercentage}%");
 

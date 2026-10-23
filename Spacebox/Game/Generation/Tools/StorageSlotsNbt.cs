@@ -24,7 +24,22 @@ public static class StorageSlotsNbt
             if (paletteId < 0 || paletteId >= paletteItems.Length) continue;
 
             var item = GameAssets.GetItemByFullID(paletteItems[paletteId]);
-            if (item != null) storage.GetSlot(posX, posY)?.SetData(item, (byte)count);
+            if (item == null) continue;
+
+            var slot = storage.GetSlot(posX, posY);
+            if (slot != null && !slot.HasItem) slot.SetData(item, (byte)count);
+            else PlaceInFirstEmpty(storage, item, (byte)count);
         }
+    }
+
+    public static bool PlaceInFirstEmpty(Storage storage, Item item, byte count)
+    {
+        foreach (var slot in storage.GetAllSlots())
+        {
+            if (slot == null || slot.HasItem) continue;
+            slot.SetData(item, count);
+            return true;
+        }
+        return false;
     }
 }

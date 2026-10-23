@@ -17,7 +17,6 @@ public sealed class GravityGeneratorWindow : GameWindow
     private readonly HSlider _strength = new HSlider { Step = 0.01, CustomMinimumSize = new Vector2(ContentWidth, 0f) };
     private readonly HBoxContainer _presets = new HBoxContainer();
     private readonly List<(Button Button, float Strength)> _presetButtons = new List<(Button, float)>();
-    private readonly Label _power = new Label();
     private readonly Label _status = StatusText.Create();
     private GravityGeneratorBlock _shown;
     private bool _syncing;
@@ -32,7 +31,6 @@ public sealed class GravityGeneratorWindow : GameWindow
         Body.AddChild(_strengthLabel);
         Body.AddChild(_strength);
         Body.AddChild(_presets);
-        Body.AddChild(_power);
         Body.AddChild(_status);
 
         _enabled.Toggled += (_, _) => Send();
@@ -65,7 +63,7 @@ public sealed class GravityGeneratorWindow : GameWindow
         SetText(_strengthLabel, $"Gravity: {_strength.Value:0.00} m/s2");
         foreach (var (button, strength) in _presetButtons)
             button.ThemeTypeVariation = MathF.Abs((float)_strength.Value - strength) < GravityGeneratorUI.PresetTolerance ? "" : "SmallButton";
-        SetText(_power, $"Power needed: {block.RequiredPower} EU");
+        ShowEnergy(block.RequiredPower);
         var (text, kind) = GravityGeneratorUI.Status();
         StatusText.Set(_status, text, kind);
     }

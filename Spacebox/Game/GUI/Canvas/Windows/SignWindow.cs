@@ -115,7 +115,7 @@ public sealed class SignWindow : GameWindow
         for (int i = 0; i < _alignButtons.Length; i++) _alignButtons[i].ButtonPressed = document.CurrentAlign == SignUI.Alignments[i];
         _size.MaxValue = MathF.Max(largest, SignTextSize.MinScale + 0.1f);
         _size.Value = size.Fill ? largest : size.Scale;
-        bool locked = size.Fill || largest <= SignTextSize.MinScale;
+        bool locked = largest <= SignTextSize.MinScale;
         _size.MouseFilter = locked ? MouseFilter.Ignore : MouseFilter.Stop;
         _size.Modulate = locked ? new Color4(1f, 1f, 1f, 0.5f) : Color4.White;
         _syncing = false;

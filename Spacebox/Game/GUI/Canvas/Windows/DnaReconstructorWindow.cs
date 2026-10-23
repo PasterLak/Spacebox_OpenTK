@@ -7,23 +7,22 @@ namespace Spacebox.Game.GUI.Canvas.Windows;
 
 public sealed class DnaReconstructorWindow : GameWindow
 {
-    private const float Width = 300f;
+    private const float Width = 330f;
 
     private readonly ItemSlotControl _slot = new ItemSlotControl();
     private readonly Label _samples = new Label();
-    private readonly Label _power = new Label();
     private readonly Label _status = StatusText.Create();
     private DnaReconstructorBlock _shown;
 
     public DnaReconstructorWindow() : base("DNA Reconstructor")
     {
         Name = "DnaReconstructor";
+        MatchColumnWidth();
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 10f);
         row.AddChild(_slot);
         var info = row.AddChild(new VBoxContainer());
         info.AddChild(_samples);
-        info.AddChild(_power);
         info.AddChild(_status);
         Body.AddChild(new Label
         {
@@ -49,7 +48,7 @@ public sealed class DnaReconstructorWindow : GameWindow
 
         _slot.Refresh();
         SetText(_samples, $"DNA samples: {block.DnaCount}/{block.DnaCapacity}");
-        SetText(_power, $"Power: {block.Data.Power} EU");
+        ShowEnergy(block.Data.Power);
         var (text, kind) = DnaReconstructorUI.Status();
         StatusText.Set(_status, text, kind);
     }

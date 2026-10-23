@@ -22,10 +22,13 @@ public abstract class GameWindow : PanelContainer
         TitleLabel = row.AddChild(new Label { Text = title, ThemeTypeVariation = "MenuTitle", SizeFlagsHorizontal = SizeFlags.ExpandFill, VerticalAlignment = VerticalAlignment.Center });
         Header = row.AddChild(new HBoxContainer { CustomMinimumSize = new Vector2(0f, HeaderHeight) });
         Header.AddThemeConstantOverride("separation", 4f);
+        _energy = row.AddChild(new Label { ThemeTypeVariation = "MenuTitle", VerticalAlignment = VerticalAlignment.Center, Visible = false, TooltipText = "Energy used by this block" });
 
         Body = column.AddChild(new VBoxContainer());
         Body.AddThemeConstantOverride("separation", 6f);
     }
+
+    private readonly Label _energy;
 
     protected Label TitleLabel { get; }
     protected HBoxContainer Header { get; }
@@ -41,6 +44,17 @@ public abstract class GameWindow : PanelContainer
     }
 
     protected abstract void Refresh();
+
+    protected void ShowEnergy(int energy) => ShowEnergyText(energy > 0 ? energy + " EU" : null);
+
+    protected void ShowEnergyText(string text)
+    {
+        bool visible = !string.IsNullOrEmpty(text);
+        if (_energy.Visible != visible) _energy.Visible = visible;
+        if (visible && _energy.Text != text) _energy.Text = text;
+    }
+
+    protected void MatchColumnWidth() => SizeFlagsHorizontal = SizeFlags.Fill;
 
     public const float HeaderHeight = 18f;
     public const float HeaderButtonSize = 18f;

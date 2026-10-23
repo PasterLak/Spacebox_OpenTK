@@ -19,6 +19,7 @@ public sealed class OxygenGeneratorWindow : GameWindow
     public OxygenGeneratorWindow() : base("Oxygen Generator")
     {
         Name = "OxygenGenerator";
+        MatchColumnWidth();
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 12f);
         row.AddChild(_tank);
@@ -43,6 +44,7 @@ public sealed class OxygenGeneratorWindow : GameWindow
         }
 
         _slot.Refresh();
+        ShowEnergy(block.ConsumptionRate);
         _tank.Capacity = block.TankCapacity;
         _tank.Value = block.Water;
         string tank = $"Tank: {block.Water}/{block.TankCapacity}";

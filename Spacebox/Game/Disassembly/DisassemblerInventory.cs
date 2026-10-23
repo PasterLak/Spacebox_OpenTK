@@ -4,7 +4,7 @@ public delegate bool DisassemblyRecipeLookup(Item item, out DisassemblyRecipe re
 
 public sealed class DisassemblerInventory
 {
-    public const byte Width = 4;
+    public const byte Width = 3;
     public const byte Height = 2;
 
     private readonly DisassemblyRecipeLookup _lookup;

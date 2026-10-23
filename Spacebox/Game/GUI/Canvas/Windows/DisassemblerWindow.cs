@@ -11,7 +11,6 @@ public sealed class DisassemblerWindow : GameWindow
 {
     private const float PreviewIconSize = 22f;
 
-    private readonly Label _power = new Label { ThemeTypeVariation = "MenuTitle", VerticalAlignment = VerticalAlignment.Center };
     private readonly Label _status = StatusText.Create();
     private readonly StorageGridControl _input = new StorageGridControl();
     private readonly StorageGridControl _output = new StorageGridControl();
@@ -23,10 +22,11 @@ public sealed class DisassemblerWindow : GameWindow
     public DisassemblerWindow() : base("Disassembler")
     {
         Name = "Disassembler";
-        Header.AddChild(_power);
+        MatchColumnWidth();
         Body.AddChild(_status);
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 10f);
+        row.Alignment = BoxAlignment.Center;
         row.AddChild(_input);
         row.AddChild(_arrow);
         row.AddChild(_output);
@@ -53,8 +53,7 @@ public sealed class DisassemblerWindow : GameWindow
 
         _input.Show(block.InputStorage);
         _output.Show(block.OutputStorage);
-        string power = $"{block.Power} EU";
-        if (_power.Text != power) _power.Text = power;
+        ShowEnergy(block.Power);
         var (text, kind) = DisassemblerUI.Status();
         StatusText.Set(_status, text, kind);
         _arrow.Progress = DisassemblerUI.Progress;

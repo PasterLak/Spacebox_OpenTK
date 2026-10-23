@@ -19,10 +19,11 @@ public sealed class ProcessingWindow : GameWindow
     public ProcessingWindow() : base("Machine")
     {
         Name = "Processing";
+        MatchColumnWidth();
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 10f);
 
-        var left = row.AddChild(new VBoxContainer { CustomMinimumSize = new Vector2(190f, 0f) });
+        var left = row.AddChild(new VBoxContainer { CustomMinimumSize = new Vector2(150f, 0f), SizeFlagsHorizontal = SizeFlags.ExpandFill });
         left.AddChild(_status);
         var slots = left.AddChild(new HBoxContainer { SizeFlagsVertical = SizeFlags.ExpandFill, Alignment = BoxAlignment.Center });
         slots.AddThemeConstantOverride("separation", 12f);
@@ -46,6 +47,7 @@ public sealed class ProcessingWindow : GameWindow
     {
         if (TitleLabel.Text != ResourceProcessingGUI.WindowName) TitleLabel.Text = ResourceProcessingGUI.WindowName;
         StatusText.Set(_status, ResourceProcessingGUI.Status, StatusKind.Normal);
+        ShowEnergy(ResourceProcessingGUI.Block.ConsumptionRate);
 
         if (!ReferenceEquals(_shownBlock, ResourceProcessingGUI.Block))
         {
