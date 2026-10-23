@@ -33,6 +33,7 @@ public static class SpaceboxNetwork
         TimeNetwork.Register(network);
         SectorNetwork.Register(network);
         EntityCreationNetwork.Register(network);
+        ShipSharingNetwork.Register(network);
         PlayerListNetwork.Register(network);
         WorldSpawnNetwork.Register(network);
         ProtectionNetwork.Register(network);

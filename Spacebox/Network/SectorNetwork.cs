@@ -91,6 +91,12 @@ public static class SectorNetwork
         return count;
     }
 
+    public static void BroadcastManifest(Sector sector)
+    {
+        if (sector == null) return;
+        foreach (int peer in NetworkManager.Instance.Peers) SendManifest(peer, sector);
+    }
+
     private static void SendManifest(int peer, Sector sector)
     {
         _customEntities.Clear();

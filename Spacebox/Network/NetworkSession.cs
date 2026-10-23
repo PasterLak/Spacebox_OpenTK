@@ -581,6 +581,7 @@ public sealed class NetworkSession : IDisposable
         _playerDataFlush.Received(peer);
         WorldEditNetwork.ForgetPeer(peer);
         ChatService.ForgetPeer(peer);
+        ShipSharingNetwork.ForgetPeer(peer);
         Players.ReconstructionNetwork.ForgetPeer(peer);
         if (PlayerRegistry.TryGet(peer, out var leaving)) leaving.LastPlayerJson = Items.ItemAuthority.ReconcileForSave(peer, leaving.LastPlayerJson);
         Items.ItemAuthority.OnLeave(peer);

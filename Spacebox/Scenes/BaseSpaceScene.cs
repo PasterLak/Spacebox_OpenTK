@@ -266,7 +266,11 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         if (Input.IsKeyDown(Keys.Escape) && !UIManager.IsTop("chat"))
         {
-            if (UIManager.IsUIMode)
+            if (Spacebox.Game.Ships.Sharing.ShipPlacementMode.IsActive && !UIManager.IsUIMode)
+            {
+                Spacebox.Game.Ships.Sharing.ShipPlacementMode.Cancel();
+            }
+            else if (UIManager.IsUIMode)
             {
                 UIManager.CloseTop();
             }
@@ -293,6 +297,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Tutorial.UI.TutorialUI.Update();
         InputOverlay.Update();
         Spacebox.Game.Waypoints.WaypointWindowUI.Update();
+        Spacebox.Game.Ships.Sharing.ShipLibraryUI.Update(localPlayer);
     }
 
     public Action OnRenderCenter;
@@ -354,6 +359,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         PauseUI.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialPromptUI.OnGUI();
         Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
+        Spacebox.Game.Ships.Sharing.ShipLibraryUI.OnGUI();
         Spacebox.Game.GUI.CameraFeedOverlayUI.OnGUI();
         Spacebox.Game.GUI.FpsCounterUI.OnGUI();
         if (Settings.ShowInterface) InputOverlay.OnGUI();
@@ -438,6 +444,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         ShipWeapons.Reset();
         TutorialService.Detach();
         Spacebox.Game.Waypoints.WaypointWindowUI.Reset();
+        Spacebox.Game.Ships.Sharing.ShipLibraryUI.Reset();
         PanelUI.Reset();
         DeathScreen.IsVisible = false;
 

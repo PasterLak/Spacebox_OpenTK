@@ -98,6 +98,36 @@ public sealed class ShipViewerSession : IDisposable
         Content?.FireWeapons();
     }
 
+    private ShipExportJob _export;
+
+    public bool IsExporting => _export != null && !_export.IsDone;
+
+    public void Export(string name, string author, string description)
+    {
+        if (SelectedWorld == null || SelectedShip == null || IsExporting) return;
+
+        try
+        {
+            var ship = ShipExportJob.Create(_loader.Load(SelectedWorld, SelectedShip), SelectedWorld, name, author, description);
+            string path = Spacebox.Game.Ships.Sharing.ShipFileNames.UniquePath(Spacebox.Game.Ships.Sharing.ShipFileNames.Folder, ship.Id);
+            string picture = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"spacebox_ship_{Guid.NewGuid():N}.png");
+            _export = new ShipExportJob(ship, path, picture);
+            _viewport?.RequestCapture(picture, 1f);
+            Status = "Exporting...";
+        }
+        catch (Exception ex)
+        {
+            Status = "Export failed: " + ex.Message;
+        }
+    }
+
+    private void UpdateExport()
+    {
+        if (_export == null || _export.IsDone) return;
+        _export.Update();
+        if (_export.IsDone) Status = _export.Error == null ? $"Exported to Ships/{System.IO.Path.GetFileName(_export.Path)}" : "Export failed: " + _export.Error;
+    }
+
     public void SavePicture()
     {
         _viewport?.RequestCapture(Engine.FramebufferCapture.CreateScreenshotPath("ship"), PictureScale);
@@ -145,6 +175,7 @@ public sealed class ShipViewerSession : IDisposable
         CollectScannedWorlds();
         StartRequestedShip();
         _viewport?.Update(deltaTime);
+        UpdateExport();
         ForgetIdleContents();
     }
 

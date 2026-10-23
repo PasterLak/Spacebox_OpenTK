@@ -269,6 +269,17 @@
                     }
                 ]
             },
+            "ships": {
+                "Name": "Ships",
+                "Description": "Open the ship library to place exported ships (creative)",
+                "Category": "Other",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "B"
+                    }
+                ]
+            },
             "waypoints": {
                 "Name": "Waypoints",
                 "Description": "Open the waypoint list",

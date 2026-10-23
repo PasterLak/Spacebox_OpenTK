@@ -923,6 +923,14 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
         return CreateNewEntity(positionWorld, GenerateDynamicEntityId());
     }
 
+    public void AddCreatedEntity(SpaceEntity entity)
+    {
+        AddEntity(entity, entity.PositionWorld);
+        entity.IsGenerated = true;
+        entity.IsModified = true;
+        IsModified = true;
+    }
+
     public SpaceEntity CreateNewEntity(Vector3 positionWorld, long id)
     {
         SpaceEntity entity = new SpaceEntity(id, positionWorld, this);

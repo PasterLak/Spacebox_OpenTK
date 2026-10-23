@@ -15,6 +15,11 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
 
     private readonly GameMenu _menu;
     private readonly ShipViewerSession _session;
+    private const string ExportPopup = "Export ship##shipViewerExport";
+    private string _exportName = "";
+    private string _exportAuthor = "";
+    private string _exportDescription = "";
+    private bool _openExport;
 
     public ShipViewerWindow(GameMenu menu)
     {
@@ -203,6 +208,13 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         ImGui.EndDisabled();
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Renders the ship and saves it to the screenshots folder");
 
+        ImGui.SameLine(0f, 16f);
+        ImGui.BeginDisabled(!ready || _session.IsExporting);
+        if (ImGui.Button("Export")) BeginExport();
+        ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Saves the ship as one file in the Ships folder to share it; place it in a creative world from the Ships window");
+        DrawExportPopup();
+
         DrawProjectiles();
 
         ImGui.SameLine(0f, 16f);
@@ -210,6 +222,46 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         if (ImGui.Button("Restore ship")) _session.RestoreShip();
         ImGui.EndDisabled();
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) ImGui.SetTooltip("Reloads the ship from its save and removes all damage");
+    }
+
+    private void BeginExport()
+    {
+        var ships = _session.Ships;
+        int index = ships?.Ships.IndexOf(_session.SelectedShip) ?? -1;
+        _exportName = index >= 0 ? ships.Label(index) : "Ship";
+        _exportAuthor = ClientConfigStore.Load()?.PlayerNickname ?? "";
+        _exportDescription = "";
+        _openExport = true;
+    }
+
+    private void DrawExportPopup()
+    {
+        if (_openExport)
+        {
+            ImGui.OpenPopup(ExportPopup);
+            _openExport = false;
+        }
+
+        if (!ImGui.BeginPopupModal(ExportPopup, ImGuiWindowFlags.AlwaysAutoResize)) return;
+
+        ImGui.Text("Name");
+        ImGui.SetNextItemWidth(360f);
+        ImGui.InputText("##exportName", ref _exportName, 48);
+        ImGui.Text("Author");
+        ImGui.SetNextItemWidth(360f);
+        ImGui.InputText("##exportAuthor", ref _exportAuthor, 32);
+        ImGui.Text("Description");
+        ImGui.InputTextMultiline("##exportDescription", ref _exportDescription, 400, new Vector2(360f, 80f));
+        ImGui.TextDisabled($"File: Ships/{Spacebox.Game.Ships.Sharing.ShipFileNames.MakeId(_exportName)}.ship");
+
+        if (ImGui.Button("Export##exportConfirm", new Vector2(120f, 0f)))
+        {
+            _session.Export(_exportName, _exportAuthor, _exportDescription);
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Cancel##exportCancel", new Vector2(120f, 0f))) ImGui.CloseCurrentPopup();
+        ImGui.EndPopup();
     }
 
     private void DrawProjectiles()
