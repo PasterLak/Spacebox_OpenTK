@@ -73,6 +73,8 @@ public static class GameControlStyles
         theme.SetStyleBox("TooltipPanel", "panel", new StyleBoxFlat(new Color4(0.05f, 0.05f, 0.07f, 0.96f), 6f).SetBorder(1f, new Color4(0.4f, 0.42f, 0.5f, 1f)));
         theme.SetColor("TooltipPanel", "font_color", new Color4(0.95f, 0.95f, 0.97f, 1f));
         theme.SetColor("Label", "tooltip_font_color", new Color4(0.95f, 0.95f, 0.97f, 1f));
+        theme.SetTypeVariation("TooltipLabel", "Label");
+        theme.SetColor("TooltipLabel", "font_color", new Color4(0.95f, 0.95f, 0.97f, 1f));
 
         theme.SetStyleBox("TabContainer", "tab", Raised(p, p.Button, 10f, 4f));
         theme.SetStyleBox("TabContainer", "tab_hover", Raised(p, p.ButtonHover, 10f, 4f, true));

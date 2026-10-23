@@ -98,7 +98,6 @@ public sealed class WorldSelectPage : MenuPage
         {
             var world = _menu.Worlds[i];
             var item = _list.AddItem(world.Name, null, world);
-            item.Secondary = world.LastEditDate ?? "";
             if (ReferenceEquals(world, _menu.selectedWorld)) selected = i;
         }
         if (selected >= 0) _list.Select(selected);

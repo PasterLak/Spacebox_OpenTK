@@ -94,7 +94,7 @@ public sealed class NewWorldPage : MenuPage
             names.Add(gameSet.ModName);
             icons.Add(gameSet.Icon);
         }
-        _gameSet.SetChoices(names, icons);
+        _gameSet.SetChoices(names, icons, true);
         _gameSet.SelectedIndex = edit ? Math.Max(0, _menu.GameSets.FindIndex(g => g.ModId == _menu.selectedWorld?.ModId)) : _menu.SelectedGameSetIndex;
         _gameMode.SelectedIndex = _menu.SelectedGameModeIndex;
         _shownGameSet = -1;

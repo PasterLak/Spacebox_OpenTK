@@ -45,7 +45,7 @@ public sealed class ChoiceBox : ComboBox
         }
     }
 
-    public void SetChoices(IEnumerable<string> labels, IReadOnlyList<Texture2D> icons = null)
+    public void SetChoices(IEnumerable<string> labels, IReadOnlyList<Texture2D> icons = null, bool flipIcons = false)
     {
         _labels.Clear();
         var options = new List<ListItem>();
@@ -53,7 +53,8 @@ public sealed class ChoiceBox : ComboBox
         foreach (var label in labels)
         {
             _labels.Add(label);
-            options.Add(new ListItem { Text = label, Icon = icons != null && i < icons.Count ? icons[i] : null });
+            var icon = icons != null && i < icons.Count ? icons[i] : null;
+            options.Add(new ListItem { Text = label, Icon = icon, IconRegion = flipIcons && icon != null ? new Rect2(0f, icon.Height, icon.Width, -icon.Height) : null });
             i++;
         }
         SetOptions(options);

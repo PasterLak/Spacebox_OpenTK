@@ -15,7 +15,7 @@ public sealed class ServerInfoDialog
     private readonly MenuModal _modal;
     private readonly MenuWindowFrame _frame;
     private readonly HBoxContainer _header = new HBoxContainer();
-    private readonly TextureRect _icon = new TextureRect { StretchMode = TextureStretchMode.KeepAspectCentered, CustomMinimumSize = new Vector2(IconSize, IconSize) };
+    private readonly TextureRect _icon = new TextureRect { StretchMode = TextureStretchMode.KeepAspectCentered, FlipV = true, CustomMinimumSize = new Vector2(IconSize, IconSize) };
     private readonly Label _name = new Label { ThemeTypeVariation = "SectionLabel" };
     private readonly Label _address = new Label { ThemeTypeVariation = "MutedLabel" };
     private readonly Label _state = new Label();

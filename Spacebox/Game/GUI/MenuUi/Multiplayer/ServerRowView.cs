@@ -21,7 +21,7 @@ public sealed class ServerRowView
     {
         Item = item;
         _icons = icons;
-        Control = new SelectableRow(IconSize) { Metadata = item };
+        Control = new SelectableRow(IconSize) { Metadata = item, FlipIcon = true };
         _name = Control.AddLine("");
         _description = Control.AddLine("", "MutedLabel");
         _address = Control.AddLine("", "MutedLabel");

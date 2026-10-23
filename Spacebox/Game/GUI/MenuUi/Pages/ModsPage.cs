@@ -49,7 +49,7 @@ public sealed class ModsPage : MenuPage
         _rowControls.Clear();
         foreach (var mod in _menu.AllGameSets)
         {
-            var row = new SelectableRow(IconSize) { Metadata = mod, Icon = mod.Icon };
+            var row = new SelectableRow(IconSize) { Metadata = mod, Icon = mod.Icon, FlipIcon = true };
             row.AddLine($"{mod.ModName}  v{mod.Version}");
             row.AddLine($"{mod.ModId} by {(string.IsNullOrEmpty(mod.Author) ? "unknown" : mod.Author)}  -  {mod.Description}", "MutedLabel");
             if (!string.IsNullOrWhiteSpace(mod.Extends))

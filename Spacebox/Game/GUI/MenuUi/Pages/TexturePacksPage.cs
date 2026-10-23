@@ -53,7 +53,7 @@ public sealed class TexturePacksPage : MenuPage
         foreach (var pack in packs)
         {
             bool active = TexturePackOrder.IsEnabled(enabled, pack.Id);
-            var row = new SelectableRow(IconSize) { Icon = Icon(pack) };
+            var row = new SelectableRow(IconSize) { Icon = Icon(pack), FlipIcon = true };
             var title = row.AddLine(active ? $"{TexturePackOrder.IndexOf(enabled, pack.Id) + 1}. {pack.DisplayName}  v{pack.Info.Version}" : $"{pack.DisplayName}  v{pack.Info.Version}");
             if (active) title.ThemeTypeVariation = "SuccessLabel";
             row.AddLine($"{pack.Id} by {(string.IsNullOrEmpty(pack.Info.Author) ? "unknown" : pack.Info.Author)}  -  {pack.TextureCount} textures  {pack.Info.Description}", "MutedLabel");
