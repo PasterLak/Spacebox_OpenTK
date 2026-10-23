@@ -13,9 +13,9 @@ public class CreativeMode : MovementMode
     private const float _cameraSpeed = 3.5f;
     private const float _shiftSpeed = 7.5f;
 
-    private static InteractionHandler CreateInteractionHandler()
+    private static InteractionHandler CreateInteractionHandler(GameModeRules rules)
     {
-        return new InteractionHandler(new InteractionPlaceBlock(), new HashSet<Type>()
+        var allowed = GameModeInteractions.Filter(new HashSet<Type>()
         {
             typeof(InteractionDestroyBlockCreative),
             typeof(InteractionPlaceBlock),
@@ -27,13 +27,13 @@ public class CreativeMode : MovementMode
             typeof(InteractionEraser),
             typeof(InteractionRepair),
             typeof(InteractionCameraPoint)
-        }, GameMode.Creative, new IPassiveInteraction[]
-        {
-            new CreativeBlockDestroying()
-        });
+        }, rules);
+
+        return new InteractionHandler(GameModeInteractions.DefaultFor(allowed, () => new InteractionPlaceBlock(), typeof(InteractionPlaceBlock)), allowed, GameMode.Creative,
+            rules.BreakBlocks ? new IPassiveInteraction[] { new CreativeBlockDestroying() } : Array.Empty<IPassiveInteraction>());
     }
 
-    public CreativeMode(LocalAstronaut player) : base(player, CreateInteractionHandler())
+    public CreativeMode(LocalAstronaut player, GameModeRules rules) : base(player, CreateInteractionHandler(rules))
     {
         player.CollisionEnabled = true;
         player.EnableCameraSway(true);

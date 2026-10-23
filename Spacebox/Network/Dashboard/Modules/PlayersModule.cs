@@ -59,12 +59,12 @@ public sealed class PlayersModule : IDashboardModule
         {
             var body = DashboardGuard.Read<GameModeRequest>(request);
             string name = body?.Name?.Trim();
-            if (string.IsNullOrEmpty(name) || body.Mode < 0 || body.Mode > (int)Spacebox.Game.Player.GameModes.GameMode.Spectator)
+            if (string.IsNullOrEmpty(name) || body.Mode < 0 || !Spacebox.Game.Player.GameModes.GameModeCatalog.Contains((Spacebox.Game.Player.GameModes.GameMode)body.Mode))
                 return HttpResponse.Error("Bad request", 400);
 
             var mode = (Spacebox.Game.Player.GameModes.GameMode)body.Mode;
             bool applied = await MainThread.Run(() => PlayerGameModeService.Change(name, mode));
-            DashboardContext.Audit(user, $"set the game mode of {name} to {mode}");
+            DashboardContext.Audit(user, $"set the game mode of {name} to {Spacebox.Game.Player.GameModes.GameModeCatalog.NameOf(mode)}");
             return HttpResponse.Json(new { ok = true, applied });
         }));
 
@@ -116,7 +116,7 @@ public sealed class PlayersModule : IDashboardModule
                 position = hasPose ? new[] { MathF.Round(position.X, 1), MathF.Round(position.Y, 1), MathF.Round(position.Z, 1) } : null,
                 alive = AstronautNetwork.Find(player.Peer)?.IsAlive ?? false,
                 muted = ServerModeration.IsMuted(player.Name),
-                gameMode = (int)PlayerGameModeService.Of(player.Name),
+                gameMode = (int)PlayerGameModeService.IdOf(player.Name),
                 skin = player.SkinColor
             });
         }
@@ -133,12 +133,15 @@ public sealed class PlayersModule : IDashboardModule
                     online = onlineNames.Contains(name),
                     lastSeen = PlayerFiles.LastSaved(folder, name).ToString("yyyy-MM-dd HH:mm"),
                     muted = ServerModeration.IsMuted(name),
-                    gameMode = (int)PlayerGameModeService.Of(name)
+                    gameMode = (int)PlayerGameModeService.IdOf(name)
                 });
             }
         }
 
-        return new { online, saved };
+        var modes = new List<object>();
+        foreach (var mode in Spacebox.Game.Player.GameModes.GameModeCatalog.All) modes.Add(new { id = (int)mode.Id, name = mode.Name });
+
+        return new { online, saved, gameModes = modes };
     }
 
     private static object Detail(string name)
@@ -157,7 +160,7 @@ public sealed class PlayersModule : IDashboardModule
         {
             name,
             online = player != null,
-            gameMode = (int)PlayerGameModeService.Of(name),
+            gameMode = (int)PlayerGameModeService.IdOf(name),
             view.Health,
             view.Power,
             view.Oxygen,

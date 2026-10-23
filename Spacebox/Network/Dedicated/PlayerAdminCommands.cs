@@ -14,22 +14,21 @@ public sealed class ServerGameModeCommand : CommandBase, Engine.Commands.IArgume
     }
 
     public override string Name => "gm";
-    public override string Description => "Change the game mode of a player. Usage: gm <0|1|2> <player> (survival, creative, spectator); admins in chat can leave out the player to change their own";
+    public override string Description => "Change the game mode of a player. Usage: gm <mode> <player> (0 survival, 1 creative, 2 spectator, or a GameSet mode by id or name); admins in chat can leave out the player to change their own";
 
     public override void Execute(string[] args)
     {
         string target = args.Length >= 2 ? args[1] : Spacebox.Network.Admin.ChatCommands.CurrentSender;
-        if (args.Length < 1 || target == null || !int.TryParse(args[0], out int id) || id < 0 || id > 2)
+        if (args.Length < 1 || target == null || !GameModeCatalog.TryFind(args[0], out var definition))
         {
-            Debug.Error($"Usage: {Name} <0|1|2> <player>");
+            Debug.Error($"Usage: {Name} <mode> <player>, modes: {GameModeList.Describe()}");
             return;
         }
 
         if (!PlayerAdmin.TryGetNetwork(target, out var player, out var network)) return;
 
-        var mode = id switch { 0 => GameMode.Survival, 1 => GameMode.Creative, _ => GameMode.Spectator };
-        Spacebox.Network.Players.PlayerGameModeService.Change(player.Name, mode);
-        Debug.Success($"{player.Name}: game mode {mode}");
+        Spacebox.Network.Players.PlayerGameModeService.Change(player.Name, definition.Id);
+        Debug.Success($"{player.Name}: game mode {definition.Name}");
     }
 }
 

@@ -305,7 +305,8 @@ public static class WorldEditNetwork
         bool unbreakable = message.IsRemoval && Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(previousId) &&
                            Spacebox.Network.Players.PlayerGameModeService.Of(senderName) != Spacebox.Game.Player.GameModes.GameMode.Creative;
         bool unbroken = message.IsRemoval && known && !CanRemoveNow(sender, senderName, entity, message.Cell);
-        if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || unbroken || !IsInReach(sender, entity, message.Cell)))
+        bool placeDenied = !message.IsRemoval && sender != network.LocalPeerId && !Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).PlaceBlocks;
+        if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || unbroken || placeDenied || !IsInReach(sender, entity, message.Cell)))
         {
             SendCorrection(sender, entity, message.Cell);
             if (!message.IsRemoval) SendRefund(sender, message.BlockId);
@@ -326,6 +327,7 @@ public static class WorldEditNetwork
     private static bool CanRemoveNow(int sender, string senderName, SpaceEntity entity, Vector3i cell)
     {
         if (sender == NetworkManager.Instance.LocalPeerId) return true;
+        if (!Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).BreakBlocks) return false;
         if (Spacebox.Network.Players.PlayerGameModeService.Of(senderName) == Spacebox.Game.Player.GameModes.GameMode.Creative) return true;
         if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) return true;
 

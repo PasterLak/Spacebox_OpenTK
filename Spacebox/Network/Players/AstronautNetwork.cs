@@ -376,10 +376,10 @@ public sealed class AstronautNetwork : NetworkTransform
     [Rpc(RpcTarget.Owner)]
     private void ApplyServerGameMode(byte mode)
     {
-        if (Owner is not LocalAstronaut local || mode > (byte)GameMode.Spectator) return;
+        if (Owner is not LocalAstronaut local || !GameModeCatalog.Contains((GameMode)mode)) return;
 
         local.GameMode = (GameMode)mode;
-        Spacebox.Game.GUI.Chat.Write($"The server changed your game mode to {local.GameMode}", Color4.Orange);
+        Spacebox.Game.GUI.Chat.Write($"The server changed your game mode to {GameModeCatalog.NameOf(local.GameModeId)}", Color4.Orange);
     }
 
     [Rpc(RpcTarget.Owner)]

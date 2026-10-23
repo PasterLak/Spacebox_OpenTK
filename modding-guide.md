@@ -61,6 +61,22 @@ Mods/GameSets/MyMod/
 - Without the file the old `config.json` `ItemsOnStart` and `generator.json` `PlayerSpawn` still work. Extensions add start items with `ItemsOnStart` in their `config.json`.
 - All time settings are seconds (weapon and cannon `ReloadTime` too: 0.5 = two shots per second).
 
+## Game modes
+
+`GameModes/*.json` defines the game modes of a GameSet. Ids 0, 1 and 2 are Survival, Creative and Spectator; their files can rename them and change their rules, but not their base. Ids 3-31 are new modes built on one of the three bases (its movement, inventory and interactions) with their own rules. Missing rules use the base's values, a missing folder keeps the three built-in modes.
+
+```json
+{
+  "Id": 3,
+  "Key": "explorer",
+  "Name": "Explorer",
+  "Base": "survival",
+  "Rules": { "BreakBlocks": false, "PlaceBlocks": false }
+}
+```
+
+Rules: `BreakBlocks`, `PlaceBlocks`, `UseWeapons`, `TakeDamage`, `NeedOxygen`. The server checks breaking, placing and shooting with the player's mode. Switch with `gm <id or key>` (e.g. `gm explorer`) or on the dashboard.
+
 ## Extensions
 
 An extension adds content to a base GameSet (usually `Default`) without copying it:

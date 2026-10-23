@@ -56,7 +56,10 @@ public class PlayerGameModesTests : IDisposable
     [Fact]
     public void TryRead_IgnoresInvalidValues()
     {
-        Assert.False(PlayerGameModes.TryRead("{\"GameMode\": 7}", out _));
+        Assert.False(PlayerGameModes.TryRead("{\"GameMode\": 99}", out _));
+        Assert.False(PlayerGameModes.TryRead("{\"GameMode\": -1}", out _));
+        Assert.True(PlayerGameModes.TryRead("{\"GameMode\": 3}", out var custom));
+        Assert.Equal(3, (int)custom);
         Assert.False(PlayerGameModes.TryRead("not json", out _));
         Assert.False(PlayerGameModes.TryRead(null, out _));
     }

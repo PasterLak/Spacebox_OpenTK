@@ -66,6 +66,7 @@ public static class EntityCreationNetwork
     {
         var network = NetworkManager.Instance;
         if (!network.IsServer || !GameAssets.Blocks.ContainsKey(message.BlockId)) return;
+        if (sender != network.LocalPeerId && !Players.PlayerGameModeService.RulesOf(PlayerRegistry.GetName(sender)).PlaceBlocks) return;
         if (!WorldEditNetwork.ChargePlacement(sender, message.BlockId)) return;
 
         var sector = World.SectorAt(message.PositionWorld);

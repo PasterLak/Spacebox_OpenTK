@@ -344,6 +344,7 @@ async function refreshPlayers() {
   const data = await run(() => api("/players"));
   if (!data) return;
   state.players = data;
+  if (data.gameModes) GAME_MODES = data.gameModes;
   $("#online-count").textContent = data.online.length;
 
   const online = data.online.map(p => el("tr", { class: "clickable", onclick: () => openPlayer(p.name) },
@@ -374,18 +375,23 @@ function renderSaved() {
 
 $("#player-filter").addEventListener("input", renderSaved);
 
-const GAME_MODES = ["Survival", "Creative", "Spectator"];
+let GAME_MODES = [{ id: 0, name: "Survival" }, { id: 1, name: "Creative" }, { id: 2, name: "Spectator" }];
+
+function gameModeName(id) {
+  const mode = GAME_MODES.find(m => m.id === id);
+  return mode ? mode.name : "Mode " + id;
+}
 
 function gameModeSelect(name, mode) {
   const select = el("select", { class: "mode-select", title: "Game mode (kept when the player rejoins)", onclick: event => event.stopPropagation() },
-    ...GAME_MODES.map((label, index) => el("option", { value: index, text: label, selected: index === mode })));
+    ...GAME_MODES.map(m => el("option", { value: m.id, text: m.name, selected: m.id === mode })));
   select.addEventListener("change", async event => {
     event.stopPropagation();
     const value = Number(select.value);
     const result = await run(() => api("/players/gamemode", { name, mode: value }));
     if (!result) { select.value = mode; return; }
     mode = value;
-    toast(`${name}: ${GAME_MODES[value]}${result.applied ? "" : " (applied when the player joins)"}`);
+    toast(`${name}: ${gameModeName(value)}${result.applied ? "" : " (applied when the player joins)"}`);
   });
   return select;
 }

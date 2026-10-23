@@ -33,8 +33,6 @@ public static class CommandSuggestionSources
 
     public static void AddGameModes(List<string> results)
     {
-        results.Add("0");
-        results.Add("1");
-        results.Add("2");
+        foreach (var mode in Spacebox.Game.Player.GameModes.GameModeCatalog.All) results.Add(mode.Key);
     }
 }

@@ -121,7 +121,7 @@ public class World : Component, ISpaceStructure
         Spacebox.Game.Player.Respawn.DnaReconstructorRegistry.Save(WorldData.WorldFolderPath);
 
         if (Spacebox.Network.GameSession.HasLocalPlayer)
-            WorldData.Info.GameMode = Player.GameMode;
+            WorldData.Info.GameMode = Player.GameModeId;
         WorldData.Info.Day = GameTime.Day;
         WorldData.Info.Ticks = GameTime.DayTick;
         WorldInfoSaver.Save(WorldData.Info);

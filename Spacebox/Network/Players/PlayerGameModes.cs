@@ -82,7 +82,7 @@ public sealed class PlayerGameModes
         try
         {
             if (JsonNode.Parse(playerJson) is not JsonObject root || root[FieldName] is not JsonValue value) return false;
-            if (!value.TryGetValue(out int raw) || raw < 0 || raw > (int)GameMode.Spectator) return false;
+            if (!value.TryGetValue(out int raw) || raw < 0 || raw >= GameModeCatalog.MaxModes) return false;
             mode = (GameMode)raw;
             return true;
         }

@@ -1,0 +1,12 @@
+{
+  "Id": 1,
+  "Key": "creative",
+  "Name": "Creative",
+  "Rules": {
+    "BreakBlocks": true,
+    "PlaceBlocks": true,
+    "UseWeapons": true,
+    "TakeDamage": false,
+    "NeedOxygen": false
+  }
+}

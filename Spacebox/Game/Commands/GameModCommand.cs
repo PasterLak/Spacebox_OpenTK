@@ -16,7 +16,7 @@ namespace Spacebox.Game.Commands
 
         public override string Name => "gm";
 
-        public override string Description => "Change gamemode. Usage: gm <0,1,2> [player]  (survival,creative,spectator; on a server only admins)";
+        public override string Description => "Change gamemode. Usage: gm <mode> [player]  (0 survival, 1 creative, 2 spectator or a GameSet mode by id or name; on a server only admins)";
 
         public override bool AvailableInTerminal => false;
 
@@ -49,38 +49,14 @@ namespace Spacebox.Game.Commands
 
 
 
-            if (TryParse<int>(args[0], out var id))
+            if (!GameModeCatalog.TryFind(args[0], out var definition))
             {
-                GameMode gm = GameMode.Spectator;
-                if (id == 0)
-                {
-                    gm = GameMode.Survival;
-                }
-                if (id == 1)
-                {
-                    gm = GameMode.Creative;
-                }
-                if (id == 2)
-                {
-                    gm = GameMode.Spectator;
-                }
-
-                if (id >= 0 && id <= 2)
-                {
-                    Astronaut.GameMode = gm;
-                    Debug.Success("Gamemod changed to " + gm.ToString());
-                }
-                else
-                {
-                    Debug.Error("Wrong game mode id!");
-                }
-
+                Debug.Error($"Unknown game mode. Modes: {GameModeList.Describe()}");
+                return;
             }
 
-
-
-
-
+            Astronaut.GameMode = definition.Id;
+            Debug.Success("Game mode changed to " + definition.Name);
         }
 
 

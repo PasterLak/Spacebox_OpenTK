@@ -50,6 +50,11 @@ public class InteractionHandler
         }
         if (!_allowedInteractions.Contains(interaction.GetType()))
         {
+            if (Spacebox.Game.Player.GameModes.GameModeInteractions.IsRuleControlled(interaction.GetType()))
+            {
+                if (interaction is not InteractionDefault && _interaction is not InteractionDefault) SetInteraction(new InteractionDefault(), gameMode);
+                return;
+            }
             Debug.Error("[Interactionhandler] Invalid interaction type or this interaction is not allowed: " + interaction.GetType().Name);
             return;
         }

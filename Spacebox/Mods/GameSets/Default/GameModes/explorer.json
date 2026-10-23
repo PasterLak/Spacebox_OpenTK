@@ -1,0 +1,10 @@
+{
+  "Id": 3,
+  "Key": "explorer",
+  "Name": "Explorer",
+  "Base": "survival",
+  "Rules": {
+    "BreakBlocks": false,
+    "PlaceBlocks": false
+  }
+}

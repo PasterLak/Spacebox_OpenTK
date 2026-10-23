@@ -5,9 +5,11 @@ using Spacebox.Game.Player.Interactions;
 
 public class SurvivalMode : MovementMode
 {
-    private static InteractionHandler CreateInteractionHandler()
+    private readonly GameModeRules _rules;
+
+    private static InteractionHandler CreateInteractionHandler(GameModeRules rules)
     {
-        return new InteractionHandler(new InteractionDefault(), new HashSet<Type>()
+        return new InteractionHandler(new InteractionDefault(), GameModeInteractions.Filter(new HashSet<Type>()
         {
            typeof(InteractionDestroyBlockSurvival),
             typeof(InteractionPlaceBlock),
@@ -18,13 +20,13 @@ public class SurvivalMode : MovementMode
             typeof(InteractionDefault),
             typeof(InteractionRepair),
              typeof(InteractionEraser)
-        },
+        }, rules),
         GameMode.Survival);
     }
 
-    public SurvivalMode(LocalAstronaut player) : base(player, CreateInteractionHandler())
+    public SurvivalMode(LocalAstronaut player, GameModeRules rules) : base(player, CreateInteractionHandler(rules))
     {
-
+        _rules = rules;
     }
 
     public override GameMode GetGameMode()
@@ -47,8 +49,16 @@ public class SurvivalMode : MovementMode
     {
         player.PowerBar.Update();
         player.HealthBar.Update();
-        player.OxygenBar.Update(World.Instance != null && World.Instance.IsBreathable(player.Position));
-        UpdateSuffocation(player);
+        bool breathable = World.Instance != null && World.Instance.IsBreathable(player.Position);
+        if (_rules.NeedOxygen)
+        {
+            player.OxygenBar.Update(breathable);
+            UpdateSuffocation(player);
+        }
+        else
+        {
+            player.OxygenBar.UpdateInfinite(breathable);
+        }
     }
 
     private readonly SuffocationDamage _suffocation = new SuffocationDamage();

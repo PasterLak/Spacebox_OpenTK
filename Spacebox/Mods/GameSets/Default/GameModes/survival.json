@@ -1,0 +1,12 @@
+{
+  "Id": 0,
+  "Key": "survival",
+  "Name": "Survival",
+  "Rules": {
+    "BreakBlocks": true,
+    "PlaceBlocks": true,
+    "UseWeapons": true,
+    "TakeDamage": true,
+    "NeedOxygen": true
+  }
+}

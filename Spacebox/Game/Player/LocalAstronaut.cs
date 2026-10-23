@@ -88,12 +88,16 @@ namespace Spacebox.Game.Player
         public OxygenBar OxygenBar { get; private set; }
 
         private GameModeBase _gameModeBase;
+        private GameMode _gameModeId;
         private GameMode _gameMode => _gameModeBase.GetGameMode();
         public GameMode GameMode
         {
             get { return _gameMode; }
             set { SetGameMode(value); }
         }
+
+        public GameMode GameModeId => _gameModeId;
+        public GameModeRules GameModeRules => GameModeCatalog.RulesOf(_gameModeId);
 
         public InteractionMode CurrentInteraction => _gameModeBase.InteractionHandler.Interaction;
         public PlayerStatistics PlayerStatistics { get; set; } = new PlayerStatistics();
@@ -203,15 +207,17 @@ namespace Spacebox.Game.Player
         private void SetGameMode(GameMode mode)
         {
             if (_gameModeBase != null) _gameModeBase.OnDisable();
-            if (mode == GameMode.Spectator && Gravity is { IsActive: true }) Gravity.Exit(this);
+            var definition = GameModeCatalog.Get(mode);
+            _gameModeId = definition.Id;
+            if (definition.Base == GameMode.Spectator && Gravity is { IsActive: true }) Gravity.Exit(this);
 
-            switch (mode)
+            switch (definition.Base)
             {
                 case GameMode.Survival:
-                    _gameModeBase = new SurvivalMode(this);
+                    _gameModeBase = new SurvivalMode(this, definition.Rules);
                     break;
                 case GameMode.Creative:
-                    _gameModeBase = new CreativeMode(this);
+                    _gameModeBase = new CreativeMode(this, definition.Rules);
                     break;
                 default:
                     _gameModeBase = new SpectatorMode(this);
@@ -371,6 +377,7 @@ namespace Spacebox.Game.Player
 
         public void TakeDamage(int damage, DeathCase? deathCase = null)
         {
+            if (!GameModeRules.TakeDamage) return;
             var health = HealthBar.StatsData;
             damage = Math.Min(damage, health.MaxValue);
             health.Decrement(damage);

@@ -97,6 +97,7 @@ public static class GameSetLoader
         ShipPhysicsSettings.Current = ShipPhysicsSettingsLoader.Load(modPath);
         LoadLoot(modPath, defaultModPath);
         MobsLoader.Load(modPath, defaultModPath);
+        GameModesLoader.Load(modPath, defaultModPath);
         MobIconRenderer.ApplyToSpawners();
         Spacebox.Game.Tutorial.TutorialLoader.Load(modPath, defaultModPath, ModInfo.ModId);
         LoadSettings(modPath);

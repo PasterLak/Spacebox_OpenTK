@@ -1,0 +1,12 @@
+{
+  "Id": 2,
+  "Key": "spectator",
+  "Name": "Spectator",
+  "Rules": {
+    "BreakBlocks": false,
+    "PlaceBlocks": false,
+    "UseWeapons": false,
+    "TakeDamage": false,
+    "NeedOxygen": false
+  }
+}
