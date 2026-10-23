@@ -20,5 +20,9 @@
       "All": "bottom",
       "Forward": "furnaceOff"
     }
+  },
+  "Sounds": {
+    "Working": "furnaceLoop",
+    "Finished": "machineDone"
   }
 }

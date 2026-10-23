@@ -10,6 +10,7 @@ public class EquipmentItem : Item
     public RadarSettings? Radar;
     public string ArmorModelPath = "";
     public string ArmorTexturePath = "";
+    public string EquipSound = "";
 
     public EquipmentItem(string name, float modelDepth) : base(1, name, modelDepth)
     {

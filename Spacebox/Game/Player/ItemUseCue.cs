@@ -15,7 +15,7 @@ public static class ItemUseCue
     public static AudioClip GetSound(Item item)
     {
         if (item is ConsumableItem && GameAssets.TryGetItemSound(item.Id, out AudioClip clip)) return clip;
-        if (item is EquipmentItem) return GameAssets.LoadResource<AudioClip>(EquipSound);
+        if (item is EquipmentItem equipment) return GameAssets.Sounds.TryGetValue(equipment.EquipSound, out var equipClip) && equipClip != null ? equipClip : GameAssets.LoadResource<AudioClip>(EquipSound);
         return null;
     }
 

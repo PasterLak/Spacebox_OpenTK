@@ -897,6 +897,10 @@
             "All": "bottom",
             "Forward": "furnaceOff"
           }
+        },
+        "Sounds": {
+          "Working": "furnaceLoop",
+          "Finished": "machineDone"
         }
       }
     },
@@ -929,6 +933,10 @@
             "All": "bottom",
             "Forward": "furnace2Off"
           }
+        },
+        "Sounds": {
+          "Working": "furnaceLoop",
+          "Finished": "machineDone"
         }
       }
     },
@@ -958,6 +966,10 @@
             "Up": "crusherTop",
             "Down": "bottom"
           }
+        },
+        "Sounds": {
+          "Working": "crusherLoop",
+          "Finished": "machineDone"
         }
       }
     },
@@ -991,6 +1003,10 @@
             "Up": "crusherTop2",
             "Down": "bottom"
           }
+        },
+        "Sounds": {
+          "Working": "crusherLoop",
+          "Finished": "machineDone"
         }
       }
     },
@@ -1023,6 +1039,10 @@
             "Up": "disassemblerTop2",
             "Down": "bottom"
           }
+        },
+        "Sounds": {
+          "Working": "disassemblerLoop",
+          "Finished": "disassemblerDone"
         }
       }
     },
@@ -1115,6 +1135,9 @@
             "Up": "cobaltGeneratorTopOff",
             "Down": "cobaltGeneratorTopOff"
           }
+        },
+        "Sounds": {
+          "Working": "generatorHum"
         }
       }
     },
@@ -1154,6 +1177,9 @@
             "Up": "generatorDownOff",
             "Down": "generatorDownOff"
           }
+        },
+        "Sounds": {
+          "Working": "generatorHum"
         }
       }
     },
@@ -1204,6 +1230,9 @@
             "Up": "generatorDownOff",
             "Down": "generatorDownOff"
           }
+        },
+        "Sounds": {
+          "Working": "generatorHum"
         }
       }
     },
@@ -1254,6 +1283,9 @@
             "Up": "wireTopOff",
             "Down": "wireTopOff"
           }
+        },
+        "Sounds": {
+          "Working": "generatorHum"
         }
       }
     },
@@ -8377,11 +8409,17 @@
     "blockPlaceLight": "34223555de6c5742",
     "blockPlaceMoritz": "6ef948b97ec9b7d3",
     "crafted": "c9b3fa431c6c1433",
+    "crusherLoop": "68dbde4a7a659a4a",
+    "disassemblerDone": "71f04ad80ff28deb",
+    "disassemblerLoop": "b9a1df00a7af8f36",
     "dnaReconstructionLoop": "c485cb43eca32a0d",
     "dnaReconstructionSpawn": "47d2cf02edea68f2",
     "dnaReconstructionStage": "563df88355d6c00a",
     "drill0": "7339e7049b48d69d",
     "drill1": "0a330a5065940b7c",
+    "drillLoop": "903e43c71a97a833",
+    "equipArmor": "5ddefb476cdf7b72",
+    "equipDevice": "6ad81b4197911db7",
     "footstepGlass1": "01f6247ac29da782",
     "footstepGlass2": "20bee26314e5dbf6",
     "footstepGlass3": "81d3e1a9c4bf1238",
@@ -8394,6 +8432,8 @@
     "footstepStone2": "a37721d0b884f13b",
     "footstepStone3": "f7ea0b8beace0c52",
     "footstepStone4": "1bf1349e2ade7a80",
+    "furnaceLoop": "65607f3d46d1bcb2",
+    "generatorHum": "2dd5bfd7ed8f2cc3",
     "gravityGeneratorOff": "c39635c818f8304a",
     "gravityGeneratorOn": "a4cc80d2d938816b",
     "heal": "2755bb928784139c",
@@ -8404,6 +8444,7 @@
     "ironDoorOpen1": "f04d945a58d2f479",
     "ironDoorOpen2": "2cde8ee87c98ba87",
     "ironDoorOpen3": "1d6def34495369fc",
+    "machineDone": "977f43c912f0755e",
     "openBlock1": "16c51de76d26280a",
     "openBlock2": "e484b6dc79e42715",
     "openBlock3": "ca73dab097cec470",

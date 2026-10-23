@@ -23,8 +23,6 @@ public class RadarUI : IDisposable
 
     private AudioSource _scanningAudio;
     private AudioSource _foundAudio;
-    private AudioSource _openAudio;
-    private AudioSource _closeAudio;
 
     private Vector2 _bgUvPos = Vector2.Zero;
     private Vector2 _bgUvMax = Vector2.Zero;
@@ -59,18 +57,6 @@ public class RadarUI : IDisposable
 
         _scanningAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarScanning"), AudioChannel.UI);
         _foundAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarFound"), AudioChannel.UI);
-
-        if (_openAudio == null || _openAudio.IsDisposed)
-        {
-            _openAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("openBlock1"), AudioChannel.UI);
-            _openAudio.Volume = 1f;
-        }
-
-        if (_closeAudio == null || _closeAudio.IsDisposed)
-        {
-            _closeAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("openBlock4"), AudioChannel.UI);
-            _closeAudio.Volume = 1f;
-        }
     }
 
     public const float PointBearingDegrees = 255f;
@@ -101,12 +87,10 @@ public class RadarUI : IDisposable
         {
             if (isVisible)
             {
-                _openAudio?.Play();
                 OnOpen?.Invoke();
             }
             else
             {
-                _closeAudio?.Play();
                 OnClose?.Invoke();
             }
             _wasVisible = isVisible;
@@ -226,8 +210,6 @@ public class RadarUI : IDisposable
     {
         _foundAudio?.Dispose();
         _scanningAudio?.Dispose();
-        _openAudio?.Dispose();
-        _closeAudio?.Dispose();
 
         _spaceBackground?.Dispose();
         _gridTexture?.Dispose();

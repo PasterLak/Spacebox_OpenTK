@@ -6,6 +6,7 @@ public class PlayerEquipment
 
     public Storage Storage { get; }
     public event Action OnChanged;
+    public event Action<EquipmentItem> Equipped;
 
     public int HealthBonus { get; private set; }
     public int PowerBonus { get; private set; }
@@ -46,12 +47,14 @@ public class PlayerEquipment
         {
             target.SetData(source.Item, source.Count);
             source.Clear();
+            Equipped?.Invoke(equipment);
             return true;
         }
 
         if (target.Item.Id == source.Item.Id) return false;
 
         source.SwapWith(target);
+        Equipped?.Invoke(equipment);
         return true;
     }
 

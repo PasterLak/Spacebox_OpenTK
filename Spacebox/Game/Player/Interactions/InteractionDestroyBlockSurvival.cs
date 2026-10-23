@@ -18,8 +18,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
     private const float timeToDamage = 0.5f;
     private float _time = timeToDamage;
     private Block lastBlock = null;
-    private static AudioSource drillAudio;
-    private static AudioSource drill0Audio;
+    private DrillLoopSound _drillSound;
 
     private PointLight light;
     private BlockMiningEffect BlockMiningEffect;
@@ -55,18 +54,8 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
 
        
 
-        if (drillAudio == null || drillAudio.IsDisposed)
-        {
-            drillAudio = new AudioSource(Resources.Load<AudioClip>("drill1"));
-            drillAudio.Volume = 1f;
-            drillAudio.IsLooped = true;
-        }
-        if (drill0Audio == null || drill0Audio.IsDisposed)
-        {
-            drill0Audio = new AudioSource(Resources.Load<AudioClip>("drill0"));
-            drill0Audio.Volume = 1f;
-            drill0Audio.IsLooped = true;
-        }
+        _drillSound?.Dispose();
+        _drillSound = new DrillLoopSound(drillItem?.Sound);
         if (BlockSelector.Instance != null)
             BlockSelector.Instance.SimpleBlock.Material.Shader.SetVector4("color", Vector4.One);
         BlockSelector.IsVisible = false;
@@ -85,8 +74,8 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         }
         model.SetAnimation(false);
 
-        drillAudio.Stop();
-        drill0Audio.Stop();
+        _drillSound?.Dispose();
+        _drillSound = null;
         light.Enabled = false;
         light.Destroy();
         BlockSelector.IsVisible = false;
@@ -137,6 +126,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
         lastBlock = null;
         if (!Input.IsAction("block_destroy")) return;
 
+        _drillSound?.Mixer.DrillTarget();
         ConsumeTargetPower(player);
 
         if (!model.Animator.IsActive)
@@ -165,12 +155,16 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             BlockMiningEffect.Enabled = false;
         }
 
-        drillAudio.Stop();
-        drill0Audio.Stop();
         light.Enabled = false;
     }
 
     public override void Update(LocalAstronaut player)
+    {
+        UpdateDrill(player);
+        _drillSound?.Update(Time.Delta);
+    }
+
+    private void UpdateDrill(LocalAstronaut player)
     {
         if(BlockMiningEffect==null)
         {
@@ -244,6 +238,7 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
                 light.Position = player.Position;
                 if (drillItem != null)
                 {
+                    _drillSound?.Mixer.DrillBlock(blockData.PowerToDrill, drillItem.Tier >= blockData.PowerToDrill);
                     if (drillItem.Tier >= blockData.PowerToDrill)
                         ProcessDestroying(hit, drillItem.Tier, player, drillItem);
                     else
@@ -270,7 +265,10 @@ public class InteractionDestroyBlockSurvival : InteractionDestroyBlock
             if (Input.IsMouseButtonDown(MouseButton.Left))
                 model.SetAnimation(true);
             if (Input.IsMouseButton(MouseButton.Left))
+            {
                 light.Position = player.Position;
+                _drillSound?.Mixer.SpinFree();
+            }
         }
     }
 }

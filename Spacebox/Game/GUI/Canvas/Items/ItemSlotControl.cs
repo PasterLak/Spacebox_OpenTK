@@ -87,7 +87,7 @@ public sealed class ItemSlotControl : Control, ISlotDropTarget
             if (AllowsSplit && _slot.HasItem)
             {
                 _slot.Split();
-                InventoryUI.splitAudio?.Play();
+                Sounds.UiSounds.Play(Sounds.UiSound.SlotSplit);
             }
             return true;
         }

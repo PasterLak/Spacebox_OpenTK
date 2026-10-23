@@ -26,5 +26,9 @@
       "Up": "crusherTop2",
       "Down": "bottom"
     }
+  },
+  "Sounds": {
+    "Working": "crusherLoop",
+    "Finished": "machineDone"
   }
 }

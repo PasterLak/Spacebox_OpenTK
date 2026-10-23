@@ -106,10 +106,13 @@ public static class DisassemblerUI
     private static void OnDisassembled(DisassemblerBlock block)
     {
         if (block != _block || !UIManager.IsOpen(WindowId) || _craftedSound == null) return;
+        if (HasFinishedSound(block)) return;
 
         if (_craftedSound.IsPlaying) _craftedSound.Stop();
         _craftedSound.Play();
     }
+
+    private static bool HasFinishedSound(DisassemblerBlock block) => !string.IsNullOrEmpty(GameAssets.GetBlockDataById(block.Id).FinishedSound);
 
     public static void Reset()
     {

@@ -59,6 +59,7 @@ public static class WaypointWindowUI
         var player = World.Instance?.Player;
         if (player == null) return;
         Select(WaypointService.Add(player.Position));
+        Spacebox.Game.GUI.Sounds.UiSounds.Play(Spacebox.Game.GUI.Sounds.UiSound.WaypointAdded);
     }
 
     public static void Close()

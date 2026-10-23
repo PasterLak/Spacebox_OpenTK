@@ -9,24 +9,10 @@ namespace Spacebox.Game.Player.Interactions;
 public sealed class InteractionEquipItem : InteractionDefault
 {
     private readonly ItemSlot _slot;
-    private AudioSource? _sound;
 
     public InteractionEquipItem(ItemSlot slot)
     {
         _slot = slot;
-    }
-
-    public override void OnEnable()
-    {
-        base.OnEnable();
-        _sound = new AudioSource(GameAssets.LoadResource<AudioClip>(ItemUseCue.EquipSound)) { Volume = 0.4f };
-    }
-
-    public override void OnDisable()
-    {
-        base.OnDisable();
-        _sound?.Dispose();
-        _sound = null;
     }
 
     public override void Update(LocalAstronaut player)
@@ -42,7 +28,6 @@ public sealed class InteractionEquipItem : InteractionDefault
         var item = _slot.Item;
         if (!player.Equipment.TryEquip(_slot)) return;
 
-        _sound?.Play();
         player.NotifyItemUsed(item);
     }
 

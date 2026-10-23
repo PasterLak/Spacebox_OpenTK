@@ -345,6 +345,16 @@ namespace Spacebox.Game.Resource
 
             blockData.FootstepSounds = Spacebox.Game.Player.Footsteps.FootstepSoundNames.KeepExisting(modBlockData.Sounds.Footsteps, GameAssets.Sounds.ContainsKey,
                 name => Debug.Error($"[GamesetLoader] Block <{modBlockData.Name}> wrong footstep sound: {name}. Skipped."));
+            blockData.WorkingSound = OptionalSound(modBlockData.Sounds.Working, modBlockData.Name, "working");
+            blockData.FinishedSound = OptionalSound(modBlockData.Sounds.Finished, modBlockData.Name, "finished");
+        }
+
+        private static string OptionalSound(string name, string blockName, string kind)
+        {
+            if (string.IsNullOrEmpty(name)) return "";
+            if (GameAssets.Sounds.ContainsKey(name)) return name;
+            Debug.Error($"[GamesetLoader] Block <{blockName}> wrong {kind} sound: {name}. Skipped.");
+            return "";
         }
     }
 }

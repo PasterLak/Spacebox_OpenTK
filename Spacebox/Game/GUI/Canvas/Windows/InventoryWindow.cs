@@ -20,5 +20,7 @@ public sealed class InventoryWindow : GameWindow
 
     public override bool IsOpen => UIManager.IsOpen(HudVisibility.ItemWindow) && Storage != null;
 
+    public override int SoundPriority => 0;
+
     protected override void Refresh() => _grid.Show(Storage);
 }

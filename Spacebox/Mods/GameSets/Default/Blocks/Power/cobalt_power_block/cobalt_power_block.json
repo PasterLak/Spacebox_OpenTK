@@ -29,5 +29,8 @@
       "Up": "cobaltGeneratorTopOff",
       "Down": "cobaltGeneratorTopOff"
     }
+  },
+  "Sounds": {
+    "Working": "generatorHum"
   }
 }
