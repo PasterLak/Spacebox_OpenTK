@@ -128,7 +128,7 @@ namespace Spacebox.Game.GUI
             return GameAssets.ItemModels[SelectedSlot.Item.Id];
         }
 
-        public static bool TryPlaceItem(out short id, GameMode gameMode)
+        public static bool TryPlaceItem(out short id)
         {
             id = 0;
             if (SelectedSlot == null) return false;
@@ -137,7 +137,7 @@ namespace Spacebox.Game.GUI
             if (!Spacebox.Network.Containers.ContainerNetwork.CanUseItems) return false;
             if (!(SelectedSlot.Item is BlockItem itemBlock)) return false;
             id = itemBlock.BlockId;
-            if (gameMode == GameMode.Survival)
+            if (Player == null || Player.GameModeRules.ConsumeItems)
                 SelectedSlot.TakeOne();
             return true;
         }
@@ -227,7 +227,7 @@ namespace Spacebox.Game.GUI
             if (slot == null) return;
             if (!slot.HasItem) return;
             if (Player == null) return;
-            if (Player.GameMode == GameMode.Spectator) return;
+            if (!Player.GameModeRules.UseItems) return;
             if (!Spacebox.Network.Containers.ContainerNetwork.CanDropFrom(slot)) return;
 
             var dropPosition = Player.Position + Player.Front * 0.5f;
@@ -282,14 +282,14 @@ namespace Spacebox.Game.GUI
         private static void UpdatePlayerInteraction(LocalAstronaut player)
         {
             if (player == null) return;
-            if (player.GameMode == GameMode.Spectator) return;
+            if (!player.GameModeRules.UseItems) return;
             if (IsHolding<BlockItem>())
                 player.SetInteraction(new InteractionPlaceBlock());
             else if (IsHolding<WeaponItem>())
                 player.SetInteraction(new InteractionShoot(SelectedSlot));
             else if (IsHolding<DrillItem>())
             {
-                if (player.GameMode == GameMode.Creative)
+                if (player.GameModeRules.InstantBreak)
                     player.SetInteraction(new InteractionDestroyBlockCreative(SelectedSlot));
                 else
                     player.SetInteraction(new InteractionDestroyBlockSurvival(SelectedSlot));

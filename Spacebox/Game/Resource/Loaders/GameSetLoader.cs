@@ -1158,7 +1158,7 @@ public static class GameSetLoader
 
     public static void GiveStartItems(LocalAstronaut player, Dictionary<string, Item> allGameItems)
     {
-        if (player?.GameMode == GameMode.Spectator ||
+        if (player == null || !player.GameModeRules.StartItems ||
             ModInfo?.ItemsOnStart?.Count == 0 ||
             allGameItems?.Count == 0)
             return;

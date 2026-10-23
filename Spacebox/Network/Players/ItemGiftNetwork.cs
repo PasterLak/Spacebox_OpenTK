@@ -51,7 +51,7 @@ public static class ItemGiftNetwork
         if (targetNetwork == null || !targetNetwork.IsAlive) return false;
 
         int requestId = _nextRequestId++;
-        bool consumed = giver.GameMode == GameMode.Survival;
+        bool consumed = giver.GameModeRules.ConsumeItems;
         _pending[requestId] = new PendingGift(item.Id, Time.Total, consumed, target.PlayerName);
         if (consumed) slot.DropOne();
 

@@ -6,7 +6,7 @@ namespace Spacebox.Game.Player;
 
 public static class DeathDrops
 {
-    public static bool ShouldDrop(ServerRules rules, GameMode mode) => !rules.KeepInventory && mode == GameMode.Survival;
+    public static bool ShouldDrop(ServerRules rules, GameModeRules mode) => !rules.KeepInventory && mode.DropItemsOnDeath;
 
     public static List<ItemStack> TakeAll(params Storage[] storages)
     {
@@ -30,7 +30,7 @@ public static class DeathDrops
 
     public static void Drop(LocalAstronaut player)
     {
-        if (player == null || !ShouldDrop(ServerRules.Current, player.GameMode)) return;
+        if (player == null || !ShouldDrop(ServerRules.Current, player.GameModeRules)) return;
 
         var drops = World.DropEffectManager;
         if (drops == null) return;

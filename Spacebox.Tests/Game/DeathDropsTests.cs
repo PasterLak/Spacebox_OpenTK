@@ -43,6 +43,6 @@ public class DeathDropsTests
     [InlineData(false, GameMode.Spectator, false)]
     public void OnlySurvivalPlayersDropWhenInventoryIsNotKept(bool keepInventory, GameMode mode, bool drops)
     {
-        Assert.Equal(drops, DeathDrops.ShouldDrop(new ServerRules { KeepInventory = keepInventory }, mode));
+        Assert.Equal(drops, DeathDrops.ShouldDrop(new ServerRules { KeepInventory = keepInventory }, GameModeRules.ForBase(mode)));
     }
 }

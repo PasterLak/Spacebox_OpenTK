@@ -134,7 +134,7 @@ public sealed class MobNetwork : NetworkTransform, IMobLink
     private static void DamageLocalPlayer(Mob mob, int damage)
     {
         if (AstronautNetwork.Local?.Owner is not LocalAstronaut local) return;
-        if (!local.IsAlive || local.GameMode != GameMode.Survival) return;
+        if (!local.IsAlive || !local.GameModeRules.MobsAttack) return;
 
         local.TakeDamage(damage, new DeathCase($"Eaten by {mob.Definition.Name}"));
     }

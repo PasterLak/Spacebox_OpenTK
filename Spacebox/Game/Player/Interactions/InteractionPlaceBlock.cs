@@ -159,7 +159,7 @@ public class InteractionPlaceBlock : InteractionMode
                 if (blockData != null && !_previewPlaceable)
                     return;
 
-                if (PanelUI.TryPlaceItem(out var id, GameMode))
+                if (PanelUI.TryPlaceItem(out var id))
                 {
                     Block newBlock = GameAssets.CreateBlockFromId(id);
 
@@ -343,7 +343,7 @@ public class InteractionPlaceBlock : InteractionMode
             {
 
 
-                if (PanelUI.TryPlaceItem(out var id, GameMode))
+                if (PanelUI.TryPlaceItem(out var id))
                 {
                     Block newBlock = GameAssets.CreateBlockFromId(id);
 

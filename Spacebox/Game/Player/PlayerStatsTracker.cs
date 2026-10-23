@@ -44,7 +44,7 @@ public sealed class PlayerStatsTracker
 
     private bool CanTrackMovement()
     {
-        return _player.IsAlive && !_player.IsFrozen && _player.GameMode != GameMode.Spectator && !ShipPilot.IsUsingCamera;
+        return _player.IsAlive && !_player.IsFrozen && _player.GameModeRules.CountStatistics && !ShipPilot.IsUsingCamera;
     }
 
     private void TrackMovement(PlayerStatistics stats, float deltaTime)
@@ -66,7 +66,7 @@ public sealed class PlayerStatsTracker
     private void TrackShipTravel(PlayerStatistics stats, float deltaTime)
     {
         var ship = ShipRider.BoardedEntity;
-        if (ship == null || ship.IsDisposed || !_player.IsAlive || _player.GameMode == GameMode.Spectator)
+        if (ship == null || ship.IsDisposed || !_player.IsAlive || !_player.GameModeRules.CountStatistics)
         {
             _trackedShip = null;
             _shipDistance.Invalidate();

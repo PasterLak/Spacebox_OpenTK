@@ -10,6 +10,11 @@ public static class GameModeInteractions
 
     public static HashSet<Type> Filter(HashSet<Type> allowed, GameModeRules rules)
     {
+        if (allowed.Contains(typeof(InteractionDestroyBlockSurvival)) || allowed.Contains(typeof(InteractionDestroyBlockCreative)))
+        {
+            allowed.Remove(rules.InstantBreak ? typeof(InteractionDestroyBlockSurvival) : typeof(InteractionDestroyBlockCreative));
+            allowed.Add(rules.InstantBreak ? typeof(InteractionDestroyBlockCreative) : typeof(InteractionDestroyBlockSurvival));
+        }
         if (!rules.BreakBlocks) allowed.ExceptWith(BreakingTypes);
         if (!rules.PlaceBlocks) allowed.ExceptWith(PlacingTypes);
         if (!rules.UseWeapons) allowed.ExceptWith(WeaponTypes);

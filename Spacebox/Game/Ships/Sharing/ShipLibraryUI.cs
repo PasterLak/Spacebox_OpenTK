@@ -42,9 +42,9 @@ public static class ShipLibraryUI
         }
 
         if (UIManager.IsUIMode || ShipPlacementMode.IsActive) return;
-        if (player.GameMode != GameMode.Creative)
+        if (!player.GameModeRules.ShipLibrary)
         {
-            Chat.Write("Ships can only be placed in creative mode", WarningChatColor);
+            Chat.Write("Your game mode cannot place saved ships", WarningChatColor);
             return;
         }
 

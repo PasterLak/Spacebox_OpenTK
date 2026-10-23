@@ -30,11 +30,11 @@ namespace Spacebox.Game.Player
         public bool IsUsingItem => PanelUI.CurrentSlot() is { HasItem: true, Item: DrillItem } && PanelUI.IsHeldItemAnimating;
 
         public EquipmentItem? ActiveFlashlightItem => Equipment.FlashlightItem ?? HeldFlashlightItem;
-        public bool CanUseFlashlight => GameMode == GameMode.Spectator || ActiveFlashlightItem != null;
+        public bool CanUseFlashlight => GameModeRules.FreeFlashlight || ActiveFlashlightItem != null;
 
         private static EquipmentItem? HeldFlashlightItem =>
             PanelUI.CurrentSlot() is { HasItem: true, Item: EquipmentItem { Flashlight: not null } item } ? item : null;
-        public RadarSettings? Radar => GameMode == GameMode.Spectator ? RadarSettings.Unlimited : Equipment.Radar;
+        public RadarSettings? Radar => GameModeRules.FullRadar ? RadarSettings.Unlimited : Equipment.Radar;
         public bool CameraActive = true;
         public Action<LocalAstronaut> OnMoved { get; set; }
         public SphereBody Body { get; private set; }
@@ -209,7 +209,7 @@ namespace Spacebox.Game.Player
             if (_gameModeBase != null) _gameModeBase.OnDisable();
             var definition = GameModeCatalog.Get(mode);
             _gameModeId = definition.Id;
-            if (definition.Base == GameMode.Spectator && Gravity is { IsActive: true }) Gravity.Exit(this);
+            if (!definition.Rules.UseGravity && Gravity is { IsActive: true }) Gravity.Exit(this);
 
             switch (definition.Base)
             {
@@ -225,6 +225,8 @@ namespace Spacebox.Game.Player
             }
 
             _gameModeBase.OnEnable();
+            CollisionEnabled = definition.Rules.Collide;
+            Spacebox.Game.GUI.CreativeWindowUI.Enabled = definition.Rules.CreativeInventory;
             _flashlightBinder?.Apply();
             PanelUI.ResetLastSelected();
             PanelUI.SetSelectedSlot(0);

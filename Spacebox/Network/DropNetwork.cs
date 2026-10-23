@@ -84,7 +84,7 @@ public sealed class DropNetwork : IDropReplicator
         var drops = World.DropEffectManager;
         if (!network.IsServer || drops == null || sender == network.LocalPeerId) return;
         if (Spacebox.Game.Rules.ServerRules.Current.KeepInventory) return;
-        if (Players.PlayerGameModeService.Of(PlayerRegistry.GetName(sender)) != Spacebox.Game.Player.GameModes.GameMode.Survival) return;
+        if (!Players.PlayerGameModeService.RulesOf(PlayerRegistry.GetName(sender)).DropItemsOnDeath) return;
         if (message.Items == null || message.Items.Count == 0 || message.Items.Count > MaxDeathDropStacks) return;
         if (!NetValidation.IsFinite(message.Position)) return;
 

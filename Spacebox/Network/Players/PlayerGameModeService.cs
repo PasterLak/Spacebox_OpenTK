@@ -18,7 +18,7 @@ public static class PlayerGameModeService
         if (string.IsNullOrWhiteSpace(name)) return false;
 
         PlayerGameModes.Current.Set(name, mode);
-        Items.ItemAuthority.OnGameModeChanged(name, GameModeCatalog.BaseOf(mode));
+        Items.ItemAuthority.OnGameModeChanged(name, mode);
         if (!PlayerRegistry.TryGetByName(name, out var player)) return false;
 
         player.LastPlayerJson = PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson);

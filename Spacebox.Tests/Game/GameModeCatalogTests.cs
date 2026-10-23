@@ -94,4 +94,47 @@ public sealed class GameModeCatalogTests : IDisposable
         Assert.Equal("B", plain.Tag);
         Assert.Equal(GameModeTags.DefaultColor(GameMode.Creative), plain.TagColor);
     }
+
+    [Fact]
+    public void NewRules_KeepTheBehaviourOfTheThreeBases()
+    {
+        var survival = GameModeRules.ForBase(GameMode.Survival);
+        var creative = GameModeRules.ForBase(GameMode.Creative);
+        var spectator = GameModeRules.ForBase(GameMode.Spectator);
+
+        Assert.True(survival.MobsAttack && survival.ConsumeItems && survival.DropItemsOnDeath && survival.Collide && survival.UseGravity);
+        Assert.False(survival.CreativeInventory || survival.InstantBreak || survival.ShipLibrary || survival.FullRadar);
+        Assert.True(creative.CreativeInventory && creative.InstantBreak && creative.BreakUnbreakable && creative.AreaTools && creative.ShipLibrary);
+        Assert.False(creative.MobsAttack || creative.ConsumeItems || creative.DropItemsOnDeath);
+        Assert.False(spectator.Collide || spectator.UseGravity || spectator.UseItems || spectator.CountStatistics || spectator.StartItems);
+        Assert.True(spectator.FreeFlashlight && spectator.FullRadar);
+    }
+
+    [Fact]
+    public void NewRules_CanBeSetPerMode()
+    {
+        var mode = Parse("""{ "Id": 5, "Key": "ghost", "Name": "Ghost", "Base": "survival", "Rules": { "Collide": false, "MobsAttack": false, "UseGravity": false, "FullRadar": true, "InstantBreak": true } }""");
+
+        Assert.False(mode.Rules.Collide);
+        Assert.False(mode.Rules.MobsAttack);
+        Assert.False(mode.Rules.UseGravity);
+        Assert.True(mode.Rules.FullRadar);
+        Assert.True(mode.Rules.InstantBreak);
+        Assert.True(mode.Rules.ConsumeItems);
+    }
+
+    [Fact]
+    public void InstantBreak_PicksTheMatchingDrillInteraction()
+    {
+        var survivalSet = new HashSet<Type> { typeof(InteractionDestroyBlockSurvival), typeof(InteractionPlaceBlock) };
+        var creativeSet = new HashSet<Type> { typeof(InteractionDestroyBlockCreative), typeof(InteractionPlaceBlock) };
+
+        var instant = GameModeInteractions.Filter(survivalSet, new GameModeRules { InstantBreak = true });
+        var drilling = GameModeInteractions.Filter(creativeSet, new GameModeRules { InstantBreak = false });
+
+        Assert.Contains(typeof(InteractionDestroyBlockCreative), instant);
+        Assert.DoesNotContain(typeof(InteractionDestroyBlockSurvival), instant);
+        Assert.Contains(typeof(InteractionDestroyBlockSurvival), drilling);
+        Assert.DoesNotContain(typeof(InteractionDestroyBlockCreative), drilling);
+    }
 }

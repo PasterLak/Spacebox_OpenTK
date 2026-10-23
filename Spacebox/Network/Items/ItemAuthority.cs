@@ -127,7 +127,7 @@ public static class ItemAuthority
 
     public static void OnGameModeChanged(string name, GameMode mode)
     {
-        if (mode != GameMode.Survival) return;
+        if (!GameModeCatalog.RulesOf(mode).ConsumeItems) return;
 
         foreach (var pair in Players)
         {
@@ -185,7 +185,7 @@ public static class ItemAuthority
         return Players.TryGetValue(peer, out player) && IsSurvival(player);
     }
 
-    private static bool IsSurvival(TrackedPlayer player) => PlayerGameModeService.Of(player.Name) == GameMode.Survival;
+    private static bool IsSurvival(TrackedPlayer player) => PlayerGameModeService.RulesOf(player.Name).ConsumeItems;
 
     private static bool IsRemote(int peer) => NetworkManager.Instance.IsServer && peer != NetworkManager.Instance.LocalPeerId;
 

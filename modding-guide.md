@@ -77,7 +77,28 @@ Mods/GameSets/MyMod/
 }
 ```
 
-`Tag` (up to 3 letters, default: first letter of the name) and `TagColor` (`#RRGGBB`, default by base) mark worlds of this mode in the world list. Rules: `BreakBlocks`, `PlaceBlocks`, `UseWeapons`, `TakeDamage`, `NeedOxygen`. The server checks breaking, placing and shooting with the player's mode. Switch with `gm <id or key>` (e.g. `gm explorer`) or on the dashboard.
+`Tag` (up to 3 letters, default: first letter of the name) and `TagColor` (`#RRGGBB`, default by base) mark worlds of this mode in the world list. Rules (all true/false; missing ones use the base's value):
+
+| Rule | Meaning | Survival / Creative / Spectator |
+|---|---|---|
+| `BreakBlocks`, `PlaceBlocks`, `UseWeapons` | break, place, shoot | yes / yes / no |
+| `TakeDamage` | damage from mobs, weapons, players, explosions, falls, suffocation | yes / no / no |
+| `NeedOxygen` | oxygen is used up outside air | yes / no / no |
+| `Collide` | bump into blocks (off = fly through) | yes / yes / no |
+| `UseGravity` | gravity generators pull the player | yes / yes / no |
+| `MobsAttack` | mobs chase and bite the player | yes / no / no |
+| `ConsumeItems` | placing, eating, repairing, spawning and gifts use items up; the server checks the inventory | yes / no / no |
+| `DropItemsOnDeath` | the inventory drops on death (unless the server keeps inventories) | yes / no / no |
+| `UseItems` | use and drop hotbar items | yes / yes / no |
+| `CreativeInventory` | creative window with every item | no / yes / no |
+| `InstantBreak` | blocks break at once instead of drilling | no / yes / no |
+| `BreakUnbreakable` | break normally unbreakable blocks | no / yes / no |
+| `AreaTools` | erase and fill areas | no / yes / no |
+| `ShipLibrary` | place saved ships | no / yes / no |
+| `FreeFlashlight`, `FullRadar` | flashlight and full radar without items | no / no / yes |
+| `CountStatistics`, `StartItems` | count statistics, give start items | yes / yes / no |
+
+The base still decides movement (walking/flying, spectator camera), the inventory layout and the interactions; the server checks breaking, placing, shooting, item use, area tools, saved ships and unbreakable blocks with the player's rules. Switch with `gm <id or key>` (e.g. `gm explorer`) or on the dashboard.
 
 ## Creating a GameSet
 

@@ -90,8 +90,8 @@ public static class CombatNetwork
     private static bool CanBeHurt(int peer)
     {
         if (peer == NetworkManager.Instance.LocalPeerId)
-            return AstronautNetwork.Local?.Owner is LocalAstronaut local && local.GameMode == Spacebox.Game.Player.GameModes.GameMode.Survival;
-        return PlayerGameModeService.Of(PlayerRegistry.GetName(peer)) == Spacebox.Game.Player.GameModes.GameMode.Survival;
+            return AstronautNetwork.Local?.Owner is LocalAstronaut local && local.GameModeRules.TakeDamage;
+        return PlayerGameModeService.RulesOf(PlayerRegistry.GetName(peer)).TakeDamage;
     }
 
     public static string GetPlayerName(int peer)
@@ -187,7 +187,7 @@ public static class CombatNetwork
         if (!AcceptsDamageFrom(sender)) return;
 
         var local = AstronautNetwork.Local?.Owner as LocalAstronaut;
-        if (local == null || !local.IsAlive || local.GameMode != Spacebox.Game.Player.GameModes.GameMode.Survival) return;
+        if (local == null || !local.IsAlive || !local.GameModeRules.TakeDamage) return;
 
         bool self = message.AttackerPeer == NetworkManager.Instance.LocalPeerId;
         if (!self) local.RegisterAttacker(message.AttackerPeer);

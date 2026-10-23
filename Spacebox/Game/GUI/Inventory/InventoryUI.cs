@@ -37,7 +37,7 @@ namespace Spacebox.Game.GUI
 
                 if (!UIManager.IsUIMode)
                 {
-                    if (Player.GameMode != GameMode.Survival)
+                    if (Player.GameModeRules.CreativeInventory)
                     {
                         UIManager.Open("inventory", "creative");
                     }

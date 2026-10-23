@@ -14,7 +14,7 @@ public static class BlockDestroyer
 
     public static void Destroy(HitInfo hit, LocalAstronaut player)
     {
-        if (!Spacebox.Game.Generation.Blocks.UnbreakableBlocks.CanDestroy(hit.block, player.GameMode)) return;
+        if (!Spacebox.Game.Generation.Blocks.UnbreakableBlocks.CanDestroy(hit.block, player.GameModeRules.BreakUnbreakable)) return;
         if (hit.chunk != null && !Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(hit.chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(hit.chunk, hit.blockPositionIndex))) return;
         hit.block.OnDestroy?.Invoke(hit);
         hit.chunk.RemoveBlock(hit.blockPositionIndex, hit.normal);
@@ -27,7 +27,7 @@ public static class BlockDestroyer
 
     public static void DestroyInstantly(HitInfo hit, LocalAstronaut player)
     {
-        if (!Spacebox.Game.Generation.Blocks.UnbreakableBlocks.CanDestroy(hit.block, player.GameMode)) return;
+        if (!Spacebox.Game.Generation.Blocks.UnbreakableBlocks.CanDestroy(hit.block, player.GameModeRules.BreakUnbreakable)) return;
         if (hit.chunk != null && !Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(hit.chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(hit.chunk, hit.blockPositionIndex))) return;
         player.PlayerStatistics.BlockDamageDealt += hit.block.Durability;
         Destroy(hit, player);

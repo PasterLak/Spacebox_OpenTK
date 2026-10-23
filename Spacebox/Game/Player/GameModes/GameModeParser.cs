@@ -2,6 +2,19 @@ namespace Spacebox.Game.Player.GameModes;
 
 public static class GameModeParser
 {
+    private static readonly (System.Reflection.PropertyInfo Override, System.Reflection.PropertyInfo Rule)[] RuleProperties = typeof(GameModeRulesJSON).GetProperties()
+        .Select(p => (p, typeof(GameModeRules).GetProperty(p.Name)))
+        .Where(pair => pair.Item2 != null && pair.Item2.PropertyType == typeof(bool))
+        .ToArray();
+
+    private static void ApplyOverrides(GameModeRules rules, GameModeRulesJSON overrides)
+    {
+        foreach (var (overrideProperty, ruleProperty) in RuleProperties)
+        {
+            if (overrideProperty.GetValue(overrides) is bool value) ruleProperty.SetValue(rules, value);
+        }
+    }
+
     public static bool TryConvert(GameModeJSON json, out GameModeDefinition mode, out string error)
     {
         mode = null;
@@ -22,12 +35,7 @@ public static class GameModeParser
         }
 
         var rules = GameModeRules.ForBase(baseMode);
-        var overrides = json.Rules ?? new GameModeRulesJSON();
-        rules.BreakBlocks = overrides.BreakBlocks ?? rules.BreakBlocks;
-        rules.PlaceBlocks = overrides.PlaceBlocks ?? rules.PlaceBlocks;
-        rules.UseWeapons = overrides.UseWeapons ?? rules.UseWeapons;
-        rules.TakeDamage = overrides.TakeDamage ?? rules.TakeDamage;
-        rules.NeedOxygen = overrides.NeedOxygen ?? rules.NeedOxygen;
+        ApplyOverrides(rules, json.Rules ?? new GameModeRulesJSON());
 
         string key = string.IsNullOrWhiteSpace(json.Key) ? id.ToString().ToLowerInvariant() : json.Key.Trim().ToLowerInvariant();
         string name = string.IsNullOrWhiteSpace(json.Name) ? key : json.Name.Trim();

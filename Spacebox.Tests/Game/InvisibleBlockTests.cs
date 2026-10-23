@@ -51,10 +51,10 @@ public class InvisibleBlockTests
             var block = new InvisibleBlock(data);
 
             Assert.True(UnbreakableBlocks.Is(block));
-            Assert.True(UnbreakableBlocks.CanDestroy(block, GameMode.Creative));
-            Assert.False(UnbreakableBlocks.CanDestroy(block, GameMode.Survival));
-            Assert.False(UnbreakableBlocks.CanDestroy(block, GameMode.Spectator));
-            Assert.True(UnbreakableBlocks.CanDestroy(new Block(), GameMode.Survival));
+            Assert.True(UnbreakableBlocks.CanDestroy(block, GameModeRules.ForBase(GameMode.Creative).BreakUnbreakable));
+            Assert.False(UnbreakableBlocks.CanDestroy(block, GameModeRules.ForBase(GameMode.Survival).BreakUnbreakable));
+            Assert.False(UnbreakableBlocks.CanDestroy(block, GameModeRules.ForBase(GameMode.Spectator).BreakUnbreakable));
+            Assert.True(UnbreakableBlocks.CanDestroy(new Block(), GameModeRules.ForBase(GameMode.Survival).BreakUnbreakable));
         }
         finally
         {

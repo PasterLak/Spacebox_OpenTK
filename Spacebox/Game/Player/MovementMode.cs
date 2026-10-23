@@ -106,7 +106,7 @@ public class MovementMode : GameModeBase
 
     private bool TryHandleGravity(LocalAstronaut player)
     {
-        var gravity = player.CollisionEnabled && player.IsAlive ? GravityField.Sample(player.Position) : Vector3.Zero;
+        var gravity = player.CollisionEnabled && player.IsAlive && player.GameModeRules.UseGravity ? GravityField.Sample(player.Position) : Vector3.Zero;
 
         if (gravity.LengthSquared > GravityThreshold * GravityThreshold)
         {

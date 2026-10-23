@@ -88,7 +88,7 @@ public class InteractionRepair : InteractionMode
             WorldEditNetwork.NotifyRepaired(_target.WeakestChunk, _target.WeakestIndex, block.Id, repaired);
         }
 
-        if (player.GameMode == GameMode.Survival)
+        if (player.GameModeRules.ConsumeItems)
         {
             _powerProgress += tool.PowerPerSecond * delta;
             int power = (int)_powerProgress;

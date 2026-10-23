@@ -303,7 +303,7 @@ public static class WorldEditNetwork
 
         short previousId = known ? GetBlockId(entity, message.Cell) : (short)0;
         bool unbreakable = message.IsRemoval && Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(previousId) &&
-                           Spacebox.Network.Players.PlayerGameModeService.Of(senderName) != Spacebox.Game.Player.GameModes.GameMode.Creative;
+                           !Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).BreakUnbreakable;
         bool unbroken = message.IsRemoval && known && !CanRemoveNow(sender, senderName, entity, message.Cell);
         bool placeDenied = !message.IsRemoval && sender != network.LocalPeerId && !Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).PlaceBlocks;
         if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || unbroken || placeDenied || !IsInReach(sender, entity, message.Cell)))
@@ -328,7 +328,7 @@ public static class WorldEditNetwork
     {
         if (sender == NetworkManager.Instance.LocalPeerId) return true;
         if (!Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).BreakBlocks) return false;
-        if (Spacebox.Network.Players.PlayerGameModeService.Of(senderName) == Spacebox.Game.Player.GameModes.GameMode.Creative) return true;
+        if (Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).InstantBreak) return true;
         if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) return true;
 
         var block = chunk.Blocks[index.X, index.Y, index.Z];
@@ -396,9 +396,9 @@ public static class WorldEditNetwork
             return;
         }
 
-        if (network.IsServer && Players.PlayerGameModeService.Of(PlayerRegistry.GetName(sender)) != Spacebox.Game.Player.GameModes.GameMode.Creative)
+        if (network.IsServer && !Players.PlayerGameModeService.RulesOf(PlayerRegistry.GetName(sender)).AreaTools)
         {
-            ChatService.SendToPlayer(PlayerRegistry.GetName(sender), "Only players in creative mode can erase or fill areas", OpenTK.Mathematics.Color4.Red);
+            ChatService.SendToPlayer(PlayerRegistry.GetName(sender), "Your game mode cannot erase or fill areas", OpenTK.Mathematics.Color4.Red);
             return;
         }
 

@@ -42,7 +42,7 @@ public sealed class InteractionSpawnMob : InteractionMode
         MobSpawnNetwork.RequestSpawn(spawner, FindSpawnPosition(player));
         _cooldown = spawner.UseCooldown;
 
-        if (GameMode == GameMode.Survival) _slot.DropOne();
+        if (player.GameModeRules.ConsumeItems) _slot.DropOne();
 
         if (_slot.Count == 0)
         {

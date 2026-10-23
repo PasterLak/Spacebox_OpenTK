@@ -93,7 +93,7 @@ public sealed class AstronautNetwork : NetworkTransform
         base.OnUpdate();
 
         if (IsSpawned && IsServer)
-            _isVulnerable.Value = (IsOwner && Owner is LocalAstronaut host ? host.GameMode : PlayerGameModeService.Of(PlayerName)) == GameMode.Survival;
+            _isVulnerable.Value = (IsOwner && Owner is LocalAstronaut host ? host.GameModeRules : PlayerGameModeService.RulesOf(PlayerName)).MobsAttack;
 
         if (IsSpawned && IsOwner && Owner is LocalAstronaut local)
         {

@@ -68,8 +68,8 @@ public static class ShipSharingNetwork
 
     private static string Check(int sender, string name, ShipPlaceRequestMessage message)
     {
-        bool creative = Players.PlayerGameModeService.Of(name) == Spacebox.Game.Player.GameModes.GameMode.Creative;
-        if (!creative && !Admin.ServerAdmins.IsAdmin(name)) return "Only creative players and admins can place ships";
+        bool allowed = Players.PlayerGameModeService.RulesOf(name).ShipLibrary;
+        if (!allowed && !Admin.ServerAdmins.IsAdmin(name)) return "Your game mode cannot place saved ships (admins can)";
         if (!Requests.TryConsume(sender, Time.Total)) return "Wait a moment before placing another ship";
         if (message.Data == null || message.Data.Length == 0) return "The ship data is missing";
         if (!NetValidation.IsFinite(message.Center)) return "Invalid position";
