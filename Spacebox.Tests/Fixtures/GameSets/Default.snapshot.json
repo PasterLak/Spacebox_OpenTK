@@ -2306,8 +2306,8 @@
         },
         "Sign": {
           "Width": 1,
-          "MaxLines": 4,
-          "MaxLineLength": 60,
+          "MaxLines": 6,
+          "MaxLineLength": 32,
           "TextColor": "#22262c"
         },
         "Sounds": {
