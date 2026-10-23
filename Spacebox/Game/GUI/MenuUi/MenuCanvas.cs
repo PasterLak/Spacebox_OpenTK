@@ -39,6 +39,7 @@ public sealed class MenuCanvas : IDisposable
     public bool HasPageFor(Type windowType) => _menu.PageOf(windowType) != null;
 
     private readonly Spacebox.Game.GUI.Canvas.Screens.ControlsOverlayView _controls = new Spacebox.Game.GUI.Canvas.Screens.ControlsOverlayView();
+    private readonly Spacebox.Game.GUI.Canvas.Screens.FadeOverlayView _fade = new Spacebox.Game.GUI.Canvas.Screens.FadeOverlayView();
 
     public MenuCanvas(GameMenu menu, MenuMusicController music, Texture2D logo)
     {
@@ -53,6 +54,7 @@ public sealed class MenuCanvas : IDisposable
         _upgrade = new UpgradeWorldDialog(menu.VersionWindow);
         Build(root);
         root.Add(_controls, UiLayer.Popup);
+        root.Add(_fade, UiLayer.Tooltip);
         Apply(Settings.Interface);
     }
 
@@ -161,6 +163,7 @@ public sealed class MenuCanvas : IDisposable
         UpdateLogoParallax();
         _page?.Tick(deltaTime);
         _controls.Sync(deltaTime);
+        _fade.Sync(deltaTime);
         _upgrade.Sync(_layer.Root);
         _layer.InputEnabled = !Engine.Debug.IsVisible;
         _layer.Update(deltaTime);

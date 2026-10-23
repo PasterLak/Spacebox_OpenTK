@@ -15,11 +15,13 @@ public static class ChatCommandInput
     public static IReadOnlyList<CommandSuggestion> Suggestions => _suggestions;
     public static int Selected { get; private set; }
     public static string Usage { get; private set; } = "";
+    public static int Version { get; private set; }
 
     public static void Update(string text)
     {
         if (text == _lastText) return;
         _lastText = text;
+        Version++;
         Selected = 0;
         _suggestions.Clear();
         Usage = "";
@@ -64,6 +66,7 @@ public static class ChatCommandInput
     public static void Reset()
     {
         _lastText = null;
+        Version++;
         _suggestions.Clear();
         Usage = "";
         Selected = 0;
