@@ -106,6 +106,8 @@ public static class GameControlStyles
         theme.SetColor("SuccessLabel", "font_color", p.Success);
         theme.SetTypeVariation("TitleBar", "PanelContainer");
         theme.SetStyleBox("TitleBar", "panel", new StyleBoxFlat(p.TitleBar).SetContentMargins(10f, 4f));
+        theme.SetStyleBox("ProgressBar", "background", Sunken(p, p.Field, 0f));
+        theme.SetStyleBox("ProgressBar", "fill", new StyleBoxFlat(p.Accent));
         theme.SetTypeVariation("GameWindow", "PanelContainer");
         theme.SetStyleBox("GameWindow", "panel", new StyleBoxFlat(p.Panel).SetBorder(1f, p.PanelDark).SetCornerRadius(WindowCornerRadius).SetContentMargins(8f));
         theme.SetTypeVariation("GameTitleBar", "PanelContainer");

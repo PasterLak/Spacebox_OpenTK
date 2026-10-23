@@ -32,13 +32,26 @@ public sealed class GameCanvas : IDisposable
 
     public static bool WantsKeyboard => Current != null && Current._layer.Root.WantsKeyboard;
 
+    public static bool IsPointerOverInteractive
+    {
+        get
+        {
+            if (Current == null) return false;
+            var root = Current._layer.Root;
+            for (var control = root.HitTest(root.PointerPosition); control != null; control = control.Parent as Control)
+            {
+                if (control.IsInteractive) return true;
+            }
+            return false;
+        }
+    }
+
     public CanvasRoot Root => _layer.Root;
     public bool WantsPointer => _layer.Root.WantsPointer;
 
     public GameCanvas()
     {
         Current = this;
-        Items.SlotDrag.IsPointerOverOtherUi = () => ImGuiNET.ImGui.GetIO().WantCaptureMouse;
         var root = _layer.Root;
         Configure(root.Stretch);
         root.Add(_hud, UiLayer.Hud);
@@ -67,38 +80,11 @@ public sealed class GameCanvas : IDisposable
     public void Update(LocalAstronaut player, float deltaTime)
     {
         _layer.InputEnabled = UIManager.IsUIMode;
-        Items.SlotDrag.BeginFrame();
         if (!UIManager.IsUIMode) Items.SlotDrag.Cancel();
         HitMarkerUI.Update(deltaTime);
         _hud.Refresh(player);
         _windows.Sync();
         _layer.Update(deltaTime);
-        PublishInventoryRect();
-    }
-
-    public bool TryAcceptImGuiDrop(ItemSlot source)
-    {
-        var root = _layer.Root;
-        var hovered = root.HitTest(root.PointerPosition);
-        if (hovered == null) return false;
-
-        Items.SlotDrag.FindTarget(hovered)?.AcceptDrop(source);
-        return true;
-    }
-
-    private void PublishInventoryRect()
-    {
-        var window = _windows.Inventory;
-        if (!window.Visible)
-        {
-            InventoryUI.SetWindowRect(System.Numerics.Vector2.Zero, System.Numerics.Vector2.Zero);
-            return;
-        }
-
-        var root = _layer.Root;
-        var min = root.CanvasToScreen(window.Rect.Position);
-        var max = root.CanvasToScreen(window.Rect.Position + window.Rect.Size);
-        InventoryUI.SetWindowRect(new System.Numerics.Vector2(min.X, min.Y), new System.Numerics.Vector2(max.X - min.X, max.Y - min.Y));
     }
 
     public void Render()

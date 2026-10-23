@@ -30,6 +30,8 @@ public sealed class ItemSlotControl : Control, ISlotDropTarget
         ThemeTypeVariation = "Slot";
         MouseFilter = MouseFilter.Stop;
         CustomMinimumSize = new Vector2(size, size);
+        SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
+        SizeFlagsVertical = SizeFlags.ShrinkCenter;
     }
 
     public ItemSlot Slot => _slot;

@@ -1,6 +1,5 @@
 using Engine;
 using Engine.Physics;
-using ImGuiNET;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
@@ -86,8 +85,11 @@ public static class ShipBindingTool
         PlayerActivity.Raise(PlayerActivityKind.ShipPartBound);
     }
 
-    public static void DrawLabels()
+    public readonly record struct Label(Vector2 Screen, string Text, Color4 Color);
+
+    public static void CollectLabels(List<Label> labels)
     {
+        labels.Clear();
         var console = ShipPilot.Console;
         var entity = console?.Entity;
         var camera = Camera.Main;
@@ -96,30 +98,24 @@ public static class ShipBindingTool
         var bindings = entity.ShipControl.GetBindings(console.LocalCell);
         if (bindings == null) return;
 
-        var drawList = ImGui.GetBackgroundDrawList();
         foreach (var pair in bindings.Bound)
         {
             var part = entity.ShipControl.GetPart<IShipPart>(pair.Key);
             var color = ConsoleBindings.GroupColors[pair.Value % ConsoleBindings.GroupColors.Length];
-            DrawLabel(drawList, camera, part, ShipKeys.GetName(bindings.GetKey(pair.Value)), color);
+            AddLabel(labels, camera, part, ShipKeys.GetName(bindings.GetKey(pair.Value)), color);
         }
 
         if (bindings.Camera is { } cameraCell)
-            DrawLabel(drawList, camera, entity.ShipControl.GetPart<IShipPart>(cameraCell), "CAM", CameraColor);
+            AddLabel(labels, camera, entity.ShipControl.GetPart<IShipPart>(cameraCell), "CAM", CameraColor);
     }
 
-    private static void DrawLabel(ImDrawListPtr drawList, Camera camera, IShipPart part, string text, Color4 color)
+    private static void AddLabel(List<Label> labels, Camera camera, IShipPart part, string text, Color4 color)
     {
         if (part?.Entity == null) return;
 
         var screen = camera.WorldToScreenPoint(part.Entity.EntityLocalToWorld(part.Frame.Center));
         if (screen == Vector2.Zero) return;
-
-        var size = ImGui.CalcTextSize(text);
-        var min = new System.Numerics.Vector2(screen.X - size.X * 0.5f - 4f, screen.Y - size.Y * 0.5f - 2f);
-        var max = new System.Numerics.Vector2(screen.X + size.X * 0.5f + 4f, screen.Y + size.Y * 0.5f + 2f);
-        drawList.AddRectFilled(min, max, ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(0f, 0f, 0f, 0.6f)), 3f);
-        drawList.AddText(new System.Numerics.Vector2(min.X + 4f, min.Y + 2f), ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(color.R, color.G, color.B, 1f)), text);
+        labels.Add(new Label(screen, text, new Color4(color.R, color.G, color.B, 1f)));
     }
 
     public static bool TryUseDoor(LocalAstronaut player)

@@ -25,6 +25,18 @@ public sealed class GameWindowsView : SafeArea
         Inventory = new InventoryWindow();
         Add(Left, new CreativeWindow());
         Add(Middle, new StorageWindow());
+        Add(Middle, new CraftingWindow());
+        Add(Middle, new ProcessingWindow());
+        Add(Middle, new OxygenGeneratorWindow());
+        Add(Middle, new DnaReconstructorWindow());
+        Add(Middle, new GeneratorWindow());
+        Add(Middle, new GravityGeneratorWindow());
+        Add(Middle, new AnalyzerWindow());
+        Add(Middle, new DisassemblerWindow());
+        Add(Middle, new ClaimBeaconWindow());
+        Add(Middle, new RadarWindow());
+        Add(Middle, new ShipConsoleWindow());
+        Add(Middle, new SignWindow());
         Add(Middle, Inventory);
         Add(Right, new EquipmentWindow());
     }

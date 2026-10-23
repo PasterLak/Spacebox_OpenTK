@@ -134,6 +134,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         Debug.RegisterCommand(new DebugTexturesCommand());
         Debug.RegisterCommand(new Spacebox.Game.Commands.BackupCommand());
+        Debug.RegisterCommand(new Spacebox.Game.Commands.UseBlockCommand(localPlayer));
         Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer));
         Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer, "teleport"));
         Debug.RegisterCommand(new Spacebox.Game.Commands.Teleport.TeleportCommand(localPlayer, "tpp"));
@@ -346,9 +347,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         base.OnGUI();
         ColorOverlay.OnGUI();
 
-        radarWindow?.OnGUI();
-        ResourceProcessingGUI.OnGUI();
-        CraftingGUI.OnGUI();
+        radarWindow?.Update();
+        ResourceProcessingGUI.Update();
+        CraftingGUI.Update();
 
 
         InventoryUI.Update();
@@ -361,15 +362,15 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
         Spacebox.Game.Ships.Sharing.ShipLibraryUI.OnGUI();
         if (Settings.ShowInterface) InputOverlay.OnGUI();
-        GeneratorUI.OnGUI();
-        AnalyzerUI.OnGUI();
-        OxygenGeneratorUI.OnGUI();
-        ClaimBeaconUI.OnGUI();
-        DisassemblerUI.OnGUI();
-        GravityGeneratorUI.OnGUI();
-        SignUI.OnGUI();
-        ShipConsoleUI.OnGUI();
-        DnaReconstructorUI.OnGUI();
+        GeneratorUI.Update();
+        AnalyzerUI.Update();
+        OxygenGeneratorUI.Update();
+        ClaimBeaconUI.Update();
+        DisassemblerUI.Update();
+        GravityGeneratorUI.Update();
+        SignUI.Update();
+        ShipConsoleUI.Update();
+        DnaReconstructorUI.Update();
         DnaReconstructionScreen.OnGUI();
 
         if (VisualDebug.Enabled)

@@ -88,17 +88,19 @@ public class InteractiveBlock : ElectricalBlock
 
         if (!UIManager.IsUIMode)
         {
-            if (Input.IsActionDown("use"))
-            {
-                if (block is not Doors.DoorBlock && hit.chunk != null &&
-                    !Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(hit.chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(hit.chunk, hit.blockPositionIndex))) return;
-
-                block.chunk = hit.chunk;
-                if (block is IContainerBlock container)
-                    Spacebox.Network.Containers.ContainerNetwork.OnInteract(container, hit.chunk, hit.blockPositionIndex);
-                block.Use(player, ref hit);
-            }
+            if (Input.IsActionDown("use")) Use(block, player, ref hit);
         }
+    }
+
+    public static void Use(InteractiveBlock block, LocalAstronaut player, ref HitInfo hit)
+    {
+        if (block is not Doors.DoorBlock && hit.chunk != null &&
+            !Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(hit.chunk.SpaceEntity, Spacebox.Game.Protection.ProtectionRules.CellOf(hit.chunk, hit.blockPositionIndex))) return;
+
+        block.chunk = hit.chunk;
+        if (block is IContainerBlock container)
+            Spacebox.Network.Containers.ContainerNetwork.OnInteract(container, hit.chunk, hit.blockPositionIndex);
+        block.Use(player, ref hit);
     }
 
 

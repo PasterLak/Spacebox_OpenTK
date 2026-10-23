@@ -20,6 +20,7 @@ public class ProgressBar : Control
     public float MaxValue { get; set; } = 100f;
     public FillMode FillMode { get; set; } = FillMode.LeftToRight;
     public bool ShowPercentage { get; set; } = true;
+    public Color4? FillColor { get; set; }
     public string Text { get; set; }
 
     public ProgressBar()
@@ -53,8 +54,8 @@ public class ProgressBar : Control
         float ratio = Ratio;
         if (ratio > 0f)
         {
-            var fill = GetThemeStyleBox("fill");
-            fill?.Draw(renderer, FillRect(rect, ratio));
+            if (FillColor.HasValue) renderer.DrawRect(FillRect(rect, ratio), FillColor.Value);
+            else GetThemeStyleBox("fill")?.Draw(renderer, FillRect(rect, ratio));
         }
 
         string label = !string.IsNullOrEmpty(Text) ? Text : ShowPercentage ? PercentText(ratio) : null;

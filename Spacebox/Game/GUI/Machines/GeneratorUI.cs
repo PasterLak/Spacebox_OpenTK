@@ -1,11 +1,8 @@
 ﻿using Engine;
-using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation.Blocks;
-using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Player;
-using System.Numerics;
 
 namespace Spacebox.Game.GUI
 {
@@ -21,9 +18,15 @@ namespace Spacebox.Game.GUI
         static int consum;
         static string blockName = "Generator";
 
+        public static bool IsOpen => UIManager.IsOpen("generator") && generatorBlock != null;
+        public static GeneratorBlock Block => generatorBlock;
+        public static string BlockName => blockName;
+        public static int NetworkPower => power;
+        public static int NetworkConsumption => consum;
+
         public static void Initialize()
         {
- 
+
         }
 
         public static void Open(GeneratorBlock block, Astronaut astronaut, ref HitInfo hit)
@@ -44,85 +47,14 @@ namespace Spacebox.Game.GUI
             UIManager.CloseTop();
         }
 
-        public static void OnGUI()
+        public static void Update()
         {
-            if (!UIManager.IsOpen("generator") || generatorBlock == null) return;
-
-            if (Input.IsActionDown("inventory") || Input.IsKeyDown(Keys.Escape))
-            {
-                Close();
-                return;
-            }
-
-            var io = ImGui.GetIO();
-            var displaySize = io.DisplaySize;
-
-            float windowWidth = displaySize.X * 0.2f;
-            float windowHeight = displaySize.Y * 0.25f;
-
-            Vector2 windowPos = new Vector2(
-                (displaySize.X - windowWidth) * 0.5f,
-                (displaySize.Y - windowHeight) * 0.5f);
-
-            var padding = windowHeight / 15f;
-            var paddingV = new Vector2(padding, padding);
-
-            ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
-
-            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
-                                           ImGuiWindowFlags.NoCollapse |
-                                           ImGuiWindowFlags.NoDecoration |
-                                           ImGuiWindowFlags.NoScrollbar;
-
-            if (ImGui.Begin("Generator", windowFlags))
-            {
-                GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y);
-
-                ImGui.SetCursorPos(paddingV);
-                ImGui.TextColored(new Vector4(1, 1, 0, 1), blockName);
-
-                ImGui.SetCursorPos(paddingV + new Vector2(0, padding * 1.5f));
-
-                if (ImGui.BeginChild("Content", new Vector2(windowWidth - padding * 2, windowHeight - padding * 5), ImGuiChildFlags.None))
-                {
-                    ImGui.Separator();
-                    ImGui.Text($"Generating: +{generatorBlock.GenerationRate} EU");
-                    ImGui.Text($"");
-                    ImGui.TextColored(new Vector4(1, 1, 0, 1), "Network");
-
-                    ImGui.Separator();
-
-                    ImGui.Text($"Power: {power} EU");
-                    ImGui.Text($"Consumption: {consum} EU");
-
-                    var progressBarWidth = windowWidth * 0.9f;
-                    var powerRatio = generatorBlock.MaxPower > 0 ? (float)generatorBlock.CurrentPower / generatorBlock.MaxPower : 0f;
-
-                    Vector4 progressColor = ConsumptionToColor();
-                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram, progressColor);
-                    var v = consum / (float)power;
-                    if (v > 0.99f) v = 0.99f;
-                    ImGui.ProgressBar(1 - v, new Vector2(progressBarWidth, windowHeight / 40f), "");
-                    ImGui.PopStyleColor();
-
-                }
-                ImGui.EndChild();
-            }
-            ImGui.End();
+            if (!IsOpen) return;
+            if (Input.IsActionDown("inventory") || Input.IsKeyDown(Keys.Escape)) Close();
         }
 
-        private static Vector4 ConsumptionToColor()
-        {
-            if (power == 0) return new Vector4(1, 1, 1, 1);
+        public static float FreeShare => power <= 0 ? 0f : 1f - Math.Min(0.99f, consum / (float)power);
 
-            var consumptionPercentage = (consum / (float)power) * 100;
-            var remainingPercentage = 100 - consumptionPercentage;
-
-            if (remainingPercentage < 33) return new Vector4(1, 0, 0, 1);
-            else if (remainingPercentage < 50) return new Vector4(1, 0.5f, 0, 1);
-            else if (remainingPercentage < 70) return new Vector4(1, 1, 0, 1);
-            else return new Vector4(0, 1, 0, 1);
-        }
+        public static int RemainingPercent => power == 0 ? 100 : (int)(100 - consum / (float)power * 100);
     }
 }

@@ -49,7 +49,6 @@ namespace Spacebox.Game.GUI
             scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"), AudioChannel.UI);
             dropAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/dropped.ogg"), AudioChannel.UI);
 
-            InventoryUIHelper.Initialize();
             SetSelectedSlot(0);
             Storage.OnDataWasChanged += OnStorageDataWasChanged;
 

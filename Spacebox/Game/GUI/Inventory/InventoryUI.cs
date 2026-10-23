@@ -12,15 +12,6 @@ namespace Spacebox.Game.GUI
     public static class InventoryUI
     {
         public static LocalAstronaut Player;
-        public static Vector2 WindowPosition { get; private set; }
-        public static Vector2 WindowSize { get; private set; }
-
-        public static void SetWindowRect(Vector2 position, Vector2 size)
-        {
-            WindowPosition = position;
-            WindowSize = size;
-        }
-
         public static void Update()
         {
             HandleInput();
@@ -30,8 +21,6 @@ namespace Spacebox.Game.GUI
 
         public static void Initialize()
         {
-            InventoryUIHelper.Initialize();
-
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"), AudioChannel.UI);
         }
 

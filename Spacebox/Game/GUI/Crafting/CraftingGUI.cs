@@ -1,13 +1,9 @@
 ﻿using Engine;
 using Engine.Audio;
-using ImGuiNET;
-using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Player;
 using Spacebox.Game.Player.GameModes;
 using System;
 using System.Linq;
-using System.Numerics;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Spacebox.Game.GUI;
 
@@ -15,10 +11,6 @@ public class CraftingGUI
 {
     private static bool _wasVisible = false;
 
-    private static bool showGrid = false;
-    private static int selectedButton = -1;
-    private static int usedSlots = 0;
-    private static int totalSlots = 0;
 
     private static CraftingCategory[] category;
     private static Storage Inventory;
@@ -31,6 +23,7 @@ public class CraftingGUI
     private static AudioSource closeSound;
 
     private static int ColumnsOfItems;
+    private static int hovered = -1;
     private static LocalAstronaut currentPlayer;
 
     public static void Toggle(LocalAstronaut player)
@@ -38,7 +31,6 @@ public class CraftingGUI
         currentPlayer = player;
         Inventory = player.Inventory;
         Panel = player.Panel;
-        showGrid = false;
 
         if (player.GameMode != GameMode.Survival)
         {
@@ -79,10 +71,13 @@ public class CraftingGUI
     }
 
     public static bool IsVisible { get; private set; }
-    public static Vector2 WindowPosition { get; private set; }
-    public static Vector2 WindowSize { get; private set; }
+    public static CraftingCategory[] Categories => category;
+    public static int CategoryColumns => CategoriesCountX;
+    public static int CategoryRows => CategoriesCountY;
+    public static int ItemColumns => ColumnsOfItems;
+    public static LocalAstronaut Player => currentPlayer;
 
-    public static void OnGUI()
+    public static void Update()
     {
         bool isVisible = UIManager.IsOpen("crafting");
 
@@ -95,126 +90,47 @@ public class CraftingGUI
         }
 
         IsVisible = isVisible;
-        if (!isVisible) return;
-
-        Vector2 displaySize = ImGui.GetIO().DisplaySize;
-        float windowWidth = displaySize.Y * (0.1f * CategoriesCountX);
-        float windowHeight = displaySize.Y * 0.25f;
-        var windowPos = GameMenu.CenterNextWindow3(windowWidth, windowHeight);
-        WindowPosition = windowPos;
-        WindowSize = new Vector2(windowWidth, windowHeight);
-        ImGui.Begin("Crafting",
-            ImGuiWindowFlags.NoResize
-            | ImGuiWindowFlags.NoMove
-            | ImGuiWindowFlags.NoCollapse
-            | ImGuiWindowFlags.NoTitleBar
-            | ImGuiWindowFlags.NoScrollbar
-            | ImGuiWindowFlags.NoScrollWithMouse
-            );
-        GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y, 0.005f);
-
-        var textSize = ImGui.CalcTextSize("Crafting");
-        ImGui.SetCursorPos(new Vector2(windowWidth * 0.505f - textSize.X * 0.5f, textSize.Y));
-        ImGui.TextColored(new Vector4(0.1f, 0.1f, 0.1f, 0.1f), "Crafting");
-        ImGui.SetCursorPos(new Vector2(windowWidth * 0.5f - textSize.X * 0.5f, textSize.Y));
-        ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 0.9f), "Crafting");
-
-        float spacing = windowHeight * 0.02f;
-        float topOffset = windowHeight * 0.2f;
-
-        if (!showGrid)
-        {
-            float buttonWidth = windowWidth / CategoriesCountX;
-            float buttonHeight = (windowHeight - topOffset) / CategoriesCountY;
-
-            for (int y = 0; y < CategoriesCountY; y++)
-            {
-                for (int x = 0; x < CategoriesCountX; x++)
-                {
-                    ImGui.SetCursorPos(new Vector2(
-                        x * buttonWidth + spacing,
-                        topOffset + y * buttonHeight + spacing
-                    ));
-                    float btnWidth = buttonWidth - spacing * 2;
-                    float btnHeight = buttonHeight - spacing * 2;
-
-                    var categoryIndex = y * CategoriesCountX + x;
-
-                    if (categoryIndex >= category.Length || category[categoryIndex] == null) continue;
-
-                    string btnLabel = category[categoryIndex].Name;
-                    CraftingCategoryButton(btnLabel, Vector2.Zero, btnWidth, btnHeight, (str) =>
-                    {
-                        selectedButton = categoryIndex;
-                        usedSlots = category[selectedButton].ItemsCountInCategory;
-
-                        int rows = (usedSlots + ColumnsOfItems - 1) / ColumnsOfItems;
-                        totalSlots = 5 * ColumnsOfItems;
-                        _resetScroll = true;
-                        showGrid = true;
-                    }, y * CategoriesCountX + x);
-                }
-            }
-        }
-        else
-        {
-            DrawGridWithSlots(windowWidth, windowHeight, topOffset / 2f);
-        }
-
-        ImGui.End();
     }
-    static bool _resetScroll;
-    private static void DrawGridWithSlots(float windowWidth, float windowHeight, float topOffset)
+
+    public static void PlayClick() => clickAudio?.Play();
+
+    public static void PlayHover(int id)
     {
-        float spacing = windowHeight * 0.02f;
-        float childX = spacing;
-        float childY = spacing;
-        float childW = windowWidth - spacing * 2;
-        float childH = windowHeight - spacing * 2;
+        if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
+        if (hovered == id || scrollAudio == null) return;
 
-        string categoryName = category[selectedButton].Name;
-        var titleSize = ImGui.CalcTextSize(categoryName);
-        float backButtonWidth = topOffset * 2.5f;
-        float backButtonHeight = topOffset;
-        float headerHeight = spacing * 2 + backButtonHeight;
-
-        ImGui.SetCursorPos(new Vector2(childX, childY));
-        ImGui.BeginChild("HeaderChild", new Vector2(childW, headerHeight), ImGuiChildFlags.None, ImGuiWindowFlags.NoScrollbar);
-        ImGui.SetCursorPos(new Vector2((childW - titleSize.X) * 0.5f, spacing));
-        ImGui.Text(categoryName);
-        ImGui.SetCursorPos(new Vector2(childW - backButtonWidth - spacing, spacing));
-        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
-        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1f));
-        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1f));
-        if (ImGui.Button("Back", new Vector2(backButtonWidth, backButtonHeight)))
-        {
-            clickAudio.Play();
-            showGrid = false;
-        }
-        ImGui.PopStyleColor(3);
-        ImGui.EndChild();
-
-        ImGui.SetCursorPos(new Vector2(childX, childY + headerHeight));
-        float gridHeight = childH - headerHeight - spacing;
-        ImGui.BeginChild("GridScroll", new Vector2(childW, gridHeight), ImGuiChildFlags.None, ImGuiWindowFlags.NoScrollbar);
-        if (_resetScroll)
-        {
-            ImGui.SetScrollY(0f);
-            _resetScroll = false;
-        }
-        ImGui.BeginTable("Grid", ColumnsOfItems, ImGuiTableFlags.NoBordersInBody, new Vector2(childW, gridHeight));
-        for (int i = 0; i < totalSlots; i++)
-        {
-            ImGui.TableNextColumn();
-            if (i < usedSlots)
-                SlotWithItem("", Vector2.Zero, childW / ColumnsOfItems, childW / ColumnsOfItems, OnClick, i);
-            else
-                EmptySlot("", Vector2.Zero, childW / ColumnsOfItems, childW / ColumnsOfItems, OnClick, i);
-        }
-        ImGui.EndTable();
-        ImGui.EndChild();
+        hovered = id;
+        if (scrollAudio.IsPlaying) scrollAudio.Stop();
+        scrollAudio.Play();
     }
 
+    public static bool CanCraft(CraftingCategory.Data data)
+    {
+        if (data?.blueprint == null || Inventory == null) return false;
+        foreach (var ingredient in data.blueprint.Ingredients)
+        {
+            if (!CraftingLogic.IsResourceAvailable(ingredient, Inventory, Panel, currentPlayer)) return false;
+        }
+        return true;
+    }
+
+    public static int PossibleCount(CraftingCategory.Data data)
+    {
+        return data?.blueprint == null || Inventory == null ? 0 : CraftingLogic.CalculatePossibleItemCraftCount(Inventory, Panel, data.blueprint, currentPlayer);
+    }
+
+    public static int AvailableCount(Ingredient ingredient)
+    {
+        if (ingredient.Item.Id_string == "$health") return currentPlayer?.HealthBar.StatsData.Value ?? 0;
+        if (ingredient.Item.Id_string == "$power") return currentPlayer?.PowerBar.StatsData.Value ?? 0;
+        return Inventory == null ? 0 : Inventory.GetTotalCountOf(ingredient.Item) + Panel.GetTotalCountOf(ingredient.Item);
+    }
+
+    public static void Craft(Blueprint blueprint)
+    {
+        clickAudio?.Play();
+        OnClick(blueprint);
+    }
 
     private static void OnClick(Blueprint blueprint)
     {
@@ -302,286 +218,6 @@ public class CraftingGUI
 
 
 
-    public static void EmptySlot(string label, Vector2 pos, float width, float height, Action<Blueprint> onClick, int slotId)
-    {
-        ImGui.Dummy(new Vector2(width, height));
-        var p0 = ImGui.GetItemRectMin();
-        var p1 = ImGui.GetItemRectMax();
-        var drawList = ImGui.GetWindowDrawList();
-        drawList.AddRect(p0, p1, Theme.Colors.BackgroundUint);
-        InventoryUIHelper.SlotSprite.Draw(drawList, p0, p1);
-
-    }
-
-    public static void SlotWithItem(string label, Vector2 pos, float width, float height, Action<Blueprint> onClick, int slotId)
-    {
-        Vector2 buttonPos = ImGui.GetCursorScreenPos();
-        float offsetValue = height * 0.1f;
-        Vector2 offset = new Vector2(offsetValue, offsetValue);
-        uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-        uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
-        var drawList = ImGui.GetWindowDrawList();
-
-        ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
-        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
-        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-        ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
-
-        var itemData = category[selectedButton].Items[slotId];
-
-        label = itemData.item.Name;
-        if (ImGui.Button($"##craft_slot_{slotId}", new Vector2(width, height)))
-        {
-            clickAudio.Play();
-            onClick.Invoke(itemData.blueprint);
-        }
-        ;
-
-        drawList.AddRect(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BackgroundUint);
-
-        InventoryUIHelper.SlotSprite.Draw(drawList, buttonPos, buttonPos + new Vector2(width, height));
-
-
-        var canCraft = true;
-
-        if (itemData.blueprint == null) canCraft = false;
-
-        if (canCraft)
-        {
-            foreach (var ing in itemData.blueprint.Ingredients)
-            {
-
-                if (CraftingLogic.IsResourceAvailable(ing, Inventory, Panel, currentPlayer)) continue;
-                else
-                {
-                    canCraft = false;
-                    break;
-                }
-            }
-        }
-
-
-        if (itemData.item.Icon.IsValid)
-        {
-            if (canCraft)
-            {
-                var count = CraftingLogic.CalculatePossibleItemCraftCount(Inventory, Panel, itemData.blueprint, currentPlayer);
-                var t = count > 1 ? count.ToString() : "";
-                var text = ImGui.CalcTextSize(t);
-                itemData.item.Icon.Draw(drawList, buttonPos + offset, buttonPos + new Vector2(width, height) - offset);
-
-                drawList.AddText(buttonPos + new Vector2(offset.X + offset.X / 4f, height - text.Y), ImGui.GetColorU32(new Vector4(0, 0, 0, 1)), t);
-                drawList.AddText(buttonPos + new Vector2(offset.X, height - text.Y - text.Y / 12f), ImGui.GetColorU32(new Vector4(1f, 1f, 1f, 1)), t);
-            }
-            else
-            {
-                Vector4 tintColor2 = new Vector4(0.9f, 0.9f, 0.9f, 0.25f);
-
-
-                itemData.item.Icon.Draw(drawList, buttonPos + offset, buttonPos + new Vector2(width, height) - offset,
-                                  ImGui.GetColorU32(tintColor2));
-
-
-            }
-
-        }
-
-        ImGui.PopStyleColor(4);
-        OnHovered(itemData, drawList, buttonPos, offset, width, height, slotId);
-    }
-
-
-
-    private static void OnHovered(CraftingCategory.Data itemData, ImGuiNET.ImDrawListPtr list, Vector2 buttonPos, Vector2 offset, float width, float height, int slotId)
-    {
-        if (itemData?.item == null || Inventory == null || !ImGui.IsItemHovered()) return;
-
-        HandleHoverAudio(slotId);
-        DrawHoverImage(list, itemData, buttonPos, offset, width, height);
-        ShowTooltip(itemData, height);
-    }
-    static int hovered = -1;
-    private static void HandleHoverAudio(int slotId)
-    {
-        if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
-   
-        if (!ImGui.IsItemHovered()) return;
-        if (hovered == slotId) return;
-
-        hovered = slotId;
-        if (scrollAudio.IsPlaying) scrollAudio.Stop();
-        scrollAudio.Play();
-    }
-
-
-
-    private static void DrawHoverImage(ImGuiNET.ImDrawListPtr list, CraftingCategory.Data itemData, Vector2 buttonPos, Vector2 offset, float width, float height)
-    {
-
-        var startPos = buttonPos + offset;
-        var endPos = buttonPos + new Vector2(width, height) - offset;
-        itemData.item.Icon.Draw(list, startPos, endPos);
-    }
-
-    private static void ShowTooltip(CraftingCategory.Data itemData, float height)
-    {
-        ImGui.BeginTooltip();
-
-        if (itemData.blueprint == null)
-        {
-            ShowNonCraftableItem(itemData);
-        }
-        else
-        {
-            ShowCraftableItem(itemData, height);
-        }
-
-        ImGui.EndTooltip();
-    }
-
-    private static void ShowNonCraftableItem(CraftingCategory.Data itemData)
-    {
-        ImGui.Text(itemData.item.Name); ImGui.Spacing();
-        var desc = itemData.item.Description;
-        if (!string.IsNullOrWhiteSpace(desc))
-        {
-            InventoryUIHelper.DrawWrappedText(desc, 50, false);
-        }
-        ImGui.TextColored(new Vector4(1, 0, 0, 1), "Not craftable");
-    }
-
-    private static void ShowCraftableItem(CraftingCategory.Data itemData, float height)
-    {
-        if (itemData.blueprint.Product == null || itemData.blueprint.Ingredients == null)
-        {
-            ImGui.Text(itemData.item.Name); ImGui.Spacing();
-
-            return;
-        }
-
-        ShowProductName(itemData);
-        ShowIngredients(itemData.blueprint.Ingredients, height);
-    }
-
-    private static void ShowProductName(CraftingCategory.Data itemData)
-    {
-        var count = itemData.blueprint.Product.Quantity;
-        var name = count > 1 ? $"{itemData.item.Name}({count})" : itemData.item.Name;
-        ImGui.Text(name); ImGui.Spacing();
-        var desc = itemData.item.Description;
-
-        if (!string.IsNullOrWhiteSpace(desc))
-        {
-
-            InventoryUIHelper.DrawWrappedText(desc, 50, false);
-            ImGui.NewLine();
-
-        }
-    }
-
-    private static void ShowIngredients(Ingredient[] ingredients, float height)
-    {
-        foreach (var ingredient in ingredients)
-        {
-            int availableCount = 0;
-
-            if (ingredient.Item.Id_string == "$health")
-            {
-                if (currentPlayer != null)
-                    availableCount = currentPlayer.HealthBar.StatsData.Value;
-
-            }
-            else if (ingredient.Item.Id_string == "$power")
-            {
-                if (currentPlayer != null)
-                    availableCount = currentPlayer.PowerBar.StatsData.Value;
-
-            }
-            else
-            {
-                availableCount = Inventory.GetTotalCountOf(ingredient.Item) + Panel.GetTotalCountOf(ingredient.Item);
-            }
-
-
-            var iconSize = new Vector2(1, 1) * (height / 2.8f);
-            var textColor = availableCount >= ingredient.Quantity
-                ? new Vector4(0, 1, 0, 1)
-                : new Vector4(1, 0, 0, 1);
-
-
-
-            if (ingredient.Item.Icon.IsValid)
-            {
-                ingredient.Item.Icon.Image(iconSize);
-                ImGui.SameLine();
-            }
-            else
-            {
-                ImGui.Dummy(iconSize);
-                ImGui.SameLine();
-            }
-
-
-
-            ImGui.TextColored(textColor, ingredient.ToString());
-        }
-    }
-
-
-
-
-    private static ImFontPtr LoadFont()
-    {
-        var io = ImGui.GetIO();
-
-        return io.FontDefault;
-    }
-
-
-    public static void CraftingCategoryButton(string label, Vector2 pos, float width, float height, Action<string> onClick, int categoryId)
-    {
-        Vector2 buttonPos = ImGui.GetCursorScreenPos();
-        float offsetValue = height * 0.1f;
-        Vector2 offset = new Vector2(offsetValue, offsetValue);
-        Vector2 padding = new Vector2(offsetValue, offsetValue) * 0.4f;
-
-
-        uint lightColor = Theme.Colors.BackgroundUint;
-        uint cc = ImGui.GetColorU32(new Vector4(1f, 1f, 0.0f, 1f));
-        var drawList = ImGui.GetWindowDrawList();
-
-        drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height), Theme.Colors.BorderLightUint);
-        drawList.AddRectFilled(buttonPos + padding, buttonPos + new Vector2(width, height), Theme.Colors.BorderDarkUint);
-
-        drawList.AddRectFilled(buttonPos + padding, buttonPos + new Vector2(width, height) - padding, Theme.Colors.BackgroundUint);
-
-        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.6f, 0.6f, 0.6f, 0f));
-        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 0.5f));
-        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 0.5f));
-
-        ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1, 0, 0, 0));
-
-        if (ImGui.Button("##menuButton" + label, new Vector2(width, height)))
-        {
-            clickAudio.Play();
-            onClick?.Invoke(label);
-
-        }
-
-
-        if (category[categoryId].IconSprite.IsValid)
-        {
-            category[categoryId].IconSprite.Draw(drawList, buttonPos + offset * 4, buttonPos + new Vector2(width, height) - offset);
-
-        }
-        Vector2 textSize = ImGui.CalcTextSize(category[categoryId].Name);
-
-  
-        drawList.AddText(LoadFont(), height / 6.5f, buttonPos + new Vector2(10, 10), Theme.Colors.Deep2Uint, "" + category[categoryId].Name);
-
-        ImGui.PopStyleColor(4);
-    }
-
     public static void Dispose()
     {
         if (scrollAudio != null)
@@ -610,9 +246,5 @@ public class CraftingGUI
         category = null;
         hovered = -1;
 
-        usedSlots = 0;
-        totalSlots = 0;
-        selectedButton = -1;
-        showGrid = false;
     }
 }

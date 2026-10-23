@@ -373,6 +373,7 @@ Fixes
 - in-game UI on CanvasUI, phase 1 HUD: crosshair and use prompts, hit marker, damage flash, repair info, gravity icon, item hints and name, FPS counter (also in the menu), camera feed frame
 - in-game UI on CanvasUI, phase 2: inventory, storage (rename), creative inventory (search, categories), equipment with the 3D figure; drag and drop, right click split, hotbar usable while the inventory is open
 - game windows: rounded corners, compact title bars, search field and sort buttons; item tooltips with bold names and picture previews again
+- in-game UI on CanvasUI, phase 3: crafting (categories, items, ingredient details), furnace/crusher, generator, gravity and oxygen generators, DNA reconstructor, analyzer, disassembler, claim beacon, radar, ship console and binding labels, sign editor; console command use (uses the block under the crosshair)
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine

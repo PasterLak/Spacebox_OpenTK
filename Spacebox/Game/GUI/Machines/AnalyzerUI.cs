@@ -1,18 +1,14 @@
-﻿using Engine.Graphics.Atlas;
-using Engine;
+﻿using Engine;
 using Engine.Audio;
-using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
-using Spacebox.Game.GUI.Menu;
 using Spacebox.Game.Physics;
 using Spacebox.Game.Resource;
 using Spacebox.GUI;
 using Spacebox.Network;
 using System;
 using System.Linq;
-using System.Numerics;
 
 namespace Spacebox.Game.GUI
 {
@@ -96,21 +92,6 @@ namespace Spacebox.Game.GUI
             _hasPower = analyzerBlock.IsActive;
         }
 
-        private static void ApplyButtonStyles()
-        {
-            ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize, 1.0f);
-            ImGui.PushStyleColor(ImGuiCol.Button, Theme.Colors.Deep.ToUInt());
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.6f, 0.6f, 0.6f, 1.0f));
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-        }
-
-        private static void PopButtonStyles()
-        {
-            ImGui.PopStyleColor(4);
-            ImGui.PopStyleVar();
-        }
-
         private static void CountBlocksIfMassChanged()
         {
             if (currentEntity == null) return;
@@ -138,7 +119,16 @@ namespace Spacebox.Game.GUI
             _wasScanning = isScanning;
         }
 
-        public static void OnGUI()
+        public static bool IsOpen => UIManager.IsOpen("analyzer") && analyzerBlock != null && currentEntity != null;
+        public static AnalyzerBlock Block => analyzerBlock;
+        public static string BlockName => blockName;
+        public static bool HasPower => _hasPower;
+
+        public static float ScanSeconds => analyzerBlock == null ? 0f
+            : analyzerBlock.IsScanning && analyzerBlock.ScanDurationTicks > 0 ? analyzerBlock.ScanDurationTicks / 20f
+            : AnalyzerScanner.GetScanSeconds(analyzerBlock, _lastBlockCount);
+
+        public static void Update()
         {
             bool isVisible = UIManager.IsOpen("analyzer");
 
@@ -168,230 +158,13 @@ namespace Spacebox.Game.GUI
             CheckPower();
             CountBlocksIfMassChanged();
             UpdateScanSounds();
+        }
 
-            var io = ImGui.GetIO();
-            var displaySize = io.DisplaySize;
-
-            float windowWidth = displaySize.X * 0.25f;
-            float windowHeight = displaySize.Y * 0.45f;
-
-            Vector2 windowPos = new Vector2(
-                (displaySize.X - windowWidth) * 0.5f,
-                (displaySize.Y - windowHeight) * 0.5f);
-
-            var padding = windowHeight * 0.04f;
-            var paddingV = new Vector2(padding, padding);
-
-            float buttonHeight = displaySize.Y * 0.035f;
-            float buttonAreaHeight = buttonHeight + padding * 2f;
-
-            float mainScrollbarSize = Math.Max(windowWidth * 0.025f, 4f);
-            float innerScrollbarSize = Math.Max(windowWidth * 0.015f, 2f);
-
-            ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(windowWidth, windowHeight));
-
-            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoResize |
-                                           ImGuiWindowFlags.NoCollapse |
-                                           ImGuiWindowFlags.NoDecoration |
-                                           ImGuiWindowFlags.NoScrollbar;
-
-            ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarSize, mainScrollbarSize);
-
-            if (ImGui.Begin("Analyzer", windowFlags))
-            {
-                GameMenu.DrawElementColors(windowPos, new Vector2(windowWidth, windowHeight), displaySize.Y);
-
-                ImGui.SetCursorPos(paddingV);
-                ImGui.TextColored(new Vector4(1.0f, 1.0f, 0.0f, 1f), blockName);
-
-                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
-
-                ImGui.SetCursorPosX(padding);
-                ImGui.TextWrapped("Scanning allows determining the approximate composition of the asteroid.");
-
-                float totalScanSeconds = analyzerBlock.IsScanning && analyzerBlock.ScanDurationTicks > 0
-                    ? analyzerBlock.ScanDurationTicks / 20f
-                    : AnalyzerScanner.GetScanSeconds(analyzerBlock, _lastBlockCount);
-
-                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
-                ImGui.SetCursorPosX(padding);
-                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), $"Scan time: {totalScanSeconds:0.0} s.");
-
-                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.005f);
-                ImGui.SetCursorPosX(padding);
-                ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), $"Deviation: {analyzerBlock.DeviationPercentage}%%");
-
-                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
-                ImGui.Separator();
-                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
-
-                Vector2 contentAvail = ImGui.GetContentRegionAvail();
-                float middleHeight = !_hasPower ? contentAvail.Y - padding : contentAvail.Y - buttonAreaHeight;
-
-                ImGui.SetCursorPosX(padding);
-                if (ImGui.BeginChild("MiddleContent", new Vector2(contentAvail.X - padding * 2f, middleHeight), ImGuiChildFlags.None))
-                {
-                    if (!_hasPower)
-                    {
-                        string noPowerText = "NO POWER";
-                        var textSize = ImGui.CalcTextSize(noPowerText);
-                        ImGui.SetCursorPos(new Vector2((ImGui.GetWindowWidth() - textSize.X) * 0.5f, (ImGui.GetContentRegionAvail().Y - textSize.Y) * 0.5f));
-                        ImGui.TextColored(new Vector4(1f, 0f, 0f, 1f), noPowerText);
-                    }
-                    else if (analyzerBlock.IsScanning)
-                    {
-                        float progress = analyzerBlock.Progress;
-
-                        string scanText = "Scanning in progress...";
-                        float textWidth = ImGui.CalcTextSize(scanText).X;
-                        float barWidth = ImGui.GetWindowWidth() * 0.85f;
-
-                        float availY = ImGui.GetContentRegionAvail().Y;
-                        float totalH = ImGui.GetTextLineHeight() + windowHeight * 0.02f + buttonHeight * 0.8f;
-                        float startY = (availY - totalH) * 0.5f;
-
-                        ImGui.SetCursorPos(new Vector2((ImGui.GetWindowWidth() - textWidth) * 0.5f, startY));
-                        ImGui.TextColored(new Vector4(1, 1, 0, 1), scanText);
-
-                        ImGui.SetCursorPos(new Vector2((ImGui.GetWindowWidth() - barWidth) * 0.5f, startY + ImGui.GetTextLineHeight() + windowHeight * 0.02f));
-                        ImGui.ProgressBar(progress, new Vector2(barWidth, buttonHeight * 0.8f), $"{(int)(progress * 100)}%");
-                    }
-                    else if (analyzerBlock.ScanComplete)
-                    {
-                        string formattedMass = analyzerBlock.CachedMass.ToString("N0").Replace(",", ".");
-                        ImGui.TextColored(new Vector4(1f, 1f, 0f, 1f), $"Estimated Mass: {formattedMass} tn");
-
-                        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
-                        ImGui.Separator();
-                        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
-
-                        ImGui.Text("Detected Minerals:");
-                        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + windowHeight * 0.01f);
-
-                        if (analyzerBlock.CachedMinerals.Count == 0)
-                        {
-                            ImGui.TextColored(new Vector4(1, 0, 0, 1), "No minerals detected.");
-                        }
-                        else
-                        {
-                            var sortedMinerals = analyzerBlock.CachedMinerals.OrderByDescending(k => k.Value).ToList();
-                            string approxSign = analyzerBlock.DeviationPercentage == 0f ? "" : "~";
-
-                            float rowHeight = ImGui.GetTextLineHeight() * 1.5f;
-                            float iconSize = ImGui.GetTextLineHeight() * 1.2f;
-
-                            ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarSize, innerScrollbarSize);
-                            if (ImGui.BeginChild("ResourcesList", ImGui.GetContentRegionAvail(), ImGuiChildFlags.None))
-                            {
-                                float innerAvailX = ImGui.GetContentRegionAvail().X;
-
-                                foreach (var kvp in sortedMinerals)
-                                {
-                                    float startY = ImGui.GetCursorPosY();
-
-                                    AtlasSprite icon = AtlasSprite.None;
-                                    if (GameAssets.TryGetItemByBlockID(kvp.Key, out Item item) && item != null)
-                                    {
-                                        icon = item.Icon;
-                                    }
-
-                                    float textOffsetY = (rowHeight - ImGui.GetTextLineHeight()) * 0.5f;
-                                    float iconOffsetY = (rowHeight - iconSize) * 0.5f;
-
-                                    ImGui.SetCursorPosY(startY + iconOffsetY);
-                                    if (icon.IsValid)
-                                    {
-                                        icon.Image(new Vector2(iconSize, iconSize));
-                                        ImGui.SameLine();
-                                    }
-                                    else
-                                    {
-                                        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + iconSize + ImGui.GetStyle().ItemSpacing.X);
-                                    }
-
-                                    ImGui.SetCursorPosY(startY + textOffsetY);
-                                    var bData = GameAssets.GetBlockDataById(kvp.Key);
-                                    string minName = bData != null ? bData.Name : $"Unknown ID: {kvp.Key}";
-                                    ImGui.TextColored(new Vector4(0.8f, 1f, 0.8f, 1f), minName);
-
-                                    string countText = $"{approxSign}{kvp.Value}";
-                                    float countWidth = ImGui.CalcTextSize(countText).X;
-
-                                    ImGui.SameLine(innerAvailX - countWidth - ImGui.GetStyle().ItemSpacing.X);
-                                    ImGui.SetCursorPosY(startY + textOffsetY);
-                                    ImGui.TextColored(new Vector4(0, 1, 0.5f, 1), countText);
-
-                                    ImGui.SetCursorPosY(startY + rowHeight);
-                                }
-                            }
-                            ImGui.EndChild();
-                            ImGui.PopStyleVar();
-                        }
-                    }
-                    else
-                    {
-                        string emptyText = "Start scanning to collect data.";
-                        float textW = ImGui.CalcTextSize(emptyText).X;
-                        float textH = ImGui.GetTextLineHeight();
-                        ImGui.SetCursorPos(new Vector2((ImGui.GetWindowWidth() - textW) * 0.5f, (ImGui.GetContentRegionAvail().Y - textH) * 0.5f));
-                        ImGui.TextColored(new Vector4(0.9f, 0.9f, 0.9f, 1f), emptyText);
-                    }
-                }
-                ImGui.EndChild();
-
-                if (_hasPower)
-                {
-                    ImGui.SetCursorPosY(windowHeight - buttonHeight - padding);
-                    float totalBtnWidth = windowWidth * 0.6f;
-
-                    ApplyButtonStyles();
-
-                    if (analyzerBlock.IsScanning)
-                    {
-                        ImGui.SetCursorPosX((windowWidth - totalBtnWidth) * 0.5f);
-
-                        if (ImGui.Button("Cancel Scan", new Vector2(totalBtnWidth, buttonHeight)))
-                        {
-                            clickSound?.Play();
-                            AnalyzerNetwork.Request(analyzerBlock, AnalyzerAction.Cancel);
-                        }
-                    }
-                    else if (analyzerBlock.ScanComplete)
-                    {
-                        float btnWidth = (totalBtnWidth - ImGui.GetStyle().ItemSpacing.X) * 0.5f;
-                        ImGui.SetCursorPosX((windowWidth - totalBtnWidth) * 0.5f);
-
-                        if (ImGui.Button("Rescan", new Vector2(btnWidth, buttonHeight)))
-                        {
-                            clickSound?.Play();
-                            AnalyzerNetwork.Request(analyzerBlock, AnalyzerAction.Start);
-                        }
-
-                        ImGui.SameLine();
-
-                        if (ImGui.Button("Clear Data", new Vector2(btnWidth, buttonHeight)))
-                        {
-                            clickSound?.Play();
-                            AnalyzerNetwork.Request(analyzerBlock, AnalyzerAction.Clear);
-                        }
-                    }
-                    else
-                    {
-                        ImGui.SetCursorPosX((windowWidth - totalBtnWidth) * 0.5f);
-
-                        if (ImGui.Button("Scan Asteroid", new Vector2(totalBtnWidth, buttonHeight)))
-                        {
-                            clickSound?.Play();
-                            AnalyzerNetwork.Request(analyzerBlock, AnalyzerAction.Start);
-                        }
-                    }
-
-                    PopButtonStyles();
-                }
-            }
-            ImGui.End();
-            ImGui.PopStyleVar();
+        public static void Request(AnalyzerAction action)
+        {
+            if (analyzerBlock == null) return;
+            clickSound?.Play();
+            AnalyzerNetwork.Request(analyzerBlock, action);
         }
 
         public static void Dispose()

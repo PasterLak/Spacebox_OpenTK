@@ -5,9 +5,7 @@ namespace Spacebox.Game.GUI.Canvas.Items;
 public static class SlotDrag
 {
     public static ItemSlot Source { get; private set; }
-    public static ItemSlot PendingImGuiDrop { get; private set; }
     public static bool IsActive => Source != null;
-    public static Func<bool> IsPointerOverOtherUi { get; set; } = () => false;
 
     public static void Begin(ItemSlot slot)
     {
@@ -17,7 +15,6 @@ public static class SlotDrag
     public static void Cancel()
     {
         Source = null;
-        PendingImGuiDrop = null;
     }
 
     public static void Release(CanvasRoot root)
@@ -34,25 +31,7 @@ public static class SlotDrag
             return;
         }
 
-        if (IsPointerOverOtherUi())
-        {
-            PendingImGuiDrop = source;
-            return;
-        }
-
         if (hovered == null) SlotTransfer.DropInWorld(source);
-    }
-
-    public static ItemSlot TakePendingImGuiDrop()
-    {
-        var slot = PendingImGuiDrop;
-        PendingImGuiDrop = null;
-        return slot;
-    }
-
-    public static void BeginFrame()
-    {
-        PendingImGuiDrop = null;
     }
 
     public static ISlotDropTarget FindTarget(Control control)

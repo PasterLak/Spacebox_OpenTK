@@ -32,6 +32,7 @@ public sealed class HudView : SafeArea
         AddOverlay(new Hud.RepairTargetControl());
         AddOverlay(new Hud.ItemControlsControl());
         AddOverlay(new Hud.GravityIndicatorControl());
+        AddOverlay(new Hud.ShipHudControl());
         AddOverlay(new Hud.FpsCounterControl());
         _itemName.Above = _column;
         AddOverlay(_itemName);
