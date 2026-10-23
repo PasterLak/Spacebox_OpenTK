@@ -24,6 +24,20 @@ public sealed class ShipPilotSeats
         return _seats.Remove(peer, out seat);
     }
 
+    public bool TryReleaseSeat(PilotSeat seat, out int peer)
+    {
+        foreach (var pair in _seats)
+        {
+            if (pair.Value != seat) continue;
+            peer = pair.Key;
+            _seats.Remove(peer);
+            return true;
+        }
+
+        peer = 0;
+        return false;
+    }
+
     public bool IsPilotOf(int peer, PilotSeat seat)
     {
         return _seats.TryGetValue(peer, out var current) && current == seat;

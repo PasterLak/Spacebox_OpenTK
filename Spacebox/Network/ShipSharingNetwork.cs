@@ -18,7 +18,7 @@ public static class ShipSharingNetwork
         network.Messages.Register<ShipPlaceRequestMessage>(OnPlaceRequest);
     }
 
-    public static void RequestPlace(CompoundTag shipEntity, Vector3 center, Quaternion rotation, Action<string, bool> report)
+    public static void RequestPlace(CompoundTag shipEntity, Vector3 center, Quaternion rotation, Vector3 placerPosition, Action<string, bool> report)
     {
         var network = NetworkManager.Instance;
         if (network.IsRemoteClient)
@@ -28,13 +28,19 @@ public static class ShipSharingNetwork
             return;
         }
 
-        bool placed = Place(shipEntity, center, rotation, GameSession.PlayerName, out string message);
+        bool placed = Place(shipEntity, center, rotation, GameSession.PlayerName, ProtectionNetwork.CanPeerEdit(network.LocalPeerId), placerPosition, out string message);
         report?.Invoke(message, placed);
     }
 
-    private static bool Place(CompoundTag shipEntity, Vector3 center, Quaternion rotation, string owner, out string message)
+    public static string CheckLocal(ShipPlacementBounds bounds, Vector3 placerPosition)
     {
-        if (!ShipPlacer.TryPlace(shipEntity, center, rotation, owner, out message, out var entity)) return false;
+        var network = NetworkManager.Instance;
+        return ShipPlacementCheck.Find(bounds, GameSession.PlayerName, ProtectionNetwork.CanPeerEdit(network.LocalPeerId), placerPosition);
+    }
+
+    private static bool Place(CompoundTag shipEntity, Vector3 center, Quaternion rotation, string owner, bool isAdmin, Vector3? placerPosition, out string message)
+    {
+        if (!ShipPlacer.TryPlace(shipEntity, center, rotation, owner, isAdmin, placerPosition, out message, out var entity)) return false;
 
         Debug.Log($"[Ships] {owner} placed ship {entity.EntityID} at {entity.PositionWorld}");
         if (NetworkManager.Instance.IsServer && NetworkManager.Instance.IsActive) SectorNetwork.BroadcastManifest(entity.Sector);
@@ -53,7 +59,8 @@ public static class ShipSharingNetwork
             try
             {
                 var entity = ShipFileCodec.FromBytes(message.Data);
-                bool placed = Place(entity, message.Center, message.Rotation, name, out error);
+                var placer = Combat.PlayerHitboxes.FindPlayer(sender);
+                bool placed = Place(entity, message.Center, message.Rotation, name, ProtectionNetwork.CanPeerEdit(sender), placer?.Position, out error);
                 ChatService.SendToPlayer(name, error, placed ? Color4.LightGreen : Color4.OrangeRed);
                 return;
             }

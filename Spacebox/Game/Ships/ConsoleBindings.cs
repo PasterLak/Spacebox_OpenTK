@@ -46,7 +46,7 @@ public sealed class ConsoleBindings
 
     public void SetKey(int group, int key)
     {
-        if (group < 0 || group >= _keys.Length || _keys[group] == key) return;
+        if (group < 0 || group >= _keys.Length || _keys[group] == key || !ShipKeys.IsValid(key)) return;
         _keys[group] = key;
         Version++;
     }

@@ -202,18 +202,23 @@ public sealed class ShipCollider
         float reach = Radius + QueryMargin;
         foreach (var sector in world.LoadedSectors)
         {
-            var entities = sector.Entities;
-            if (entities == null || DistanceSquaredToBox(sector.BoundingBox, centerOfMassWorld) > reach * reach) continue;
+            if (sector.Entities == null || DistanceSquaredToBox(sector.BoundingBox, centerOfMassWorld) > reach * reach) continue;
 
-            for (int i = 0; i < entities.Count; i++)
-            {
-                var other = entities[i];
-                if (other == _entity || other.IsDisposed || other.Chunks.Count == 0) continue;
-                if (DistanceSquaredToBounds(other, centerOfMassWorld) <= reach * reach) _nearby.Add(other);
-            }
+            AddNearby(sector.Entities, centerOfMassWorld, reach);
+            if (sector.Visitors != null) AddNearby(sector.Visitors, centerOfMassWorld, reach);
         }
 
         return _nearby.Count > 0;
+    }
+
+    private void AddNearby(IReadOnlyList<SpaceEntity> entities, Vector3 centerOfMassWorld, float reach)
+    {
+        for (int i = 0; i < entities.Count; i++)
+        {
+            var other = entities[i];
+            if (other == _entity || other.IsDisposed || other.Chunks.Count == 0) continue;
+            if (DistanceSquaredToBounds(other, centerOfMassWorld) <= reach * reach && !_nearby.Contains(other)) _nearby.Add(other);
+        }
     }
 
     private static bool IsInsideSolid(SpaceEntity entity, Vector3 world)

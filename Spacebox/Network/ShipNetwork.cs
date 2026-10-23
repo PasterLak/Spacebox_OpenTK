@@ -208,6 +208,7 @@ public static class ShipNetwork
     private static readonly List<(Vector3i, ConsoleCommand)> _commandScratch = new List<(Vector3i, ConsoleCommand)>();
     private static readonly List<Vector3i> _cellScratch = new List<Vector3i>();
     private static int _tickCounter;
+    private static PilotSeat? _localSeat;
 
     public static void Register(NetworkManager network)
     {
@@ -223,12 +224,14 @@ public static class ShipNetwork
         ShipWeapons.Register();
         ShipWeapons.ShotFired += OnShotFired;
         ShipControlSystem.BindingsChanged += OnBindingsChanged;
+        ShipControlSystem.ConsoleRemoved += OnConsoleRemoved;
         Time.OnTick += OnTick;
     }
 
     public static void Reset()
     {
         _pilots.Clear();
+        _localSeat = null;
         _movingLastTick.Clear();
         _movingThisTick.Clear();
         _restRepeats.Clear();
@@ -261,17 +264,38 @@ public static class ShipNetwork
         }, DeliveryMode.Sequenced);
     }
 
-    public static void SendMount(ShipConsoleBlock console, bool mount)
+    public static bool TryMount(ShipConsoleBlock console)
     {
         var entity = console?.Entity;
-        if (entity == null) return;
+        if (entity == null) return false;
 
-        if (!mount) entity.ShipControl.ClearCommand(console.LocalCell);
+        var seat = new PilotSeat(entity.EntityID, console.LocalCell);
+        var network = NetworkManager.Instance;
+        if (network.IsServer && !_pilots.TryTake(network.LocalPeerId, seat)) return false;
+
+        _localSeat = seat;
+        if (network.IsRemoteClient)
+            network.SendToServer(new ShipMountMessage { EntityId = seat.EntityId, ConsoleCell = seat.Cell, Mount = true });
+        return true;
+    }
+
+    public static void SendUnmount()
+    {
+        if (_localSeat is not { } seat) return;
+        _localSeat = null;
+
+        if (World.Instance != null && World.Instance.TryFindEntity(seat.EntityId, out var entity))
+            entity.ShipControl.ClearCommand(seat.Cell);
 
         var network = NetworkManager.Instance;
-        if (!network.IsRemoteClient) return;
+        if (network.IsServer)
+        {
+            if (_pilots.IsPilotOf(network.LocalPeerId, seat)) _pilots.TryRelease(network.LocalPeerId, out _);
+            return;
+        }
 
-        network.SendToServer(new ShipMountMessage { EntityId = entity.EntityID, ConsoleCell = console.LocalCell, Mount = mount });
+        if (network.IsRemoteClient)
+            network.SendToServer(new ShipMountMessage { EntityId = seat.EntityId, ConsoleCell = seat.Cell, Mount = false });
     }
 
     public static void RequestCycleBinding(SpaceEntity entity, Vector3i consoleCell, Vector3i targetCell, int direction = 1)
@@ -399,6 +423,19 @@ public static class ShipNetwork
             entity.ShipControl.ClearCommand(pilot.Cell);
     }
 
+    private static void OnConsoleRemoved(ShipControlSystem control, Vector3i consoleCell)
+    {
+        var network = NetworkManager.Instance;
+        if (network == null || !network.IsServer) return;
+
+        var seat = new PilotSeat(control.Entity.EntityID, consoleCell);
+        while (_pilots.TryReleaseSeat(seat, out int peer))
+        {
+            if (peer == network.LocalPeerId || network.Mode == NetworkMode.Offline) continue;
+            network.Send(peer, new ShipMountMessage { EntityId = seat.EntityId, ConsoleCell = seat.Cell, Mount = false });
+        }
+    }
+
     private static void OnBindingRequest(int sender, ShipBindingRequestMessage message)
     {
         if (!NetworkManager.Instance.IsServer) return;
@@ -419,7 +456,7 @@ public static class ShipNetwork
                 control.ToggleCamera(message.ConsoleCell, message.TargetCell);
                 break;
             case ShipBindingRequestMessage.OperationKey:
-                control.SetKey(message.ConsoleCell, message.Group, message.Key);
+                if (ShipKeys.IsValid(message.Key)) control.SetKey(message.ConsoleCell, message.Group, message.Key);
                 break;
         }
     }

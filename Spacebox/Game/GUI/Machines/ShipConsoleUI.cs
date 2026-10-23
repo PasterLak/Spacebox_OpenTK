@@ -32,6 +32,9 @@ public sealed class ShipConsoleUI : IGameUiController
     public ShipConsoleBlock Console => ShipPilot.Console;
     public ConsoleBindings Bindings => Console?.Entity?.ShipControl.GetBindings(Console.LocalCell);
 
+    public static string UseKeyName => KeyNames.ForAction("use") ?? "Use";
+    public static string BindingHelp => $"Binding: LMB or mouse wheel changes group (camera: toggle), {UseKeyName} exits";
+
     public string HudText
     {
         get
@@ -41,7 +44,7 @@ public sealed class ShipConsoleUI : IGameUiController
 
             float speed = console.Entity.Ship?.Motion.Velocity.Length ?? 0f;
             return ShipBindingTool.IsActive
-                ? $"BINDING  {ShipBindingTool.DescribeHovered() ?? "Look at a ship block"}\nLMB / wheel: change group   RMB: open door or back to seat"
+                ? $"BINDING  {ShipBindingTool.DescribeHovered() ?? "Look at a ship block"}\nLMB / wheel: change group   {UseKeyName}: open door or back to seat"
                 : $"Speed {speed:0.0} m/s\nInventory key: console   Use: leave";
         }
     }

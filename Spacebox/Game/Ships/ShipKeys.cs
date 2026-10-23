@@ -19,6 +19,11 @@ public static class ShipKeys
         return group >= 0 && group < DefaultGroupKeys.Length ? (int)DefaultGroupKeys[group] : None;
     }
 
+    public static bool IsValid(int key)
+    {
+        return key == None || key == MouseLeft || key == MouseRight || (key > 0 && Enum.IsDefined(typeof(Keys), key));
+    }
+
     public static bool IsHeld(int key)
     {
         return key switch

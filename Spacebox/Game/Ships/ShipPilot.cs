@@ -13,6 +13,7 @@ public static class ShipPilot
 {
     private const float AimDistance = 300f;
     private const float RollSpeed = 1000f;
+    private const string SeatTakenMessage = "This console is already in use.";
 
     private static LocalAstronaut _player;
     private static Vector3 _seatLocal;
@@ -37,6 +38,11 @@ public static class ShipPilot
         if (console?.Entity == null || player == null || !player.IsAlive) return;
         if (!Spacebox.Game.Protection.EntityProtection.CheckLocalUse(console.Entity)) return;
         if (IsPiloting) Unmount(player);
+        if (!Spacebox.Network.ShipNetwork.TryMount(console))
+        {
+            Spacebox.Game.GUI.Chat.Write(SeatTakenMessage, Color4.Red);
+            return;
+        }
 
         Console = console;
         _player = player;
@@ -50,7 +56,6 @@ public static class ShipPilot
         FaceConsole(player, console);
 
         Spacebox.Game.GUI.PanelUI.BlockHands();
-        Spacebox.Network.ShipNetwork.SendMount(console, true);
         Mounted?.Invoke(console);
     }
 
@@ -66,7 +71,7 @@ public static class ShipPilot
         }
 
         SetViewCamera(null, player);
-        Spacebox.Network.ShipNetwork.SendMount(console, false);
+        Spacebox.Network.ShipNetwork.SendUnmount();
         ShipBindingTool.Exit();
         Spacebox.Game.GUI.PanelUI.UnblockHands();
         Console = null;

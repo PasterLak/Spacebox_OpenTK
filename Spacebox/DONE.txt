@@ -141,6 +141,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- ships: invalid console keys are rejected, pilots lose the seat when the console is destroyed, one pilot per console (host too), ships collide with entities from neighbour sectors, saved ships cannot be placed into blocks, players or foreign claims (red outline), console help shows the real use key
 - server: rejoining before a save keeps the unsaved player data, offline game mode changes are kept on save, /save from chat no longer re-enters the network loop, bans during login apply, restart relaunches even if cleanup fails, gifts are kept when the giver leaves mid-gift, stuck ship states are dropped
 - item duplication: remote players' files are written only with the world (no more keeping chest items after "Don't Save" or a crash); the Spacer gives its loot once per world; window/reinforced window crush into 3/4 sand (was a sand loop); exploding blocks no longer drop themselves; players without creative inventory can't deposit into chests unchecked
 - bullets that ricochet off a bomb no longer make it explode

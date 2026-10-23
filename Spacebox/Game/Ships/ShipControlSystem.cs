@@ -27,6 +27,7 @@ public sealed class ShipControlSystem
 
     public static event Action<ShipControlSystem, CannonBlock> CannonFired;
     public static event Action<ShipControlSystem, Vector3i> BindingsChanged;
+    public static event Action<ShipControlSystem, Vector3i> ConsoleRemoved;
 
     public ShipControlSystem(SpaceEntity entity)
     {
@@ -71,6 +72,7 @@ public sealed class ShipControlSystem
             case ShipConsoleBlock console:
                 _bindings.Remove(console.LocalCell);
                 _commands.Remove(console.LocalCell);
+                ConsoleRemoved?.Invoke(this, console.LocalCell);
                 break;
         }
 

@@ -36,7 +36,7 @@ public sealed class ShipConsoleWindow : GameWindow
         bind.Pressed += _ => _shipConsole.BindBlocks();
         var leave = actions.AddChild(new Button { Text = "Leave seat", SizeFlagsHorizontal = SizeFlags.ExpandFill });
         leave.Pressed += _ => _shipConsole.LeaveSeat();
-        Body.AddChild(new Label { Text = "Binding: LMB or mouse wheel changes group (camera: toggle), RMB exits", ThemeTypeVariation = "MutedLabel", Autowrap = true, CustomMinimumSize = new Vector2(Width, 0f) });
+        Body.AddChild(new Label { Text = ShipConsoleUI.BindingHelp, ThemeTypeVariation = "MutedLabel", Autowrap = true, CustomMinimumSize = new Vector2(Width, 0f) });
     }
 
     public override bool IsOpen => _shipConsole.IsOpen && _shipConsole.Bindings != null;

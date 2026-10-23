@@ -20,7 +20,13 @@ public static class ShipPlacer
 
     public static Vector3 OriginFor(Vector3 center, Vector3 localCenter, Quaternion rotation) => center - Vector3.Transform(localCenter, rotation);
 
-    public static bool TryPlace(CompoundTag shipEntity, Vector3 center, Quaternion rotation, string owner, out string message, out SpaceEntity placed)
+    public static ShipPlacementBounds BoundsOf(CompoundTag shipEntity, Vector3 center, Quaternion rotation)
+    {
+        var stats = ShipTagReader.Measure(shipEntity);
+        return ShipPlacementBounds.FromLocal((Vector3)stats.Min, (Vector3)stats.Max, center, rotation);
+    }
+
+    public static bool TryPlace(CompoundTag shipEntity, Vector3 center, Quaternion rotation, string owner, bool isAdmin, Vector3? placerPosition, out string message, out SpaceEntity placed)
     {
         placed = null;
         message = ShipImportTag.Validate(shipEntity);
@@ -32,6 +38,9 @@ public static class ShipPlacer
         }
 
         rotation = rotation.Normalized();
+        message = ShipPlacementCheck.Find(BoundsOf(shipEntity, center, rotation), owner, isAdmin, placerPosition);
+        if (message != null) return false;
+
         var origin = OriginFor(center, CenterOf(shipEntity), rotation);
         var sector = World.SectorAt(origin);
         if (sector == null)

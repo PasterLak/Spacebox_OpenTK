@@ -30,7 +30,10 @@ public static class ConsoleBindingsCodec
         var bindings = new ConsoleBindings(groupCount, weapons);
 
         for (int i = 0; i < groupCount; i++)
-            bindings.SetKey(i, reader.ReadInt());
+        {
+            int key = reader.ReadInt();
+            bindings.SetKey(i, ShipKeys.IsValid(key) ? key : ShipKeys.None);
+        }
 
         if (reader.ReadBool()) bindings.SetCamera(reader.ReadVector3i());
 

@@ -12,7 +12,10 @@ public static class ShipPlacementMode
     private const float MaxDistance = 200f;
     private const float Thickness = 0.08f;
 
+    private const float CheckInterval = 0.2f;
+
     private static readonly Color4 OutlineColor = new Color4(0.45f, 0.85f, 1f, 0.9f);
+    private static readonly Color4 BlockedColor = new Color4(1f, 0.25f, 0.2f, 0.9f);
 
     private static ShipFile _ship;
     private static Vector3 _localCenter;
@@ -25,6 +28,8 @@ public static class ShipPlacementMode
     private static bool _unblockPending;
     private static bool _alignPending;
     private static ShipPlacementPreview _preview;
+    private static string _blockedReason;
+    private static float _nextCheck;
 
     public static bool IsActive => _ship != null;
 
@@ -46,6 +51,8 @@ public static class ShipPlacementMode
         _frameKnown = false;
         _turned = false;
         _alignPending = true;
+        _blockedReason = null;
+        _nextCheck = 0f;
         _distance = Math.Clamp(_halfSize.Length + 4f, MinDistance, MaxDistance);
         if (_unblockPending) _unblockPending = false;
         else PanelUI.BlockHands();
@@ -96,7 +103,14 @@ public static class ShipPlacementMode
         if (!IsActive) return;
 
         var center = player.Position + player.Front * _distance;
-        WorldLines.DrawBox(_localCenter - _halfSize, _localCenter + _halfSize, OutlineColor, Thickness, local => center + Vector3.Transform(local - _localCenter, _rotation));
+        if (Time.Total >= _nextCheck)
+        {
+            _nextCheck = Time.Total + CheckInterval;
+            _blockedReason = Spacebox.Network.ShipSharingNetwork.CheckLocal(new ShipPlacementBounds(center, _halfSize, _rotation), player.Position);
+        }
+
+        var color = _blockedReason == null ? OutlineColor : BlockedColor;
+        WorldLines.DrawBox(_localCenter - _halfSize, _localCenter + _halfSize, color, Thickness, local => center + Vector3.Transform(local - _localCenter, _rotation));
         _preview?.SetPose(_localCenter, _rotation, center);
     }
 
@@ -143,7 +157,15 @@ public static class ShipPlacementMode
 
         var ship = _ship;
         var center = player.Position + player.Front * _distance;
-        Spacebox.Network.ShipSharingNetwork.RequestPlace(ship.Entity, center, _rotation, (message, ok) => Chat.Write(message, ok ? Color4.LightGreen : Color4.OrangeRed));
+        string blocked = Spacebox.Network.ShipSharingNetwork.CheckLocal(new ShipPlacementBounds(center, _halfSize, _rotation), player.Position);
+        if (blocked != null)
+        {
+            _blockedReason = blocked;
+            Chat.Write(blocked, Color4.OrangeRed);
+            return;
+        }
+
+        Spacebox.Network.ShipSharingNetwork.RequestPlace(ship.Entity, center, _rotation, player.Position, (message, ok) => Chat.Write(message, ok ? Color4.LightGreen : Color4.OrangeRed));
         Cancel();
     }
 

@@ -77,4 +77,18 @@ public class ShipPilotSeatsTests
         Assert.False(seats.IsTaken(Console));
         Assert.False(seats.IsTaken(OtherConsole));
     }
+
+    [Fact]
+    public void TryReleaseSeat_FreesSeatAndReturnsPilot()
+    {
+        var seats = new ShipPilotSeats();
+        seats.TryTake(2, Console);
+        seats.TryTake(3, OtherConsole);
+
+        Assert.True(seats.TryReleaseSeat(Console, out int peer));
+        Assert.Equal(2, peer);
+        Assert.False(seats.IsTaken(Console));
+        Assert.True(seats.IsPilotOf(3, OtherConsole));
+        Assert.False(seats.TryReleaseSeat(Console, out _));
+    }
 }
