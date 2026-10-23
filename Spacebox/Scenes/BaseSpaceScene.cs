@@ -385,7 +385,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Network.Players.PlayerGameModes.Current.Reset();
         Spacebox.Game.Protection.ClaimVisuals.Reset();
         Spacebox.Game.Protection.ClaimSettings.ClearOverride();
-        CreativeTools.Reset();
+        CreativeTools.ClearSession();
         Spacebox.Game.Pictures.PictureFrameInteraction.Reset();
         Spacebox.Network.Players.PlayerSkinStore.Reset();
         if (!GameSession.IsDedicated)

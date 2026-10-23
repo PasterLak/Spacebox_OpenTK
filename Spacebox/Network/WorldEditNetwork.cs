@@ -9,6 +9,7 @@ using Spacebox.Game.Generation.Tools;
 using Spacebox.Network.Messages;
 using Spacebox.Game.GUI;
 using Spacebox.Game.Player;
+using Spacebox.Game.Player.Building;
 
 namespace Spacebox.Network;
 
@@ -18,6 +19,7 @@ public static class WorldEditNetwork
     {
         network.Messages.Register<BlockEditMessage>(OnBlockEdit);
         network.Messages.Register<BulkBlockEditMessage>(OnBulkEdit);
+        network.Messages.Register<PasteBlocksMessage>(OnPaste);
         network.Messages.Register<BlockDamageMessage>(OnBlockDamage);
         network.Messages.Register<BlockPlaceRefundMessage>(OnPlaceRefund);
         network.Messages.Register<BlockRepairMessage>(OnBlockRepair);
@@ -157,6 +159,61 @@ public static class WorldEditNetwork
         BulkBlockEdit.Apply(entity, min, max, blockId);
         if (network.IsActive) network.SendToClients(message);
         return true;
+    }
+
+    public static bool RequestPaste(SpaceEntity entity, Vector3i min, BlockClipboard clipboard)
+    {
+        if (entity == null || clipboard == null) return false;
+
+        var cells = new List<ClipboardCell>(clipboard.Cells);
+        if (!BlockPaste.TryValidate(min, clipboard.Size, cells, out var error))
+        {
+            Debug.Warning($"[WorldEdit] {error}");
+            return false;
+        }
+
+        var network = NetworkManager.Instance;
+        var message = new PasteBlocksMessage { EntityId = entity.EntityID, Min = min, Size = clipboard.Size, Cells = cells };
+        if (network.IsRemoteClient)
+        {
+            network.SendToServer(message);
+            return true;
+        }
+
+        BlockPaste.Apply(entity, min, cells);
+        if (network.IsActive) network.SendToClients(message);
+        return true;
+    }
+
+    private static void OnPaste(int sender, PasteBlocksMessage message)
+    {
+        var network = NetworkManager.Instance;
+        if (sender == network.LocalPeerId) return;
+        if (RemoteEntityBacklog.TryDefer(message.EntityId, () => OnPaste(sender, message))) return;
+
+        if (!BlockPaste.TryValidate(message.Min, message.Size, message.Cells, out var error))
+        {
+            Debug.Warning($"[WorldEdit] Rejected paste from peer {sender}: {error}");
+            return;
+        }
+
+        if (network.IsServer && !Players.PlayerGameModeService.RulesOf(PlayerRegistry.GetName(sender)).AreaTools)
+        {
+            ChatService.SendToPlayer(PlayerRegistry.GetName(sender), "Your game mode cannot paste blocks", OpenTK.Mathematics.Color4.Red);
+            return;
+        }
+
+        var world = World.Instance;
+        if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
+        var max = message.Min + message.Size - Vector3i.One;
+        if (network.IsServer && ProtectionNetwork.BlocksPeerBox(sender, entity, message.Min, max))
+        {
+            ProtectionNetwork.Deny(sender);
+            return;
+        }
+
+        BlockPaste.Apply(entity, message.Min, message.Cells);
+        if (network.IsServer) network.SendToClients(message);
     }
 
     private static bool CanDamage(int sender)

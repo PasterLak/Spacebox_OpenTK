@@ -311,6 +311,10 @@ namespace Spacebox.Game.GUI
                 player.SetInteraction(new InteractionSpawnMob(SelectedSlot));
             else if (IsHolding<EraserToolItem>())
                 player.SetInteraction(new InteractionEraser());
+            else if (IsHolding<FillToolItem>())
+                player.SetInteraction(new InteractionFill());
+            else if (IsHolding<CopyToolItem>())
+                player.SetInteraction(new InteractionCopyPaste());
             else if (IsHolding<CameraPointItem>())
                 player.SetInteraction(new InteractionCameraPoint(ItemModel));
             else

@@ -5,7 +5,7 @@ namespace Spacebox.Game.Player.GameModes;
 public static class GameModeInteractions
 {
     private static readonly Type[] BreakingTypes = { typeof(InteractionDestroyBlockSurvival), typeof(InteractionDestroyBlockCreative), typeof(InteractionEraser) };
-    private static readonly Type[] PlacingTypes = { typeof(InteractionPlaceBlock) };
+    private static readonly Type[] PlacingTypes = { typeof(InteractionPlaceBlock), typeof(InteractionFill), typeof(InteractionCopyPaste) };
     private static readonly Type[] WeaponTypes = { typeof(InteractionShoot) };
 
     public static HashSet<Type> Filter(HashSet<Type> allowed, GameModeRules rules)

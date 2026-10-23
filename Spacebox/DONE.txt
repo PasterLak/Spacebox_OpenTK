@@ -26,6 +26,8 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- creative Fill Tool (bucket): select an area, Alt+click picks the block, Enter fills the empty cells (works in multiplayer)
+- creative Copy Tool: select an area, Enter copies, LMB pastes with a box preview, R rotates (works in multiplayer)
 - radar works: shows nearby ships, players and mobs as they are swept (colours per kind); round display without gray corners; energy use in the title
 - commands: /hit [player] <damage>, /set <hp|power|air> <value> [player], /skin <color> [player] (synced, saved per world in skins.nbt)
 - server statistics: most players today and ever, players per day, joins, different players, play time, running time; stats command and dashboard panel

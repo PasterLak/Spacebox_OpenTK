@@ -12,6 +12,8 @@ namespace Spacebox.Game.Player
     {
         public static BlockPointer Block1 { get; private set; } = null;
         public static BlockPointer Block2 { get; private set; } = null;
+        public static short FillBlockId { get; set; }
+        public static Spacebox.Game.Player.Building.BlockClipboard Clipboard { get; set; }
 
         public static void SetPoint1(BlockPointer blockPointer)
         {
@@ -87,6 +89,31 @@ namespace Spacebox.Game.Player
                 return;
             }
 
+            ApplyBox(blockId);
+        }
+
+        public static void FillBlocks(short blockId)
+        {
+            if (blockId == BulkBlockEdit.EraseBlockId || Block1?.spaceEntity == null || Block2?.spaceEntity == null || Block1.spaceEntity != Block2.spaceEntity)
+            {
+                Reset();
+                return;
+            }
+
+            ApplyBox(blockId);
+        }
+
+        public static bool HasFullSelection => Block1?.spaceEntity != null && Block2?.spaceEntity != null && Block1.spaceEntity == Block2.spaceEntity;
+
+        public static void ClearSession()
+        {
+            Reset();
+            FillBlockId = 0;
+            Clipboard = null;
+        }
+
+        private static void ApplyBox(short blockId)
+        {
             if (Spacebox.Game.Protection.EntityProtection.CheckLocalEditBox(Block1.spaceEntity, Vector3i.ComponentMin(Block1.Cell, Block2.Cell), Vector3i.ComponentMax(Block1.Cell, Block2.Cell))) WorldEditNetwork.RequestBulkEdit(Block1.spaceEntity, Block1.Cell, Block2.Cell, blockId);
             Reset();
         }

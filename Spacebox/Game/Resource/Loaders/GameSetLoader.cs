@@ -480,6 +480,8 @@ public static class GameSetLoader
 
             RegisterEraserItem();
             RegisterEraserItem2();
+            RegisterFillItem();
+            RegisterCopyItem();
         }
         catch (Exception ex)
         {
@@ -890,6 +892,28 @@ public static class GameSetLoader
         GameAssetsRegister.RegisterItem(camPoint, "cameraPoint");
     }
 
+
+    private static void RegisterFillItem()
+    {
+        var fill = new FillToolItem("Fill Tool", 2f)
+        {
+            Id_string = "default:fill_tool",
+            Namespace = "default",
+            Description = "LMB - select block 1\nRMB - select block 2\nAlt+LMB - pick the block to fill with\nMMB - reset\nEnter - fill empty cells"
+        };
+        GameAssetsRegister.RegisterItem(fill, "fillTool");
+    }
+
+    private static void RegisterCopyItem()
+    {
+        var copy = new CopyToolItem("Copy Tool", 2f)
+        {
+            Id_string = "default:copy_tool",
+            Namespace = "default",
+            Description = "LMB / RMB - select corners\nEnter - copy\nThen: LMB - paste, R - rotate, RMB - new selection"
+        };
+        GameAssetsRegister.RegisterItem(copy, "copyTool");
+    }
 
     private static Item RegisterConsumableItem(ConsumableItemJSON data, string id)
     {

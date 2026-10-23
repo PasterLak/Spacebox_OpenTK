@@ -25,6 +25,8 @@ public class CreativeMode : MovementMode
             typeof(InteractionShoot),
             typeof(InteractionDefault),
             typeof(InteractionEraser),
+            typeof(InteractionFill),
+            typeof(InteractionCopyPaste),
             typeof(InteractionRepair),
             typeof(InteractionCameraPoint)
         }, rules);
