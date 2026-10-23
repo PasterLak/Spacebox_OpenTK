@@ -277,6 +277,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             {
                 Spacebox.Game.Ships.Sharing.ShipPlacementMode.Cancel();
             }
+            else if (Spacebox.Game.GUI.Canvas.GameCanvas.HadOpenDialog)
+            {
+            }
             else if (UIManager.IsUIMode)
             {
                 UIManager.CloseTop();
@@ -337,15 +340,11 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
     public override void OnGUI()
     {
-        if (WorldLoadingScreen.IsActive)
-        {
-            WorldLoadingScreen.OnGUI();
-            return;
-        }
-
         _gameCanvas?.Render();
+        if (WorldLoadingScreen.IsActive) return;
+
         base.OnGUI();
-        ColorOverlay.OnGUI();
+        ColorOverlay.Update();
 
         radarWindow?.Update();
         ResourceProcessingGUI.Update();
@@ -356,8 +355,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         StorageUI.Update();
         Chat.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialUI.OnGUI();
-        WelcomeUI.OnGUI();
-        PauseUI.OnGUI();
+        WelcomeUI.Update();
+        PauseUI.Update();
         Spacebox.Game.Tutorial.UI.TutorialPromptUI.OnGUI();
         Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
         Spacebox.Game.Ships.Sharing.ShipLibraryUI.OnGUI();
@@ -371,7 +370,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         SignUI.Update();
         ShipConsoleUI.Update();
         DnaReconstructorUI.Update();
-        DnaReconstructionScreen.OnGUI();
 
         if (VisualDebug.Enabled)
         {

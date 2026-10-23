@@ -1,6 +1,4 @@
-using System.Numerics;
 using Engine;
-using ImGuiNET;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
 
@@ -12,14 +10,7 @@ public static class WorldLoadingScreen
     private const float MinDuration = 0.3f;
     private const float MaxDuration = 60f;
     private const float MaxConditionWait = 15f;
-    private const string Title = "Loading world";
-
-    private static readonly uint TitleColor = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f));
-    private static readonly uint StepColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.85f, 0.85f, 1f));
-    private static readonly uint ShadowColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.8f));
-    private static readonly uint BarBackgroundColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.1f, 0.1f, 0.12f, 0.85f));
-    private static readonly uint BarFillColor = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.85f, 0.1f, 1f));
-    private static readonly uint BarBorderColor = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.85f, 0.1f, 0.6f));
+    public const string Title = "Loading world";
 
     private static LocalAstronaut _player;
     private static float _elapsed;
@@ -31,6 +22,8 @@ public static class WorldLoadingScreen
     private static Func<bool> _waitFor;
 
     public static bool IsActive { get; private set; }
+    public static float Progress => _progress;
+    public static string Step => _step;
 
     public static void Begin(LocalAstronaut player, Action onComplete = null, Func<bool> waitFor = null)
     {
@@ -68,26 +61,6 @@ public static class WorldLoadingScreen
         if (isReady || _elapsed >= MaxDuration) Finish();
     }
 
-    public static void OnGUI()
-    {
-        if (!IsActive) return;
-
-        var displaySize = ImGui.GetIO().DisplaySize;
-        var drawList = ImGui.GetForegroundDrawList();
-        var center = displaySize * 0.5f;
-        float lineHeight = ImGui.GetTextLineHeight();
-
-        DrawCenteredText(drawList, Title, new Vector2(center.X, center.Y - lineHeight * 2.2f), TitleColor);
-
-        var barSize = new Vector2(displaySize.Y * 0.5f, displaySize.Y * 0.012f);
-        var barMin = new Vector2(center.X - barSize.X * 0.5f, center.Y);
-        drawList.AddRectFilled(barMin, barMin + barSize, BarBackgroundColor);
-        drawList.AddRectFilled(barMin, barMin + new Vector2(barSize.X * _progress, barSize.Y), BarFillColor);
-        drawList.AddRect(barMin, barMin + barSize, BarBorderColor);
-
-        DrawCenteredText(drawList, _step, new Vector2(center.X, barMin.Y + barSize.Y + lineHeight * 0.8f), StepColor);
-    }
-
     public static void Reset()
     {
         IsActive = false;
@@ -108,13 +81,6 @@ public static class WorldLoadingScreen
         if (work.Chunks > 0) return $"Generating chunks ({work.Chunks})";
         if (work.Meshes > 0) return $"Building meshes ({work.Meshes})";
         return "Finishing";
-    }
-
-    private static void DrawCenteredText(ImDrawListPtr drawList, string text, Vector2 center, uint color)
-    {
-        var position = new Vector2(center.X - ImGui.CalcTextSize(text).X * 0.5f, center.Y);
-        drawList.AddText(position + Vector2.One, ShadowColor, text);
-        drawList.AddText(position, color, text);
     }
 
     private static void Finish()

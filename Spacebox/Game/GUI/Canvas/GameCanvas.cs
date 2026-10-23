@@ -22,6 +22,7 @@ public sealed class GameCanvas : IDisposable
     private readonly CanvasLayer _layer = new CanvasLayer("Game interface");
     private readonly HudView _hud = new HudView();
     private readonly Windows.GameWindowsView _windows = new Windows.GameWindowsView();
+    private readonly Screens.GameScreensView _screens = new Screens.GameScreensView();
     private SkiaCanvasFont _font;
     private GameUiDesign _design = (GameUiDesign)(-1);
     private float _scale = -1f;
@@ -31,6 +32,10 @@ public sealed class GameCanvas : IDisposable
     public static bool DrawsHotbar => true;
 
     public static bool WantsKeyboard => Current != null && Current._layer.Root.WantsKeyboard;
+
+    public static bool HadOpenDialog => Current != null && Current._dialogWasOpen;
+
+    private bool _dialogWasOpen;
 
     public static bool IsPointerOverInteractive
     {
@@ -57,6 +62,7 @@ public sealed class GameCanvas : IDisposable
         root.Add(_hud, UiLayer.Hud);
         _hud.SetAnchorsPreset(LayoutPreset.FullRect);
         root.Add(_windows, UiLayer.Windows);
+        root.Add(_screens, UiLayer.Popup);
         root.Add(new Items.SlotDragGhost(), UiLayer.Popup);
         if (!Application.IsHeadless) _font = new SkiaCanvasFont(Path.Combine(AppContext.BaseDirectory, GameCanvasThemes.FontPath), (int)GameCanvasThemes.FontSize);
         Apply(Settings.Interface);
@@ -79,17 +85,24 @@ public sealed class GameCanvas : IDisposable
 
     public void Update(LocalAstronaut player, float deltaTime)
     {
-        _layer.InputEnabled = UIManager.IsUIMode;
         if (!UIManager.IsUIMode) Items.SlotDrag.Cancel();
         HitMarkerUI.Update(deltaTime);
-        _hud.Refresh(player);
-        _windows.Sync();
+        bool interfaceShown = (Settings.ShowInterface || HudVisibility.ShowHotbar) && !WorldLoadingScreen.IsActive;
+        if (_hud.Visible != interfaceShown) _hud.Visible = interfaceShown;
+        if (_windows.Visible != interfaceShown) _windows.Visible = interfaceShown;
+        if (interfaceShown)
+        {
+            _hud.Refresh(player);
+            _windows.Sync();
+        }
+        _screens.Sync(player?.DeathScreen, deltaTime);
+        _layer.InputEnabled = UIManager.IsUIMode || _screens.WantsInput;
+        _dialogWasOpen = _layer.Root.TryGetLayer(UiLayer.Modal, out var modal) && modal.HasVisibleContent;
         _layer.Update(deltaTime);
     }
 
     public void Render()
     {
-        if (!Settings.ShowInterface && !HudVisibility.ShowHotbar) return;
         _layer.Render();
     }
 

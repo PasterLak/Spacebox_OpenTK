@@ -95,12 +95,20 @@ namespace Spacebox.Game.GUI
             _onUpdate = null;
         }
 
+        public static OpenTK.Mathematics.Color4 CurrentColor => new OpenTK.Mathematics.Color4(_color.X, _color.Y, _color.Z, _currentAlpha);
+
+        public static bool IsVisible => _isEnabled && _isActive;
+
+        public static bool Update()
+        {
+            if (!_isEnabled || !_isActive) return false;
+            UpdateFade();
+            return _isEnabled && _isActive;
+        }
+
         public static void OnGUI()
         {
-            if (!_isEnabled || !_isActive) return;
-
-           
-            UpdateFade();
+            if (!Update()) return;
 
             ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);

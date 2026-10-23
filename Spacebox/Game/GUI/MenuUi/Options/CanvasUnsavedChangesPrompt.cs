@@ -6,12 +6,22 @@ namespace Spacebox.Game.GUI.MenuUi;
 public sealed class CanvasUnsavedChangesPrompt : IUnsavedChangesPrompt
 {
     private readonly ConfirmDialog _dialog = new ConfirmDialog();
+    private readonly Func<CanvasRoot> _root;
+
+    public CanvasUnsavedChangesPrompt() : this(() => MenuCanvas.Current?.Root)
+    {
+    }
+
+    public CanvasUnsavedChangesPrompt(Func<CanvasRoot> root)
+    {
+        _root = root;
+    }
 
     public bool IsOpen => _dialog.IsOpen;
 
     public void Open(Action onSave, Action onDiscard, Action onCancel)
     {
-        var root = MenuCanvas.Current?.Root;
+        var root = _root?.Invoke();
         if (root == null)
         {
             onCancel?.Invoke();

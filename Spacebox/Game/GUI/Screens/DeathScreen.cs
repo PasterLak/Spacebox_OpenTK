@@ -1,8 +1,7 @@
 ﻿using Engine;
 using Engine.Audio;
-using ImGuiNET;
 using Spacebox.Game.Player;
-using System.Numerics;
+using System;
 
 namespace Spacebox.Game.GUI
 {
@@ -14,12 +13,10 @@ namespace Spacebox.Game.GUI
         private float transitionDuration = 2f;
         private float startAlpha = 0.8f;
         private float endAlpha = 0.4f;
-        private Vector4 overlayColor = new Vector4(0.8f, 0.1f, 0.1f, 1f);
+        private OpenTK.Mathematics.Vector3 overlayColor = new OpenTK.Mathematics.Vector3(0.8f, 0.1f, 0.1f);
 
         private string deathMessage = "YOU DIED";
         private string deathCause = "";
-        private string respawnButtonText = "Respawn";
-        private string reconstructButtonText = "Reconstruct from DNA";
 
         private AudioSource deathSound;
         private bool soundPlayed = false;
@@ -54,6 +51,20 @@ namespace Spacebox.Game.GUI
             get => deathCause;
             set => deathCause = value;
         }
+
+        public float Progress => transitionDuration <= 0f ? 1f : OpenTK.Mathematics.MathHelper.Clamp(currentTime / transitionDuration, 0f, 1f);
+
+        public float OverlayAlpha => OpenTK.Mathematics.MathHelper.Lerp(startAlpha, endAlpha, Progress);
+
+        public OpenTK.Mathematics.Color4 OverlayColor => new OpenTK.Mathematics.Color4(overlayColor.X, overlayColor.Y, overlayColor.Z, OverlayAlpha);
+
+        public bool ShowsButtons => Progress >= 1f;
+
+        public bool CanReconstruct => OnReconstruct != null;
+
+        public string Blocker => ReconstructionBlocker?.Invoke();
+
+        public float ParallaxIntensity => parallaxIntensity;
 
         public event Action OnRespawn;
         public event Action OnReconstruct;
@@ -94,192 +105,23 @@ namespace Spacebox.Game.GUI
             currentTime += Time.Delta;
         }
 
-        public void Render()
+        public void Respawn()
         {
             if (!IsVisible) return;
-
-            var displaySize = ImGui.GetIO().DisplaySize;
-
-            float progress = OpenTK.Mathematics.MathHelper.Clamp(currentTime / transitionDuration, 0f, 1f);
-            float currentAlpha = OpenTK.Mathematics.MathHelper.Lerp(startAlpha, endAlpha, progress);
-
-            ImGui.SetNextWindowPos(Vector2.Zero);
-            ImGui.SetNextWindowSize(displaySize);
-
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(overlayColor.X, overlayColor.Y, overlayColor.Z, currentAlpha));
-
-            if (ImGui.Begin("DeathOverlay", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoBringToFrontOnFocus))
-            {
-                ImGui.End();
-            }
-
-            ImGui.PopStyleColor();
-            ImGui.PopStyleVar(3);
-
-            RenderUI(displaySize, progress);
+            Hide();
+            OnRespawn?.Invoke();
         }
 
-        private void RenderUI(Vector2 displaySize, float progress)
+        public void Reconstruct()
         {
-            ImGui.SetNextWindowPos(Vector2.Zero);
-            ImGui.SetNextWindowSize(displaySize);
-
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0, 0, 0, 0));
-
-            if (ImGui.Begin("DeathUI", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize))
-            {
-                float scale = Math.Min(displaySize.X / 1920f, displaySize.Y / 1080f);
-                RenderDeathMessage(displaySize, scale);
-
-                if (!string.IsNullOrEmpty(deathCause))
-                {
-                    RenderDeathCause(displaySize, scale);
-                }
-
-                if (progress >= 1f)
-                {
-                    RenderRespawnButton(displaySize, scale);
-                }
-            }
-
-            ImGui.End();
-            ImGui.PopStyleColor();
-            ImGui.PopStyleVar(3);
-        }
-
-        private void RenderDeathMessage(Vector2 displaySize, float scale)
-        {
-            float baseFontSize = 72f;
-            float scaledFontSize = baseFontSize * scale;
-
-            ImGui.SetWindowFontScale(scaledFontSize / ImGui.GetFontSize());
-
-            Vector2 textSize = ImGui.CalcTextSize(deathMessage);
-
-            Vector2 mousePosition = Input.Mouse.Position.ToSystemVector2();
-            Vector2 offset = (mousePosition - displaySize / 2f) * parallaxIntensity;
-
-            float textX = (displaySize.X - textSize.X) * 0.5f + offset.X;
-            float textY = displaySize.Y * 0.25f + offset.Y;
-
-            Vector4 textColor = new Vector4(1f, 0.2f, 0.2f, 1f);
-            Vector4 shadowColor = new Vector4(0f, 0f, 0f, 0.8f);
-
-            float shadowOffset = 3f * scale;
-
-            ImGui.SetCursorPos(new Vector2(textX + shadowOffset, textY + shadowOffset));
-            ImGui.TextColored(shadowColor, deathMessage);
-
-            ImGui.SetCursorPos(new Vector2(textX, textY));
-            ImGui.TextColored(textColor, deathMessage);
-
-            ImGui.SetWindowFontScale(1f);
-        }
-
-        private void RenderDeathCause(Vector2 displaySize, float scale)
-        {
-            float baseFontSize = 32f;
-            float scaledFontSize = baseFontSize * scale;
-
-            ImGui.SetWindowFontScale(scaledFontSize / ImGui.GetFontSize());
-
-            Vector2 textSize = ImGui.CalcTextSize(deathCause);
-
-            Vector2 mousePosition = Input.Mouse.Position.ToSystemVector2();
-             Vector2 offset = (mousePosition - displaySize / 2f) * parallaxIntensity * 0.8f;
-
-            float textX = (displaySize.X - textSize.X) * 0.5f + offset.X;
-            float textY = displaySize.Y * 0.35f + offset.Y;
-
-            Vector4 textColor = new Vector4(0.9f, 0.9f, 0.9f, 0.8f);
-            Vector4 shadowColor = new Vector4(0f, 0f, 0f, 0.6f);
-
-            float shadowOffset = 2f * scale;
-
-            ImGui.SetCursorPos(new Vector2(textX + shadowOffset, textY + shadowOffset));
-            ImGui.TextColored(shadowColor, deathCause);
-
-            ImGui.SetCursorPos(new Vector2(textX, textY));
-            ImGui.TextColored(textColor, deathCause);
-
-            ImGui.SetWindowFontScale(1f);
-        }
-
-        private void RenderRespawnButton(Vector2 displaySize, float scale)
-        {
-            float buttonWidth = 250f * scale;
-            float buttonHeight = 60f * scale;
-
-            Vector2 buttonSize = new Vector2(buttonWidth, buttonHeight);
-            Vector2 buttonPos = new Vector2(
-                (displaySize.X - buttonWidth) * 0.5f,
-                displaySize.Y * 0.6f
-            );
-
-            ImGui.SetCursorPos(buttonPos);
-            Vector2 buttonScreenPos = ImGui.GetCursorScreenPos();
-
-            float offsetValue = buttonHeight * 0.1f;
-            Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
-
-            var drawList = ImGui.GetWindowDrawList();
-            drawList.AddRectFilled(buttonScreenPos - offset, buttonScreenPos + buttonSize + offset, borderColor);
-            drawList.AddRectFilled(buttonScreenPos, buttonScreenPos + buttonSize + offset, lightColor);
-
-            if (ImGui.Button(respawnButtonText, buttonSize))
-            {
-                Hide();
-                OnRespawn?.Invoke();
-                return;
-            }
-
-            RenderReconstructButton(displaySize, scale, buttonPos + new Vector2(0f, buttonHeight + offsetValue * 4f), buttonSize, offset);
-        }
-
-        private void RenderReconstructButton(Vector2 displaySize, float scale, Vector2 buttonPos, Vector2 buttonSize, Vector2 offset)
-        {
-            if (OnReconstruct == null) return;
-
-            string blocker = ReconstructionBlocker?.Invoke();
-            var drawList = ImGui.GetWindowDrawList();
-
-            ImGui.SetCursorPos(buttonPos);
-            Vector2 buttonScreenPos = ImGui.GetCursorScreenPos();
-
-            if (blocker != null)
-            {
-                drawList.AddRectFilled(buttonScreenPos - offset, buttonScreenPos + buttonSize + offset, ImGui.GetColorU32(new Vector4(0.3f, 0.3f, 0.3f, 0.8f)));
-                ImGui.BeginDisabled();
-                ImGui.Button(reconstructButtonText, buttonSize);
-                ImGui.EndDisabled();
-
-                Vector2 textSize = ImGui.CalcTextSize(blocker);
-                ImGui.SetCursorPos(new Vector2((displaySize.X - textSize.X) * 0.5f, buttonPos.Y + buttonSize.Y + offset.Y * 3f));
-                ImGui.TextColored(new Vector4(1f, 0.75f, 0.3f, 1f), blocker);
-                return;
-            }
-
-            drawList.AddRectFilled(buttonScreenPos - offset, buttonScreenPos + buttonSize + offset, ImGui.GetColorU32(new Vector4(0.3f, 0.85f, 1f, 1f)));
-            drawList.AddRectFilled(buttonScreenPos, buttonScreenPos + buttonSize + offset, ImGui.GetColorU32(new Vector4(0.15f, 0.45f, 0.6f, 1f)));
-
-            if (ImGui.Button(reconstructButtonText, buttonSize))
-            {
-                Hide();
-                OnReconstruct.Invoke();
-            }
+            if (!IsVisible || OnReconstruct == null || Blocker != null) return;
+            Hide();
+            OnReconstruct.Invoke();
         }
 
         public void SetOverlayColor(float r, float g, float b)
         {
-            overlayColor = new Vector4(r, g, b, overlayColor.W);
+            overlayColor = new OpenTK.Mathematics.Vector3(r, g, b);
         }
 
         public void SetTransitionParams(float duration, float startAlpha, float endAlpha)

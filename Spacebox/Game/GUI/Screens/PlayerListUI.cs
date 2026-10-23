@@ -1,7 +1,5 @@
-using System.Numerics;
 using Engine.Networking;
-using ImGuiNET;
-using Spacebox.Game.GUI.Menu;
+using Spacebox.Game.GUI.Canvas.Windows;
 using Spacebox.Network;
 using Spacebox.Network.Moderation;
 
@@ -9,117 +7,38 @@ namespace Spacebox.Game.GUI;
 
 public static class PlayerListUI
 {
-    private const string BanPopupId = "Ban player?";
+    public const int GoodPing = 80;
+    public const int MediumPing = 200;
 
-    private static readonly Vector4 GoodPingColor = new Vector4(0.4f, 1f, 0.4f, 1f);
-    private static readonly Vector4 MediumPingColor = new Vector4(1f, 0.85f, 0.2f, 1f);
-    private static readonly Vector4 BadPingColor = new Vector4(1f, 0.3f, 0.3f, 1f);
-    private static readonly Vector4 MutedColor = new Vector4(0.6f, 0.6f, 0.6f, 1f);
+    public static IReadOnlyList<PlayerListEntry> Players => PlayerListNetwork.Players;
 
-    private static int _banPeer = -1;
-    private static string _banName = string.Empty;
+    public static bool CanModerate => NetworkManager.Instance.IsServer && GameSession.HasLocalPlayer;
 
-    public static void Draw()
+    public static int LocalPeer => NetworkManager.Instance.LocalPeerId;
+
+    public static string Label(PlayerListEntry player, int localPeer)
     {
-        var network = NetworkManager.Instance;
-        var players = PlayerListNetwork.Players;
-        var displaySize = ImGui.GetIO().DisplaySize;
-        var size = new Vector2(displaySize.X * 0.22f, displaySize.Y * 0.5f);
-        var position = new Vector2(displaySize.X - size.X - displaySize.X * 0.03f, (displaySize.Y - size.Y) * 0.5f);
-
-        ImGui.SetNextWindowPos(position);
-        ImGui.SetNextWindowSize(size);
-        ImGui.Begin("PlayerList", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
-        GameMenu.DrawElementColors(position, size, displaySize.Y, 0.005f);
-
-        ImGui.Text($"Players ({players.Count})");
-        ImGui.Separator();
-
-        bool canModerate = network.IsServer && GameSession.HasLocalPlayer;
-        int columns = canModerate ? 3 : 2;
-
-        if (ImGui.BeginTable("PlayerListTable", columns, ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.RowBg))
-        {
-            ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.TableSetupColumn("Ping", ImGuiTableColumnFlags.WidthFixed);
-            if (canModerate) ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthFixed);
-
-            for (int i = 0; i < players.Count; i++)
-                DrawRow(players[i], network.LocalPeerId, canModerate);
-
-            ImGui.EndTable();
-        }
-
-        DrawBanPopup();
-        ImGui.End();
-    }
-
-    private static void DrawRow(PlayerListEntry player, int localPeer, bool canModerate)
-    {
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-
         string label = Spacebox.Network.Admin.PlayerBadges.Label(player.Name, player.IsAdmin);
         if (player.IsHost) label += " (host)";
         if (player.Peer == localPeer) label += " (you)";
         if (player.IsMuted) label += " [muted]";
-
-        if (player.IsMuted) ImGui.TextColored(MutedColor, label);
-        else ImGui.Text(label);
-
-        ImGui.TableNextColumn();
-        if (player.IsHost) ImGui.Text("-");
-        else ImGui.TextColored(GetPingColor(player.Ping), $"{player.Ping} ms");
-
-        if (!canModerate) return;
-
-        ImGui.TableNextColumn();
-        if (player.IsHost || player.Peer == localPeer) return;
-
-        ImGui.PushID(player.Peer);
-
-        if (ImGui.SmallButton("Kick")) ServerModeration.Kick(player.Peer);
-
-        ImGui.SameLine();
-        if (ImGui.SmallButton(player.IsMuted ? "Unmute" : "Mute")) ServerModeration.SetMuted(player.Name, !player.IsMuted);
-
-        ImGui.SameLine();
-        if (ImGui.SmallButton("Ban"))
-        {
-            _banPeer = player.Peer;
-            _banName = player.Name;
-            ImGui.OpenPopup(BanPopupId);
-        }
-
-        ImGui.PopID();
+        return label;
     }
 
-    private static void DrawBanPopup()
+    public static string PingText(PlayerListEntry player) => player.IsHost ? "-" : $"{player.Ping} ms";
+
+    public static StatusKind PingKind(PlayerListEntry player)
     {
-        if (!ImGui.BeginPopupModal(BanPopupId, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoMove)) return;
-
-        ImGui.Text($"Ban {_banName}? They will not be able to join again.");
-
-        if (ImGui.Button("Ban", new Vector2(120f, 0f)))
-        {
-            ServerModeration.Ban(_banPeer);
-            _banPeer = -1;
-            ImGui.CloseCurrentPopup();
-        }
-
-        ImGui.SameLine();
-        if (ImGui.Button("Cancel", new Vector2(120f, 0f)))
-        {
-            _banPeer = -1;
-            ImGui.CloseCurrentPopup();
-        }
-
-        ImGui.EndPopup();
+        if (player.IsHost) return StatusKind.Muted;
+        if (player.Ping < GoodPing) return StatusKind.Good;
+        return player.Ping < MediumPing ? StatusKind.Warning : StatusKind.Bad;
     }
 
-    private static Vector4 GetPingColor(int ping)
-    {
-        if (ping < 80) return GoodPingColor;
-        return ping < 200 ? MediumPingColor : BadPingColor;
-    }
+    public static bool CanModeratePlayer(PlayerListEntry player, int localPeer) => !player.IsHost && player.Peer != localPeer;
+
+    public static void Kick(PlayerListEntry player) => ServerModeration.Kick(player.Peer);
+
+    public static void ToggleMute(PlayerListEntry player) => ServerModeration.SetMuted(player.Name, !player.IsMuted);
+
+    public static void Ban(int peer) => ServerModeration.Ban(peer);
 }

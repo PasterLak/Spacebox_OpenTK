@@ -520,7 +520,6 @@ namespace Spacebox.Game.Player
         public override void OnGUI()
         {
             base.OnGUI();
-            DeathScreen.Render();
         }
     }
 }

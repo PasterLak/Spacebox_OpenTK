@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using ImGuiNET;
 using Engine;
 namespace Spacebox.GUI
 {
@@ -32,8 +31,6 @@ namespace Spacebox.GUI
                 }
 
 
-                ImGui.Begin("Black Screen Overlay", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove);
-                ImGui.End();
             }
         }
 
