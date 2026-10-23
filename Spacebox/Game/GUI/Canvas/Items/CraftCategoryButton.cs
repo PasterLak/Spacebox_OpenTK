@@ -14,7 +14,7 @@ public sealed class CraftCategoryButton : Control
     public CraftCategoryButton(CraftingCategory category)
     {
         _category = category;
-        ThemeTypeVariation = "Slot";
+        ThemeTypeVariation = "TileButton";
         MouseFilter = MouseFilter.Stop;
         CustomMinimumSize = DefaultSize;
         TooltipTitle = category.Name;

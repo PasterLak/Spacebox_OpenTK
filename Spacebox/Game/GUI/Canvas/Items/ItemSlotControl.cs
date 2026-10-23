@@ -184,12 +184,6 @@ public sealed class ItemSlotControl : Control, ISlotDropTarget
         TooltipTitle = _slot.Item.Name;
         string details = ItemTooltipText.Details(_slot.Item, ShowsStackSize, ShowsDescription, ShowsId).Trim();
         TooltipText = string.IsNullOrEmpty(_hint) ? details : (details.Length > 0 ? details + "\n" : "") + _hint;
-        if (_slot.Item is IItemTooltipImage picture && picture.TooltipImage != null)
-        {
-            TooltipImage = picture.TooltipImage;
-            TooltipImageFlipV = true;
-            float height = MathF.Round(Size.Y > 0f ? Size.Y * TooltipImageScale : DefaultSize * TooltipImageScale);
-            TooltipImageSize = new Vector2(MathF.Round(height * Math.Clamp(picture.TooltipImageAspect, 0.25f, 4f)), height);
-        }
+        ItemTooltipPicture.Apply(this, _slot.Item, (Size.Y > 0f ? Size.Y : DefaultSize) * TooltipImageScale);
     }
 }

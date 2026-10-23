@@ -8,12 +8,16 @@ public sealed class CraftTooltip : VBoxContainer
 {
     private const float IconSize = 20f;
     private const float TextWidth = 240f;
+    private const float PictureHeight = 110f;
 
     private readonly List<(Label Label, Ingredient Ingredient)> _ingredients = new List<(Label, Ingredient)>();
+    private readonly Item _item;
+    private bool _pictureAdded;
 
     public CraftTooltip(CraftingCategory.Data data)
     {
         Name = "CraftTooltip";
+        _item = data?.item;
         MouseFilter = MouseFilter.Ignore;
         AddThemeConstantOverride("separation", 3f);
 
@@ -42,8 +46,28 @@ public sealed class CraftTooltip : VBoxContainer
         }
     }
 
+    private void AddPicture(Item item)
+    {
+        if (item is not IItemTooltipImage picture || picture.TooltipImage == null) return;
+        float aspect = Math.Clamp(picture.TooltipImageAspect, ItemTooltipPicture.MinAspect, ItemTooltipPicture.MaxAspect);
+        AddChild(new TextureRect
+        {
+            Texture = picture.TooltipImage,
+            FlipV = true,
+            StretchMode = TextureStretchMode.KeepAspectCentered,
+            CustomMinimumSize = new Vector2(MathF.Round(PictureHeight * aspect), PictureHeight),
+            SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
+            MouseFilter = MouseFilter.Ignore
+        });
+    }
+
     public void Refresh()
     {
+        if (!_pictureAdded)
+        {
+            _pictureAdded = true;
+            AddPicture(_item);
+        }
         foreach (var (label, ingredient) in _ingredients) StatusText.SetKind(label, KindOf(ingredient));
     }
 

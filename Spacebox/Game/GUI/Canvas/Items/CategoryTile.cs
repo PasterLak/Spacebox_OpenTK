@@ -17,7 +17,7 @@ public sealed class CategoryTile : Control
         _icon = icon;
         _caption = caption ?? "";
         TooltipText = tooltip;
-        ThemeTypeVariation = "Slot";
+        ThemeTypeVariation = "TileButton";
         MouseFilter = MouseFilter.Stop;
         CustomMinimumSize = new Vector2(size, size);
     }

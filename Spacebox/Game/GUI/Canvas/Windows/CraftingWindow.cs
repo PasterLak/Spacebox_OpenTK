@@ -7,6 +7,7 @@ namespace Spacebox.Game.GUI.Canvas.Windows;
 public sealed class CraftingWindow : GameWindow
 {
     private const int VisibleItemRows = 4;
+    private const int DefaultInventoryColumns = 8;
 
     private readonly GridContainer _categories = new GridContainer();
     private readonly VBoxContainer _itemsView = new VBoxContainer { Visible = false };
@@ -19,6 +20,7 @@ public sealed class CraftingWindow : GameWindow
     public CraftingWindow() : base("Crafting")
     {
         Name = "Crafting";
+        MatchColumnWidth();
         _categories.AddThemeConstantOverride("h_separation", 4f);
         _categories.AddThemeConstantOverride("v_separation", 4f);
         Body.AddChild(_categories);
@@ -67,10 +69,10 @@ public sealed class CraftingWindow : GameWindow
             button.Clicked += ShowItems;
         }
 
-        float width = Math.Max(1, CraftingGUI.CategoryColumns) * (CraftCategoryButton.DefaultSize.X + 4f);
-        _itemsScroll.CustomMinimumSize = new Vector2(width, VisibleItemRows * ItemSlotControl.DefaultSize);
         ShowCategories();
     }
+
+    private static int InventoryColumns => Math.Max(1, (int)(InventoryUI.Player?.Inventory?.SizeX ?? DefaultInventoryColumns));
 
     private void ShowCategories()
     {
@@ -85,13 +87,17 @@ public sealed class CraftingWindow : GameWindow
         _categoryTitle.Text = category.Name;
         _items.ClearChildren();
         _itemControls.Clear();
-        int columns = Math.Max(1, (int)((_itemsScroll.CustomMinimumSize.X - 12f) / ItemSlotControl.DefaultSize));
+        int columns = InventoryColumns;
+        float spacing = GetThemeConstant("slot_spacing", 0f);
+        float gridWidth = columns * ItemSlotControl.DefaultSize + (columns - 1) * spacing;
+        float size = MathF.Floor((gridWidth - GetThemeConstant("scrollbar_width", 8f)) / columns);
         _items.Columns = columns;
+        _itemsScroll.CustomMinimumSize = new Vector2(gridWidth, VisibleItemRows * size);
 
         for (int i = 0; i < category.Items.Count; i++)
         {
             int id = i;
-            var control = _items.AddChild(new CraftItemControl(category.Items[i]));
+            var control = _items.AddChild(new CraftItemControl(category.Items[i], size));
             control.Hovered += _ => CraftingGUI.PlayHover(id);
             control.Clicked += c =>
             {
