@@ -10,12 +10,14 @@ public sealed class MenuCanvas : IDisposable
 {
     private const float LogoHeight = 150f;
     private const float LinkSize = 28f;
+    private const float LogoParallax = 0.01f;
 
     private readonly CanvasLayer _layer = new CanvasLayer("Menu");
     private readonly GameMenu _menu;
     private readonly MenuMusicController _music;
     private readonly Control _pageHolder = new CenterContainer { Name = "Pages", SizeFlagsVertical = SizeFlags.Fill | SizeFlags.Expand, MouseFilter = MouseFilter.Ignore };
-    private readonly TextureRect _logo = new TextureRect { Name = "Logo", StretchMode = TextureStretchMode.KeepAspectCentered, FlipV = true, CustomMinimumSize = new Vector2(0f, LogoHeight), MouseFilter = MouseFilter.Ignore };
+    private readonly Control _logoHolder = new Control { Name = "LogoHolder", CustomMinimumSize = new Vector2(0f, LogoHeight), MouseFilter = MouseFilter.Ignore };
+    private readonly TextureRect _logo = new TextureRect { Name = "Logo", StretchMode = TextureStretchMode.KeepAspectCentered, FlipV = true, MouseFilter = MouseFilter.Ignore };
     private readonly Label _pressAnyKey = new Label { Text = "Press any key to start", HorizontalAlignment = HorizontalAlignment.Center };
     private readonly VBoxContainer _links = new VBoxContainer { Name = "Links" };
     private readonly IconButton _musicButton = new IconButton(LinkSize);
@@ -60,7 +62,9 @@ public sealed class MenuCanvas : IDisposable
         column.AddThemeConstantOverride("separation", 12f);
         area.AddChild(column);
         column.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 24f), MouseFilter = MouseFilter.Ignore });
-        column.AddChild(_logo);
+        _logo.SetAnchorsPreset(LayoutPreset.FullRect);
+        _logoHolder.AddChild(_logo);
+        column.AddChild(_logoHolder);
         column.AddChild(_pageHolder);
         column.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 32f), MouseFilter = MouseFilter.Ignore });
 
@@ -147,11 +151,25 @@ public sealed class MenuCanvas : IDisposable
 
         if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape)) MenuModal.CloseTop();
         SyncPage(menuVisible ? _menu.CurrentWindowType : null);
-        _logo.Visible = CenteredImageMenu.IsVisible && !connecting && (_page?.ShowsLogo ?? true);
+        _logoHolder.Visible = CenteredImageMenu.IsVisible && !connecting && (_page?.ShowsLogo ?? true);
+        UpdateLogoParallax();
         _page?.Tick(deltaTime);
         _upgrade.Sync(_layer.Root);
         _layer.InputEnabled = !Engine.Debug.IsVisible;
         _layer.Update(deltaTime);
+    }
+
+    private void UpdateLogoParallax()
+    {
+        var screen = _layer.Root.ScreenSize;
+        if (!_logoHolder.Visible || screen.X <= 0f || screen.Y <= 0f) return;
+
+        var mouse = Input.Mouse.Position;
+        var offset = (new Vector2(mouse.X / screen.X, mouse.Y / screen.Y) - new Vector2(0.5f)) * _layer.Root.ViewportSize * LogoParallax;
+        _logo.OffsetLeft = offset.X;
+        _logo.OffsetRight = offset.X;
+        _logo.OffsetTop = offset.Y;
+        _logo.OffsetBottom = offset.Y;
     }
 
     private void SyncPage(Type windowType)

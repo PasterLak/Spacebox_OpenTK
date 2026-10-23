@@ -56,12 +56,16 @@ public sealed class WorldSelectPage : MenuPage
         frame.Body.AddChild(info);
 
         var worldButtons = new HBoxContainer();
+        worldButtons.AddThemeConstantOverride("separation", 8f);
         _play = MenuLayout.Button(_menu, "Play", () => _menu.OpenWorld(_menu.selectedWorld));
         _edit = MenuLayout.Button(_menu, "Edit", Edit);
         _delete = MenuLayout.IconButton(_menu, "Resources/Textures/UI/trash.png", "Delete the world", AskDelete);
+        var editButtons = new HBoxContainer { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
+        editButtons.AddThemeConstantOverride("separation", 8f);
+        editButtons.AddChild(_edit);
+        editButtons.AddChild(_delete);
         worldButtons.AddChild(_play);
-        worldButtons.AddChild(_edit);
-        worldButtons.AddChild(_delete);
+        worldButtons.AddChild(editButtons);
         frame.Body.AddChild(worldButtons);
 
         frame.Footer.AddChild(MenuLayout.Button(_menu, "Create New World", CreateNew));

@@ -366,6 +366,7 @@ Fixes
 - Ship placing: the preview is the real ship model, built in the background while you already aim (block preview until it is ready)
 - Ship placing starts with the ship's own up (consoles) as your up and its nose (thrusters, cannons) toward you; R / Y / U turn around the ship's own axes
 - menu is no longer darker after leaving a world (the GameSet lighting stayed); world preview fills its box
+- menu logo follows the mouse again (parallax); Play in the world list is as wide as Create New World
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine
