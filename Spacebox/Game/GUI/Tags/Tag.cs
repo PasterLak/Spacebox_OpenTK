@@ -1,5 +1,4 @@
-﻿using ImGuiNET;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Spacebox.Game.GUI;
 
@@ -14,6 +13,9 @@ public class Tag
     public uint ColorUint { get; private set; }
     public bool Visible { get; set; }
     public TagCategory Category { get; set; }
+
+    public const float MinFontShare = 1f / 60f;
+    public const float MaxFontShare = 1f / 40f;
 
     private static float MinFontSize;
     private static float MaxFontSize;
@@ -50,8 +52,10 @@ public class Tag
 
     private void UpdateColorUint()
     {
-        ColorUint = ImGui.GetColorU32(new System.Numerics.Vector4(Color.R, Color.G, Color.B, Color.A));
+        ColorUint = (uint)(Pack(Color.A) << 24 | Pack(Color.B) << 16 | Pack(Color.G) << 8 | Pack(Color.R));
     }
+
+    private static int Pack(float channel) => (int)MathF.Round(Math.Clamp(channel, 0f, 1f) * 255f);
 
     public void UpdateColor(Color4 newColor)
     {
@@ -61,8 +65,8 @@ public class Tag
 
     public static void SetFontSizes(Vector2 displaySize)
     {
-        MinFontSize = displaySize.Y * 0.01f;
-        MaxFontSize = displaySize.Y * 0.016f;
+        MinFontSize = displaySize.Y * MinFontShare;
+        MaxFontSize = displaySize.Y * MaxFontShare;
     }
 
     public static float CalculateFontSize(float distanceSquared)
@@ -76,7 +80,7 @@ public class Tag
         return MathHelper.Clamp(size, MinFontSize, MaxFontSize);
     }
 
-    public System.Numerics.Vector2 GetTextPosition(System.Numerics.Vector2 screenPosition, System.Numerics.Vector2 textSize)
+    public Vector2 GetTextPosition(Vector2 screenPosition, Vector2 textSize)
     {
         return TextAlignment switch
         {

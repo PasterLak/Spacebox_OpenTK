@@ -36,6 +36,7 @@ public class GameWindowsPlacementTests
 
         Assert.Equal(alone, view.Inventory.Rect);
         Assert.Equal(root.ViewportSize.X * 0.5f, alone.X + alone.Width * 0.5f, 1);
+        Assert.Equal(root.ViewportSize.Y * 0.5f + GameWindowsView.InventoryDrop, alone.Y + alone.Height * 0.5f, 1);
     }
 
     [Fact]

@@ -378,6 +378,8 @@ Fixes
 - in-game UI on CanvasUI, phase 4: pause menu with options, statistics and player list (kick, mute, ban), death screen, DNA reconstruction, world loading, welcome screen and screen fades
 - tutorial prompt and controls overlay (F6) on CanvasUI; inventory stays in the screen centre with the other windows around it; furnace/crusher progress fills the arrow; crafting ingredients in the item tooltip again, bigger Back button
 - classic UI: slots look pressed into the window (darker, shadow top-left) instead of like buttons, tooltips in the classic style; crafting tooltips show the picture after the recipe; crafting item list as wide as the inventory
+- waypoint names are drawn under the windows; crafting items fill from the bottom, 3 rows visible, Back and category name at the bottom; hotbar on a rounded panel, rounded bars; inventory one slot lower
+- fixed: inventory key hints stayed on screen after closing the inventory with Escape
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine

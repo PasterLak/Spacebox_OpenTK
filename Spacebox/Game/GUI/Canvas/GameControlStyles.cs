@@ -110,6 +110,8 @@ public static class GameControlStyles
         theme.SetStyleBox("ProgressBar", "fill", new StyleBoxFlat(p.Accent));
         theme.SetTypeVariation("GameWindow", "PanelContainer");
         theme.SetStyleBox("GameWindow", "panel", new StyleBoxFlat(p.Panel).SetBorder(1f, p.PanelDark).SetCornerRadius(WindowCornerRadius).SetContentMargins(8f));
+        theme.SetTypeVariation("HotbarPanel", "PanelContainer");
+        theme.SetStyleBox("HotbarPanel", "panel", new StyleBoxFlat(p.Panel).SetBorder(1f, p.PanelDark).SetCornerRadius(HotbarCornerRadius).SetContentMargins(3f));
         theme.SetTypeVariation("GameTitleBar", "PanelContainer");
         theme.SetStyleBox("GameTitleBar", "panel", new StyleBoxFlat(p.TitleBar).SetCornerRadius(WindowCornerRadius - 2f).SetContentMargins(8f, 2f));
         theme.SetTypeVariation("HeaderButton", "Button");
@@ -134,6 +136,8 @@ public static class GameControlStyles
     }
 
     public const float WindowCornerRadius = 6f;
+    public const float HotbarCornerRadius = 4f;
+    public const float BarCornerRadius = 3f;
 
     private static StyleBox RowBox(Color4 color, Color4 line) => new StyleBoxFlat(color) { BorderBottom = 1f, BorderColor = line }.SetContentMargins(6f, 4f);
 

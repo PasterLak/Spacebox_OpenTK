@@ -6,6 +6,7 @@ public sealed class GameWindowsView : SafeArea
 {
     public const float HudReserve = 120f;
     public const float Gap = 10f;
+    public const float InventoryDrop = Items.ItemSlotControl.DefaultSize;
 
     private readonly List<GameWindow> _windows = new List<GameWindow>();
     private readonly List<GameWindow> _left = new List<GameWindow>();
@@ -66,7 +67,7 @@ public sealed class GameWindowsView : SafeArea
         if (Inventory.Visible)
         {
             var size = Inventory.GetCombinedMinimumSize();
-            float y = Math.Clamp(MathF.Round(area.Y + (area.Height - size.Y) * 0.5f), free.Y, MathF.Max(free.Y, free.End.Y - size.Y));
+            float y = Math.Clamp(MathF.Round(area.Y + (area.Height - size.Y) * 0.5f + InventoryDrop), free.Y, MathF.Max(free.Y, free.End.Y - size.Y));
             anchor = new Rect2(MathF.Round(centerX - size.X * 0.5f), y, size.X, size.Y);
             Container.FitChildInRect(Inventory, anchor);
 

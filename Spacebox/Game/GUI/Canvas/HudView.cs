@@ -13,6 +13,7 @@ public sealed class HudView : SafeArea
     private readonly VBoxContainer _column = new VBoxContainer();
     private readonly HBoxContainer _bars = new HBoxContainer();
     private readonly HBoxContainer _hotbar = new HBoxContainer();
+    private readonly PanelContainer _hotbarPanel = new PanelContainer { Name = "HotbarPanel", ThemeTypeVariation = "HotbarPanel", MouseFilter = MouseFilter.Ignore, SizeFlagsHorizontal = SizeFlags.ShrinkCenter };
     private readonly StatBarControl _health = new StatBarControl(GameCanvasThemes.Health);
     private readonly StatBarControl _oxygen = new StatBarControl(GameCanvasThemes.Oxygen);
     private readonly StatBarControl _power = new StatBarControl(GameCanvasThemes.Power);
@@ -26,6 +27,7 @@ public sealed class HudView : SafeArea
         Name = "Hud";
         MouseFilter = MouseFilter.Ignore;
         AddOverlay(new Hud.CameraFeedControl());
+        AddOverlay(new Hud.TagsOverlayControl());
         AddOverlay(_hitImage);
         AddOverlay(new Hud.CrosshairControl());
         AddOverlay(new Hud.HitMarkerControl());
@@ -50,7 +52,8 @@ public sealed class HudView : SafeArea
         }
 
         _column.AddChild(_bars);
-        _column.AddChild(_hotbar);
+        _column.AddChild(_hotbarPanel);
+        _hotbarPanel.AddChild(_hotbar);
     }
 
     private void AddOverlay(Control overlay)
@@ -74,7 +77,7 @@ public sealed class HudView : SafeArea
 
     public void Present(Storage hotbar, int selectedSlot, bool showBars)
     {
-        _hotbar.Visible = hotbar != null;
+        _hotbarPanel.Visible = hotbar != null;
         _bars.Visible = showBars;
         _column.Visible = hotbar != null || showBars;
         if (hotbar != null) RefreshHotbar(hotbar, selectedSlot);

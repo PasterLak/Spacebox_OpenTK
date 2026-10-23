@@ -12,9 +12,14 @@ namespace Spacebox.Game.GUI
     public static class InventoryUI
     {
         public static LocalAstronaut Player;
+        private static bool _wasOpen;
+
         public static void Update()
         {
             HandleInput();
+            bool open = UIManager.IsOpen("inventory");
+            if (_wasOpen && !open) ItemControlsUI.IsVisible = false;
+            _wasOpen = open;
         }
 
         public static AudioSource splitAudio;

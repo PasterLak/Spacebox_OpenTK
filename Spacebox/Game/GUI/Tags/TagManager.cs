@@ -1,6 +1,5 @@
 ﻿using Engine;
 using Engine.Components;
-using ImGuiNET;
 using OpenTK.Mathematics;
 using Spacebox.Game.Player;
 
@@ -13,7 +12,6 @@ namespace Spacebox.Game.GUI
         private readonly HashSet<Tag> _activeTags = new HashSet<Tag>();
         private readonly List<Tag> _visibleTags = new List<Tag>(256);
         private Vector2 _screenSize;
-        private ImFontPtr _font;
         private Pool<Tag> _tagPool;
 
         public Func<RadarSettings?>? RadarSource { get; set; }
@@ -100,7 +98,6 @@ namespace Spacebox.Game.GUI
             base.OnAttached(onOwner);
             SpaceboxWindow.OnResized += OnResized;
             OnResized(SpaceboxWindow.Instance.ClientSize);
-            _font = ImGui.GetIO().FontDefault;
         }
 
         public override void OnDetached()
@@ -112,12 +109,27 @@ namespace Spacebox.Game.GUI
             Instance = null;
         }
 
-        public override void OnGUI()
+        public readonly struct ScreenTag
         {
+            public readonly Tag Tag;
+            public readonly Vector2 Screen;
+            public readonly float DistanceSquared;
+
+            public ScreenTag(Tag tag, Vector2 screen, float distanceSquared)
+            {
+                Tag = tag;
+                Screen = screen;
+                DistanceSquared = distanceSquared;
+            }
+        }
+
+        public void CollectScreenTags(List<ScreenTag> result)
+        {
+            result.Clear();
             if (!ShouldRenderTags()) return;
 
             FilterVisibleTags();
-            RenderTags();
+            CollectOnScreen(result);
         }
 
         private bool ShouldRenderTags()
@@ -142,11 +154,10 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        private void RenderTags()
+        private void CollectOnScreen(List<ScreenTag> result)
         {
             var camera = Camera.Main;
 
-            var drawList = ImGui.GetBackgroundDrawList();
             var radar = Radar;
             float generalRangeSquared = Settings.ENTITY_SEARCH_RADIUS * Settings.ENTITY_SEARCH_RADIUS;
             float radarRangeSquared = radar != null ? radar.Range * radar.Range : -1f;
@@ -166,7 +177,7 @@ namespace Spacebox.Game.GUI
                     continue;
                 }
 
-                RenderTag(tag, screenPos, drawList, camera, distanceSquared);
+                result.Add(new ScreenTag(tag, screenPos, distanceSquared));
             }
         }
 
@@ -176,21 +187,9 @@ namespace Spacebox.Game.GUI
                    screenPos.Y > 0 && screenPos.Y <= _screenSize.Y;
         }
 
-        private void RenderTag(Tag tag, Vector2 screenPos, ImDrawListPtr drawList, Camera camera, float distanceSquared)
-        {
-            var textSize = ImGui.CalcTextSize(tag.Text);
-
-            var screenCoords = tag.GetTextPosition(screenPos.ToSystemVector2(), textSize);
-
-            var fontSize = Tag.CalculateFontSize(distanceSquared);
-
-            drawList.AddText(_font, fontSize, screenCoords, tag.ColorUint, tag.Text);
-        }
-
         private void OnResized(Vector2 screenSize)
         {
             _screenSize = screenSize;
-            Tag.SetFontSizes(screenSize);
         }
 
         public List<Tag> GetStaticTags() => _activeTags.Where(tag => tag.IsStatic).ToList();

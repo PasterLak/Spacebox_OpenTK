@@ -39,8 +39,9 @@ public sealed class StatBarControl : Control
     protected override void Draw(ICanvasRenderer renderer)
     {
         var rect = LocalRect;
-        renderer.DrawRect(rect, GetThemeColor("bar_back_color", new Color4(0.2f, 0.2f, 0.2f, 0.85f)));
-        if (_ratio > 0f) renderer.DrawRect(new Rect2(rect.X, rect.Y, MathF.Round(rect.Width * _ratio), rect.Height), Fill);
+        StyleBoxFlat.FillRounded(renderer, rect, GameControlStyles.BarCornerRadius, GetThemeColor("bar_back_color", new Color4(0.2f, 0.2f, 0.2f, 0.85f)));
+        float filled = MathF.Round(rect.Width * _ratio);
+        if (filled > 0f) StyleBoxFlat.FillRounded(renderer, new Rect2(rect.X, rect.Y, filled, rect.Height), MathF.Min(GameControlStyles.BarCornerRadius, filled * 0.5f), Fill);
 
         var font = GetThemeFont();
         if (font == null || _text.Length == 0) return;

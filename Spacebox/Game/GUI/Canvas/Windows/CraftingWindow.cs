@@ -6,7 +6,8 @@ namespace Spacebox.Game.GUI.Canvas.Windows;
 
 public sealed class CraftingWindow : GameWindow
 {
-    private const int VisibleItemRows = 4;
+    private const int VisibleItemRows = 3;
+    private const int ScrollSettleFrames = 3;
     private const int DefaultInventoryColumns = 8;
 
     private readonly GridContainer _categories = new GridContainer();
@@ -16,6 +17,7 @@ public sealed class CraftingWindow : GameWindow
     private readonly ScrollContainer _itemsScroll = new ScrollContainer();
     private readonly List<CraftItemControl> _itemControls = new List<CraftItemControl>();
     private CraftingCategory[] _builtFor;
+    private int _scrollToBottomFrames;
 
     public CraftingWindow() : base("Crafting")
     {
@@ -26,20 +28,20 @@ public sealed class CraftingWindow : GameWindow
         Body.AddChild(_categories);
         Body.AddChild(_itemsView);
 
-        var header = _itemsView.AddChild(new HBoxContainer());
-        header.AddThemeConstantOverride("separation", 8f);
-        var back = header.AddChild(new Button { Text = "Back", CustomMinimumSize = new Vector2(64f, 26f) });
+        _items.AddThemeConstantOverride("h_separation", 0f);
+        _items.AddThemeConstantOverride("v_separation", 0f);
+        _itemsScroll.AddChild(_items);
+        _itemsView.AddChild(_itemsScroll);
+
+        var footer = _itemsView.AddChild(new HBoxContainer());
+        footer.AddThemeConstantOverride("separation", 8f);
+        var back = footer.AddChild(new Button { Text = "Back", CustomMinimumSize = new Vector2(64f, 26f) });
         back.Pressed += _ =>
         {
             CraftingGUI.PlayClick();
             ShowCategories();
         };
-        header.AddChild(_categoryTitle);
-
-        _items.AddThemeConstantOverride("h_separation", 0f);
-        _items.AddThemeConstantOverride("v_separation", 0f);
-        _itemsScroll.AddChild(_items);
-        _itemsView.AddChild(_itemsScroll);
+        footer.AddChild(_categoryTitle);
     }
 
     public override bool IsOpen => CraftingGUI.IsVisible && CraftingGUI.Categories != null;
@@ -48,6 +50,11 @@ public sealed class CraftingWindow : GameWindow
     {
         if (!ReferenceEquals(_builtFor, CraftingGUI.Categories)) BuildCategories();
         if (!_itemsView.Visible) return;
+        if (_scrollToBottomFrames > 0)
+        {
+            _scrollToBottomFrames--;
+            _itemsScroll.ScrollOffset = _itemsScroll.MaxScroll;
+        }
 
         foreach (var control in _itemControls) control.Refresh();
     }
@@ -91,13 +98,17 @@ public sealed class CraftingWindow : GameWindow
         float spacing = GetThemeConstant("slot_spacing", 0f);
         float gridWidth = columns * ItemSlotControl.DefaultSize + (columns - 1) * spacing;
         float size = MathF.Floor((gridWidth - GetThemeConstant("scrollbar_width", 8f)) / columns);
+        int count = category.Items.Count;
+        int rows = Math.Max(1, (count + columns - 1) / columns);
         _items.Columns = columns;
-        _itemsScroll.CustomMinimumSize = new Vector2(gridWidth, VisibleItemRows * size);
+        _itemsScroll.CustomMinimumSize = new Vector2(gridWidth, Math.Min(rows, VisibleItemRows) * size);
 
-        for (int i = 0; i < category.Items.Count; i++)
+        var controls = new CraftItemControl[count];
+        for (int i = 0; i < count; i++)
         {
             int id = i;
-            var control = _items.AddChild(new CraftItemControl(category.Items[i], size));
+            var control = new CraftItemControl(category.Items[i], size);
+            controls[i] = control;
             control.Hovered += _ => CraftingGUI.PlayHover(id);
             control.Clicked += c =>
             {
@@ -107,7 +118,18 @@ public sealed class CraftingWindow : GameWindow
             _itemControls.Add(control);
         }
 
+        for (int row = rows - 1; row >= 0; row--)
+        {
+            for (int column = 0; column < columns; column++)
+            {
+                int index = row * columns + column;
+                if (index < count) _items.AddChild(controls[index]);
+                else _items.AddChild(Spacer(size, size));
+            }
+        }
+
         _categories.Visible = false;
         _itemsView.Visible = true;
+        _scrollToBottomFrames = ScrollSettleFrames;
     }
 }
