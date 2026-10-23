@@ -9,10 +9,11 @@ public sealed class WorldSelectPage : MenuPage
 {
     private const float Width = 560f;
     private const float ListHeight = 190f;
+    private const float ListWidth = 210f;
 
     private readonly GameMenu _menu;
-    private readonly ItemList _list = new ItemList { CustomMinimumSize = new Vector2(300f, ListHeight), SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
-    private readonly TextureRect _preview = new TextureRect { StretchMode = TextureStretchMode.KeepAspectCentered, FlipV = true, CustomMinimumSize = new Vector2(ListHeight, ListHeight), MouseFilter = MouseFilter.Ignore };
+    private readonly ItemList _list = new ItemList { CustomMinimumSize = new Vector2(ListWidth, ListHeight) };
+    private readonly TextureRect _preview = new TextureRect { StretchMode = TextureStretchMode.KeepAspectCovered, FlipV = true, IgnoreTextureSize = true, MouseFilter = MouseFilter.Ignore };
     private readonly Label _noPreview = new Label { Text = "No preview yet", ThemeTypeVariation = "MutedLabel", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
     private readonly Label _mode = new Label();
     private readonly Label _author = new Label { Overrun = TextOverrun.Ellipsis };
@@ -39,7 +40,7 @@ public sealed class WorldSelectPage : MenuPage
         var top = new HBoxContainer();
         top.AddThemeConstantOverride("separation", 10f);
         top.AddChild(_list);
-        var previewBox = new PanelContainer { ThemeTypeVariation = "InsetPanel", CustomMinimumSize = new Vector2(ListHeight, ListHeight) };
+        var previewBox = new PanelContainer { ThemeTypeVariation = "InsetPanel", ClipContents = true, CustomMinimumSize = new Vector2(ListHeight, ListHeight), SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
         previewBox.AddChild(_preview);
         previewBox.AddChild(_noPreview);
         top.AddChild(previewBox);

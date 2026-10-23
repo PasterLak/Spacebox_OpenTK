@@ -62,6 +62,15 @@ public static class GameControlStyles
         theme.SetStyleBox("CheckBox", "box", Sunken(p, p.Field, 0f));
         theme.SetStyleBox("CheckBox", "box_hover", Focused(p, p.Field, 0f, -1f));
         theme.SetStyleBox("ItemList", "panel", Sunken(p, p.List, 2f));
+        foreach (var type in new[] { "ItemList", "ListRow" })
+        {
+            theme.SetStyleBox(type, "item", RowBox(p.Row, p.RowBorder));
+            theme.SetStyleBox(type, "item_hover", RowBox(Mix(p.Row, p.PanelLight), p.Bevel ? p.PanelDark : p.PanelLight));
+            theme.SetStyleBox(type, "item_selected", RowBox(p.Selected, p.SelectedBorder));
+        }
+        theme.SetConstant("ItemList", "item_separation", 3f);
+        theme.SetConstant("ItemList", "v_padding", 6f);
+        theme.SetTypeVariation("ListRow", "PanelContainer");
         theme.SetStyleBox("Panel", "panel", Raised(p, p.Panel, 0f));
         theme.SetStyleBox("PanelContainer", "panel", Raised(p, p.Panel, 12f));
         theme.SetStyleBox("PopupPanel", "panel", Raised(p, p.Panel, 6f));
@@ -106,6 +115,10 @@ public static class GameControlStyles
         theme.SetConstant("Control", "box_size", 14f);
         theme.SetConstant("Control", "v_padding", 6f);
     }
+
+    private static StyleBox RowBox(Color4 color, Color4 border) => new StyleBoxFlat(color).SetBorder(1f, border).SetContentMargins(6f, 4f);
+
+    private static Color4 Mix(Color4 a, Color4 b) => new Color4((a.R + b.R) * 0.5f, (a.G + b.G) * 0.5f, (a.B + b.B) * 0.5f, MathF.Max(a.A, b.A * 0.15f));
 
     public static StyleBox Raised(GamePalette p, Color4 color, float horizontal, float vertical = -1f, bool highlight = false)
     {

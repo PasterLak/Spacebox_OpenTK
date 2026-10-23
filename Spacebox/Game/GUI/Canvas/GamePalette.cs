@@ -22,6 +22,9 @@ public sealed class GamePalette
     public Color4 Selected { get; init; }
     public Color4 SelectedText { get; init; }
     public Color4 Hover { get; init; }
+    public Color4 Row { get; init; }
+    public Color4 RowBorder { get; init; }
+    public Color4 SelectedBorder { get; init; }
     public Color4 Accent { get; init; }
     public Color4 Heading { get; init; }
     public Color4 Error { get; init; }
@@ -34,12 +37,12 @@ public sealed class GamePalette
         Panel = new Color4(0.75f, 0.75f, 0.75f, 1f),
         PanelLight = new Color4(0.9f, 0.9f, 0.9f, 1f),
         PanelDark = new Color4(0.5f, 0.5f, 0.5f, 1f),
-        TitleBar = new Color4(0.45f, 0.45f, 0.45f, 1f),
-        TitleText = Color4.White,
-        Text = new Color4(0.13f, 0.13f, 0.13f, 1f),
-        TextMuted = new Color4(0.3f, 0.3f, 0.3f, 1f),
+        TitleBar = new Color4(1f, 0.72f, 0.1f, 1f),
+        TitleText = new Color4(0.3f, 0.19f, 0.02f, 1f),
+        Text = new Color4(0.22f, 0.22f, 0.22f, 1f),
+        TextMuted = new Color4(0.38f, 0.38f, 0.38f, 1f),
         Field = new Color4(0.9f, 0.9f, 0.9f, 1f),
-        FieldText = new Color4(0.1f, 0.1f, 0.1f, 1f),
+        FieldText = new Color4(0.22f, 0.22f, 0.22f, 1f),
         Button = new Color4(0.66f, 0.66f, 0.66f, 1f),
         ButtonHover = new Color4(0.74f, 0.74f, 0.7f, 1f),
         ButtonPressed = new Color4(0.55f, 0.55f, 0.55f, 1f),
@@ -47,8 +50,11 @@ public sealed class GamePalette
         ButtonDisabledText = new Color4(0.5f, 0.5f, 0.5f, 1f),
         List = new Color4(0.85f, 0.85f, 0.85f, 1f),
         Selected = new Color4(1f, 0.72f, 0.1f, 1f),
-        SelectedText = new Color4(0.08f, 0.08f, 0.08f, 1f),
+        SelectedText = new Color4(0.25f, 0.17f, 0.02f, 1f),
         Hover = new Color4(0f, 0f, 0f, 0.08f),
+        Row = new Color4(0.89f, 0.89f, 0.89f, 1f),
+        RowBorder = new Color4(0.64f, 0.64f, 0.64f, 1f),
+        SelectedBorder = new Color4(0.78f, 0.52f, 0.04f, 1f),
         Accent = new Color4(1f, 0.72f, 0.1f, 1f),
         Heading = new Color4(0.45f, 0.27f, 0f, 1f),
         Error = new Color4(0.7f, 0.05f, 0.05f, 1f),
@@ -77,6 +83,9 @@ public sealed class GamePalette
         Selected = new Color4(0.62f, 0.45f, 0.08f, 1f),
         SelectedText = Color4.White,
         Hover = new Color4(1f, 1f, 1f, 0.07f),
+        Row = new Color4(1f, 1f, 1f, 0.03f),
+        RowBorder = new Color4(0.26f, 0.28f, 0.35f, 1f),
+        SelectedBorder = new Color4(1f, 0.77f, 0.16f, 1f),
         Accent = new Color4(1f, 0.77f, 0.16f, 1f),
         Heading = new Color4(1f, 0.77f, 0.16f, 1f),
         Error = new Color4(1f, 0.45f, 0.38f, 1f),

@@ -37,7 +37,7 @@ public class ItemList : Control
     public float IconSize { get; set; } = 16f;
     public bool AllowReselect { get; set; }
     public override bool IsInteractive => true;
-    public float RowHeight => MathF.Max(IconSize, GetThemeFont()?.GetLineHeight(GetThemeFontSize()) ?? 12f) + GetThemeConstant("v_padding", 4f);
+    public float RowHeight => MathF.Max(IconSize, GetThemeFont()?.GetLineHeight(GetThemeFontSize()) ?? 12f) + GetThemeConstant("v_padding", 4f) + GetThemeConstant("item_separation", 0f);
     public float ContentHeight => _items.Count * RowHeight;
     public float MaxScroll => MathF.Max(0f, ContentHeight - Size.Y);
     public bool IsScrolledToBottom => _scroll >= MaxScroll - 1f;
@@ -186,26 +186,34 @@ public class ItemList : Control
         var textColor = GetThemeColor("font_color", Color4.White);
         var secondaryColor = GetThemeColor("font_secondary_color", new Color4(1f, 1f, 1f, 0.45f));
         var headerColor = GetThemeColor("font_header_color", new Color4(1f, 0.77f, 0.16f, 1f));
+        float gap = GetThemeConstant("item_separation", 0f);
+        var itemBox = GetThemeStyleBox("item");
+        var hoverBox = GetThemeStyleBox("item_hover");
+        var selectedBox = GetThemeStyleBox("item_selected");
 
         renderer.PushClip(LocalRect);
         for (int i = first; i <= last; i++)
         {
             var item = _items[i];
             float y = MathF.Floor(i * row - _scroll);
-            var rowRect = new Rect2(0f, y, width, row);
-            if (i == _selected) renderer.DrawRect(rowRect, GetThemeColor(HasFocus ? "selected_color" : "selected_unfocused_color", new Color4(0.2f, 0.4f, 0.75f, HasFocus ? 0.75f : 0.45f)));
-            else if (i == _hovered && !item.IsHeader && !item.Disabled) renderer.DrawRect(rowRect, GetThemeColor("hover_color", new Color4(1f, 1f, 1f, 0.07f)));
+            var rowRect = new Rect2(0f, y, width, row - gap);
+            bool hovered = i == _hovered && !item.IsHeader && !item.Disabled;
+            if (i == _selected && selectedBox != null) selectedBox.Draw(renderer, rowRect);
+            else if (i == _selected) renderer.DrawRect(rowRect, GetThemeColor(HasFocus ? "selected_color" : "selected_unfocused_color", new Color4(0.2f, 0.4f, 0.75f, HasFocus ? 0.75f : 0.45f)));
+            else if (hovered && hoverBox != null) hoverBox.Draw(renderer, rowRect);
+            else if (hovered) renderer.DrawRect(rowRect, GetThemeColor("hover_color", new Color4(1f, 1f, 1f, 0.07f)));
+            else if (!item.IsHeader) itemBox?.Draw(renderer, rowRect);
 
             float x = 4f + item.Indent * 12f;
             if (item.Icon != null)
             {
-                float iy = y + (row - IconSize) * 0.5f;
+                float iy = y + (row - gap - IconSize) * 0.5f;
                 renderer.DrawTexture(item.Icon, new Rect2(x, MathF.Floor(iy), IconSize, IconSize), CanvasDraw.UvOf(item.Icon, item.IconRegion), Color4.White);
                 x += IconSize + 4f;
             }
 
             if (font == null) continue;
-            float ty = MathF.Floor(y + (row - lineHeight) * 0.5f);
+            float ty = MathF.Floor(y + (row - gap - lineHeight) * 0.5f);
             var color = item.IsHeader ? headerColor : item.Disabled ? secondaryColor : item.TextColor ?? textColor;
             string text = TextFit.Ellipsize(font, item.Text, size, MathF.Max(0f, width - x - 4f));
             CanvasDraw.Text(renderer, font, new Vector2(x, ty), text, size, color);

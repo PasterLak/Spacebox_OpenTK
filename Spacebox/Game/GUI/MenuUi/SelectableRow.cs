@@ -11,10 +11,15 @@ public sealed class SelectableRow : PanelContainer
     private readonly VBoxContainer _lines = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand, MouseFilter = MouseFilter.Ignore };
     private readonly TextureRect _icon = new TextureRect { StretchMode = TextureStretchMode.KeepAspectCentered, MouseFilter = MouseFilter.Ignore };
     private bool _selected;
+    private bool _styled;
+    private bool _styledSelected;
+    private bool _styledHover;
+    private StyleBox _themedBox;
 
     public SelectableRow(float iconSize)
     {
         MouseFilter = MouseFilter.Stop;
+        ThemeTypeVariation = "ListRow";
         _row.AddThemeConstantOverride("separation", 8f);
         _lines.AddThemeConstantOverride("separation", 1f);
         _icon.CustomMinimumSize = new Vector2(iconSize, iconSize);
@@ -76,14 +81,32 @@ public sealed class SelectableRow : PanelContainer
         return true;
     }
 
+    public override void Process(float deltaTime)
+    {
+        base.Process(deltaTime);
+        if (_styled && _styledSelected == _selected && _styledHover == IsHovered && ReferenceEquals(_themedBox, GetThemeStyleBox(BoxName))) return;
+        UpdateStyle();
+    }
+
+    private string BoxName => _selected ? "item_selected" : IsHovered ? "item_hover" : "item";
+
     protected override void OnMouseEnter() => UpdateStyle();
 
     protected override void OnMouseExit() => UpdateStyle();
 
     private void UpdateStyle()
     {
-        var color = _selected ? GetThemeColor("selected_color", new Color4(1f, 0.72f, 0.1f, 1f)) : IsHovered ? GetThemeColor("hover_color", new Color4(0f, 0f, 0f, 0.08f)) : new Color4(0f, 0f, 0f, 0f);
-        AddThemeStyleBoxOverride("panel", new StyleBoxFlat(color).SetContentMargins(6f, 4f));
+        var box = GetThemeStyleBox(BoxName);
+        _themedBox = box;
+        _styled = true;
+        _styledSelected = _selected;
+        _styledHover = IsHovered;
+        if (box == null)
+        {
+            var color = _selected ? GetThemeColor("selected_color", new Color4(1f, 0.72f, 0.1f, 1f)) : IsHovered ? GetThemeColor("hover_color", new Color4(0f, 0f, 0f, 0.08f)) : new Color4(0f, 0f, 0f, 0f);
+            box = new StyleBoxFlat(color).SetContentMargins(6f, 4f);
+        }
+        AddThemeStyleBoxOverride("panel", box);
         var text = _selected ? GetThemeColor("font_selected_color", Color4.Black) : (Color4?)null;
         foreach (var child in _lines.Children)
         {
