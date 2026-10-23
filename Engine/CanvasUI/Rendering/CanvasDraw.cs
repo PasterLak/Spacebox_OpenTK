@@ -58,7 +58,7 @@ public static class CanvasDraw
         }
     }
 
-    public static void Text(ICanvasRenderer renderer, CanvasFont font, Vector2 position, string text, float size, Color4 color)
+    public static void Text(ICanvasRenderer renderer, CanvasFont font, Vector2 position, string text, float size, Color4 color, float letterSpacing = 0f)
     {
         if (font == null || string.IsNullOrEmpty(text) || font.Atlas == null) return;
 
@@ -81,7 +81,7 @@ public static class CanvasDraw
                 var dest = new Rect2(x + glyph.Offset.X * scale, y + glyph.Offset.Y * scale, glyph.Size.X * scale, glyph.Size.Y * scale);
                 renderer.DrawTexture(font.Atlas, dest, glyph.Uv, color);
             }
-            x += glyph.Advance * scale;
+            x += glyph.Advance * scale + letterSpacing;
         }
     }
 }

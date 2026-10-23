@@ -346,6 +346,17 @@ public sealed class AstronautNetwork : NetworkTransform
         SendRpc(nameof(ApplyServerStats), (byte)stats, amount);
     }
 
+    public void KillByServer()
+    {
+        SendRpc(nameof(ApplyServerKill));
+    }
+
+    [Rpc(RpcTarget.Owner)]
+    private void ApplyServerKill()
+    {
+        if (Owner is LocalAstronaut local) local.Kill(new DeathCase(DeathMessageFormatter.CommandReason));
+    }
+
     public void GiveItemByServer(string fullItemId, int count)
     {
         int seq = GameAssets.ItemsStr.TryGetValue(fullItemId ?? "", out var item) ? Items.ItemAuthority.Grant(OwnerPeer, item.Id, count) : 0;

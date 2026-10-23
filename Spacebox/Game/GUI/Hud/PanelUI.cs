@@ -174,6 +174,7 @@ namespace Spacebox.Game.GUI
 
         private static void UpdateInput()
         {
+            if (Player == null || Storage == null) return;
             if (Debug.IsVisible) return;
             if (UIManager.IsOpen("inventory")) return;
 

@@ -150,6 +150,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new GameRuleCommand());
         Debug.RegisterCommand(new GiveCommand(localPlayer));
         Debug.RegisterCommand(new StatCommand(localPlayer, "heal", PlayerStat.All));
+        Debug.RegisterCommand(new KillCommand(localPlayer));
         Debug.RegisterCommand(new StatCommand(localPlayer, "health", PlayerStat.Health));
         Debug.RegisterCommand(new StatCommand(localPlayer, "power", PlayerStat.Power));
         Debug.RegisterCommand(new StatCommand(localPlayer, "air", PlayerStat.Air));
@@ -357,7 +358,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Tutorial.UI.TutorialUI.OnGUI();
         WelcomeUI.Update();
         PauseUI.Update();
-        Spacebox.Game.Waypoints.WaypointWindowUI.OnGUI();
         Spacebox.Game.Ships.Sharing.ShipLibraryUI.OnGUI();
         GeneratorUI.Update();
         AnalyzerUI.Update();

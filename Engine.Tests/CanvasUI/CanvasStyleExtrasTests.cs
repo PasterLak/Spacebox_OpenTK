@@ -51,7 +51,7 @@ public sealed class CanvasStyleExtrasTests
         var bold = root.Add(new Label { Text = "Iron", Bold = true });
         root.Layout();
 
-        Assert.Equal(plain.GetMinimumSize().X + 1f, bold.GetMinimumSize().X);
+        Assert.Equal(plain.GetMinimumSize().X + 1f + 4 * Label.BoldLetterSpacing, bold.GetMinimumSize().X);
     }
 
     [Fact]

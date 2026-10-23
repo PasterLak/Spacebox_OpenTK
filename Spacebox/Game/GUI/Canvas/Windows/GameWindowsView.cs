@@ -33,6 +33,7 @@ public sealed class GameWindowsView : SafeArea
         Add(_middle, new RadarWindow());
         Add(_middle, new ShipConsoleWindow());
         Add(_middle, new SignWindow());
+        Add(_middle, new WaypointsWindow());
         Add(null, Inventory);
         Add(_right, new EquipmentWindow());
     }

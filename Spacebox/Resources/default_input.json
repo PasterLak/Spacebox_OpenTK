@@ -301,6 +301,72 @@
                         "Key": "J"
                     }
                 ]
+            },
+            "ship_place_yaw": {
+                "Name": "Turn ship (yaw)",
+                "Description": "Turn the ship you are placing around its up axis",
+                "Category": "Ship placement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "R"
+                    }
+                ]
+            },
+            "ship_place_pitch": {
+                "Name": "Turn ship (pitch)",
+                "Description": "Tilt the ship you are placing forward",
+                "Category": "Ship placement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Y"
+                    }
+                ]
+            },
+            "ship_place_roll": {
+                "Name": "Turn ship (roll)",
+                "Description": "Roll the ship you are placing",
+                "Category": "Ship placement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "U"
+                    }
+                ]
+            },
+            "ship_place_reverse": {
+                "Name": "Turn backwards",
+                "Description": "Hold to turn the ship the other way",
+                "Category": "Ship placement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftShift"
+                    }
+                ]
+            },
+            "ship_place_fine": {
+                "Name": "Fine turn",
+                "Description": "Hold to turn in small steps",
+                "Category": "Ship placement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "LeftControl"
+                    }
+                ]
+            },
+            "ship_place_align": {
+                "Name": "Align ship",
+                "Description": "Align the ship with your view again",
+                "Category": "Ship placement",
+                "Bindings": [
+                    {
+                        "Type": "Key",
+                        "Key": "Backspace"
+                    }
+                ]
             }
         },
         "Axes": {}

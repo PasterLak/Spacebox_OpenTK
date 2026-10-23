@@ -27,6 +27,8 @@ public abstract class PlayerTargetCommand<TRequest> : CommandBase, IArgumentSugg
 
     protected abstract string Describe(TRequest request);
 
+    protected virtual string Report(string playerName, TRequest request) => $"{playerName}: {Describe(request)}";
+
     public abstract void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results);
 
     public override void Execute(string[] args)
@@ -50,7 +52,7 @@ public abstract class PlayerTargetCommand<TRequest> : CommandBase, IArgumentSugg
             }
 
             ApplyLocal(_localPlayer, request);
-            Debug.Success($"{GameSession.PlayerName}: {Describe(request)}");
+            Debug.Success(Report(GameSession.PlayerName, request));
             return;
         }
 
@@ -68,7 +70,7 @@ public abstract class PlayerTargetCommand<TRequest> : CommandBase, IArgumentSugg
         }
 
         ApplyRemote(network, request);
-        Debug.Success($"{player.Name}: {Describe(request)}");
+        Debug.Success(Report(player.Name, request));
     }
 
     private static bool IsLocalName(string name)

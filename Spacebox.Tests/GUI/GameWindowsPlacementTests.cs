@@ -55,4 +55,13 @@ public class GameWindowsPlacementTests
             for (int j = i + 1; j < open.Count; j++)
                 Assert.False(open[i].Rect.Intersects(open[j].Rect), $"{open[i].GetType().Name} / {open[j].GetType().Name}");
     }
+
+    [Fact]
+    public void WaypointsWindow_LaysOutCleanly()
+    {
+        var (root, view) = Build();
+        Window<WaypointsWindow>(view).Visible = true;
+        var report = Engine.CanvasUI.Validation.LayoutHarness.ValidateAll(root, Engine.CanvasUI.Validation.ScreenProfiles.All, new Engine.CanvasUI.Validation.LayoutRules { MinHitTargetPixels = 12f });
+        Assert.True(report.IsClean, report.Format());
+    }
 }

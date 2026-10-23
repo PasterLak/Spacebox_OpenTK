@@ -50,7 +50,7 @@ public static class ShipPlacementMode
         if (_unblockPending) _unblockPending = false;
         else PanelUI.BlockHands();
         _preview?.Show(ship.Entity);
-        Chat.Write($"Placing '{ship.Name}': left click to place, R / Y / U to turn (Shift: the other way, Ctrl: {ShipPlacementRotation.FineStep:0} degrees), Backspace to line up with you, mouse wheel for distance, right click or Escape to cancel", Color4.LightBlue);
+        Chat.Write($"Placing '{ship.Name}': left click to place, {Key(YawAction, "R")} / {Key(PitchAction, "Y")} / {Key(RollAction, "U")} to turn ({Key(ReverseAction, "Shift")}: the other way, {Key(FineAction, "Ctrl")}: {ShipPlacementRotation.FineStep:0} degrees), {Key(AlignAction, "Backspace")} to line up with you, mouse wheel for distance, right click or Escape to cancel", Color4.LightBlue);
     }
 
     public static void Cancel()
@@ -100,14 +100,27 @@ public static class ShipPlacementMode
         _preview?.SetPose(_localCenter, _rotation, center);
     }
 
+    public const string YawAction = "ship_place_yaw";
+    public const string PitchAction = "ship_place_pitch";
+    public const string RollAction = "ship_place_roll";
+    public const string ReverseAction = "ship_place_reverse";
+    public const string FineAction = "ship_place_fine";
+    public const string AlignAction = "ship_place_align";
+
+    private static string Key(string action, string fallback) => Spacebox.Game.GUI.KeyNames.ForAction(action) ?? fallback;
+
+    private static bool Pressed(string action, Keys fallback) => Engine.InputPro.InputManager.Instance.HasAction(action) ? Input.IsActionDown(action) : Input.IsKeyDown(fallback);
+
+    private static bool Held(string action, Keys fallback) => Engine.InputPro.InputManager.Instance.HasAction(action) ? Input.IsAction(action) : Input.IsKey(fallback);
+
     private static void HandleInput(LocalAstronaut player)
     {
-        float step = (Input.IsKey(Keys.LeftControl) || Input.IsKey(Keys.RightControl) ? ShipPlacementRotation.FineStep : ShipPlacementRotation.CoarseStep)
-                     * (Input.IsKey(Keys.LeftShift) || Input.IsKey(Keys.RightShift) ? -1f : 1f);
-        if (Input.IsKeyDown(Keys.R)) TurnAround(Vector3.UnitY, step);
-        if (Input.IsKeyDown(Keys.Y)) TurnAround(Vector3.UnitX, step);
-        if (Input.IsKeyDown(Keys.U)) TurnAround(Vector3.UnitZ, step);
-        if (Input.IsKeyDown(Keys.Backspace))
+        float step = (Held(FineAction, Keys.LeftControl) ? ShipPlacementRotation.FineStep : ShipPlacementRotation.CoarseStep)
+                     * (Held(ReverseAction, Keys.LeftShift) ? -1f : 1f);
+        if (Pressed(YawAction, Keys.R)) TurnAround(Vector3.UnitY, step);
+        if (Pressed(PitchAction, Keys.Y)) TurnAround(Vector3.UnitX, step);
+        if (Pressed(RollAction, Keys.U)) TurnAround(Vector3.UnitZ, step);
+        if (Pressed(AlignAction, Keys.Backspace))
         {
             _rotation = ShipPlacementRotation.AlignedTo(player.Right, player.Up, player.Front, _frame);
             _turned = false;

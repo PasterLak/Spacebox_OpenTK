@@ -91,7 +91,7 @@ public class Label : Control
             if (_autowrap) return new Vector2(0f, lineHeight);
             return new Vector2(0f, font.Measure(_text, size).Y) + new Vector2(0f, OutlinePadding().Y);
         }
-        if (!_autowrap) return font.Measure(_text, size) + OutlinePadding();
+        if (!_autowrap) return MeasureText(font, _text, size) + OutlinePadding();
 
         var lines = Lines(font, size, Size.X);
         return new Vector2(0f, lines.Count * font.GetLineHeight(size));
@@ -107,11 +107,11 @@ public class Label : Control
         var font = GetThemeFont();
         if (font == null || _text.Length == 0) return Vector2.Zero;
         float size = GetThemeFontSize();
-        if (!_autowrap) return font.Measure(_text, size) + OutlinePadding();
+        if (!_autowrap) return MeasureText(font, _text, size) + OutlinePadding();
 
         var lines = Lines(font, size, Size.X);
         float width = 0f;
-        for (int i = 0; i < lines.Count; i++) width = MathF.Max(width, font.MeasureWidth(lines[i], size));
+        for (int i = 0; i < lines.Count; i++) width = MathF.Max(width, LineWidth(font, lines[i], size));
         return new Vector2(width, lines.Count * font.GetLineHeight(size));
     }
 
@@ -133,7 +133,7 @@ public class Label : Control
         for (int i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
-            float width = font.MeasureWidth(line, size);
+            float width = LineWidth(font, line, size);
             float x = HorizontalAlignment == HorizontalAlignment.Center ? (Size.X - width) * 0.5f
                 : HorizontalAlignment == HorizontalAlignment.Right ? Size.X - width : 0f;
             var position = new Vector2(MathF.Floor(x), MathF.Floor(y + i * lineHeight));
@@ -176,8 +176,35 @@ public class Label : Control
         {
             CanvasDraw.Text(renderer, font, position + ShadowOffset, line, size, ShadowColor);
         }
-        CanvasDraw.Text(renderer, font, position, line, size, color);
-        if (Bold) CanvasDraw.Text(renderer, font, position + new Vector2(1f, 0f), line, size, color);
+        float spacing = LetterSpacing;
+        CanvasDraw.Text(renderer, font, position, line, size, color, spacing);
+        if (Bold) CanvasDraw.Text(renderer, font, position + new Vector2(1f, 0f), line, size, color, spacing);
+    }
+
+    public const float BoldLetterSpacing = 1f;
+
+    private float LetterSpacing => Bold ? BoldLetterSpacing : 0f;
+
+    private float LineWidth(CanvasFont font, string line, float size) => font.MeasureWidth(line, size) + LetterSpacing * line.Length;
+
+    private Vector2 MeasureText(CanvasFont font, string text, float size)
+    {
+        var measured = font.Measure(text, size);
+        if (!Bold || string.IsNullOrEmpty(text)) return measured;
+        int longest = 0;
+        int current = 0;
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (text[i] == '\n')
+            {
+                longest = Math.Max(longest, current);
+                current = 0;
+                continue;
+            }
+            current++;
+        }
+        longest = Math.Max(longest, current);
+        return new Vector2(measured.X + longest * BoldLetterSpacing, measured.Y);
     }
 
     private Vector2 OutlinePadding() => (OutlineSize > 0f && OutlineColor.A > 0f ? new Vector2(OutlineSize * 2f) : Vector2.Zero) + (Bold ? new Vector2(1f, 0f) : Vector2.Zero);

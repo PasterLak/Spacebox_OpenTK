@@ -262,6 +262,6 @@ Bits 37–48 hold `MultiblockOffset`, 49 `IsMeshHidden`, 50 `HasCustomShape`; 51
 | Debug command | `Game/Commands/` + registration in `BaseSpaceScene.LoadContent` (also usable from chat with `/`); argument suggestions through `IArgumentSuggestions` (`CommandSuggestionSources`); commands on a player (self or by name, server forwarding and admin check) derive from `PlayerTargetCommand<T>` |
 | Scene | `Scenes/` + `SpaceboxWindow.OnRegisterScenes` |
 | Save format change | NBT keys with defaults; renamed/removed ids or keys → `WorldUpgradeStep` in `Game/Versioning/Steps/` registered in `WorldUpgradeRegistry.CreateDefault` + test with `WorldFixtureBuilder` |
-| Waypoint features | `Game/Waypoints/` (`WaypointService` over `TagManager` static tags, saved in `tags.nbt`; window `WaypointWindowUI`, key `waypoints` = M) |
+| Waypoint features | `Game/Waypoints/` (`WaypointService` over `TagManager` static tags, saved in `tags.nbt`; controller `WaypointWindowUI`, CanvasUI window `Canvas/Windows/WaypointsWindow`, key `waypoints` = N) |
 | Network message | `add-network-message` skill |
 | Reusable, game-independent code | `Engine/`, not here |

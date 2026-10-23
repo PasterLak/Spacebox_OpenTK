@@ -399,6 +399,14 @@ namespace Spacebox.Game.Player
             }
         }
 
+        public void Kill(DeathCase deathCase)
+        {
+            if (!IsAlive) return;
+            var health = HealthBar.StatsData;
+            health.Decrement(health.Value);
+            Death(deathCase);
+        }
+
         private void Death(DeathCase? deathCase = null)
         {
             if (!IsAlive) return;

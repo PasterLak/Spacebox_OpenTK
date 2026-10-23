@@ -35,13 +35,13 @@ public sealed class CraftingWindow : GameWindow
 
         var footer = _itemsView.AddChild(new HBoxContainer());
         footer.AddThemeConstantOverride("separation", 8f);
+        footer.AddChild(_categoryTitle);
         var back = footer.AddChild(new Button { Text = "Back", CustomMinimumSize = new Vector2(64f, 26f) });
         back.Pressed += _ =>
         {
             CraftingGUI.PlayClick();
             ShowCategories();
         };
-        footer.AddChild(_categoryTitle);
     }
 
     public override bool IsOpen => CraftingGUI.IsVisible && CraftingGUI.Categories != null;
@@ -99,9 +99,9 @@ public sealed class CraftingWindow : GameWindow
         float gridWidth = columns * ItemSlotControl.DefaultSize + (columns - 1) * spacing;
         float size = MathF.Floor((gridWidth - GetThemeConstant("scrollbar_width", 8f)) / columns);
         int count = category.Items.Count;
-        int rows = Math.Max(1, (count + columns - 1) / columns);
+        int rows = Math.Max(VisibleItemRows, (count + columns - 1) / columns);
         _items.Columns = columns;
-        _itemsScroll.CustomMinimumSize = new Vector2(gridWidth, Math.Min(rows, VisibleItemRows) * size);
+        _itemsScroll.CustomMinimumSize = new Vector2(gridWidth, VisibleItemRows * size);
 
         var controls = new CraftItemControl[count];
         for (int i = 0; i < count; i++)
@@ -124,7 +124,7 @@ public sealed class CraftingWindow : GameWindow
             {
                 int index = row * columns + column;
                 if (index < count) _items.AddChild(controls[index]);
-                else _items.AddChild(Spacer(size, size));
+                else _items.AddChild(new EmptySlotControl(size));
             }
         }
 

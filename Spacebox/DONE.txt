@@ -380,6 +380,8 @@ Fixes
 - classic UI: slots look pressed into the window (darker, shadow top-left) instead of like buttons, tooltips in the classic style; crafting tooltips show the picture after the recipe; crafting item list as wide as the inventory
 - waypoint names are drawn under the windows; crafting items fill from the bottom, 3 rows visible, Back and category name at the bottom; hotbar on a rounded panel, rounded bars; inventory one slot lower
 - fixed: inventory key hints stayed on screen after closing the inventory with Escape
+- waypoint window on CanvasUI; console/chat command kill [player]; ship placement keys can be changed in Controls; crafting: Back on the right, always 3 rows with empty slots; bold text has more space between letters
+- fixed: crash when closing the game (hotbar input after the player was removed)
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine
