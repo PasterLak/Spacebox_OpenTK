@@ -53,6 +53,11 @@ public sealed class EditorJsonFile
         return file;
     }
 
+    public static EditorJsonFile Missing(string fullPath, string rootFolder)
+    {
+        return new EditorJsonFile(fullPath, Path.GetRelativePath(rootFolder, fullPath)) { Version = NextStamp() };
+    }
+
     public static JsonNode Parse(string text)
     {
         try
@@ -85,6 +90,13 @@ public sealed class EditorJsonFile
 
         IsDirty = false;
         Version = NextStamp();
+    }
+
+    public void Replace(JsonNode root)
+    {
+        Root = root;
+        Error = null;
+        MarkDirty();
     }
 
     public void MarkDirty()

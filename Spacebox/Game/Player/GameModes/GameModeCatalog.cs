@@ -3,6 +3,7 @@ namespace Spacebox.Game.Player.GameModes;
 public static class GameModeCatalog
 {
     public const int MaxModes = 32;
+    public const int FirstCustomId = 3;
 
     private static readonly List<GameModeDefinition> _modes = new List<GameModeDefinition>();
 
@@ -29,6 +30,15 @@ public static class GameModeCatalog
             else if ((int)mode.Id < MaxModes) _modes.Add(mode);
         }
         _modes.Sort((a, b) => ((int)a.Id).CompareTo((int)b.Id));
+    }
+
+    public static int LowestFreeCustomId(ICollection<int> usedIds)
+    {
+        for (int id = FirstCustomId; id < MaxModes; id++)
+        {
+            if (!usedIds.Contains(id)) return id;
+        }
+        return -1;
     }
 
     public static bool Contains(GameMode id) => _modes.Exists(mode => mode.Id == id);

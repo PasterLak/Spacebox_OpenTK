@@ -125,4 +125,138 @@ public sealed class GameSetProjectTests : IDisposable
         Assert.Contains("Optional/new.json", files);
         Assert.Contains("blocks.json", files);
     }
+
+    [Fact]
+    public void BrokenFile_RefusesAddAndDuplicateAndIsNotSaved()
+    {
+        File.WriteAllText(Path.Combine(_root, "broken.json"), "{ \"Blueprints\": [ { ");
+        string original = File.ReadAllText(Path.Combine(_root, "broken.json"));
+        var project = new GameSetProject(_root, "test");
+        var source = new ArrayEntrySource(project, "broken.json", "Blueprints", GameSetCatalog.Blueprints);
+        var file = project.GetFile("broken.json");
+        Assert.NotNull(file.Error);
+
+        Assert.Null(source.Add(null));
+        file.MarkDirty();
+        project.SaveAll();
+
+        Assert.Null(file.Root);
+        Assert.Equal(original, File.ReadAllText(Path.Combine(_root, "broken.json")));
+    }
+
+    [Fact]
+    public void BrokenGroupedFile_RefusesAdd()
+    {
+        File.WriteAllText(Path.Combine(_root, "recipes.json"), "{ \"RecipeCatalog\": [ ");
+        var project = new GameSetProject(_root, "test");
+        var source = new GroupedArrayEntrySource(project, "recipes.json", "RecipeCatalog", "Type", "Recipes", GameSetCatalog.ProcessingRecipes);
+
+        Assert.Null(source.Add("furnace"));
+        Assert.Null(project.GetFile("recipes.json").Root);
+    }
+
+    [Fact]
+    public void ReplacingABrokenFile_ClearsTheErrorAndSaves()
+    {
+        File.WriteAllText(Path.Combine(_root, "broken.json"), "{ \"a\": [ ");
+        var project = new GameSetProject(_root, "test");
+        var file = project.GetFile("broken.json");
+
+        file.Replace(new JsonObject { ["a"] = 1 });
+        project.SaveAll();
+
+        Assert.Null(file.Error);
+        Assert.Equal(1, EditorJsonFile.Parse(File.ReadAllText(Path.Combine(_root, "broken.json")))!["a"]!.GetValue<int>());
+    }
+
+    [Fact]
+    public void GetFile_TreatsPendingDeletesAsMissing()
+    {
+        var project = new GameSetProject(_root, "test");
+        project.DeleteFile(project.GetFile("Projectiles/p_a.json"));
+
+        var file = project.GetFile("Projectiles/p_a.json");
+
+        Assert.Null(file.Root);
+        Assert.False(file.IsDirty);
+        Assert.False(project.Exists("Projectiles/p_a.json"));
+        Assert.Equal(1, project.DirtyCount);
+        Assert.DoesNotContain("Projectiles/p_a.json", project.ListJsonFiles());
+    }
+
+    [Fact]
+    public void DiscardChanges_BringsBackFilesThatWereReadWhilePendingDelete()
+    {
+        var project = new GameSetProject(_root, "test");
+        project.DeleteFile(project.GetFile("Projectiles/p_a.json"));
+        project.GetFile("Projectiles/p_a.json");
+
+        project.DiscardChanges();
+
+        Assert.NotNull(project.GetFile("Projectiles/p_a.json").Root);
+    }
+
+    [Fact]
+    public void ReloadFromDisk_ReloadsFileObjectsInPlace()
+    {
+        var project = new GameSetProject(_root, "test");
+        var file = project.GetFile("Projectiles/p_a.json");
+        int version = project.Version;
+        File.WriteAllText(Path.Combine(_root, "Projectiles", "p_a.json"), "{ \"Speed\": 20 }");
+
+        project.ReloadFromDisk();
+        file.Root!["Speed"] = 30;
+        file.MarkDirty();
+        project.SaveAll();
+
+        Assert.Same(file, project.GetFile("Projectiles/p_a.json"));
+        Assert.True(project.Version > version);
+        Assert.Equal(30, EditorJsonFile.Parse(File.ReadAllText(Path.Combine(_root, "Projectiles", "p_a.json")))!["Speed"]!.GetValue<int>());
+    }
+
+    [Fact]
+    public void ReloadFromDisk_DropsFilesThatNoLongerExist()
+    {
+        var project = new GameSetProject(_root, "test");
+        project.GetFile("blocks.json");
+        File.Delete(Path.Combine(_root, "blocks.json"));
+
+        project.ReloadFromDisk();
+
+        Assert.DoesNotContain("blocks.json", project.ListJsonFiles());
+        Assert.Equal(0, project.DirtyCount);
+    }
+
+    [Theory]
+    [InlineData("Optional/new.json", true)]
+    [InlineData("new.json", true)]
+    [InlineData("C:/x.json", false)]
+    [InlineData("C:x.json", false)]
+    [InlineData("/etc/x.json", false)]
+    [InlineData("\\\\server\\x.json", false)]
+    [InlineData("../x.json", false)]
+    [InlineData("a/../../x.json", false)]
+    [InlineData("x.txt", false)]
+    [InlineData(" ", false)]
+    public void IsValidNewFileName_KeepsFilesInsideTheGameSet(string name, bool valid)
+    {
+        Assert.Equal(valid, GameSetProject.IsValidNewFileName(name));
+    }
+
+    [Fact]
+    public void GameModes_AddAndDuplicatePickTheLowestFreeId()
+    {
+        Directory.CreateDirectory(Path.Combine(_root, "GameModes"));
+        File.WriteAllText(Path.Combine(_root, "GameModes", "survival.json"), "{ \"Id\": 0, \"Key\": \"survival\" }");
+        File.WriteAllText(Path.Combine(_root, "GameModes", "explorer.json"), "{ \"Id\": 3, \"Key\": \"explorer\" }");
+        File.WriteAllText(Path.Combine(_root, "GameModes", "hard.json"), "{ \"Id\": 5, \"Key\": \"hard\" }");
+        var project = new GameSetProject(_root, "test");
+        var source = new FolderEntrySource(project, "GameModes", GameSetCatalog.GameModes);
+
+        var added = source.Add(null);
+        var copy = source.Duplicate(added);
+
+        Assert.Equal(4, added.Node!["Id"]!.GetValue<int>());
+        Assert.Equal(6, copy.Node!["Id"]!.GetValue<int>());
+    }
 }

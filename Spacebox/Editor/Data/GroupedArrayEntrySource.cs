@@ -62,6 +62,7 @@ public sealed class GroupedArrayEntrySource : IEntrySource
     public EditorEntry Add(string group)
     {
         var items = EnsureItems(string.IsNullOrWhiteSpace(group) ? "new_group" : group);
+        if (items == null) return null;
         var node = Definition.Template();
         items.Add(node);
         return Commit(node);
@@ -70,6 +71,7 @@ public sealed class GroupedArrayEntrySource : IEntrySource
     public EditorEntry Duplicate(EditorEntry entry)
     {
         var items = EnsureItems(entry.Group);
+        if (items == null) return null;
         var node = EditorJson.Clone(entry.Node);
         int index = IndexOf(items, entry.Node);
         items.Insert(index < 0 ? items.Count : index + 1, node);
@@ -78,8 +80,8 @@ public sealed class GroupedArrayEntrySource : IEntrySource
 
     public void Remove(EditorEntry entry)
     {
-        var items = EnsureItems(entry.Group);
-        int index = IndexOf(items, entry.Node);
+        var items = FindItems(entry.Group);
+        int index = items == null ? -1 : IndexOf(items, entry.Node);
         if (index < 0) return;
         items.RemoveAt(index);
         _project.GetFile(_relativeFile).MarkDirty();
@@ -96,9 +98,22 @@ public sealed class GroupedArrayEntrySource : IEntrySource
         return null;
     }
 
+    private JsonArray FindItems(string groupName)
+    {
+        var groups = EditorJson.GetArray(_project.GetFile(_relativeFile).Root, _groupsKey);
+        if (groups == null) return null;
+        foreach (var node in groups)
+        {
+            if (node is JsonObject group && string.Equals(EditorJson.GetString(group, _groupNameKey), groupName, StringComparison.OrdinalIgnoreCase))
+                return EditorJson.GetArray(group, _itemsKey);
+        }
+        return null;
+    }
+
     private JsonArray EnsureItems(string groupName)
     {
         var file = _project.GetFile(_relativeFile);
+        if (file.Error != null) return null;
         if (file.Root is not JsonObject root)
         {
             root = new JsonObject();

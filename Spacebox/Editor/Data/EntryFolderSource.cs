@@ -63,6 +63,7 @@ public sealed class EntryFolderSource : IEntrySource
         var node = Definition.Template();
         string id = MakeId(Definition.NewIdPrefix);
         Definition.SetId(node, id);
+        Definition.PrepareNew(node, GetEntries());
         return Create(id, node);
     }
 
@@ -72,22 +73,65 @@ public sealed class EntryFolderSource : IEntrySource
         var id = Definition.GetId(entry.Node);
         id = MakeId(string.IsNullOrEmpty(id) ? Definition.NewIdPrefix : id);
         Definition.SetId(node, id);
+        Definition.PrepareNew(node, GetEntries());
         return Create(id, node);
     }
 
+    private static readonly string[] SiblingFiles = { GameSetFormat.BlueprintFile, GameSetFormat.EntryRecipesFile };
+
     public void Remove(EditorEntry entry)
     {
+        string root = RootOf(entry.File.RelativePath);
+        string id = Definition.GetId(entry.Node);
+        if (_canCreate) DeleteSiblings(entry.File.RelativePath);
         _project.DeleteFile(entry.File);
+        if (_canCreate && root != null) RemoveFromOrder(root, id);
         _version = -1;
+    }
+
+    private void DeleteSiblings(string entryPath)
+    {
+        string folder = Path.GetDirectoryName(entryPath)?.Replace('\\', '/');
+        if (string.IsNullOrEmpty(folder)) return;
+        foreach (var name in SiblingFiles)
+        {
+            string path = folder + "/" + name;
+            if (_project.Exists(path)) _project.DeleteFile(_project.GetFile(path));
+        }
+    }
+
+    private void RemoveFromOrder(string root, string id)
+    {
+        if (string.IsNullOrEmpty(id)) return;
+        string path = root.TrimEnd('/') + "/" + GameSetFormat.OrderFile;
+        if (!_project.Exists(path)) return;
+
+        var file = _project.GetFile(path);
+        if (file.Root is not JsonArray order) return;
+        bool removed = false;
+        for (int i = order.Count - 1; i >= 0; i--)
+        {
+            if (order[i] is JsonValue value && value.TryGetValue(out string orderId) && string.Equals(orderId, id, StringComparison.OrdinalIgnoreCase))
+            {
+                order.RemoveAt(i);
+                removed = true;
+            }
+        }
+        if (removed) file.MarkDirty();
+    }
+
+    private string RootOf(string path)
+    {
+        foreach (var root in _roots)
+        {
+            if (IsEntryFile(path, root)) return root;
+        }
+        return null;
     }
 
     public bool Owns(EditorEntry entry)
     {
-        foreach (var root in _roots)
-        {
-            if (IsEntryFile(entry.File.RelativePath, root)) return true;
-        }
-        return false;
+        return RootOf(entry.File.RelativePath) != null;
     }
 
     private EditorEntry Create(string id, JsonNode node)

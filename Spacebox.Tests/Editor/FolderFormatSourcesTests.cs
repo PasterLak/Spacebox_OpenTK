@@ -85,4 +85,42 @@ public sealed class FolderFormatSourcesTests : IDisposable
         Assert.True(File.Exists(Path.Combine(Root, "Recipes", "crusher.json")));
         Assert.Equal(2, GameSetContentReader.ReadFolder(Root).Recipes.Count);
     }
+
+    [Fact]
+    public void Items_RemoveDeletesEntryFilesAndOrderId()
+    {
+        _sets.Write("Mod/Items/bulb/item.json", "{ \"ID\": \"bulb\" }");
+        _sets.Write("Mod/Items/bulb/blueprint.json", "{ \"Product\": { \"Item\": \"bulb\", \"Quantity\": 1 } }");
+        _sets.Write("Mod/Items/bulb/recipes.json", "[ ]");
+        _sets.Write("Mod/Items/rod/item.json", "{ \"ID\": \"rod\" }");
+        _sets.Write("Mod/Items/order.json", "[ \"bulb\", \"rod\" ]");
+        var project = new GameSetProject(Root, "mod");
+        var source = GameSetSources.Items(project);
+
+        source.Remove(source.GetEntries().First(e => GameSetCatalog.Items.GetId(e.Node) == "bulb"));
+        project.SaveAll();
+
+        Assert.False(File.Exists(Path.Combine(Root, "Items", "bulb", "item.json")));
+        Assert.False(File.Exists(Path.Combine(Root, "Items", "bulb", "blueprint.json")));
+        Assert.False(File.Exists(Path.Combine(Root, "Items", "bulb", "recipes.json")));
+        Assert.Equal("[\"rod\"]", EditorJsonFile.Parse(File.ReadAllText(Path.Combine(Root, "Items", "order.json")))!.ToJsonString());
+    }
+
+    [Fact]
+    public void Blueprints_RemoveKeepsTheItemEntry()
+    {
+        _sets.Write("Mod/Items/bulb/item.json", "{ \"ID\": \"bulb\" }");
+        _sets.Write("Mod/Items/bulb/blueprint.json", "{ \"Product\": { \"Item\": \"bulb\", \"Quantity\": 1 } }");
+        _sets.Write("Mod/Items/bulb/recipes.json", "[ ]");
+        _sets.Write("Mod/Items/order.json", "[ \"bulb\" ]");
+        var project = new GameSetProject(Root, "mod");
+        var source = GameSetSources.Blueprints(project);
+
+        source.Remove(source.GetEntries().Single());
+        project.SaveAll();
+
+        Assert.False(File.Exists(Path.Combine(Root, "Items", "bulb", "blueprint.json")));
+        Assert.True(File.Exists(Path.Combine(Root, "Items", "bulb", "item.json")));
+        Assert.True(File.Exists(Path.Combine(Root, "Items", "bulb", "recipes.json")));
+    }
 }

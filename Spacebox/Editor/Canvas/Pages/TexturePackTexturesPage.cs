@@ -82,6 +82,18 @@ public sealed class TexturePackTexturesPage : EditorPage
         ReleaseTextures();
     }
 
+    public override void Release()
+    {
+        base.Release();
+        ReleaseTextures();
+    }
+
+    protected override void OnShown()
+    {
+        base.OnShown();
+        _shownVersion = -1;
+    }
+
     private void Refresh()
     {
         _shownVersion = Editor.Assets.Version;

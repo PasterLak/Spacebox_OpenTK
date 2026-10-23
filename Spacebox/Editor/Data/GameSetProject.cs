@@ -56,7 +56,8 @@ public sealed class GameSetProject
         var key = Normalize(relativePath);
         if (_files.TryGetValue(key, out var file)) return file;
 
-        file = EditorJsonFile.Load(GetFullPath(key), RootPath);
+        var fullPath = GetFullPath(key);
+        file = _pendingDeletes.Contains(fullPath) ? EditorJsonFile.Missing(fullPath, RootPath) : EditorJsonFile.Load(fullPath, RootPath);
         _files[key] = file;
         return file;
     }
@@ -141,7 +142,7 @@ public sealed class GameSetProject
 
         foreach (var file in _files.Values)
         {
-            if (!file.IsDirty) continue;
+            if (!file.IsDirty || file.Error != null) continue;
             file.Save();
             if (file.Root != null) Mirror?.Write(file.RelativePath, EditorJsonFile.Serialize(file.Root));
         }
@@ -150,14 +151,19 @@ public sealed class GameSetProject
 
     public void ReloadFromDisk()
     {
-        _files.Clear();
         _pendingDeletes.Clear();
+        foreach (var key in _files.Keys.ToArray())
+        {
+            var file = _files[key];
+            if (File.Exists(file.FullPath)) file.Reload();
+            else _files.Remove(key);
+        }
         _structureVersion = EditorJsonFile.NextStamp();
     }
 
     public void DiscardChanges()
     {
-        _pendingDeletes.Clear();
+        ForgetPendingDeletes();
         foreach (var key in _files.Keys.ToArray())
         {
             var file = _files[key];
@@ -168,7 +174,24 @@ public sealed class GameSetProject
         _structureVersion = EditorJsonFile.NextStamp();
     }
 
+    private void ForgetPendingDeletes()
+    {
+        foreach (var key in _files.Keys.ToArray())
+        {
+            var file = _files[key];
+            if (!file.IsDirty && _pendingDeletes.Contains(file.FullPath)) _files.Remove(key);
+        }
+        _pendingDeletes.Clear();
+    }
+
     public const string ReadOnlyMessage = "Empty is read-only. Create a new GameSet in Mods to build on it.";
+
+    public static bool IsValidNewFileName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name) || !name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) return false;
+        if (name.Contains("..") || name.Contains(':') || name.StartsWith('/') || name.StartsWith('\\')) return false;
+        return !Path.IsPathRooted(name) && name.IndexOfAny(Path.GetInvalidPathChars()) < 0;
+    }
 
     public static string Normalize(string relativePath)
     {
