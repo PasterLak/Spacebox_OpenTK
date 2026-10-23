@@ -61,7 +61,7 @@ public sealed class PlayerRespawner
         bool isFar = IsFar(grant);
         var effects = settings != null ? new DnaReconstructionAudio(settings.Sounds) : null;
 
-        DnaReconstructionScreen.Play(settings?.ReconstructionTime ?? DefaultReconstructionTime, () => Arrive(grant, settings, isFar), effects);
+        GameUi.Current?.DnaReconstruction.Play(settings?.ReconstructionTime ?? DefaultReconstructionTime, () => Arrive(grant, settings, isFar), effects);
     }
 
     private bool IsFar(ReconstructionGrant grant)

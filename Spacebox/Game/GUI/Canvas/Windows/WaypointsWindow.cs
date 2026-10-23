@@ -17,6 +17,8 @@ public sealed class WaypointsWindow : GameWindow
     private const float MarkerSize = 10f;
 
     private readonly VBoxContainer _rows = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+
+    private readonly WaypointWindowUI _waypoints;
     private readonly List<(SelectableRow Row, Label Distance, Tag Tag)> _rowItems = new List<(SelectableRow, Label, Tag)>();
     private readonly Label _empty = StatusText.Create("No waypoints yet. Fly to a place you want to find again and press \"Add at my position\".", StatusKind.Muted);
     private readonly VBoxContainer _editor = new VBoxContainer { CustomMinimumSize = new Vector2(EditorWidth, 0f) };
@@ -32,8 +34,9 @@ public sealed class WaypointsWindow : GameWindow
     private Tag _shown;
     private bool _syncing;
 
-    public WaypointsWindow() : base("Waypoints")
+    public WaypointsWindow(WaypointWindowUI waypoints) : base("Waypoints")
     {
+        _waypoints = waypoints;
         Name = "Waypoints";
         Body.AddChild(StatusText.Create("Only you can see your waypoints.", StatusKind.Muted));
 
@@ -59,7 +62,7 @@ public sealed class WaypointsWindow : GameWindow
         {
             var swatch = _palette.AddChild(new ColorSwatch(color, SwatchSize, ""));
             var picked = color;
-            swatch.Clicked += () => WaypointWindowUI.SetColor(picked);
+            swatch.Clicked += () => _waypoints.SetColor(picked);
             _swatches.Add(swatch);
         }
 
@@ -72,32 +75,32 @@ public sealed class WaypointsWindow : GameWindow
 
         _name.TextChanged += text =>
         {
-            if (!_syncing) WaypointWindowUI.Rename(text);
+            if (!_syncing) _waypoints.Rename(text);
         };
-        _name.EditingFinished += _ => WaypointWindowUI.Save();
+        _name.EditingFinished += _ => _waypoints.Save();
         _custom.ColorChanged += color =>
         {
-            if (!_syncing) WaypointWindowUI.SetColor(new Color4(color.R, color.G, color.B, 1f));
+            if (!_syncing) _waypoints.SetColor(new Color4(color.R, color.G, color.B, 1f));
         };
         _visible.Toggled += (_, pressed) =>
         {
-            if (!_syncing) WaypointWindowUI.SetVisible(pressed);
+            if (!_syncing) _waypoints.SetVisible(pressed);
         };
-        _delete.Pressed += _ => WaypointWindowUI.Delete();
+        _delete.Pressed += _ => _waypoints.Delete();
 
         var footer = Body.AddChild(new HBoxContainer());
         footer.AddThemeConstantOverride("separation", ColumnGap);
         var add = footer.AddChild(new Button { Text = "Add at my position", SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        add.Pressed += _ => WaypointWindowUI.AddAtPlayer();
+        add.Pressed += _ => _waypoints.AddAtPlayer();
         var close = footer.AddChild(new Button { Text = "Close", SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        close.Pressed += _ => WaypointWindowUI.Close();
+        close.Pressed += _ => _waypoints.Close();
     }
 
-    public override bool IsOpen => WaypointWindowUI.IsOpen;
+    public override bool IsOpen => _waypoints.IsOpen;
 
     protected override void Refresh()
     {
-        var waypoints = WaypointWindowUI.Collect();
+        var waypoints = _waypoints.Collect();
         string structure = Structure(waypoints);
         if (structure != _structure)
         {
@@ -107,8 +110,8 @@ public sealed class WaypointsWindow : GameWindow
 
         foreach (var (row, distance, tag) in _rowItems)
         {
-            row.IsSelected = ReferenceEquals(tag, WaypointWindowUI.Selected);
-            SetText(distance, WaypointWindowUI.DistanceTo(tag));
+            row.IsSelected = ReferenceEquals(tag, _waypoints.Selected);
+            SetText(distance, _waypoints.DistanceTo(tag));
         }
 
         RefreshEditor();
@@ -116,7 +119,7 @@ public sealed class WaypointsWindow : GameWindow
 
     private void RefreshEditor()
     {
-        var selected = WaypointWindowUI.Selected;
+        var selected = _waypoints.Selected;
         bool hasSelection = selected != null;
         var children = _editor.Children;
         for (int i = 0; i < children.Count; i++)
@@ -144,8 +147,8 @@ public sealed class WaypointsWindow : GameWindow
         if (_visible.ButtonPressed != selected.Visible) _visible.ButtonPressed = selected.Visible;
         _syncing = false;
 
-        SetText(_distance, "Distance: " + WaypointWindowUI.DistanceTo(selected));
-        string delete = WaypointWindowUI.ConfirmDelete ? "Click again to delete" : "Delete";
+        SetText(_distance, "Distance: " + _waypoints.DistanceTo(selected));
+        string delete = _waypoints.ConfirmDelete ? "Click again to delete" : "Delete";
         if (_delete.Text != delete) _delete.Text = delete;
     }
 
@@ -168,7 +171,7 @@ public sealed class WaypointsWindow : GameWindow
             name.Overrun = TextOverrun.Ellipsis;
             var distance = row.Row.AddChild(StatusText.Create("", StatusKind.Muted));
             distance.VerticalAlignment = VerticalAlignment.Center;
-            row.Selected += r => WaypointWindowUI.Select((Tag)r.Metadata);
+            row.Selected += r => _waypoints.Select((Tag)r.Metadata);
             _rowItems.Add((row, distance, tag));
         }
     }

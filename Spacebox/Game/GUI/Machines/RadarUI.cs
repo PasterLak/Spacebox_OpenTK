@@ -6,10 +6,8 @@ using System;
 
 namespace Spacebox.Game.GUI;
 
-public class RadarUI : IDisposable
+public sealed class RadarUI : IGameUiController, IDisposable
 {
-    public static RadarUI Instance;
-
     private bool _wasVisible = false;
 
     public event Action OnOpen;
@@ -42,7 +40,6 @@ public class RadarUI : IDisposable
     public RadarUI(Texture2D skyboxTexture)
     {
         _spaceBackground = skyboxTexture;
-        Instance = this;
         _bgUvMax = _bgUvSize;
 
         _gridTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/Radar/radarGrid.png");
@@ -79,7 +76,7 @@ public class RadarUI : IDisposable
     public float TargetAlpha => Math.Clamp(_pointVisibilityTimer / 2f, 0f, 1f);
     public Vector2 TargetDirection => GetDirectionFromDegrees(PointBearingDegrees);
 
-    public void Update()
+    public void OnGUI()
     {
         bool isVisible = IsOpen;
 
@@ -206,6 +203,8 @@ public class RadarUI : IDisposable
         UIManager.Toggle("radar");
     }
 
+    public void Reset() => Dispose();
+
     public void Dispose()
     {
         _foundAudio?.Dispose();
@@ -216,7 +215,5 @@ public class RadarUI : IDisposable
         _lineTexture?.Dispose();
         _scanningTexture?.Dispose();
         _maskTexture?.Dispose();
-
-        Instance = null;
     }
 }

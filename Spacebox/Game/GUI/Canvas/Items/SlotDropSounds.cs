@@ -21,7 +21,7 @@ public static class SlotDropSounds
 
     private static bool IsEquipmentSlot(ItemSlot slot)
     {
-        var equipment = InventoryUI.Player?.Equipment;
+        var equipment = GameUi.Current?.Inventory.Player?.Equipment;
         return equipment != null && slot.Storage != null && ReferenceEquals(slot.Storage, equipment.Storage);
     }
 }

@@ -1,25 +1,38 @@
 using Engine;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Player;
 using Spacebox.Game.Ships;
 using Spacebox.Network;
 
 namespace Spacebox.Game.GUI;
 
-public static class ShipConsoleUI
+public sealed class ShipConsoleUI : IGameUiController
 {
     private const string WindowId = "shipConsole";
 
-    private static readonly int[] _groupCounts = new int[ConsoleBindings.GroupColors.Length];
-    private static int _waitingGroup = -1;
-    private static bool _skipOpenKey;
+    private readonly int[] _groupCounts = new int[ConsoleBindings.GroupColors.Length];
+    private int _waitingGroup = -1;
+    private bool _skipOpenKey;
+    private readonly ChatController _chat;
+    private LocalAstronaut _player;
 
-    public static bool IsOpen => UIManager.IsOpen(WindowId);
-    public static int WaitingGroup => _waitingGroup;
-    public static ShipConsoleBlock Console => ShipPilot.Console;
-    public static ConsoleBindings Bindings => Console?.Entity?.ShipControl.GetBindings(Console.LocalCell);
+    public ShipConsoleUI(ChatController chat)
+    {
+        _chat = chat;
+    }
 
-    public static string HudText
+    public void Initialize(LocalAstronaut player)
+    {
+        _player = player;
+    }
+
+    public bool IsOpen => UIManager.IsOpen(WindowId);
+    public int WaitingGroup => _waitingGroup;
+    public ShipConsoleBlock Console => ShipPilot.Console;
+    public ConsoleBindings Bindings => Console?.Entity?.ShipControl.GetBindings(Console.LocalCell);
+
+    public string HudText
     {
         get
         {
@@ -33,9 +46,9 @@ public static class ShipConsoleUI
         }
     }
 
-    public static void HandleInput()
+    public void HandleInput()
     {
-        if (!ShipPilot.IsPiloting || Debug.IsVisible || Chat.FocusInput) return;
+        if (!ShipPilot.IsPiloting || Debug.IsVisible || _chat.FocusInput) return;
         if (UIManager.IsUIMode || !Input.IsActionDown("inventory")) return;
 
         ShipBindingTool.Exit();
@@ -44,7 +57,7 @@ public static class ShipConsoleUI
         UIManager.Open(WindowId);
     }
 
-    public static void Update()
+    public void OnGUI()
     {
         if (!IsOpen) return;
 
@@ -76,7 +89,7 @@ public static class ShipConsoleUI
         }
     }
 
-    public static int[] CountGroups(ConsoleBindings bindings)
+    public int[] CountGroups(ConsoleBindings bindings)
     {
         Array.Clear(_groupCounts);
         foreach (var pair in bindings.Bound)
@@ -84,25 +97,26 @@ public static class ShipConsoleUI
         return _groupCounts;
     }
 
-    public static void ToggleWaiting(int group)
+    public void ToggleWaiting(int group)
     {
         _waitingGroup = _waitingGroup == group ? -1 : group;
     }
 
-    public static void BindBlocks()
+    public void BindBlocks()
     {
         Close();
         ShipBindingTool.Enter();
     }
 
-    public static void LeaveSeat()
+    public void LeaveSeat()
     {
         Close();
-        ShipPilot.Unmount(InventoryUI.Player);
+        ShipPilot.Unmount(_player);
     }
 
-    public static void Reset()
+    public void Reset()
     {
+        _player = null;
         _waitingGroup = -1;
         _skipOpenKey = false;
     }
@@ -147,7 +161,7 @@ public static class ShipConsoleUI
         return result.ToArray();
     }
 
-    private static void Close()
+    private void Close()
     {
         _waitingGroup = -1;
         UIManager.CloseAll();

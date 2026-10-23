@@ -10,34 +10,34 @@ using System.Linq;
 
 namespace Spacebox.Game.GUI
 {
-    public class ResourceProcessingGUI
+    public sealed class ResourceProcessingGUI : IGameUiController
     {
-        static ResourceProcessingGUI()
+        private Recipe Recipe = new Recipe();
+        private Storage InputStorage = new Storage(1, 1);
+        private Storage FuelStorage = new Storage(1, 1);
+        private Storage OutputStorage = new Storage(1, 1);
+        private ProcessingComponent processingBlock;
+        private Storage BufferStorage;
+
+        public string WindowName = "";
+        private AtlasSprite batteryIcon;
+        private AtlasSprite inputIcon;
+        private AtlasSprite outputIcon;
+        private bool _wasVisible = false;
+
+        private string status = "";
+        private bool wasInitialized = false;
+
+        private AudioSource craftedSound;
+        private AudioSource pickupSound;
+        private LocalAstronaut Player;
+
+        public void Initialize(LocalAstronaut player)
         {
             SlotTransfer.ItemsDraggedOut += CreditProcessedItems;
         }
 
-        protected static Recipe Recipe = new Recipe();
-        protected static Storage InputStorage = new Storage(1, 1);
-        protected static Storage FuelStorage = new Storage(1, 1);
-        protected static Storage OutputStorage = new Storage(1, 1);
-        protected static ProcessingComponent processingBlock;
-        protected static Storage BufferStorage;
-
-        public static string WindowName = "";
-        private static AtlasSprite batteryIcon;
-        private static AtlasSprite inputIcon;
-        private static AtlasSprite outputIcon;
-        protected static bool _wasVisible = false;
-
-        private static string status = "";
-        private static bool wasInitialized = false;
-
-        private static AudioSource craftedSound;
-        private static AudioSource pickupSound;
-        private static LocalAstronaut Player;
-
-        public static void Toggle(LocalAstronaut player)
+        public void Toggle(LocalAstronaut player)
         {
             Player = player;
             if (!wasInitialized)
@@ -54,7 +54,7 @@ namespace Spacebox.Game.GUI
                 UIManager.Toggle("resourceProcessing", "inventory");
         }
 
-        private static void InitIcons()
+        private void InitIcons()
         {
             batteryIcon = UIAtlas.Get("battery");
 
@@ -70,7 +70,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Activate(ProcessingComponent block, LocalAstronaut player)
+        public void Activate(ProcessingComponent block, LocalAstronaut player)
         {
             Player = player;
             if (!wasInitialized)
@@ -143,7 +143,7 @@ namespace Spacebox.Game.GUI
                 UIManager.Open("resourceProcessing", "inventory");
         }
 
-        private static void OnCrafted(ProcessingComponent block)
+        private void OnCrafted(ProcessingComponent block)
         {
             if (!UIManager.IsOpen("resourceProcessing")) return;
             if (!string.IsNullOrEmpty(GameAssets.GetBlockDataById(block.Host.Id).FinishedSound)) return;
@@ -159,7 +159,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        private static void OnInputItemWasChanged(Storage storage)
+        private void OnInputItemWasChanged(Storage storage)
         {
             if (processingBlock != null)
             {
@@ -171,7 +171,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        private static void UpdateStatus()
+        private void UpdateStatus()
         {
             if (processingBlock == null)
             {
@@ -231,8 +231,13 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Reset()
+        public void Reset()
         {
+            SlotTransfer.ItemsDraggedOut -= CreditProcessedItems;
+            craftedSound?.Dispose();
+            pickupSound?.Dispose();
+            craftedSound = null;
+            pickupSound = null;
             if (processingBlock != null) processingBlock.OnCrafted -= OnCrafted;
             InputStorage.OnDataWasChanged -= OnInputItemWasChanged;
             OutputStorage.OnDataWasChanged -= OnInputItemWasChanged;
@@ -248,18 +253,18 @@ namespace Spacebox.Game.GUI
             _wasVisible = false;
         }
 
-        public static bool IsOpen => UIManager.IsOpen("resourceProcessing") && processingBlock != null;
-        public static string Status => status;
+        public bool IsOpen => UIManager.IsOpen("resourceProcessing") && processingBlock != null;
+        public string Status => status;
 
-        public static float Progress => processingBlock != null && processingBlock.IsRunning ? processingBlock.GetTaskProgress() / 100f : 0f;
-        public static ItemSlot InputSlot => InputStorage.GetSlot(0, 0);
-        public static ItemSlot OutputSlot => OutputStorage.GetSlot(0, 0);
-        public static AtlasSprite InputIcon => inputIcon;
-        public static AtlasSprite OutputIcon => outputIcon;
-        public static ProcessingComponent Block => processingBlock;
-        public static Storage Buffer => BufferStorage;
+        public float Progress => processingBlock != null && processingBlock.IsRunning ? processingBlock.GetTaskProgress() / 100f : 0f;
+        public ItemSlot InputSlot => InputStorage.GetSlot(0, 0);
+        public ItemSlot OutputSlot => OutputStorage.GetSlot(0, 0);
+        public AtlasSprite InputIcon => inputIcon;
+        public AtlasSprite OutputIcon => outputIcon;
+        public ProcessingComponent Block => processingBlock;
+        public Storage Buffer => BufferStorage;
 
-        public static IEnumerable<Recipe> Recipes
+        public IEnumerable<Recipe> Recipes
         {
             get
             {
@@ -268,9 +273,9 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static float RecipeSeconds(Recipe recipe) => processingBlock == null ? 0f : processingBlock.GetTicksWithEfficiency(recipe.RequiredTicks) / 20f;
+        public float RecipeSeconds(Recipe recipe) => processingBlock == null ? 0f : processingBlock.GetTicksWithEfficiency(recipe.RequiredTicks) / 20f;
 
-        public static void Update()
+        public void OnGUI()
         {
             bool isVisible = UIManager.IsOpen("resourceProcessing");
 
@@ -295,7 +300,7 @@ namespace Spacebox.Game.GUI
                 status = "Status: Processing";
         }
 
-        public static void MoveItems(ItemSlot slot)
+        public void MoveItems(ItemSlot slot)
         {
             if (!slot.HasItem) return;
             if (!Input.IsAction("storage_item_quick_transfer")) return;
@@ -321,7 +326,7 @@ namespace Spacebox.Game.GUI
             CreditProcessedItems(slot, itemBefore, PlayerStatistics.CountMovedFrom(itemBefore, countBefore, slot.Item, slot.Count));
         }
 
-        private static void CreditProcessedItems(ItemSlot slot, Item item, int moved)
+        private void CreditProcessedItems(ItemSlot slot, Item item, int moved)
         {
             if (moved <= 0 || Player == null || !IsProductSlot(slot, item)) return;
 
@@ -329,14 +334,14 @@ namespace Spacebox.Game.GUI
             if (item != null) PlayerActivity.Raise(PlayerActivityKind.ItemProcessed, item.Id, moved, processingBlock?.RecipeType);
         }
 
-        private static bool IsProductSlot(ItemSlot slot, Item item)
+        private bool IsProductSlot(ItemSlot slot, Item item)
         {
             if (slot.Storage == OutputStorage) return true;
             if (BufferStorage == null || slot.Storage != BufferStorage || item == null || processingBlock == null) return false;
             return !GameAssets.TryGetRecipe(processingBlock.RecipeType, item.Id, out _);
         }
 
-        private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)
+        private void TryMoveToPlayerPanel(ItemSlot slot, byte rest)
         {
             if (Player?.Panel == null) return;
 
@@ -347,7 +352,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        private static void RestartPickupSound()
+        private void RestartPickupSound()
         {
             if (pickupSound.IsPlaying)
             {

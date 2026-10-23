@@ -9,32 +9,50 @@ using Engine.InputPro;
 
 namespace Spacebox.Game.GUI
 {
-    public static class InventoryUI
+    public sealed class InventoryUI : IGameUiController
     {
-        public static LocalAstronaut Player;
-        private static bool _wasOpen;
+        private readonly ChatController _chat;
+        private readonly ItemControlsUI _itemControls;
 
-        public static void Update()
+        public LocalAstronaut Player;
+        private bool _wasOpen;
+
+        public InventoryUI(ChatController chat, ItemControlsUI itemControls)
+        {
+            _chat = chat;
+            _itemControls = itemControls;
+        }
+
+        public void OnGUI()
         {
             HandleInput();
             bool open = UIManager.IsOpen("inventory");
-            if (_wasOpen && !open) ItemControlsUI.IsVisible = false;
+            if (_wasOpen && !open) _itemControls.IsVisible = false;
             _wasOpen = open;
         }
 
-        public static AudioSource splitAudio;
+        public AudioSource splitAudio;
 
-        public static void Initialize()
+        public void Initialize(LocalAstronaut player)
         {
+            Player = player;
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"), AudioChannel.UI);
         }
 
-        private static void HandleInput()
+        public void Reset()
+        {
+            splitAudio?.Dispose();
+            splitAudio = null;
+            Player = null;
+            _wasOpen = false;
+        }
+
+        private void HandleInput()
         {
             if (Input.IsActionDown("inventory") && !Debug.IsVisible && !Spacebox.Game.Ships.ShipPilot.IsPiloting)
             {
                 if (Player.IsAlive == false) return;
-                if (Chat.FocusInput) return; 
+                if (_chat.FocusInput) return;
                 if (ImGui.GetIO().WantCaptureKeyboard || Spacebox.Game.GUI.Canvas.GameCanvas.WantsKeyboard) return;
 
                 if (!UIManager.IsUIMode)
@@ -56,7 +74,7 @@ namespace Spacebox.Game.GUI
 
                 if (UIManager.IsOpen("inventory"))
                 {
-                    ItemControlsUI.IsVisible = true;
+                    _itemControls.IsVisible = true;
 
                     var shift = InputManager.Instance.GetAction("storage_item_quick_transfer");
                     var delete = InputManager.Instance.GetAction("storage_item_delete");
@@ -64,16 +82,16 @@ namespace Spacebox.Game.GUI
                     var text = shift.Bindings[0].GetDisplayName() + " - " + shift.Description;
                     text += "\n" + delete.Bindings[0].GetDisplayName() + " - " + delete.Description;
 
-                    ItemControlsUI.Text = text;
+                    _itemControls.Text = text;
                 }
                 else
                 {
-                    ItemControlsUI.IsVisible = false;
+                    _itemControls.IsVisible = false;
                 }
             }
         }
 
-        public static void OnSlotClicked(ItemSlot slot)
+        public void OnSlotClicked(ItemSlot slot)
         {
             if (slot.HasItem)
             {

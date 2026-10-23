@@ -3,40 +3,47 @@ using Spacebox.Game.GUI;
 
 namespace Spacebox.Game.Tutorial.UI;
 
-public static class TutorialMenuUI
+public sealed class TutorialMenuUI : IGameUiController
 {
     public const string WindowId = "tutorialMenu";
 
-    private static readonly List<(string Label, Action Click)> _buttons = new List<(string, Action)>();
-    private static bool _confirmRestart;
-    private static bool _confirmStop;
+    private readonly List<(string Label, Action Click)> _buttons = new List<(string, Action)>();
+    private bool _confirmRestart;
+    private bool _confirmStop;
 
-    public static bool IsOpen => UIManager.IsOpen(WindowId);
+    private readonly TutorialUI _tutorial;
 
-    public static void Open()
+    public TutorialMenuUI(TutorialUI tutorial)
+    {
+        _tutorial = tutorial;
+    }
+
+    public bool IsOpen => UIManager.IsOpen(WindowId);
+
+    public void Open()
     {
         _confirmRestart = false;
         _confirmStop = false;
         UIManager.Open(WindowId);
     }
 
-    public static IReadOnlyList<(string Label, Action Click)> Buttons => _buttons;
+    public IReadOnlyList<(string Label, Action Click)> Buttons => _buttons;
 
-    public static string Description => DescribeState(TutorialService.Runner);
+    public string Description => DescribeState(TutorialService.Runner);
 
-    public static void Refresh()
+    public void Refresh()
     {
         BuildButtons(TutorialService.Runner);
     }
 
-    public static void Press(int index)
+    public void Press(int index)
     {
         if (index < 0 || index >= _buttons.Count) return;
-        TutorialUI.PlayClick();
+        _tutorial.PlayClick();
         _buttons[index].Click();
     }
 
-    private static void BuildButtons(TutorialRunner runner)
+    private void BuildButtons(TutorialRunner runner)
     {
         _buttons.Clear();
         bool available = TutorialService.HasTutorialFor(CurrentMode());

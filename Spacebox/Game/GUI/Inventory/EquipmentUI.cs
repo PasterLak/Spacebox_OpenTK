@@ -3,7 +3,7 @@ using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI;
 
-public static class EquipmentUI
+public sealed class EquipmentUI : IGameUiController
 {
     private const string BackgroundsFolder = "equipment/";
     public const int Rows = 4;
@@ -27,7 +27,7 @@ public static class EquipmentUI
 
     private static readonly string[] _backgroundNames = CreateBackgroundNames();
 
-    public static PlayerPreview Preview { get; private set; } = new PlayerPreview();
+    public PlayerPreview Preview { get; private set; } = new PlayerPreview();
 
     public static string BackgroundName(EquipmentSlotType type) => _backgroundNames[(int)type];
 
@@ -42,18 +42,18 @@ public static class EquipmentUI
         return names;
     }
 
-    public static void RenderPreview()
+    public void RenderPreview()
     {
         Preview.Render();
     }
 
-    public static void Reset()
+    public void Reset()
     {
         Preview.Dispose();
         Preview = new PlayerPreview();
     }
 
-    public static void OnSlotClicked(ItemSlot slot)
+    public void OnSlotClicked(ItemSlot slot)
     {
         if (slot.HasItem && Input.IsAction("storage_item_quick_transfer"))
         {

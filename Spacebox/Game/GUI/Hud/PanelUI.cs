@@ -1,443 +1,77 @@
-﻿using Spacebox.Network.Players;
-using Engine;
-using Engine.Audio;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using Spacebox.Game.Generation;
 using Spacebox.Game.Player;
-using Spacebox.Game.Player.GameModes;
-using Spacebox.Game.Player.Interactions;
-using System.Numerics;
-using System;
 
-namespace Spacebox.Game.GUI
+namespace Spacebox.Game.GUI;
+
+public static class PanelUI
 {
-    public static class PanelUI
+    private static PanelController Panel => GameUi.Current?.Panel;
+
+    public static LocalAstronaut Player => Panel?.Player;
+
+    public static Item HeldItem => Panel?.HeldItem;
+
+    public static bool AreHandsBlocked => Panel?.AreHandsBlocked ?? false;
+
+    public static bool IsHeldItemAnimating => Panel?.IsHeldItemAnimating ?? false;
+
+    public static bool AllowScroll
     {
-        private static readonly BlockLightProbe _heldItemLight = new BlockLightProbe();
-        private static float SlotSize = 64.0f;
-        public static bool EnableRenderForCurrentItem { get; set; } = true;
-        public static bool AllowScroll { get; set; } = true;
-        public static bool IsItemModelVisible { get; set; } = true;
-        public static bool AreHandsBlocked { get; private set; }
-        public static Storage Storage;
-        private static ItemModel ItemModel;
-        private static ItemSlot SelectedSlot;
-        public static Item HeldItem => SelectedSlot != null && SelectedSlot.HasItem ? SelectedSlot.Item : null;
-        private static AudioSource scrollAudio;
-        private static AudioSource dropAudio;
-        private static short _selectedSlotId = 0;
-        public static short SelectedSlotId
+        get => Panel?.AllowScroll ?? true;
+        set
         {
-            get { return _selectedSlotId; }
-            set { _selectedSlotId = value; }
+            if (Panel != null) Panel.AllowScroll = value;
         }
-        public static Action<short> OnSlotChanged;
+    }
 
-        private static float TimeToHideItemName = 2f;
-        private static float _time = 0;
-        private static bool wasPlayerOnes = false;
-        public static LocalAstronaut Player;
-        private static short _lastSelectedSlotId = -1;
-        private static Item _lastSelectedItem = null;
-        private static byte _lastSelectedCount = 0;
-
-        public static void Initialize(LocalAstronaut player)
+    public static bool IsItemModelVisible
+    {
+        get => Panel?.IsItemModelVisible ?? true;
+        set
         {
-            Player = player;
-            Storage = Player.Panel;
-            scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"), AudioChannel.UI);
-            dropAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/dropped.ogg"), AudioChannel.UI);
-
-            SetSelectedSlot(0);
-            Storage.OnDataWasChanged += OnStorageDataWasChanged;
-
-            _lastSelectedItem = null;
-            _lastSelectedSlotId = -1;
-            _lastSelectedCount = 0;
+            if (Panel != null) Panel.IsItemModelVisible = value;
         }
+    }
 
-        public static void Reset()
+    public static short SelectedSlotId
+    {
+        get => Panel?.SelectedSlotId ?? 0;
+        set
         {
-            if (Storage != null) Storage.OnDataWasChanged -= OnStorageDataWasChanged;
-            Player = null;
-            Storage = null;
-            ItemModel = null;
-            SelectedSlot = null;
-            IsItemModelVisible = true;
-            AreHandsBlocked = false;
+            if (Panel != null) Panel.SelectedSlotId = value;
         }
+    }
 
-        private static void OnStorageDataWasChanged(Storage storage)
+    public static event Action<short> OnSlotChanged
+    {
+        add
         {
-            SelectSlot(SelectedSlotId);
+            if (Panel != null) Panel.OnSlotChanged += value;
         }
-
-        public static bool IsHolding<T>() where T : Item
+        remove
         {
-            if (SelectedSlot == null) return false;
-            if (!SelectedSlot.HasItem) return false;
-            return SelectedSlot.Item.Is<T>();
+            if (Panel != null) Panel.OnSlotChanged -= value;
         }
+    }
 
-        public static void BlockHands()
-        {
-            if (AreHandsBlocked) return;
-            AreHandsBlocked = true;
+    public static ItemSlot CurrentSlot() => Panel?.CurrentSlot();
 
-            if (ItemModel != null) ItemModel.ResetToEnd();
-            ItemModel = null;
-            ItemControlsUI.IsVisible = false;
-            BlockSelector.IsVisible = false;
+    public static bool IsHolding<T>() where T : Item => Panel?.IsHolding<T>() ?? false;
 
-            if (Player != null)
-            {
-                Player.SetInteraction(new InteractionDefault());
-                Player.ChangeItemInHand(null);
-                Player.ItemLight.Enabled = false;
-            }
+    public static void SetSelectedSlot(short id) => Panel?.SetSelectedSlot(id);
 
-            AstronautNetwork.Local?.SetHeldItem(null);
-        }
+    public static void ResetLastSelected() => Panel?.ResetLastSelected();
 
-        public static void ResetHandsBlock()
-        {
-            AreHandsBlocked = false;
-        }
+    public static void SetFlashlight(LocalAstronaut astronaut) => Panel?.SetFlashlight(astronaut);
 
-        public static void UnblockHands()
-        {
-            if (!AreHandsBlocked) return;
-            AreHandsBlocked = false;
-            ResetLastSelected();
-            SelectSlot(SelectedSlotId);
-        }
+    public static void BlockHands() => Panel?.BlockHands();
 
-        public static void DrawItemModel()
-        {
-            if (!IsItemModelVisible || AreHandsBlocked) return;
-            if (ItemModel == null) return;
-            ItemModel.Render();
-        }
+    public static void UnblockHands() => Panel?.UnblockHands();
 
-        public static bool IsHeldItemAnimating => ItemModel is AnimatedItemModel { Animator.IsActive: true };
+    public static void ResetHandsBlock() => Panel?.ResetHandsBlock();
 
-        public static ItemModel GetSlotModel()
-        {
-            return GameAssets.ItemModels[SelectedSlot.Item.Id];
-        }
-
-        public static bool TryPlaceItem(out short id)
-        {
-            id = 0;
-            if (SelectedSlot == null) return false;
-            if (!SelectedSlot.HasItem) return false;
-            if (UIManager.IsOpen("inventory")) return false;
-            if (!Spacebox.Network.Containers.ContainerNetwork.CanUseItems) return false;
-            if (!(SelectedSlot.Item is BlockItem itemBlock)) return false;
-            id = itemBlock.BlockId;
-            if (Player == null || Player.GameModeRules.ConsumeItems)
-                SelectedSlot.TakeOne();
-            return true;
-        }
-
-        public static void ShowItemModel()
-        {
-            bool hadModel = ItemModel != null;
-            var lastModel = ItemModel;
-            if (SelectedSlot?.HasItem == true && !(SelectedSlot.Item is BlockItem))
-            {
-                ItemModel = GameAssets.ItemModels[SelectedSlot.Item.Id];
-
-                if (!hadModel) ItemModel.PlayDrawAnimation();
-                else
-                {
-                    if (lastModel != ItemModel)
-                    {
-                        ItemModel.PlayDrawAnimation();
-                    }
-                }
-            }
-        }
-
-        private static void HideItemModel()
-        {
-            if (SelectedSlot == null) return;
-            if (!SelectedSlot.HasItem || SelectedSlot.Item is BlockItem)
-            {
-                if (ItemModel != null)
-                    ItemModel.ResetToEnd();
-
-                ItemModel = null;
-            }
-        }
-
-        private static void UpdateInput()
-        {
-            if (Player == null || Storage == null) return;
-            if (Debug.IsVisible) return;
-            if (UIManager.IsOpen("inventory")) return;
-
-            if (UIManager.IsUIMode && !UIManager.IsOpen("radar")) return;
-
-            if (!AllowScroll || AreHandsBlocked) return;
-            if (Player.CanMove == false) return;
-
-            if (Input.MouseScrollDelta.Y < 0)
-            {
-                SelectedSlotId++;
-                if (SelectedSlotId > (short)(Storage.SizeY - 1))
-                    SelectedSlotId = 0;
-                SetSelectedSlot(SelectedSlotId);
-            }
-            if (Input.MouseScrollDelta.Y > 0)
-            {
-                SelectedSlotId--;
-                if (SelectedSlotId < 0)
-                    SelectedSlotId = (short)(Storage.SizeY - 1);
-                SetSelectedSlot(SelectedSlotId);
-            }
-            if (Input.IsActionDown("drop_item"))
-            {
-                if (Input.IsKey(Keys.LeftShift))
-                {
-                    DropItem(SelectedSlot, true);
-                }
-                else
-                {
-                    DropItem(SelectedSlot, false);
-                }
-            }
-            if (Input.IsKeyDown(Keys.D0))
-            {
-                SetSelectedSlot(9);
-            }
-            for (int i = 0; i <= 9; i++)
-            {
-                if (Input.IsKeyDown(Keys.D1 + i % 10))
-                {
-                    SetSelectedSlot((short)(i % Storage.SizeY));
-                    break;
-                }
-            }
-        }
-
-        private static void DropItem(ItemSlot slot, bool dropAll)
-        {
-            if (slot == null) return;
-            if (!slot.HasItem) return;
-            if (Player == null) return;
-            if (!Player.GameModeRules.UseItems) return;
-            if (!Spacebox.Network.Containers.ContainerNetwork.CanDropFrom(slot)) return;
-
-            var dropPosition = Player.Position + Player.Front * 0.5f;
-
-            if (!dropAll)
-            {
-                World.DropEffectManager.DropItem(dropPosition, Player.Front, 6f, slot.Item, 1, 2, 4);
-                slot.DropOne();
-            }
-            else
-            {
-                World.DropEffectManager.DropItemSlot(dropPosition, Player.Front, 6f, slot, 2, 4);
-                slot.Clear();
-            }
-
-            if (dropAudio != null)
-            {
-                dropAudio.Play();
-            }
-        }
-
-        public static void Update()
-        {
-            if (_time > 0)
-                _time -= Time.Delta;
-
-            if (ItemModel != null && EnableRenderForCurrentItem)
-            {
-                if (ItemModel.Enabled)
-                {
-                    if (Player != null && Player.ItemSway != null)
-                    {
-                        ItemModel.SwayMatrix = Player.ItemSway.GetSwayMatrix();
-                    }
-                    if (Player != null && ItemModel.Material != null)
-                    {
-                        _heldItemLight.Update(Player.Position, Time.Delta);
-                        ItemModel.Material.BlockLight = _heldItemLight.Value;
-                    }
-                    else
-                    {
-                        ItemModel.SwayMatrix = Matrix4.Identity;
-                    }
-                    ItemModel.Update();
-                }
-            }
-
-            if (UIManager.IsOpen("inventory")) return;
-            UpdateInput();
-        }
-
-        private static void UpdatePlayerInteraction(LocalAstronaut player)
-        {
-            if (player == null) return;
-            if (!player.GameModeRules.UseItems) return;
-            if (IsHolding<BlockItem>())
-                player.SetInteraction(new InteractionPlaceBlock());
-            else if (IsHolding<WeaponItem>())
-                player.SetInteraction(new InteractionShoot(SelectedSlot));
-            else if (IsHolding<DrillItem>())
-            {
-                if (player.GameModeRules.InstantBreak)
-                    player.SetInteraction(new InteractionDestroyBlockCreative(SelectedSlot));
-                else
-                    player.SetInteraction(new InteractionDestroyBlockSurvival(SelectedSlot));
-            }
-            else if (IsHolding<ConsumableItem>())
-                player.SetInteraction(new InteractionConsumeItem(SelectedSlot));
-            else if (IsHolding<EquipmentItem>())
-                player.SetInteraction(new InteractionEquipItem(SelectedSlot));
-            else if (IsHolding<RepairToolItem>())
-                player.SetInteraction(new InteractionRepair(SelectedSlot));
-            else if (IsHolding<MobSpawnerItem>())
-                player.SetInteraction(new InteractionSpawnMob(SelectedSlot));
-            else if (IsHolding<EraserToolItem>())
-                player.SetInteraction(new InteractionEraser());
-            else if (IsHolding<CameraPointItem>())
-                player.SetInteraction(new InteractionCameraPoint(ItemModel));
-            else
-                player.SetInteraction(new InteractionDefault());
-        }
-
-        public static void ResetLastSelected()
-        {
-            _lastSelectedSlotId = -1;
-            _lastSelectedCount = 0;
-            _lastSelectedItem = null;
-        }
-
-        public static void SetSelectedSlot(short id)
-        {
-            SelectedSlotId = id;
-            SelectSlot(SelectedSlotId);
-            if (wasPlayerOnes)
-            {
-                if (scrollAudio != null)
-                {
-                    if (scrollAudio.IsPlaying)
-                        scrollAudio.Stop();
-                    scrollAudio.Play();
-                }
-            }
-            else
-            {
-                wasPlayerOnes = true;
-            }
-        }
-
-        public static void SetFlashlight(LocalAstronaut ast)
-        {
-            if (ast?.Flashlight != null && ItemModel?.Material != null)
-            {
-                ItemModel.Material.SetFlashlight(ast.Flashlight);
-            }
-        }
-
-        private static void SelectSlot(short slot)
-        {
-            if (Storage != null)
-            {
-                SelectedSlot = Storage.GetSlot(0, slot);
-                if (AreHandsBlocked) return;
-
-                var hadModel = ItemModel != null;
-
-                ShowItemModel();
-                HideItemModel();
-
-                if (_lastSelectedSlotId != slot ||
-                    _lastSelectedItem != SelectedSlot.Item ||
-                    _lastSelectedCount != SelectedSlot.Count)
-                {
-                    UpdatePlayerInteraction(Player);
-                    _lastSelectedSlotId = slot;
-                    _lastSelectedItem = SelectedSlot.Item;
-                    _lastSelectedCount = SelectedSlot.Count;
-                }
-
-                if (Player != null && SelectedSlot != null)
-                {
-                    Player.SetItemLight(SelectedSlot);
-
-                    if (SelectedSlot.HasItem)
-                    {
-                        Player.ChangeItemInHand(SelectedSlot.Item);
-                    }
-                    else
-                    {
-                        Player.ChangeItemInHand(null);
-                    }
-                }
-
-                AstronautNetwork.Local?.SetHeldItem(SelectedSlot);
-
-                ShowItemDescription();
-
-                OnSlotChanged?.Invoke(slot);
-            }
-        }
-
-        private static void ShowItemDescription()
-        {
-            if (!UIManager.IsOpen("inventory"))
-            {
-                if (SelectedSlot.HasItem && SelectedSlot.Item != null)
-                {
-                    _time = TimeToHideItemName;
-
-                    if (SelectedSlot.Item.Description != "")
-                    {
-                        ItemControlsUI.IsVisible = true;
-                        ItemControlsUI.Text = SelectedSlot.Item.Description;
-                    }
-                    else
-                    {
-                        ItemControlsUI.IsVisible = false;
-                    }
-                }
-                else
-                {
-                    ItemControlsUI.IsVisible = false;
-                }
-            }
-        }
-
-        public static string ShownItemName => HudVisibility.ShowPlayerHud && SelectedSlot != null && SelectedSlot.HasItem && _time > 0 ? SelectedSlot.Item.Name : null;
-
-        public static ItemSlot CurrentSlot() => SelectedSlot;
-
-        public static void OnSlotClicked(ItemSlot slot)
-        {
-            if (Input.IsMouseButton(MouseButton.Left))
-            {
-            }
-            if (slot.HasItem)
-            {
-                if (Input.IsAction("storage_item_quick_transfer"))
-                {
-                    if (Player == null || !Player.Equipment.TryEquip(slot))
-                        slot.TryMoveItemToConnectedStorage(out var _);
-                }
-                if (Input.IsKey(Keys.LeftAlt))
-                    slot.Split();
-                if (Input.IsAction("storage_item_delete"))
-                    slot.Clear();
-                if (Input.IsMouseButton(MouseButton.Left))
-                {
-                    var mousePos = Input.Mouse.Position.ToSystemVector2();
-                }
-            }
-        }
+    public static bool TryPlaceItem(out short id)
+    {
+        id = 0;
+        return Panel != null && Panel.TryPlaceItem(out id);
     }
 }

@@ -12,14 +12,17 @@ public sealed class LoadingScreenView : GameScreen
     private readonly Label _step = new Label { HorizontalAlignment = HorizontalAlignment.Center };
     private readonly ProgressBar _bar = new ProgressBar { MaxValue = 1f, CustomMinimumSize = new Vector2(320f, 8f), ShowPercentage = false };
 
-    public LoadingScreenView()
+    private readonly WorldLoadingController _loading;
+
+    public LoadingScreenView(WorldLoadingController loading)
     {
+        _loading = loading;
         Name = "Loading";
         var center = AddChild(new CenterContainer { MouseFilter = MouseFilter.Ignore });
         center.SetAnchorsPreset(LayoutPreset.FullRect);
         var column = center.AddChild(new VBoxContainer { MouseFilter = MouseFilter.Ignore });
         column.AddThemeConstantOverride("separation", 10f);
-        var title = column.AddChild(new Label { Text = WorldLoadingScreen.Title, HorizontalAlignment = HorizontalAlignment.Center, Bold = true });
+        var title = column.AddChild(new Label { Text = WorldLoadingController.Title, HorizontalAlignment = HorizontalAlignment.Center, Bold = true });
         title.AddThemeFontSizeOverride(24f);
         title.AddThemeColorOverride("font_color", Color4.White);
         title.ShadowColor = Shadow;
@@ -31,11 +34,11 @@ public sealed class LoadingScreenView : GameScreen
         _step.ShadowColor = Shadow;
     }
 
-    public override bool IsShown => WorldLoadingScreen.IsActive;
+    public override bool IsShown => _loading.IsActive;
 
     protected override void Refresh(float deltaTime)
     {
-        _bar.Value = WorldLoadingScreen.Progress;
-        SetText(_step, WorldLoadingScreen.Step);
+        _bar.Value = _loading.Progress;
+        SetText(_step, _loading.Step);
     }
 }

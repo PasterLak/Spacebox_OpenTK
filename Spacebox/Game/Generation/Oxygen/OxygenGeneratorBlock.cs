@@ -72,7 +72,7 @@ public class OxygenGeneratorBlock : InteractiveBlock, IContainerBlock, IEntityBl
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);
-        OxygenGeneratorUI.Open(this, player);
+        GameUi.Current?.OxygenGenerator.Open(this, player);
     }
 
     public string ContainerWindowId => "oxygenGenerator";

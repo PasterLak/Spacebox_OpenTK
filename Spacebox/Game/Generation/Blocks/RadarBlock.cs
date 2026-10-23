@@ -10,14 +10,19 @@ namespace Spacebox.Game.Generation.Blocks
         public RadarBlock(BlockData blockData) : base(blockData)
         {
 
-            if (RadarUI.Instance != null)
-                OnUse += RadarUI.Instance.Toggle;
+            if (GameUi.Current?.Radar != null)
+                OnUse += ToggleRadar;
 
             IsActive = false;
             EFlags = ElectricalFlags.CanConsume;
             MaxPower = 200;
             ConsumptionRate = 10;
             CurrentPower = 0;
+        }
+
+        private static void ToggleRadar(LocalAstronaut player)
+        {
+            GameUi.Current?.Radar?.Toggle(player);
         }
 
         public override void Use(LocalAstronaut player, ref HitInfo hit)

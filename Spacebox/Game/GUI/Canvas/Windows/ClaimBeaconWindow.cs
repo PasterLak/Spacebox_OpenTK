@@ -33,8 +33,11 @@ public sealed class ClaimBeaconWindow : GameWindow
     private int _membersVersion = -1;
     private string _suggestionsFor;
 
-    public ClaimBeaconWindow() : base("Claim Beacon")
+    private readonly ClaimBeaconUI _claimBeacon;
+
+    public ClaimBeaconWindow(ClaimBeaconUI claimBeacon) : base("Claim Beacon")
     {
+        _claimBeacon = claimBeacon;
         Name = "ClaimBeacon";
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 10f);
@@ -47,7 +50,7 @@ public sealed class ClaimBeaconWindow : GameWindow
         status.AddChild(_payRow);
         _payRow.AddChild(_slot);
         _payRow.AddChild(new Label { Text = "Pay with ingots", VerticalAlignment = VerticalAlignment.Center, SizeFlagsVertical = SizeFlags.ShrinkCenter });
-        _slot.Clicked += ClaimBeaconUI.OnSlotClicked;
+        _slot.Clicked += _claimBeacon.OnSlotClicked;
 
         row.AddChild(new VSeparator());
         var payments = row.AddChild(new VBoxContainer { CustomMinimumSize = new Vector2(110f, ColumnHeight) });
@@ -69,20 +72,20 @@ public sealed class ClaimBeaconWindow : GameWindow
         members.AddChild(_suggestions);
         members.AddChild(_noSuggestions);
         members.AddChild(_showZone);
-        _showZone.Toggled += (_, pressed) => ClaimBeaconUI.SetShowZone(pressed);
+        _showZone.Toggled += (_, pressed) => _claimBeacon.SetShowZone(pressed);
     }
 
-    public override bool IsOpen => ClaimBeaconUI.IsOpen;
+    public override bool IsOpen => _claimBeacon.IsOpen;
 
     protected override void Refresh()
     {
-        var block = ClaimBeaconUI.Block;
+        var block = _claimBeacon.Block;
         var settings = ClaimSettings.Current;
-        if (TitleLabel.Text != ClaimBeaconUI.BlockName) TitleLabel.Text = ClaimBeaconUI.BlockName;
+        if (TitleLabel.Text != _claimBeacon.BlockName) TitleLabel.Text = _claimBeacon.BlockName;
         if (!ReferenceEquals(block, _shown))
         {
             _shown = block;
-            _slot.Bind(ClaimBeaconUI.PaymentSlot);
+            _slot.Bind(_claimBeacon.PaymentSlot);
             _membersVersion = -1;
             _newMember.Text = "";
         }
@@ -106,14 +109,14 @@ public sealed class ClaimBeaconWindow : GameWindow
 
         if (!ReferenceEquals(settings, _paymentsFor)) BuildPayments(settings);
         RefreshMembers(block, settings);
-        if (_showZone.ButtonPressed != ClaimBeaconUI.ShowZone) _showZone.ButtonPressed = ClaimBeaconUI.ShowZone;
+        if (_showZone.ButtonPressed != _claimBeacon.ShowZone) _showZone.ButtonPressed = _claimBeacon.ShowZone;
     }
 
     private void BuildPayments(ClaimSettings settings)
     {
         _paymentsFor = settings;
         _payments.ClearChildren();
-        foreach (var payment in ClaimBeaconUI.SortedPayments())
+        foreach (var payment in _claimBeacon.SortedPayments())
         {
             var row = _payments.AddChild(new HBoxContainer());
             row.AddThemeConstantOverride("separation", 4f);
@@ -126,7 +129,7 @@ public sealed class ClaimBeaconWindow : GameWindow
 
     private void RefreshMembers(ClaimBeaconBlock block, ClaimSettings settings)
     {
-        bool canManage = ClaimBeaconUI.CanManage;
+        bool canManage = _claimBeacon.CanManage;
         SetText(_membersTitle, $"Members {block.Members.Count}/{settings.MaxMembers}");
         _addRow.Visible = canManage;
         _suggestions.Visible = canManage;
@@ -144,7 +147,7 @@ public sealed class ClaimBeaconWindow : GameWindow
                 if (!canManage) continue;
                 string name = member;
                 var remove = row.AddChild(new Button { Text = "x", ThemeTypeVariation = "SmallButton", TooltipText = "Remove member" });
-                remove.Pressed += _ => ClaimBeaconUI.RemoveMember(name);
+                remove.Pressed += _ => _claimBeacon.RemoveMember(name);
             }
             _suggestionsFor = null;
         }
@@ -156,7 +159,7 @@ public sealed class ClaimBeaconWindow : GameWindow
     private void RefreshSuggestions()
     {
         string typed = _newMember.Text;
-        var names = ClaimBeaconUI.NameSuggestionsFor(typed);
+        var names = _claimBeacon.NameSuggestionsFor(typed);
         string key = typed + "|" + string.Join(",", names);
         if (key == _suggestionsFor) return;
         _suggestionsFor = key;
@@ -176,7 +179,7 @@ public sealed class ClaimBeaconWindow : GameWindow
     {
         string name = _newMember.Text.Trim();
         if (name.Length == 0) return;
-        ClaimBeaconUI.AddMember(name);
+        _claimBeacon.AddMember(name);
         _newMember.Text = "";
     }
 

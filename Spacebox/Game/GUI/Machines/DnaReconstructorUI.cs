@@ -6,17 +6,17 @@ using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.GUI;
 
-public static class DnaReconstructorUI
+public sealed class DnaReconstructorUI : IGameUiController
 {
     private const string WindowId = "dnaReconstructor";
     private const string SlotIcon = "dna_ui";
 
-    private static DnaReconstructorBlock _block;
-    private static LocalAstronaut _player;
-    private static string _blockName = "DNA Reconstructor";
-    private static bool _wasVisible;
+    private DnaReconstructorBlock _block;
+    private LocalAstronaut _player;
+    private string _blockName = "DNA Reconstructor";
+    private bool _wasVisible;
 
-    public static void Open(DnaReconstructorBlock block, LocalAstronaut player)
+    public void Open(DnaReconstructorBlock block, LocalAstronaut player)
     {
         _block = block;
         _player = player;
@@ -32,10 +32,10 @@ public static class DnaReconstructorUI
             UIManager.Open(WindowId, "inventory");
     }
 
-    public static bool IsOpen => UIManager.IsOpen(WindowId) && _block != null;
-    public static string BlockName => _blockName;
+    public bool IsOpen => UIManager.IsOpen(WindowId) && _block != null;
+    public string BlockName => _blockName;
 
-    public static void Update()
+    public void OnGUI()
     {
         bool isVisible = IsOpen;
         if (_wasVisible && !isVisible) OnClosed();
@@ -43,11 +43,11 @@ public static class DnaReconstructorUI
         if (isVisible && Input.IsKeyDown(Keys.Escape)) UIManager.CloseAll();
     }
 
-    public static DnaReconstructorBlock Block => _block;
-    public static ItemSlot DnaSlot => _block?.DnaStorage.GetSlot(0, 0);
-    public static Engine.Graphics.Atlas.AtlasSprite SlotSprite => UIAtlas.Get(SlotIcon);
+    public DnaReconstructorBlock Block => _block;
+    public ItemSlot DnaSlot => _block?.DnaStorage.GetSlot(0, 0);
+    public Engine.Graphics.Atlas.AtlasSprite SlotSprite => UIAtlas.Get(SlotIcon);
 
-    public static (string Text, Spacebox.Game.GUI.Canvas.Windows.StatusKind Kind) Status()
+    public (string Text, Spacebox.Game.GUI.Canvas.Windows.StatusKind Kind) Status()
     {
         if (_block == null) return ("", Spacebox.Game.GUI.Canvas.Windows.StatusKind.Muted);
         if (!_block.IsActive) return ("NO POWER", Spacebox.Game.GUI.Canvas.Windows.StatusKind.Bad);
@@ -55,7 +55,7 @@ public static class DnaReconstructorUI
         return ("Ready", Spacebox.Game.GUI.Canvas.Windows.StatusKind.Good);
     }
 
-    public static void OnSlotClicked(ItemSlot slot)
+    public void OnSlotClicked(ItemSlot slot)
     {
         if (slot.HasItem && Input.IsAction("storage_item_quick_transfer"))
         {
@@ -63,14 +63,14 @@ public static class DnaReconstructorUI
         }
     }
 
-    public static void Reset()
+    public void Reset()
     {
         _block = null;
         _player = null;
         _wasVisible = false;
     }
 
-    private static void OnClosed()
+    private void OnClosed()
     {
         if (_player != null)
         {

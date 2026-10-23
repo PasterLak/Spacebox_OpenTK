@@ -45,12 +45,6 @@ public class CreativeMode : MovementMode
         return GameMode.Creative;
     }
 
-    public override void OnEnable()
-    {
-        base.OnEnable();
-        CreativeWindowUI.Enabled = true;
-    }
-
     public override void OnDisable()
     {
         base.OnDisable();
@@ -59,8 +53,6 @@ public class CreativeMode : MovementMode
         {
             UIManager.CloseAll();
         }
-
-        CreativeWindowUI.Enabled = false;
     }
 
     public override void Update(LocalAstronaut player)

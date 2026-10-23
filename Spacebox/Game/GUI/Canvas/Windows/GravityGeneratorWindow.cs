@@ -16,13 +16,16 @@ public sealed class GravityGeneratorWindow : GameWindow
     private readonly Label _strengthLabel = new Label();
     private readonly HSlider _strength = new HSlider { Step = 0.01, CustomMinimumSize = new Vector2(ContentWidth, 0f) };
     private readonly HBoxContainer _presets = new HBoxContainer();
+
+    private readonly GravityGeneratorUI _gravityGenerator;
     private readonly List<(Button Button, float Strength)> _presetButtons = new List<(Button, float)>();
     private readonly Label _status = StatusText.Create();
     private GravityGeneratorBlock _shown;
     private bool _syncing;
 
-    public GravityGeneratorWindow() : base("Gravity Generator")
+    public GravityGeneratorWindow(GravityGeneratorUI gravityGenerator) : base("Gravity Generator")
     {
+        _gravityGenerator = gravityGenerator;
         Name = "GravityGenerator";
         Body.AddChild(_enabled);
         Body.AddChild(_insideOnly);
@@ -37,16 +40,16 @@ public sealed class GravityGeneratorWindow : GameWindow
         _insideOnly.Toggled += (_, _) => Send();
         _radius.ValueChanged += _ => Send();
         _strength.ValueChanged += _ => Send();
-        _radius.DragEnded += GravityGeneratorUI.ApplyPendingPower;
-        _strength.DragEnded += GravityGeneratorUI.ApplyPendingPower;
+        _radius.DragEnded += _gravityGenerator.ApplyPendingPower;
+        _strength.DragEnded += _gravityGenerator.ApplyPendingPower;
     }
 
-    public override bool IsOpen => GravityGeneratorUI.IsOpen;
+    public override bool IsOpen => _gravityGenerator.IsOpen;
 
     protected override void Refresh()
     {
-        var block = GravityGeneratorUI.Block;
-        if (TitleLabel.Text != GravityGeneratorUI.BlockName) TitleLabel.Text = GravityGeneratorUI.BlockName;
+        var block = _gravityGenerator.Block;
+        if (TitleLabel.Text != _gravityGenerator.BlockName) TitleLabel.Text = _gravityGenerator.BlockName;
         if (!ReferenceEquals(block, _shown)) Bind(block);
 
         _syncing = true;
@@ -64,7 +67,7 @@ public sealed class GravityGeneratorWindow : GameWindow
         foreach (var (button, strength) in _presetButtons)
             button.ThemeTypeVariation = MathF.Abs((float)_strength.Value - strength) < GravityGeneratorUI.PresetTolerance ? "" : "SmallButton";
         ShowEnergy(block.RequiredPower);
-        var (text, kind) = GravityGeneratorUI.Status();
+        var (text, kind) = _gravityGenerator.Status();
         StatusText.Set(_status, text, kind);
     }
 
@@ -87,7 +90,7 @@ public sealed class GravityGeneratorWindow : GameWindow
             {
                 _strength.Value = strength;
                 Send();
-                GravityGeneratorUI.ApplyPendingPower();
+                _gravityGenerator.ApplyPendingPower();
             };
             _presetButtons.Add((button, strength));
         }
@@ -96,8 +99,8 @@ public sealed class GravityGeneratorWindow : GameWindow
     private void Send()
     {
         if (_syncing) return;
-        GravityGeneratorUI.Configure((int)Math.Round(_radius.Value), (float)_strength.Value, _enabled.ButtonPressed, _insideOnly.ButtonPressed);
-        if (!Input.IsMouseButton(OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Left)) GravityGeneratorUI.ApplyPendingPower();
+        _gravityGenerator.Configure((int)Math.Round(_radius.Value), (float)_strength.Value, _enabled.ButtonPressed, _insideOnly.ButtonPressed);
+        if (!Input.IsMouseButton(OpenTK.Windowing.GraphicsLibraryFramework.MouseButton.Left)) _gravityGenerator.ApplyPendingPower();
     }
 
     private static void SetText(Label label, string text)

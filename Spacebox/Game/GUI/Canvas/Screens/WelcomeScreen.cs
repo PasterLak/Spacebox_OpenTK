@@ -15,8 +15,11 @@ public sealed class WelcomeScreen : GameScreen
     private bool _bannerLoaded;
     private bool _syncing;
 
-    public WelcomeScreen()
+    private readonly WelcomeUI _welcome;
+
+    public WelcomeScreen(WelcomeUI welcome)
     {
+        _welcome = welcome;
         Name = "Welcome";
         var center = AddChild(new CenterContainer { MouseFilter = MouseFilter.Ignore });
         center.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -29,16 +32,16 @@ public sealed class WelcomeScreen : GameScreen
         frame.Body.AddChild(_tutorial);
         _tutorial.Toggled += (_, pressed) =>
         {
-            if (!_syncing) WelcomeUI.PlayTutorial = pressed;
+            if (!_syncing) _welcome.PlayTutorial = pressed;
         };
 
         frame.Footer.AddChild(MenuLayout.Spacer());
-        var start = frame.Footer.AddChild(MenuLayout.Button(null, "Start", WelcomeUI.Start, false));
+        var start = frame.Footer.AddChild(MenuLayout.Button(null, "Start", _welcome.Start, false));
         start.CustomMinimumSize = new Vector2(120f, MenuLayout.ButtonHeight);
         frame.Footer.AddChild(MenuLayout.Spacer());
     }
 
-    public override bool IsShown => WelcomeUI.IsVisible;
+    public override bool IsShown => _welcome.IsVisible;
 
     protected override bool BlocksPointer => true;
 
@@ -56,10 +59,10 @@ public sealed class WelcomeScreen : GameScreen
             _banner.Visible = _banner.Texture != null;
         }
 
-        bool hasTutorial = WelcomeUI.HasTutorial;
+        bool hasTutorial = _welcome.HasTutorial;
         if (_tutorial.Visible != hasTutorial) _tutorial.Visible = hasTutorial;
         _syncing = true;
-        if (_tutorial.ButtonPressed != WelcomeUI.PlayTutorial) _tutorial.ButtonPressed = WelcomeUI.PlayTutorial;
+        if (_tutorial.ButtonPressed != _welcome.PlayTutorial) _tutorial.ButtonPressed = _welcome.PlayTutorial;
         _syncing = false;
     }
 

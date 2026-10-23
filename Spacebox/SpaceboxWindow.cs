@@ -113,7 +113,7 @@ public class SpaceboxWindow : EngineWindow
             return;
         }
 
-        if (!IsQuitting && Spacebox.Game.GUI.PauseUI.TryPromptBeforeLeaving(Quit))
+        if (!IsQuitting && Spacebox.Game.GUI.GameUi.Current?.Pause.TryPromptBeforeLeaving(Quit) == true)
         {
             e.Cancel = true;
             return;

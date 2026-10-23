@@ -11,14 +11,21 @@ public sealed class EquipmentWindow : GameWindow
     private const float SlotGap = 4f;
     private const float PreviewColumns = 2.8f;
 
+    private readonly EquipmentUI _equipmentUi;
+    private readonly InventoryUI _inventory;
+    private readonly PanelController _panel;
+
     private readonly List<(ItemSlotControl Control, EquipmentSlotType Type)> _slots = new List<(ItemSlotControl, EquipmentSlotType)>();
     private readonly PlayerPreviewControl _preview;
     private readonly List<VBoxContainer> _slotColumns = new List<VBoxContainer>();
     private float _gap = -1f;
     private PlayerEquipment _equipment;
 
-    public EquipmentWindow() : base("Equipment")
+    public EquipmentWindow(EquipmentUI equipmentUi, InventoryUI inventory, PanelController panel) : base("Equipment")
     {
+        _equipmentUi = equipmentUi;
+        _inventory = inventory;
+        _panel = panel;
         Name = "Equipment";
         float slot = ItemSlotControl.DefaultSize;
         float height = EquipmentUI.Rows * slot + (EquipmentUI.Rows - 1) * SlotGap;
@@ -26,7 +33,7 @@ public sealed class EquipmentWindow : GameWindow
         var row = Body.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 6f);
         row.AddChild(Column(0));
-        _preview = row.AddChild(new PlayerPreviewControl(() => EquipmentUI.Preview, source => _equipment?.TryEquip(source)) { CustomMinimumSize = new Vector2(MathF.Round((slot + SlotGap) * PreviewColumns), height) });
+        _preview = row.AddChild(new PlayerPreviewControl(() => _equipmentUi.Preview, source => _equipment?.TryEquip(source)) { CustomMinimumSize = new Vector2(MathF.Round((slot + SlotGap) * PreviewColumns), height) });
         row.AddChild(Column(1));
         row.AddChild(new VSeparator());
 
@@ -36,11 +43,11 @@ public sealed class EquipmentWindow : GameWindow
         foreach (var type in EquipmentUI.DeviceSlots) devices.AddChild(CreateSlot(type));
     }
 
-    public override bool IsOpen => UIManager.IsOpen(HudVisibility.ItemWindow) && InventoryUI.Player?.Equipment != null;
+    public override bool IsOpen => UIManager.IsOpen(HudVisibility.ItemWindow) && _inventory.Player?.Equipment != null;
 
     protected override void Refresh()
     {
-        var player = InventoryUI.Player;
+        var player = _inventory.Player;
         var equipment = player.Equipment;
         if (!ReferenceEquals(equipment, _equipment))
         {
@@ -50,7 +57,7 @@ public sealed class EquipmentWindow : GameWindow
 
         foreach (var (control, _) in _slots) control.Refresh();
         ApplySlotGap(GetThemeConstant("slot_spacing", SlotGap));
-        EquipmentUI.Preview.Prepare(player, equipment, PanelUI.HeldItem, _preview.PixelSize);
+        _equipmentUi.Preview.Prepare(player, equipment, _panel.HeldItem, _preview.PixelSize);
     }
 
     private void ApplySlotGap(float gap)
@@ -79,7 +86,7 @@ public sealed class EquipmentWindow : GameWindow
     private ItemSlotControl CreateSlot(EquipmentSlotType type)
     {
         var control = new ItemSlotControl();
-        control.Clicked += EquipmentUI.OnSlotClicked;
+        control.Clicked += _equipmentUi.OnSlotClicked;
         _slots.Add((control, type));
         return control;
     }

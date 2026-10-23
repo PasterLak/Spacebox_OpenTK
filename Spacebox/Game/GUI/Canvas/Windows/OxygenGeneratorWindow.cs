@@ -16,8 +16,11 @@ public sealed class OxygenGeneratorWindow : GameWindow
     private readonly Label _detail = StatusText.Create("", StatusKind.Muted);
     private OxygenGeneratorBlock _shown;
 
-    public OxygenGeneratorWindow() : base("Oxygen Generator")
+    private readonly OxygenGeneratorUI _oxygenGenerator;
+
+    public OxygenGeneratorWindow(OxygenGeneratorUI oxygenGenerator) : base("Oxygen Generator")
     {
+        _oxygenGenerator = oxygenGenerator;
         Name = "OxygenGenerator";
         MatchInventorySize();
         var row = Body.AddChild(new HBoxContainer());
@@ -28,19 +31,19 @@ public sealed class OxygenGeneratorWindow : GameWindow
         info.AddChild(_tankText);
         info.AddChild(_status);
         info.AddChild(_detail);
-        _slot.Clicked += OxygenGeneratorUI.OnSlotClicked;
+        _slot.Clicked += _oxygenGenerator.OnSlotClicked;
     }
 
-    public override bool IsOpen => OxygenGeneratorUI.IsOpen;
+    public override bool IsOpen => _oxygenGenerator.IsOpen;
 
     protected override void Refresh()
     {
-        var block = OxygenGeneratorUI.Block;
-        if (TitleLabel.Text != OxygenGeneratorUI.BlockName) TitleLabel.Text = OxygenGeneratorUI.BlockName;
+        var block = _oxygenGenerator.Block;
+        if (TitleLabel.Text != _oxygenGenerator.BlockName) TitleLabel.Text = _oxygenGenerator.BlockName;
         if (!ReferenceEquals(block, _shown))
         {
             _shown = block;
-            _slot.Bind(OxygenGeneratorUI.WaterSlot, OxygenGeneratorUI.WaterIcon);
+            _slot.Bind(_oxygenGenerator.WaterSlot, _oxygenGenerator.WaterIcon);
         }
 
         _slot.Refresh();
@@ -49,7 +52,7 @@ public sealed class OxygenGeneratorWindow : GameWindow
         _tank.Value = block.Water;
         string tank = $"Tank: {block.Water}/{block.TankCapacity}";
         if (_tankText.Text != tank) _tankText.Text = tank;
-        var (text, kind, detail) = OxygenGeneratorUI.Status();
+        var (text, kind, detail) = _oxygenGenerator.Status();
         StatusText.Set(_status, text, kind);
         StatusText.Set(_detail, detail, StatusKind.Muted);
         _detail.Visible = detail.Length > 0;

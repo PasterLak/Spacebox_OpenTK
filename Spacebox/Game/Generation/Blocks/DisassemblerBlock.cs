@@ -59,7 +59,7 @@ public class DisassemblerBlock : InteractiveBlock, IContainerBlock, IEntityBlock
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);
-        DisassemblerUI.Open(this, player);
+        GameUi.Current?.Disassembler.Open(this, player);
     }
 
     public void OnAddedToEntity(Chunk chunk, Vector3i localCell)

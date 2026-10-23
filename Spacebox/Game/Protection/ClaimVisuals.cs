@@ -54,7 +54,8 @@ public static class ClaimVisuals
 
     private static void DrawOutlines(LocalAstronaut player, float deltaTime)
     {
-        var open = ClaimBeaconUI.ShowZone ? ClaimBeaconUI.OpenBlock : null;
+        var claimBeacon = GameUi.Current?.ClaimBeacon;
+        var open = claimBeacon != null && claimBeacon.ShowZone ? claimBeacon.OpenBlock : null;
         if (open != null) DrawZone(open);
 
         if (_highlightTime > 0f)

@@ -18,8 +18,11 @@ public sealed class PlayerListPanel : PanelContainer
     private string _structure = "";
     private float _timer;
 
-    public PlayerListPanel()
+    private readonly PauseUI _pause;
+
+    public PlayerListPanel(PauseUI pause)
     {
+        _pause = pause;
         Name = "PlayerList";
         Visible = false;
         SizeFlagsVertical = SizeFlags.ShrinkCenter;
@@ -34,7 +37,7 @@ public sealed class PlayerListPanel : PanelContainer
 
     public void Sync(float deltaTime)
     {
-        bool shown = PauseUI.IsMultiplayer;
+        bool shown = _pause.IsMultiplayer;
         if (Visible != shown)
         {
             Visible = shown;

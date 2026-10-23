@@ -12,10 +12,12 @@ public sealed class CraftTooltip : VBoxContainer
 
     private readonly List<(Label Label, Ingredient Ingredient)> _ingredients = new List<(Label, Ingredient)>();
     private readonly Item _item;
+    private readonly CraftingGUI _crafting;
     private bool _pictureAdded;
 
-    public CraftTooltip(CraftingCategory.Data data)
+    public CraftTooltip(CraftingGUI crafting, CraftingCategory.Data data)
     {
+        _crafting = crafting;
         Name = "CraftTooltip";
         _item = data?.item;
         MouseFilter = MouseFilter.Ignore;
@@ -71,5 +73,5 @@ public sealed class CraftTooltip : VBoxContainer
         foreach (var (label, ingredient) in _ingredients) StatusText.SetKind(label, KindOf(ingredient));
     }
 
-    private static StatusKind KindOf(Ingredient ingredient) => CraftingGUI.AvailableCount(ingredient) >= ingredient.Quantity ? StatusKind.Good : StatusKind.Bad;
+    private StatusKind KindOf(Ingredient ingredient) => _crafting.AvailableCount(ingredient) >= ingredient.Quantity ? StatusKind.Good : StatusKind.Bad;
 }

@@ -8,16 +8,19 @@ public sealed class RadarWindow : GameWindow
 
     private readonly RadarDisplay _display = new RadarDisplay(DisplaySize);
 
-    public RadarWindow() : base("Radar")
+    private readonly GameUi _ui;
+
+    public RadarWindow(GameUi ui) : base("Radar")
     {
+        _ui = ui;
         Name = "Radar";
         Body.AddChild(_display);
     }
 
-    public override bool IsOpen => RadarUI.Instance != null && RadarUI.Instance.IsOpen;
+    public override bool IsOpen => _ui.Radar != null && _ui.Radar.IsOpen;
 
     protected override void Refresh()
     {
-        _display.Radar = RadarUI.Instance;
+        _display.Radar = _ui.Radar;
     }
 }

@@ -16,8 +16,8 @@ public sealed class PauseScreen : GameScreen
 
     private readonly ParallaxTitle _title = new ParallaxTitle("PAUSE", TitleSize, TitleColor, NearShadow, FarShadow, 4f);
     private readonly CenterContainer _center = new CenterContainer { MouseFilter = MouseFilter.Ignore };
-    private readonly StatisticsPanel _statistics = new StatisticsPanel();
-    private readonly PlayerListPanel _players = new PlayerListPanel();
+    private readonly StatisticsPanel _statistics;
+    private readonly PlayerListPanel _players;
     private readonly HBoxContainer _leftSide = new HBoxContainer { MouseFilter = MouseFilter.Ignore, Alignment = BoxAlignment.End };
     private readonly HBoxContainer _rightSide = new HBoxContainer { MouseFilter = MouseFilter.Ignore };
     private readonly Button _save;
@@ -25,8 +25,13 @@ public sealed class PauseScreen : GameScreen
     private OptionsHostPage _options;
     private Spacebox.Game.GUI.Menu.OptionsMenu _optionsMenu;
 
-    public PauseScreen()
+    private readonly PauseUI _pause;
+
+    public PauseScreen(PauseUI pause, StatisticsUI statistics)
     {
+        _pause = pause;
+        _statistics = new StatisticsPanel(pause, statistics);
+        _players = new PlayerListPanel(pause);
         Name = "Pause";
         AddChild(_center);
         _center.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -45,14 +50,14 @@ public sealed class PauseScreen : GameScreen
         frame.Body.AddThemeConstantOverride("separation", 10f);
         row.AddChild(frame.Root);
 
-        frame.Body.AddChild(MenuLayout.Button(null, "Continue", PauseUI.Continue));
-        _save = frame.Body.AddChild(MenuLayout.Button(null, "Save", PauseUI.Save));
-        frame.Body.AddChild(MenuLayout.Button(null, "Options", PauseUI.OpenOptions));
-        frame.Body.AddChild(MenuLayout.Button(null, "Statistics", PauseUI.ToggleStatistics));
-        frame.Body.AddChild(MenuLayout.Button(null, "Tutorial", PauseUI.OpenTutorial));
-        _network = frame.Body.AddChild(MenuLayout.Button(null, "Open to network", PauseUI.OpenToNetwork));
-        frame.Body.AddChild(MenuLayout.Button(null, "Go to menu", PauseUI.RequestGoToMenuFromButton));
-        frame.Body.AddChild(MenuLayout.Button(null, "Exit", PauseUI.RequestExit));
+        frame.Body.AddChild(MenuLayout.Button(null, "Continue", _pause.Continue));
+        _save = frame.Body.AddChild(MenuLayout.Button(null, "Save", _pause.Save));
+        frame.Body.AddChild(MenuLayout.Button(null, "Options", _pause.OpenOptions));
+        frame.Body.AddChild(MenuLayout.Button(null, "Statistics", _pause.ToggleStatistics));
+        frame.Body.AddChild(MenuLayout.Button(null, "Tutorial", _pause.OpenTutorial));
+        _network = frame.Body.AddChild(MenuLayout.Button(null, "Open to network", _pause.OpenToNetwork));
+        frame.Body.AddChild(MenuLayout.Button(null, "Go to menu", _pause.RequestGoToMenuFromButton));
+        frame.Body.AddChild(MenuLayout.Button(null, "Exit", _pause.RequestExit));
 
         row.AddChild(_rightSide);
         _rightSide.AddChild(_statistics);
@@ -62,14 +67,14 @@ public sealed class PauseScreen : GameScreen
 
     public PlayerListPanel Players => _players;
 
-    public override bool IsShown => PauseUI.IsVisible;
+    public override bool IsShown => _pause.IsVisible;
 
     protected override bool BlocksPointer => true;
 
     protected override void Refresh(float deltaTime)
     {
-        bool options = PauseUI.IsOptionsOpen && SyncOptions();
-        bool menu = !options && !PauseUI.IsTutorialOpen;
+        bool options = _pause.IsOptionsOpen && SyncOptions();
+        bool menu = !options && !_pause.IsTutorialOpen;
 
         if (_center.Visible != menu) _center.Visible = menu;
         if (_options != null && _options.Visible != options)
@@ -81,10 +86,10 @@ public sealed class PauseScreen : GameScreen
         if (options) _options.Tick(deltaTime);
         if (!menu) return;
 
-        _title.Intensity = PauseUI.ParallaxIntensity;
+        _title.Intensity = _pause.ParallaxIntensity;
         _title.Tick();
-        if (_save.Text != PauseUI.SaveButtonText) _save.Text = PauseUI.SaveButtonText;
-        if (_network.Text != PauseUI.NetworkButtonText) _network.Text = PauseUI.NetworkButtonText;
+        if (_save.Text != _pause.SaveButtonText) _save.Text = _pause.SaveButtonText;
+        if (_network.Text != _pause.NetworkButtonText) _network.Text = _pause.NetworkButtonText;
         _statistics.Sync(deltaTime);
         _players.Sync(deltaTime);
         BalanceSides();
@@ -101,7 +106,7 @@ public sealed class PauseScreen : GameScreen
 
     private bool SyncOptions()
     {
-        var menu = PauseUI.Options;
+        var menu = _pause.Options;
         if (menu == null) return false;
         if (ReferenceEquals(menu, _optionsMenu)) return true;
 

@@ -24,8 +24,13 @@ public sealed class CraftingWindow : GameWindow
     private CraftingCategory[] _builtFor;
     private int _scrollToBottomFrames;
 
-    public CraftingWindow() : base("Crafting")
+    private readonly CraftingGUI _crafting;
+    private readonly InventoryUI _inventory;
+
+    public CraftingWindow(CraftingGUI crafting, InventoryUI inventory) : base("Crafting")
     {
+        _crafting = crafting;
+        _inventory = inventory;
         Name = "Crafting";
         MatchColumnWidth();
         _tabs.AddThemeConstantOverride("separation", 4f);
@@ -47,22 +52,22 @@ public sealed class CraftingWindow : GameWindow
         var back = footer.AddChild(new Button { Text = "Back", CustomMinimumSize = new Vector2(64f, 26f) });
         back.Pressed += _ =>
         {
-            CraftingGUI.PlayClick();
+            _crafting.PlayClick();
             ShowCategories();
         };
         back.MouseEntered += _ =>
         {
             if (!_itemsView.Visible) return;
-            CraftingGUI.PlayClick();
+            _crafting.PlayClick();
             ShowCategories();
         };
     }
 
-    public override bool IsOpen => CraftingGUI.IsVisible && CraftingGUI.Categories != null;
+    public override bool IsOpen => _crafting.IsVisible && _crafting.Categories != null;
 
     protected override void Refresh()
     {
-        if (!ReferenceEquals(_builtFor, CraftingGUI.Categories)) BuildCategories();
+        if (!ReferenceEquals(_builtFor, _crafting.Categories)) BuildCategories();
         if (!_itemsView.Visible) return;
         if (_scrollToBottomFrames > 0)
         {
@@ -75,36 +80,36 @@ public sealed class CraftingWindow : GameWindow
 
     private void BuildCategories()
     {
-        _builtFor = CraftingGUI.Categories;
+        _builtFor = _crafting.Categories;
         _tabs.ClearChildren();
         _tabButtons.Clear();
-        var groups = CraftingGUI.Groups;
+        var groups = _crafting.Groups;
         for (int i = 0; i < groups.Count; i++)
         {
             int index = i;
             var tab = _tabs.AddChild(new Button { Text = groups[i].Name, ToggleMode = true, SizeFlagsHorizontal = SizeFlags.ExpandFill, CustomMinimumSize = new Vector2(0f, 24f) });
             tab.Pressed += _ =>
             {
-                if (CraftingGUI.SelectedGroup != index) CraftingGUI.PlayTab();
+                if (_crafting.SelectedGroup != index) _crafting.PlayTab();
                 ShowGroup(index);
             };
             tab.MouseEntered += _ =>
             {
-                if (CraftingGUI.SelectedGroup == index) return;
-                CraftingGUI.PlayTab();
+                if (_crafting.SelectedGroup == index) return;
+                _crafting.PlayTab();
                 ShowGroup(index);
             };
             _tabButtons.Add(tab);
         }
         _tabs.Visible = groups.Count > 1;
-        ShowGroup(Math.Clamp(CraftingGUI.SelectedGroup, 0, Math.Max(0, groups.Count - 1)));
+        ShowGroup(Math.Clamp(_crafting.SelectedGroup, 0, Math.Max(0, groups.Count - 1)));
         ShowCategories();
     }
 
     private void ShowGroup(int index)
     {
-        var groups = CraftingGUI.Groups;
-        CraftingGUI.SelectedGroup = index;
+        var groups = _crafting.Groups;
+        _crafting.SelectedGroup = index;
         for (int i = 0; i < _tabButtons.Count; i++) _tabButtons[i].ButtonPressed = i == index;
 
         var tile = CraftCategoryButton.DefaultSize;
@@ -141,7 +146,7 @@ public sealed class CraftingWindow : GameWindow
         }
     }
 
-    private static int InventoryColumns => Math.Max(1, (int)(InventoryUI.Player?.Inventory?.SizeX ?? DefaultInventoryColumns));
+    private int InventoryColumns => Math.Max(1, (int)(_inventory.Player?.Inventory?.SizeX ?? DefaultInventoryColumns));
 
     private void ShowCategories()
     {
@@ -152,7 +157,7 @@ public sealed class CraftingWindow : GameWindow
 
     private void ShowItems(CraftingCategory category)
     {
-        CraftingGUI.PlayClick();
+        _crafting.PlayClick();
         _categoryTitle.Text = category.Name;
         _items.ClearChildren();
         _itemControls.Clear();
@@ -168,12 +173,12 @@ public sealed class CraftingWindow : GameWindow
         for (int i = 0; i < count; i++)
         {
             int id = i;
-            var control = new CraftItemControl(category.Items[i], size);
+            var control = new CraftItemControl(_crafting, category.Items[i], size);
             controls[i] = control;
-            control.Hovered += _ => CraftingGUI.PlayHover(id);
+            control.Hovered += _ => _crafting.PlayHover(id);
             control.Clicked += c =>
             {
-                if (c.Data?.blueprint != null) CraftingGUI.Craft(c.Data.blueprint);
+                if (c.Data?.blueprint != null) _crafting.Craft(c.Data.blueprint);
             };
             control.Refresh();
             _itemControls.Add(control);

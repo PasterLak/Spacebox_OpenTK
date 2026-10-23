@@ -7,28 +7,28 @@ using System;
 
 namespace Spacebox.Game.GUI
 {
-    public static class StorageUI
+    public sealed class StorageUI : IGameUiController
     {
-        public static Storage? Storage { get; private set; }
-        public static StorageBlock? StorageBlock { get; private set; }
-        private static LocalAstronaut? Astronaut;
-        private static bool _wasVisible = false;
+        public Storage? Storage { get; private set; }
+        public StorageBlock? StorageBlock { get; private set; }
+        private LocalAstronaut? Astronaut;
+        private bool _wasVisible = false;
 
-        private static AudioSource splitAudio;
+        private AudioSource splitAudio;
 
 
-        public static void Initialize()
+        public void Initialize(LocalAstronaut player)
         {
             splitAudio = new AudioSource(Resources.Load<AudioClip>("splitStack"), AudioChannel.UI);
         }
 
-        public static void OpenStorage(StorageBlock storageBlock, LocalAstronaut astronaut)
+        public void OpenStorage(StorageBlock storageBlock, LocalAstronaut astronaut)
         {
             StorageBlock = storageBlock;
             OpenStorage(storageBlock.Storage, astronaut);
         }
 
-        public static void OpenStorage(Storage storage, LocalAstronaut astronaut)
+        public void OpenStorage(Storage storage, LocalAstronaut astronaut)
         {
             Storage = storage;
             Astronaut = astronaut;
@@ -42,7 +42,7 @@ namespace Spacebox.Game.GUI
                 UIManager.Open("storage", "inventory");
         }
 
-        private static void CloseStorage()
+        private void CloseStorage()
         {
             Storage?.DisconnectStorage();
             Storage = null;
@@ -56,7 +56,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Update()
+        public void OnGUI()
         {
             bool isVisible = UIManager.IsOpen("storage");
             if (isVisible == _wasVisible) return;
@@ -65,14 +65,14 @@ namespace Spacebox.Game.GUI
             _wasVisible = isVisible;
         }
 
-        public static void Rename(string name)
+        public void Rename(string name)
         {
             if (StorageBlock == null) return;
             string newName = (name ?? "").Trim();
             if (!string.IsNullOrWhiteSpace(newName)) Spacebox.Network.Containers.StorageNameNetwork.Rename(StorageBlock, newName);
         }
 
-        private static void TryMoveToPlayerPanel(ItemSlot slot, byte rest)
+        private void TryMoveToPlayerPanel(ItemSlot slot, byte rest)
         {
             if (Astronaut?.Panel == null) return;
 
@@ -83,7 +83,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void OnSlotClicked(ItemSlot slot)
+        public void OnSlotClicked(ItemSlot slot)
         {
             if (!slot.HasItem) return;
 
@@ -103,13 +103,14 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Dispose()
+        public void Reset()
         {
             splitAudio?.Dispose();
 
             Storage = null;
             StorageBlock = null;
             Astronaut = null;
+            _wasVisible = false;
         }
     }
 }

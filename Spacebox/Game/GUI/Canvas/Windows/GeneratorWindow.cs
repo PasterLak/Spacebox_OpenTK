@@ -15,8 +15,11 @@ public sealed class GeneratorWindow : GameWindow
     private readonly Label _consumption = new Label();
     private readonly ProgressBar _free = new ProgressBar { MaxValue = 1f, CustomMinimumSize = new Vector2(220f, 10f), ShowPercentage = false, TooltipText = "Free power of the network" };
 
-    public GeneratorWindow() : base("Generator")
+    private readonly GeneratorUI _generator;
+
+    public GeneratorWindow(GeneratorUI generator) : base("Generator")
     {
+        _generator = generator;
         Name = "Generator";
         Body.AddChild(_generating);
         Body.AddChild(new HSeparator());
@@ -26,17 +29,17 @@ public sealed class GeneratorWindow : GameWindow
         Body.AddChild(_free);
     }
 
-    public override bool IsOpen => GeneratorUI.IsOpen;
+    public override bool IsOpen => _generator.IsOpen;
 
     protected override void Refresh()
     {
-        if (TitleLabel.Text != GeneratorUI.BlockName) TitleLabel.Text = GeneratorUI.BlockName;
-        SetText(_generating, $"Generating: +{GeneratorUI.Block.GenerationRate} EU");
-        ShowEnergyText($"+{GeneratorUI.Block.GenerationRate} EU");
-        SetText(_power, $"Power: {GeneratorUI.NetworkPower} EU");
-        SetText(_consumption, $"Consumption: {GeneratorUI.NetworkConsumption} EU");
-        _free.Value = GeneratorUI.FreeShare;
-        _free.FillColor = ColorFor(GeneratorUI.RemainingPercent, GeneratorUI.NetworkPower);
+        if (TitleLabel.Text != _generator.BlockName) TitleLabel.Text = _generator.BlockName;
+        SetText(_generating, $"Generating: +{_generator.Block.GenerationRate} EU");
+        ShowEnergyText($"+{_generator.Block.GenerationRate} EU");
+        SetText(_power, $"Power: {_generator.NetworkPower} EU");
+        SetText(_consumption, $"Consumption: {_generator.NetworkConsumption} EU");
+        _free.Value = _generator.FreeShare;
+        _free.FillColor = ColorFor(_generator.RemainingPercent, _generator.NetworkPower);
     }
 
     private static Color4 ColorFor(int remaining, int power)

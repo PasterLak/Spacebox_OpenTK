@@ -92,7 +92,7 @@ public static class CombatNetwork
         if (attackerPeer == victimPeer)
             return;
         if (attackerPeer == network.LocalPeerId)
-            HitMarkerUI.Show(headshot);
+            GameUi.Current?.HitMarker.Show(headshot);
         else if (attackerPeer != victimPeer)
             network.Send(attackerPeer, new HitConfirmMessage { Headshot = headshot });
     }
@@ -209,6 +209,6 @@ public static class CombatNetwork
     private static void OnHitConfirm(int sender, HitConfirmMessage message)
     {
         if (NetworkManager.Instance.IsServer) return;
-        HitMarkerUI.Show(message.Headshot);
+        GameUi.Current?.HitMarker.Show(message.Headshot);
     }
 }

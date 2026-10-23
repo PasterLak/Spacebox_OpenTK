@@ -6,21 +6,27 @@ using Spacebox.Game.GUI;
 
 namespace Spacebox.Game.Waypoints;
 
-public static class WaypointWindowUI
+public sealed class WaypointWindowUI : IGameUiController
 {
     public const string WindowId = "waypoints";
     private const string ToggleAction = "waypoints";
 
-    private static Tag _selected;
-    private static bool _confirmDelete;
+    private Tag _selected;
+    private bool _confirmDelete;
+    private readonly ChatController _chat;
 
-    public static bool IsOpen => UIManager.IsOpen(WindowId);
-    public static Tag Selected => _selected;
-    public static bool ConfirmDelete => _confirmDelete;
-
-    public static void Update()
+    public WaypointWindowUI(ChatController chat)
     {
-        if (Chat.FocusInput || Debug.IsVisible || TagManager.Instance == null) return;
+        _chat = chat;
+    }
+
+    public bool IsOpen => UIManager.IsOpen(WindowId);
+    public Tag Selected => _selected;
+    public bool ConfirmDelete => _confirmDelete;
+
+    public void Update()
+    {
+        if (_chat.FocusInput || Debug.IsVisible || TagManager.Instance == null) return;
         if (Spacebox.Game.GUI.Canvas.GameCanvas.WantsKeyboard) return;
         if (!InputManager.Instance.HasAction(ToggleAction) || !Input.IsActionDown(ToggleAction)) return;
 
@@ -35,26 +41,26 @@ public static class WaypointWindowUI
         }
     }
 
-    public static void Reset()
+    public void Reset()
     {
         _selected = null;
         _confirmDelete = false;
     }
 
-    public static IReadOnlyList<Tag> Collect()
+    public IReadOnlyList<Tag> Collect()
     {
         var waypoints = WaypointService.Collect();
         if (_selected != null && !WaypointService.Contains(_selected)) Select(null);
         return waypoints;
     }
 
-    public static void Select(Tag tag)
+    public void Select(Tag tag)
     {
         _selected = tag;
         _confirmDelete = false;
     }
 
-    public static void AddAtPlayer()
+    public void AddAtPlayer()
     {
         var player = World.Instance?.Player;
         if (player == null) return;
@@ -62,33 +68,33 @@ public static class WaypointWindowUI
         Spacebox.Game.GUI.Sounds.UiSounds.Play(Spacebox.Game.GUI.Sounds.UiSound.WaypointAdded);
     }
 
-    public static void Close()
+    public void Close()
     {
         if (UIManager.IsTop(WindowId)) UIManager.CloseTop();
     }
 
-    public static void Rename(string name)
+    public void Rename(string name)
     {
         if (_selected != null) WaypointService.Rename(_selected, name);
     }
 
-    public static void SetColor(Color4 color)
+    public void SetColor(Color4 color)
     {
         if (_selected == null) return;
         WaypointService.SetColor(_selected, color);
         WaypointService.Save();
     }
 
-    public static void SetVisible(bool visible)
+    public void SetVisible(bool visible)
     {
         if (_selected == null) return;
         WaypointService.SetVisible(_selected, visible);
         WaypointService.Save();
     }
 
-    public static void Save() => WaypointService.Save();
+    public void Save() => WaypointService.Save();
 
-    public static void Delete()
+    public void Delete()
     {
         if (_selected == null) return;
         if (!_confirmDelete)
@@ -101,7 +107,7 @@ public static class WaypointWindowUI
         Select(null);
     }
 
-    public static string DistanceTo(Tag tag)
+    public string DistanceTo(Tag tag)
     {
         var player = World.Instance?.Player;
         return player == null || tag == null ? "" : FormatDistance(Vector3.Distance(player.Position, tag.WorldPosition));

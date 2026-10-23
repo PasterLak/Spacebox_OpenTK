@@ -43,7 +43,7 @@ namespace Spacebox.Game.Generation.Blocks
             if (!IsActive) return;
 
             base.Use(player, ref hit);
-            AnalyzerUI.Open(this, ref hit);
+            GameUi.Current?.Analyzer.Open(this, ref hit);
         }
 
         public void OnAddedToEntity(Chunk chunk, Vector3i localCell)

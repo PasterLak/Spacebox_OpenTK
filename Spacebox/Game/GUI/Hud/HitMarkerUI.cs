@@ -1,26 +1,30 @@
+using Engine;
+
 namespace Spacebox.Game.GUI;
 
-public static class HitMarkerUI
+public sealed class HitMarkerUI : IGameUiController
 {
     private const float Duration = 0.2f;
 
-    private static float _timeLeft;
+    private float _timeLeft;
 
-    public static bool IsVisible => _timeLeft > 0f;
-    public static bool IsHeadshot { get; private set; }
+    public bool IsVisible => _timeLeft > 0f;
+    public bool IsHeadshot { get; private set; }
 
-    public static void Show(bool headshot)
+    public void Show(bool headshot)
     {
         _timeLeft = Duration;
         IsHeadshot = headshot;
     }
 
-    public static void Update(float deltaTime)
+    void IGameUiController.Update() => Update(Time.Delta);
+
+    public void Update(float deltaTime)
     {
         if (_timeLeft > 0f) _timeLeft -= deltaTime;
     }
 
-    public static void Reset()
+    public void Reset()
     {
         _timeLeft = 0f;
     }

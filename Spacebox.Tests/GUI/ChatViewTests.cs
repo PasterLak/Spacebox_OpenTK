@@ -19,7 +19,7 @@ public class ChatViewTests
     {
         var root = new CanvasRoot { Theme = GameCanvasThemes.Create(design, ShowcaseFixture.Assets.Font) };
         GameCanvas.Configure(root.Stretch);
-        var view = root.Add(new ChatView(), UiLayer.Popup);
+        var view = root.Add(new ChatView(new GameUi().Chat, new WorldLoadingController()), UiLayer.Popup);
         view.Visible = true;
         return (root, view);
     }

@@ -9,26 +9,26 @@ using Spacebox.Network;
 
 namespace Spacebox.Game.GUI;
 
-public static class ClaimBeaconUI
+public sealed class ClaimBeaconUI : IGameUiController
 {
     private const string WindowId = "claimBeacon";
 
-    private static readonly List<KeyValuePair<string, int>> _sortedPayments = new List<KeyValuePair<string, int>>();
-    private static ClaimSettings _sortedFor;
+    private readonly List<KeyValuePair<string, int>> _sortedPayments = new List<KeyValuePair<string, int>>();
+    private ClaimSettings _sortedFor;
 
-    private static ClaimBeaconBlock _block;
-    private static LocalAstronaut _player;
-    private static bool _wasVisible;
+    private ClaimBeaconBlock _block;
+    private LocalAstronaut _player;
+    private bool _wasVisible;
     private const int MaxNameSuggestions = 6;
-    private static readonly List<string> _onlinePlayers = new List<string>();
-    private static readonly List<string> _excludedNames = new List<string>();
-    private static readonly List<string> _nameSuggestions = new List<string>();
-    private static string _blockName = "Claim Beacon";
+    private readonly List<string> _onlinePlayers = new List<string>();
+    private readonly List<string> _excludedNames = new List<string>();
+    private readonly List<string> _nameSuggestions = new List<string>();
+    private string _blockName = "Claim Beacon";
 
-    public static bool ShowZone { get; private set; } = true;
-    public static ClaimBeaconBlock OpenBlock => UIManager.IsOpen(WindowId) ? _block : null;
+    public bool ShowZone { get; private set; } = true;
+    public ClaimBeaconBlock OpenBlock => UIManager.IsOpen(WindowId) ? _block : null;
 
-    public static void Open(ClaimBeaconBlock block, LocalAstronaut player)
+    public void Open(ClaimBeaconBlock block, LocalAstronaut player)
     {
         _block = block;
         _player = player;
@@ -44,15 +44,15 @@ public static class ClaimBeaconUI
             UIManager.Open(WindowId, "inventory");
     }
 
-    public static bool IsOpen => UIManager.IsOpen(WindowId) && _block != null;
-    public static ClaimBeaconBlock Block => _block;
-    public static string BlockName => _blockName;
-    public static ItemSlot PaymentSlot => _block?.PaymentStorage.GetSlot(0, 0);
-    public static bool CanManage => _block != null && ClaimMembersNetwork.CanManage(_block, GameSession.PlayerName, EntityProtection.LocalCanEdit);
+    public bool IsOpen => UIManager.IsOpen(WindowId) && _block != null;
+    public ClaimBeaconBlock Block => _block;
+    public string BlockName => _blockName;
+    public ItemSlot PaymentSlot => _block?.PaymentStorage.GetSlot(0, 0);
+    public bool CanManage => _block != null && ClaimMembersNetwork.CanManage(_block, GameSession.PlayerName, EntityProtection.LocalCanEdit);
 
-    public static void SetShowZone(bool show) => ShowZone = show;
+    public void SetShowZone(bool show) => ShowZone = show;
 
-    public static void Update()
+    public void OnGUI()
     {
         bool isVisible = IsOpen;
         if (_wasVisible && !isVisible) OnClosed();
@@ -60,18 +60,18 @@ public static class ClaimBeaconUI
         if (isVisible && Input.IsKeyDown(Keys.Escape)) UIManager.CloseAll();
     }
 
-    public static void AddMember(string name)
+    public void AddMember(string name)
     {
         if (_block == null || string.IsNullOrWhiteSpace(name)) return;
         ClaimMembersNetwork.Request(_block, name, true);
     }
 
-    public static void RemoveMember(string name)
+    public void RemoveMember(string name)
     {
         if (_block != null) ClaimMembersNetwork.Request(_block, name, false);
     }
 
-    public static IReadOnlyList<string> NameSuggestionsFor(string typed)
+    public IReadOnlyList<string> NameSuggestionsFor(string typed)
     {
         _onlinePlayers.Clear();
         CommandSuggestionSources.AddPlayerNames(_onlinePlayers);
@@ -83,14 +83,14 @@ public static class ClaimBeaconUI
         return _nameSuggestions;
     }
 
-    public static void Reset()
+    public void Reset()
     {
         _block = null;
         _player = null;
         _wasVisible = false;
     }
 
-    public static List<KeyValuePair<string, int>> SortedPayments()
+    public List<KeyValuePair<string, int>> SortedPayments()
     {
         var settings = ClaimSettings.Current;
         if (settings == _sortedFor && settings.Payments.Count == _sortedPayments.Count) return _sortedPayments;
@@ -102,7 +102,7 @@ public static class ClaimBeaconUI
         return _sortedPayments;
     }
 
-    public static void OnSlotClicked(ItemSlot slot)
+    public void OnSlotClicked(ItemSlot slot)
     {
         if (slot.HasItem && Input.IsAction("storage_item_quick_transfer"))
         {
@@ -110,7 +110,7 @@ public static class ClaimBeaconUI
         }
     }
 
-    private static void OnClosed()
+    private void OnClosed()
     {
         if (_player != null)
         {

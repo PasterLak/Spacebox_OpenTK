@@ -7,16 +7,19 @@ public sealed class InventoryWindow : GameWindow
 {
     private readonly StorageGridControl _grid = new StorageGridControl();
 
-    public InventoryWindow() : base("Inventory")
+    private readonly InventoryUI _inventory;
+
+    public InventoryWindow(InventoryUI inventory) : base("Inventory")
     {
+        _inventory = inventory;
         Name = "Inventory";
         AddHeaderButton(StorageButtons.CombineText, StorageButtons.CombineTooltip, () => StorageButtons.Combine(Storage));
         AddHeaderButton(StorageButtons.SortText, StorageButtons.SortTooltip, () => StorageButtons.Sort(Storage));
-        _grid.SlotClicked += InventoryUI.OnSlotClicked;
+        _grid.SlotClicked += _inventory.OnSlotClicked;
         Body.AddChild(_grid);
     }
 
-    private static Storage Storage => InventoryUI.Player?.Inventory;
+    private Storage Storage => _inventory.Player?.Inventory;
 
     public override bool IsOpen => UIManager.IsOpen(HudVisibility.ItemWindow) && Storage != null;
 

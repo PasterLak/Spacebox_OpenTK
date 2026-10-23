@@ -1,14 +1,14 @@
 namespace Spacebox.Game.GUI;
 
-public static class RepairTargetUI
+public sealed class RepairTargetUI : IGameUiController
 {
-    private static bool _visible;
-    private static string _name = "";
-    private static int _current;
-    private static int _max;
-    private static bool _repairing;
+    private bool _visible;
+    private string _name = "";
+    private int _current;
+    private int _max;
+    private bool _repairing;
 
-    public static void Show(string blockName, int current, int max, bool repairing)
+    public void Show(string blockName, int current, int max, bool repairing)
     {
         _visible = true;
         _name = blockName ?? "";
@@ -17,15 +17,15 @@ public static class RepairTargetUI
         _repairing = repairing;
     }
 
-    public static bool IsVisible => _visible;
-    public static string Name => _name;
-    public static bool IsRepairing => _repairing && _current < _max;
-    public static float Fill => _max <= 0 ? 1f : Math.Clamp(_current / (float)_max, 0f, 1f);
-    public static string Status => IsRepairing ? "Repairing... " + Describe(_current, _max) : Describe(_current, _max);
+    public bool IsVisible => _visible;
+    public string Name => _name;
+    public bool IsRepairing => _repairing && _current < _max;
+    public float Fill => _max <= 0 ? 1f : Math.Clamp(_current / (float)_max, 0f, 1f);
+    public string Status => IsRepairing ? "Repairing... " + Describe(_current, _max) : Describe(_current, _max);
 
-    public static void Hide() => _visible = false;
+    public void Hide() => _visible = false;
 
-    public static void Reset()
+    public void Reset()
     {
         _visible = false;
         _repairing = false;

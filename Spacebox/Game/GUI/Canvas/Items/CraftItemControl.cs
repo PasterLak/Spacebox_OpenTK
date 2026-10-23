@@ -10,20 +10,22 @@ public sealed class CraftItemControl : Control
     private static readonly Color4 DimmedTint = new Color4(0.9f, 0.9f, 0.9f, 0.25f);
 
     private readonly CraftingCategory.Data _data;
+    private readonly CraftingGUI _crafting;
     private bool _canCraft;
     private int _count = -1;
     private string _countText = "";
 
-    public CraftItemControl(CraftingCategory.Data data, float size = ItemSlotControl.DefaultSize)
+    public CraftItemControl(CraftingGUI crafting, CraftingCategory.Data data, float size = ItemSlotControl.DefaultSize)
     {
         _data = data;
+        _crafting = crafting;
         ThemeTypeVariation = "Slot";
         MouseFilter = MouseFilter.Stop;
         CustomMinimumSize = new Vector2(size, size);
         int quantity = data?.blueprint?.Product?.Quantity ?? 1;
         string name = data?.item?.Name ?? "";
         TooltipTitle = quantity > 1 ? $"{name} ({quantity})" : name;
-        _tooltip = new CraftTooltip(data);
+        _tooltip = new CraftTooltip(crafting, data);
         TooltipContent = _tooltip;
     }
 
@@ -37,8 +39,8 @@ public sealed class CraftItemControl : Control
     public void Refresh()
     {
         if (IsHovered) _tooltip.Refresh();
-        _canCraft = CraftingGUI.CanCraft(_data);
-        int count = _canCraft ? CraftingGUI.PossibleCount(_data) : 0;
+        _canCraft = _crafting.CanCraft(_data);
+        int count = _canCraft ? _crafting.PossibleCount(_data) : 0;
         if (count == _count) return;
         _count = count;
         _countText = count > 1 ? count.ToString() : "";

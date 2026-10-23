@@ -5,19 +5,19 @@ using Spacebox.Network.Dedicated;
 
 namespace Spacebox.Game.GUI;
 
-public static class ChatCommandInput
+public sealed class ChatCommandInput
 {
-    private static readonly List<CommandBase> _commands = new List<CommandBase>();
-    private static readonly List<CommandSuggestion> _suggestions = new List<CommandSuggestion>();
-    private static readonly ChatHistory _history = new ChatHistory();
-    private static string _lastText;
+    private readonly List<CommandBase> _commands = new List<CommandBase>();
+    private readonly List<CommandSuggestion> _suggestions = new List<CommandSuggestion>();
+    private readonly ChatHistory _history = new ChatHistory();
+    private string _lastText;
 
-    public static IReadOnlyList<CommandSuggestion> Suggestions => _suggestions;
-    public static int Selected { get; private set; }
-    public static string Usage { get; private set; } = "";
-    public static int Version { get; private set; }
+    public IReadOnlyList<CommandSuggestion> Suggestions => _suggestions;
+    public int Selected { get; private set; }
+    public string Usage { get; private set; } = "";
+    public int Version { get; private set; }
 
-    public static void Update(string text)
+    public void Update(string text)
     {
         if (text == _lastText) return;
         _lastText = text;
@@ -36,7 +36,7 @@ public static class ChatCommandInput
         if (_suggestions.Count == 1 && string.Equals(ChatCommands.LastWord(line), _suggestions[0].Text, StringComparison.OrdinalIgnoreCase)) _suggestions.Clear();
     }
 
-    public static string Complete(string text)
+    public string Complete(string text)
     {
         Update(text);
         if (_suggestions.Count == 0) return null;
@@ -44,7 +44,7 @@ public static class ChatCommandInput
         return ChatCommands.Prefix + CommandCompletion.Apply(text.Substring(1), _suggestions[Selected].Text);
     }
 
-    public static string Navigate(string text, bool up)
+    public string Navigate(string text, bool up)
     {
         Update(text);
         if (_suggestions.Count > 0)
@@ -57,13 +57,13 @@ public static class ChatCommandInput
         return up ? _history.Older(text) : _history.Newer(text);
     }
 
-    public static void Sent(string text)
+    public void Sent(string text)
     {
         _history.Add(text);
         Reset();
     }
 
-    public static void Reset()
+    public void Reset()
     {
         _lastText = null;
         Version++;
@@ -73,7 +73,7 @@ public static class ChatCommandInput
         _history.ResetCursor();
     }
 
-    private static void CollectCommands()
+    private void CollectCommands()
     {
         _commands.Clear();
         foreach (var command in CommandManager.GetCommands())

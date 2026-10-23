@@ -9,8 +9,11 @@ public sealed class TutorialPromptScreen : GameScreen
 {
     private const float Width = 340f;
 
-    public TutorialPromptScreen()
+    private readonly TutorialPromptUI _prompt;
+
+    public TutorialPromptScreen(TutorialPromptUI prompt)
     {
+        _prompt = prompt;
         Name = "TutorialPrompt";
         var center = AddChild(new CenterContainer { MouseFilter = MouseFilter.Ignore });
         center.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -19,11 +22,11 @@ public sealed class TutorialPromptScreen : GameScreen
         frame.Root.Name = "TutorialPromptWindow";
         center.AddChild(frame.Root);
         frame.Body.AddChild(new Label { Text = TutorialPromptUI.Text, Autowrap = true, CustomMinimumSize = new Vector2(Width - 40f, 0f) });
-        frame.Footer.AddChild(MenuLayout.Button(null, "Start", TutorialPromptUI.Start));
-        frame.Footer.AddChild(MenuLayout.Button(null, "No, thanks", TutorialPromptUI.Decline));
+        frame.Footer.AddChild(MenuLayout.Button(null, "Start", _prompt.Start));
+        frame.Footer.AddChild(MenuLayout.Button(null, "No, thanks", _prompt.Decline));
     }
 
-    public override bool IsShown => TutorialPromptUI.IsOpen;
+    public override bool IsShown => _prompt.IsOpen;
 
     protected override bool BlocksPointer => true;
 }

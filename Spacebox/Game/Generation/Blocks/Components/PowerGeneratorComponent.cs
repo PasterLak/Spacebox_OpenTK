@@ -36,6 +36,6 @@ public sealed class PowerGeneratorComponent : BlockComponent
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         var generator = hit.chunk?.SpaceEntity.GetStructureOrigin(hit.chunk, hit.blockPositionIndex) as ElectricalBlock ?? Host;
-        GeneratorUI.Open(generator, player, ref hit);
+        GameUi.Current?.Generator.Open(generator, player, ref hit);
     }
 }

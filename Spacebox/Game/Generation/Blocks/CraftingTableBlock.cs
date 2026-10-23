@@ -9,8 +9,13 @@ namespace Spacebox.Game.Generation.Blocks
     {
         public CraftingTableBlock(BlockData blockData) : base(blockData)
         {
-            OnUse += CraftingGUI.Toggle;
+            OnUse += ToggleCrafting;
 
+        }
+
+        private static void ToggleCrafting(LocalAstronaut player)
+        {
+            GameUi.Current?.Crafting.Toggle(player);
         }
 
         public override void Use(LocalAstronaut player, ref HitInfo hit)

@@ -13,13 +13,20 @@ public sealed class ShipHudControl : HudOverlayControl
 
     private readonly List<ShipBindingTool.Label> _labels = new List<ShipBindingTool.Label>();
 
+    private readonly ShipConsoleUI _shipConsole;
+
+    public ShipHudControl(ShipConsoleUI shipConsole)
+    {
+        _shipConsole = shipConsole;
+    }
+
     protected override bool IsShown() => ShipPilot.Console?.Entity != null && !Engine.UIManager.IsUIMode;
 
     protected override void DrawOverlay(ICanvasRenderer renderer)
     {
         DrawLabels(renderer);
 
-        string text = ShipConsoleUI.HudText;
+        string text = _shipConsole.HudText;
         if (string.IsNullOrEmpty(text)) return;
 
         var lines = text.Split('\n');

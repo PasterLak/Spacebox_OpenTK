@@ -26,25 +26,28 @@ public sealed class SignWindow : GameWindow
     private bool _syncing;
     private float _fit = 1f;
 
-    public SignWindow() : base("Sign")
+    private readonly SignUI _sign;
+
+    public SignWindow(SignUI sign) : base("Sign")
     {
+        _sign = sign;
         Name = "Sign";
         _colors.AddThemeConstantOverride("separation", 3f);
         _colors.AddChild(_bold);
         _colors.AddChild(_defaultSwatch);
-        _defaultSwatch.Clicked += () => SignUI.Document?.ApplyColor(null);
+        _defaultSwatch.Clicked += () => _sign.Document?.ApplyColor(null);
         var swatches = new List<ColorSwatch>();
         foreach (var name in SignUI.QuickColors)
         {
             if (!SignMarkup.TryParseColor(name, out var color)) continue;
             var swatch = _colors.AddChild(new ColorSwatch(color, SwatchSize, name) { SizeFlagsVertical = SizeFlags.ShrinkCenter });
             var picked = color;
-            swatch.Clicked += () => SignUI.Document?.ApplyColor(picked);
+            swatch.Clicked += () => _sign.Document?.ApplyColor(picked);
             swatches.Add(swatch);
         }
         _swatches = swatches.ToArray();
         _defaultSwatch.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        _bold.Pressed += _ => SignUI.Document?.ToggleBold();
+        _bold.Pressed += _ => _sign.Document?.ToggleBold();
         Body.AddChild(_colors);
 
         var layout = Body.AddChild(new HBoxContainer());
@@ -52,21 +55,21 @@ public sealed class SignWindow : GameWindow
         {
             var align = SignUI.Alignments[i];
             var button = layout.AddChild(new Button { Text = align.ToString(), ThemeTypeVariation = "SmallButton", ToggleMode = true });
-            button.Pressed += _ => SignUI.Document?.SetAlign(align);
+            button.Pressed += _ => _sign.Document?.SetAlign(align);
             _alignButtons[i] = button;
         }
         var reset = layout.AddChild(new Button { Text = "Reset style", ThemeTypeVariation = "SmallButton", TooltipText = "Removes bold, colours and alignment from the selection, or every style and the text size when nothing is selected" });
-        reset.Pressed += _ => SignUI.Document?.ResetStyle();
+        reset.Pressed += _ => _sign.Document?.ResetStyle();
 
         var sizeRow = Body.AddChild(new HBoxContainer());
         sizeRow.AddChild(_fill);
         sizeRow.AddChild(new Label { Text = "Size", ThemeTypeVariation = "MutedLabel", VerticalAlignment = VerticalAlignment.Center });
         sizeRow.AddChild(_size);
         sizeRow.AddChild(_sizeValue);
-        _fill.Pressed += _ => SignUI.ToggleFill(_fit);
+        _fill.Pressed += _ => _sign.ToggleFill(_fit);
         _size.ValueChanged += value =>
         {
-            if (!_syncing) SignUI.SetScale((float)value, _fit);
+            if (!_syncing) _sign.SetScale((float)value, _fit);
         };
 
         Body.AddChild(_editor);
@@ -74,19 +77,19 @@ public sealed class SignWindow : GameWindow
 
         var buttons = Body.AddChild(new HBoxContainer());
         var save = buttons.AddChild(new Button { Text = "Save", SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        save.Pressed += _ => SignUI.Save();
+        save.Pressed += _ => _sign.Save();
         var cancel = buttons.AddChild(new Button { Text = "Cancel", SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        cancel.Pressed += _ => SignUI.Close();
+        cancel.Pressed += _ => _sign.Close();
     }
 
-    public override bool IsOpen => SignUI.IsOpen;
+    public override bool IsOpen => _sign.IsOpen;
 
     protected override void Refresh()
     {
-        var sign = SignUI.Sign;
-        var document = SignUI.Document;
+        var sign = _sign.Sign;
+        var document = _sign.Document;
         var data = sign.Data;
-        if (TitleLabel.Text != SignUI.BlockName) TitleLabel.Text = SignUI.BlockName;
+        if (TitleLabel.Text != _sign.BlockName) TitleLabel.Text = _sign.BlockName;
         if (!ReferenceEquals(sign, _shown))
         {
             _shown = sign;
@@ -96,15 +99,15 @@ public sealed class SignWindow : GameWindow
             _editor.GrabFocus();
         }
 
-        _fit = SignUI.FitScale();
-        var size = SignUI.ClampTextSize(_fit);
+        _fit = _sign.FitScale();
+        var size = _sign.ClampTextSize(_fit);
         float largest = SignUI.Largest(_fit);
 
         _editor.Document = document;
         _editor.DefaultColor = data.TextColor;
         _editor.Background = SignUI.BackgroundFor(data.TextColor);
-        _editor.SignGlyphWidth = SignUI.SignGlyphWidth;
-        _editor.SignLineHeight = SignUI.SignLineHeight;
+        _editor.SignGlyphWidth = _sign.SignGlyphWidth;
+        _editor.SignLineHeight = _sign.SignLineHeight;
         _editor.SignPixelsWide = data.PixelsPerBlock * data.Width;
         _editor.SignMargin = data.Margin;
         _editor.TextScale = size.Resolve(_fit);

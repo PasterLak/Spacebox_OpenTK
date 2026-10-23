@@ -8,7 +8,7 @@ using System.Numerics;
 
 namespace Spacebox.Game.Tutorial.UI;
 
-public static class TutorialUI
+public sealed class TutorialUI : IGameUiController
 {
     private const string ToggleAction = "tutorial";
     private const float WidthRatio = 0.21f;
@@ -26,28 +26,37 @@ public static class TutorialUI
         public string Counter;
     }
 
-    private static readonly List<string> _textLines = new List<string>();
-    private static readonly List<string> _hintLines = new List<string>();
-    private static readonly List<string> _titleLines = new List<string>();
-    private static readonly List<TaskLayout> _taskLayouts = new List<TaskLayout>();
-    private static readonly Dictionary<ITutorialTask, float> _doneTimes = new Dictionary<ITutorialTask, float>();
-    private static readonly Dictionary<string, AudioSource> _customSounds = new Dictionary<string, AudioSource>();
+    private readonly List<string> _textLines = new List<string>();
+    private readonly List<string> _hintLines = new List<string>();
+    private readonly List<string> _titleLines = new List<string>();
+    private readonly List<TaskLayout> _taskLayouts = new List<TaskLayout>();
+    private readonly Dictionary<ITutorialTask, float> _doneTimes = new Dictionary<ITutorialTask, float>();
+    private readonly Dictionary<string, AudioSource> _customSounds = new Dictionary<string, AudioSource>();
 
-    private static string _layoutStepId;
-    private static float _layoutWidth;
-    private static float _layoutSize;
-    private static float _clock;
-    private static float _stepStartedAt;
-    private static float _stepCompletedAt = -10f;
-    private static float _footerUntil;
-    private static bool _initialized;
-    private static bool _promptShown;
-    private static AudioSource _tickSound;
-    private static AudioSource _stepSound;
-    private static AudioSource _chapterSound;
-    private static AudioSource _clickSound;
+    private string _layoutStepId;
+    private float _layoutWidth;
+    private float _layoutSize;
+    private float _clock;
+    private float _stepStartedAt;
+    private float _stepCompletedAt = -10f;
+    private float _footerUntil;
+    private bool _initialized;
+    private AudioSource _tickSound;
+    private AudioSource _stepSound;
+    private AudioSource _chapterSound;
+    private AudioSource _clickSound;
+    private readonly WorldLoadingController _loading;
+    private readonly ChatController _chat;
 
-    public static void Init()
+    public TutorialUI(WorldLoadingController loading, ChatController chat)
+    {
+        _loading = loading;
+        _chat = chat;
+    }
+
+    public bool IsInitialized => _initialized;
+
+    public void Initialize(Spacebox.Game.Player.LocalAstronaut player)
     {
         if (_initialized || Application.IsHeadless) return;
 
@@ -66,7 +75,7 @@ public static class TutorialUI
         _footerUntil = _clock + FooterSeconds;
     }
 
-    public static void Dispose()
+    public void Reset()
     {
         if (!_initialized) return;
 
@@ -86,29 +95,22 @@ public static class TutorialUI
         _customSounds.Clear();
         _doneTimes.Clear();
         _layoutStepId = null;
-        _promptShown = false;
         _initialized = false;
         TutorialToasts.Clear();
     }
 
-    public static void PlayClick()
+    public void PlayClick()
     {
         Play(_clickSound);
     }
 
-    public static void Update()
+    public void Update()
     {
         if (!_initialized) return;
         _clock += Time.Delta;
         if (!TutorialService.IsAttached) return;
 
-        if (TutorialService.NeedsJoinPrompt && !_promptShown && !UIManager.IsUIMode && !WorldLoadingScreen.IsActive)
-        {
-            _promptShown = true;
-            TutorialPromptUI.Open();
-        }
-
-        if (UIManager.IsUIMode || Debug.IsVisible || Chat.FocusInput || !TutorialService.Runner.IsRunning) return;
+        if (UIManager.IsUIMode || Debug.IsVisible || _chat.FocusInput || !TutorialService.Runner.IsRunning) return;
         if (InputManager.Instance.HasAction(ToggleAction) && Input.IsActionDown(ToggleAction))
         {
             TutorialService.SetCollapsed(!TutorialService.IsCollapsed);
@@ -116,15 +118,15 @@ public static class TutorialUI
         }
     }
 
-    public static bool IsShown => _initialized && Settings.ShowInterface && !WorldLoadingScreen.IsActive;
+    public bool IsShown => _initialized && Settings.ShowInterface && !_loading.IsActive;
 
-    public static void Draw(TutorialCanvas drawList, Vector2 display, float baseSize)
+    public void Draw(TutorialCanvas drawList, Vector2 display, float baseSize)
     {
         if (!IsShown) return;
 
         float width = MathF.Max(display.X * WidthRatio, baseSize * MinWidthInLines);
         float margin = baseSize * 0.9f;
-        float top = margin + (Chat.IsShownOnRight ? display.Y * 0.5f : 0f);
+        float top = margin + (_chat.IsShownOnRight ? display.Y * 0.5f : 0f);
         var topLeft = new Vector2(display.X - width - margin, top);
 
         float bottom = top;
@@ -140,7 +142,7 @@ public static class TutorialUI
         TutorialToasts.Draw(drawList, new Vector2(display.X - margin, bottom + baseSize * 0.5f), display, width, baseSize, _clock);
     }
 
-    private static float DrawPanel(TutorialCanvas drawList, TutorialRunner runner, Vector2 topLeft, float width, float baseSize, float alpha)
+    private float DrawPanel(TutorialCanvas drawList, TutorialRunner runner, Vector2 topLeft, float width, float baseSize, float alpha)
     {
         var font = drawList.Font;
         float pad = baseSize * 0.7f;
@@ -157,7 +159,7 @@ public static class TutorialUI
         return max.Y;
     }
 
-    private static float Layout(TutorialCanvas drawList, TutorialRunner runner, CanvasFont font, Vector2 topLeft, float width, float baseSize, float alpha, bool draw)
+    private float Layout(TutorialCanvas drawList, TutorialRunner runner, CanvasFont font, Vector2 topLeft, float width, float baseSize, float alpha, bool draw)
     {
         float pad = baseSize * 0.7f;
         float smallSize = baseSize * 0.9f;
@@ -247,7 +249,7 @@ public static class TutorialUI
         return y - topLeft.Y + pad * 0.6f;
     }
 
-    private static float DrawTask(TutorialCanvas drawList, CanvasFont font, ITutorialTask task, TaskLayout layout, float x, float right, float y, float baseSize, float alpha, bool draw)
+    private float DrawTask(TutorialCanvas drawList, CanvasFont font, ITutorialTask task, TaskLayout layout, float x, float right, float y, float baseSize, float alpha, bool draw)
     {
         float line = baseSize * 1.3f;
         float box = baseSize * 0.85f;
@@ -310,7 +312,7 @@ public static class TutorialUI
         return !task.IsDone && !task.ShowsCounter && task.Target > 1f && task.Current > 0f;
     }
 
-    private static float DrawCollapsed(TutorialCanvas drawList, TutorialRunner runner, Vector2 topLeft, float width, float baseSize, float alpha)
+    private float DrawCollapsed(TutorialCanvas drawList, TutorialRunner runner, Vector2 topLeft, float width, float baseSize, float alpha)
     {
         var font = drawList.Font;
         float pad = baseSize * 0.5f;
@@ -336,7 +338,7 @@ public static class TutorialUI
         return max.Y;
     }
 
-    private static void EnsureLayout(TutorialRunner runner, CanvasFont font, float width, float baseSize)
+    private void EnsureLayout(TutorialRunner runner, CanvasFont font, float width, float baseSize)
     {
         var step = runner.CurrentStep;
         if (step == null) return;
@@ -363,30 +365,30 @@ public static class TutorialUI
         }
     }
 
-    private static string Format(string text, float target)
+    private string Format(string text, float target)
     {
         return TutorialText.Format(text, TutorialService.Text, target);
     }
 
-    private static string KeyName(string action)
+    private string KeyName(string action)
     {
         return TutorialService.Text?.KeyName(action) ?? action;
     }
 
-    private static void OnStepStarted(TutorialStep step)
+    private void OnStepStarted(TutorialStep step)
     {
         _stepStartedAt = _clock;
         _layoutStepId = null;
         _doneTimes.Clear();
     }
 
-    private static void OnTaskCompleted(ITutorialTask task)
+    private void OnTaskCompleted(ITutorialTask task)
     {
         _doneTimes[task] = _clock;
         Play(_tickSound);
     }
 
-    private static void OnStepCompleted(TutorialStep step, IReadOnlyList<TutorialReward> rewards, bool skipped)
+    private void OnStepCompleted(TutorialStep step, IReadOnlyList<TutorialReward> rewards, bool skipped)
     {
         _stepCompletedAt = _clock;
         if (skipped) return;
@@ -396,13 +398,13 @@ public static class TutorialUI
         TutorialToasts.Add("Step complete!", Format(step.Title, 0f), rewards, step.Icon, false, _clock);
     }
 
-    private static void OnChapterCompleted(TutorialChapter chapter, IReadOnlyList<TutorialReward> rewards)
+    private void OnChapterCompleted(TutorialChapter chapter, IReadOnlyList<TutorialReward> rewards)
     {
         Play(_chapterSound);
         TutorialToasts.Add("Chapter complete", Format(chapter.Title, 0f), rewards, chapter.Icon, true, _clock);
     }
 
-    private static void OnFinished(TutorialDefinition definition)
+    private void OnFinished(TutorialDefinition definition)
     {
         TutorialToasts.Add("Tutorial complete!", "You know the basics. Good luck out there!", null, TutorialIcon.None, true, _clock + 0.5f);
     }
@@ -420,7 +422,7 @@ public static class TutorialUI
         source.Play();
     }
 
-    private static void PlayOnce(string clip)
+    private void PlayOnce(string clip)
     {
         if (!_customSounds.TryGetValue(clip, out var source))
         {

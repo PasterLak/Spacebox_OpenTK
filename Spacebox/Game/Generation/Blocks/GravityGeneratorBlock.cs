@@ -45,7 +45,7 @@ public class GravityGeneratorBlock : InteractiveBlock, IGravitySource, IEntityBl
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);
-        GravityGeneratorUI.Open(this, player);
+        GameUi.Current?.GravityGenerator.Open(this, player);
     }
 
     public void Configure(int radius, float strength, bool isGravityEnabled, bool insideOnly)

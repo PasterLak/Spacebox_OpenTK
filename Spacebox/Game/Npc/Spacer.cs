@@ -214,7 +214,7 @@ namespace Spacebox.Game
                     {
                         if (!_lootWasGenerated && !IsReplica)
                             GenerateLoot();
-                        StorageUI.OpenStorage(Storage, cam);
+                        GameUi.Current?.Storage.OpenStorage(Storage, cam);
                         Link?.NotifyOpened();
                         CenteredText.Hide();
                     }

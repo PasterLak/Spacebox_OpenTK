@@ -14,8 +14,11 @@ public sealed class DnaReconstructorWindow : GameWindow
     private readonly Label _status = StatusText.Create();
     private DnaReconstructorBlock _shown;
 
-    public DnaReconstructorWindow() : base("DNA Reconstructor")
+    private readonly DnaReconstructorUI _dnaReconstructor;
+
+    public DnaReconstructorWindow(DnaReconstructorUI dnaReconstructor) : base("DNA Reconstructor")
     {
+        _dnaReconstructor = dnaReconstructor;
         Name = "DnaReconstructor";
         MatchInventorySize();
         var row = Body.AddChild(new HBoxContainer());
@@ -31,25 +34,25 @@ public sealed class DnaReconstructorWindow : GameWindow
             Autowrap = true,
             CustomMinimumSize = new Vector2(Width, 0f)
         });
-        _slot.Clicked += DnaReconstructorUI.OnSlotClicked;
+        _slot.Clicked += _dnaReconstructor.OnSlotClicked;
     }
 
-    public override bool IsOpen => DnaReconstructorUI.IsOpen;
+    public override bool IsOpen => _dnaReconstructor.IsOpen;
 
     protected override void Refresh()
     {
-        var block = DnaReconstructorUI.Block;
-        if (TitleLabel.Text != DnaReconstructorUI.BlockName) TitleLabel.Text = DnaReconstructorUI.BlockName;
+        var block = _dnaReconstructor.Block;
+        if (TitleLabel.Text != _dnaReconstructor.BlockName) TitleLabel.Text = _dnaReconstructor.BlockName;
         if (!ReferenceEquals(block, _shown))
         {
             _shown = block;
-            _slot.Bind(DnaReconstructorUI.DnaSlot, DnaReconstructorUI.SlotSprite);
+            _slot.Bind(_dnaReconstructor.DnaSlot, _dnaReconstructor.SlotSprite);
         }
 
         _slot.Refresh();
         SetText(_samples, $"DNA samples: {block.DnaCount}/{block.DnaCapacity}");
         ShowEnergy(block.Data.Power);
-        var (text, kind) = DnaReconstructorUI.Status();
+        var (text, kind) = _dnaReconstructor.Status();
         StatusText.Set(_status, text, kind);
     }
 

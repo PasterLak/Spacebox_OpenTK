@@ -17,28 +17,28 @@ public sealed class GameWindowsView : SafeArea
     private float _inventoryHeight;
     private readonly GameWindowSounds _sounds = new GameWindowSounds();
 
-    public GameWindowsView()
+    public GameWindowsView(GameUi ui)
     {
         Name = "GameWindows";
-        Inventory = new InventoryWindow();
-        Add(_left, new CreativeWindow());
-        Add(_middle, new StorageWindow());
-        Add(_middle, new CraftingWindow());
-        Add(_middle, new ProcessingWindow());
-        Add(_middle, new OxygenGeneratorWindow());
-        Add(_middle, new DnaReconstructorWindow());
-        Add(_middle, new GeneratorWindow());
-        Add(_middle, new GravityGeneratorWindow());
-        Add(_middle, new AnalyzerWindow());
-        Add(_middle, new DisassemblerWindow());
-        Add(_middle, new ClaimBeaconWindow());
-        Add(_middle, new RadarWindow());
-        Add(_middle, new ShipConsoleWindow());
-        Add(_middle, new SignWindow());
-        Add(_middle, new WaypointsWindow());
-        Add(_middle, new ShipLibraryWindow());
+        Inventory = new InventoryWindow(ui.Inventory);
+        Add(_left, new CreativeWindow(ui.Creative));
+        Add(_middle, new StorageWindow(ui.Storage));
+        Add(_middle, new CraftingWindow(ui.Crafting, ui.Inventory));
+        Add(_middle, new ProcessingWindow(ui.Processing));
+        Add(_middle, new OxygenGeneratorWindow(ui.OxygenGenerator));
+        Add(_middle, new DnaReconstructorWindow(ui.DnaReconstructor));
+        Add(_middle, new GeneratorWindow(ui.Generator));
+        Add(_middle, new GravityGeneratorWindow(ui.GravityGenerator));
+        Add(_middle, new AnalyzerWindow(ui.Analyzer));
+        Add(_middle, new DisassemblerWindow(ui.Disassembler));
+        Add(_middle, new ClaimBeaconWindow(ui.ClaimBeacon));
+        Add(_middle, new RadarWindow(ui));
+        Add(_middle, new ShipConsoleWindow(ui.ShipConsole));
+        Add(_middle, new SignWindow(ui.Sign));
+        Add(_middle, new WaypointsWindow(ui.Waypoints));
+        Add(_middle, new ShipLibraryWindow(ui.ShipLibrary));
         Add(null, Inventory);
-        Add(_right, new EquipmentWindow());
+        Add(_right, new EquipmentWindow(ui.Equipment, ui.Inventory, ui.Panel));
     }
 
     public InventoryWindow Inventory { get; }

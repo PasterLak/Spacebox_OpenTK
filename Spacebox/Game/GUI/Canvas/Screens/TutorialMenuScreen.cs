@@ -13,8 +13,13 @@ public sealed class TutorialMenuScreen : GameScreen
     private readonly VBoxContainer _buttons = new VBoxContainer();
     private readonly List<string> _shownLabels = new List<string>();
 
-    public TutorialMenuScreen()
+    private readonly TutorialMenuUI _menu;
+    private readonly PauseUI _pause;
+
+    public TutorialMenuScreen(TutorialMenuUI menu, PauseUI pause)
     {
+        _menu = menu;
+        _pause = pause;
         Name = "TutorialMenu";
         var center = AddChild(new CenterContainer { MouseFilter = MouseFilter.Ignore });
         center.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -27,15 +32,15 @@ public sealed class TutorialMenuScreen : GameScreen
         _buttons.AddThemeConstantOverride("separation", 8f);
     }
 
-    public override bool IsShown => TutorialMenuUI.IsOpen && PauseUI.IsVisible && !PauseUI.IsOptionsOpen;
+    public override bool IsShown => _menu.IsOpen && _pause.IsVisible && !_pause.IsOptionsOpen;
 
     protected override bool BlocksPointer => true;
 
     protected override void Refresh(float deltaTime)
     {
-        TutorialMenuUI.Refresh();
-        SetText(_description, TutorialMenuUI.Description);
-        var buttons = TutorialMenuUI.Buttons;
+        _menu.Refresh();
+        SetText(_description, _menu.Description);
+        var buttons = _menu.Buttons;
         if (SameLabels(buttons)) return;
 
         _shownLabels.Clear();
@@ -45,7 +50,7 @@ public sealed class TutorialMenuScreen : GameScreen
             int index = i;
             _shownLabels.Add(buttons[i].Label);
             var button = _buttons.AddChild(new Button { Text = buttons[i].Label, CustomMinimumSize = new Vector2(0f, MenuLayout.ButtonHeight), SizeFlagsHorizontal = SizeFlags.ExpandFill });
-            button.Pressed += _ => TutorialMenuUI.Press(index);
+            button.Pressed += _ => _menu.Press(index);
         }
     }
 

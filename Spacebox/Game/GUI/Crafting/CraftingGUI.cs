@@ -8,23 +8,23 @@ using System.Linq;
 
 namespace Spacebox.Game.GUI;
 
-public class CraftingGUI
+public sealed class CraftingGUI : IGameUiController
 {
 
 
-    private static CraftingCategory[] category;
-    private static List<CraftingCategoryGroup> groups;
-    private static Storage Inventory;
-    private static Storage Panel;
+    private CraftingCategory[] category;
+    private List<CraftingCategoryGroup> groups;
+    private Storage Inventory;
+    private Storage Panel;
 
-    private static AudioSource scrollAudio;
-    private static AudioSource clickAudio;
+    private AudioSource scrollAudio;
+    private AudioSource clickAudio;
 
-    private static int ColumnsOfItems;
-    private static int hovered = -1;
-    private static LocalAstronaut currentPlayer;
+    private int ColumnsOfItems;
+    private int hovered = -1;
+    private LocalAstronaut currentPlayer;
 
-    public static void Toggle(LocalAstronaut player)
+    public void Toggle(LocalAstronaut player)
     {
         currentPlayer = player;
         Inventory = player.Inventory;
@@ -40,10 +40,10 @@ public class CraftingGUI
         }
     }
 
-    static int CategoriesCountX = 0;
+    private int CategoriesCountX = 0;
     const int CategoriesCountY = 2;
 
-    public static void Init()
+    public void Initialize(LocalAstronaut player)
     {
         category = CraftingCategoryLayout.Arrange(GameAssets.CraftingCategories.Values, CategoriesCountY, out CategoriesCountX);
         groups = CraftingCategoryGroups.Build(GameAssets.CraftingCategories.Values);
@@ -57,25 +57,25 @@ public class CraftingGUI
         clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"), AudioChannel.UI);
     }
 
-    public static bool IsVisible { get; private set; }
-    public static CraftingCategory[] Categories => category;
-    public static IReadOnlyList<CraftingCategoryGroup> Groups => groups;
-    public static int SelectedGroup { get; set; }
-    public static int CategoryColumns => CategoriesCountX;
-    public static int CategoryRows => CategoriesCountY;
-    public static int ItemColumns => ColumnsOfItems;
-    public static LocalAstronaut Player => currentPlayer;
+    public bool IsVisible { get; private set; }
+    public CraftingCategory[] Categories => category;
+    public IReadOnlyList<CraftingCategoryGroup> Groups => groups;
+    public int SelectedGroup { get; set; }
+    public int CategoryColumns => CategoriesCountX;
+    public int CategoryRows => CategoriesCountY;
+    public int ItemColumns => ColumnsOfItems;
+    public LocalAstronaut Player => currentPlayer;
 
-    public static void Update()
+    public void OnGUI()
     {
         IsVisible = UIManager.IsOpen("crafting");
     }
 
-    public static void PlayClick() => clickAudio?.Play();
+    public void PlayClick() => clickAudio?.Play();
 
-    public static void PlayTab() => UiSounds.Play(UiSound.TabSwitch);
+    public void PlayTab() => UiSounds.Play(UiSound.TabSwitch);
 
-    public static void PlayHover(int id)
+    public void PlayHover(int id)
     {
         if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
         if (hovered == id || scrollAudio == null) return;
@@ -85,7 +85,7 @@ public class CraftingGUI
         scrollAudio.Play();
     }
 
-    public static bool CanCraft(CraftingCategory.Data data)
+    public bool CanCraft(CraftingCategory.Data data)
     {
         if (data?.blueprint == null || Inventory == null) return false;
         foreach (var ingredient in data.blueprint.Ingredients)
@@ -95,24 +95,24 @@ public class CraftingGUI
         return true;
     }
 
-    public static int PossibleCount(CraftingCategory.Data data)
+    public int PossibleCount(CraftingCategory.Data data)
     {
         return data?.blueprint == null || Inventory == null ? 0 : CraftingLogic.CalculatePossibleItemCraftCount(Inventory, Panel, data.blueprint, currentPlayer);
     }
 
-    public static int AvailableCount(Ingredient ingredient)
+    public int AvailableCount(Ingredient ingredient)
     {
         if (ingredient.Item.Id_string == "$health") return currentPlayer?.HealthBar.StatsData.Value ?? 0;
         if (ingredient.Item.Id_string == "$power") return currentPlayer?.PowerBar.StatsData.Value ?? 0;
         return Inventory == null ? 0 : Inventory.GetTotalCountOf(ingredient.Item) + Panel.GetTotalCountOf(ingredient.Item);
     }
 
-    public static void Craft(Blueprint blueprint)
+    public void Craft(Blueprint blueprint)
     {
         OnClick(blueprint);
     }
 
-    private static void OnClick(Blueprint blueprint)
+    private void OnClick(Blueprint blueprint)
     {
 
         if (blueprint == null)
@@ -199,7 +199,7 @@ public class CraftingGUI
 
 
 
-    public static void Dispose()
+    public void Reset()
     {
         if (scrollAudio != null)
         {

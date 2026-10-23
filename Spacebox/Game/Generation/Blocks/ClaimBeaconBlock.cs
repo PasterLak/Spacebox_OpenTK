@@ -54,7 +54,7 @@ public class ClaimBeaconBlock : InteractiveBlock, IContainerBlock, IEntityBlockL
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);
-        ClaimBeaconUI.Open(this, player);
+        GameUi.Current?.ClaimBeacon.Open(this, player);
     }
 
     public bool IsAllowed(string playerName) => ClaimMembership.IsAllowed(Owner, _members, playerName);

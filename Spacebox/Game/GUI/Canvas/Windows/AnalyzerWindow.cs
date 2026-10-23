@@ -11,6 +11,8 @@ public sealed class AnalyzerWindow : GameWindow
     private const float ContentHeight = 170f;
     private const float MineralIconSize = 18f;
 
+    private readonly AnalyzerUI _analyzer;
+
     private enum View { NoPower, Scanning, Complete, Empty }
 
     private readonly Label _scanTime = new Label();
@@ -29,8 +31,9 @@ public sealed class AnalyzerWindow : GameWindow
     private int _mineralsVersion = -1;
     private View _view = (View)(-1);
 
-    public AnalyzerWindow() : base("Analyzer")
+    public AnalyzerWindow(AnalyzerUI analyzer) : base("Analyzer")
     {
+        _analyzer = analyzer;
         Name = "Analyzer";
         Body.AddChild(new Label { Text = "Scanning allows determining the approximate composition of the asteroid.", Autowrap = true, CustomMinimumSize = new Vector2(Width, 0f) });
         Body.AddChild(_scanTime);
@@ -53,25 +56,25 @@ public sealed class AnalyzerWindow : GameWindow
 
         Body.AddChild(_buttons);
         foreach (var button in new[] { _scan, _cancel, _rescan, _clear }) _buttons.AddChild(button);
-        _scan.Pressed += _ => AnalyzerUI.Request(AnalyzerAction.Start);
-        _rescan.Pressed += _ => AnalyzerUI.Request(AnalyzerAction.Start);
-        _cancel.Pressed += _ => AnalyzerUI.Request(AnalyzerAction.Cancel);
-        _clear.Pressed += _ => AnalyzerUI.Request(AnalyzerAction.Clear);
+        _scan.Pressed += _ => _analyzer.Request(AnalyzerAction.Start);
+        _rescan.Pressed += _ => _analyzer.Request(AnalyzerAction.Start);
+        _cancel.Pressed += _ => _analyzer.Request(AnalyzerAction.Cancel);
+        _clear.Pressed += _ => _analyzer.Request(AnalyzerAction.Clear);
     }
 
-    public override bool IsOpen => AnalyzerUI.IsOpen;
+    public override bool IsOpen => _analyzer.IsOpen;
 
-    public override bool LacksPower => !AnalyzerUI.HasPower;
+    public override bool LacksPower => !_analyzer.HasPower;
 
     protected override void Refresh()
     {
-        var block = AnalyzerUI.Block;
-        if (TitleLabel.Text != AnalyzerUI.BlockName) TitleLabel.Text = AnalyzerUI.BlockName;
+        var block = _analyzer.Block;
+        if (TitleLabel.Text != _analyzer.BlockName) TitleLabel.Text = _analyzer.BlockName;
         ShowEnergy(block.ConsumptionRate);
-        SetText(_scanTime, $"Scan time: {AnalyzerUI.ScanSeconds:0.0} s.");
+        SetText(_scanTime, $"Scan time: {_analyzer.ScanSeconds:0.0} s.");
         SetText(_deviation, $"Deviation: {block.DeviationPercentage}%");
 
-        var view = !AnalyzerUI.HasPower ? View.NoPower : block.IsScanning ? View.Scanning : block.ScanComplete ? View.Complete : View.Empty;
+        var view = !_analyzer.HasPower ? View.NoPower : block.IsScanning ? View.Scanning : block.ScanComplete ? View.Complete : View.Empty;
         if (view != _view) Show(view);
 
         if (view == View.Scanning) _progress.Value = block.Progress;
@@ -95,7 +98,7 @@ public sealed class AnalyzerWindow : GameWindow
 
     private void BuildMinerals()
     {
-        var block = AnalyzerUI.Block;
+        var block = _analyzer.Block;
         _mineralsVersion = block.CachedMinerals.Count + (int)(block.CachedMass % 100000);
         _mass.Text = $"Estimated Mass: {block.CachedMass.ToString("N0").Replace(",", ".")} tn";
         _minerals.ClearChildren();

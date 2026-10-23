@@ -19,8 +19,11 @@ public sealed class DisassemblerWindow : GameWindow
     private DisassemblerBlock _shown;
     private DisassemblyRecipe _previewFor;
 
-    public DisassemblerWindow() : base("Disassembler")
+    private readonly DisassemblerUI _disassembler;
+
+    public DisassemblerWindow(DisassemblerUI disassembler) : base("Disassembler")
     {
+        _disassembler = disassembler;
         Name = "Disassembler";
         MatchColumnWidth();
         Body.AddChild(_status);
@@ -32,35 +35,35 @@ public sealed class DisassemblerWindow : GameWindow
         row.AddChild(_output);
         Body.AddChild(_preview);
         _preview.AddThemeConstantOverride("separation", 4f);
-        _input.SlotClicked += DisassemblerUI.OnSlotClicked;
-        _output.SlotClicked += DisassemblerUI.OnSlotClicked;
+        _input.SlotClicked += _disassembler.OnSlotClicked;
+        _output.SlotClicked += _disassembler.OnSlotClicked;
     }
 
-    public override bool IsOpen => DisassemblerUI.IsOpen;
+    public override bool IsOpen => _disassembler.IsOpen;
 
-    public override bool LacksPower => DisassemblerUI.Block is { HasPower: false };
+    public override bool LacksPower => _disassembler.Block is { HasPower: false };
 
     protected override void Refresh()
     {
-        var block = DisassemblerUI.Block;
-        if (TitleLabel.Text != DisassemblerUI.BlockName) TitleLabel.Text = DisassemblerUI.BlockName;
+        var block = _disassembler.Block;
+        if (TitleLabel.Text != _disassembler.BlockName) TitleLabel.Text = _disassembler.BlockName;
         if (!ReferenceEquals(block, _shown))
         {
             _shown = block;
             _input.Show(block.InputStorage);
             _output.Show(block.OutputStorage);
-            foreach (var slot in _input.Slots) slot.Bind(slot.Slot, DisassemblerUI.InputIcon);
-            foreach (var slot in _output.Slots) slot.Bind(slot.Slot, DisassemblerUI.OutputIcon);
+            foreach (var slot in _input.Slots) slot.Bind(slot.Slot, _disassembler.InputIcon);
+            foreach (var slot in _output.Slots) slot.Bind(slot.Slot, _disassembler.OutputIcon);
         }
 
         _input.Show(block.InputStorage);
         _output.Show(block.OutputStorage);
         ShowEnergy(block.Power);
-        var (text, kind) = DisassemblerUI.Status();
+        var (text, kind) = _disassembler.Status();
         StatusText.Set(_status, text, kind);
-        _arrow.Progress = DisassemblerUI.Progress;
+        _arrow.Progress = _disassembler.Progress;
 
-        var recipe = DisassemblerUI.PreviewRecipe();
+        var recipe = _disassembler.PreviewRecipe();
         if (!ReferenceEquals(recipe, _previewFor)) BuildPreview(recipe);
     }
 

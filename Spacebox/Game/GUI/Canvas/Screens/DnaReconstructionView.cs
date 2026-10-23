@@ -23,19 +23,22 @@ public sealed class DnaReconstructionView : GameScreen
 
     private readonly string[] _percentTexts = new string[101];
 
-    public DnaReconstructionView()
+    private readonly Screen _reconstruction;
+
+    public DnaReconstructionView(Screen reconstruction)
     {
+        _reconstruction = reconstruction;
         Name = "DnaReconstruction";
         MouseFilter = MouseFilter.Ignore;
         for (int i = 0; i < _percentTexts.Length; i++) _percentTexts[i] = i + "%";
     }
 
-    public override bool IsShown => Screen.IsActive;
+    public override bool IsShown => _reconstruction.IsActive;
 
     protected override void Draw(ICanvasRenderer renderer)
     {
         var size = Size;
-        float t = Screen.Progress;
+        float t = _reconstruction.Progress;
         float fadeIn = Math.Clamp(t / Screen.FadeInEnd, 0f, 1f);
 
         renderer.DrawRect(new Rect2(Vector2.Zero, size), Fade(BackgroundColor, fadeIn));
@@ -150,22 +153,22 @@ public sealed class DnaReconstructionView : GameScreen
         renderer.DrawRect(new Rect2(body.Feet.X - halfWidth, y - 1f, halfWidth * 2f, 2f), ScanColor);
     }
 
-    private static void DrawGrid(ICanvasRenderer renderer, Vector2 size, float alpha)
+    private void DrawGrid(ICanvasRenderer renderer, Vector2 size, float alpha)
     {
         var color = Fade(GridColor, alpha);
         float step = size.Y / Screen.GridLines;
-        float offset = (Screen.Elapsed * step * 0.5f) % step;
+        float offset = (_reconstruction.Elapsed * step * 0.5f) % step;
 
         for (float y = offset; y < size.Y; y += step) renderer.DrawRect(new Rect2(0f, y, size.X, 1f), color);
         for (float x = 0f; x < size.X; x += step) renderer.DrawRect(new Rect2(x, 0f, 1f, size.Y), color);
     }
 
-    private static void DrawHelix(ICanvasRenderer renderer, Vector2 center, float height, float radius, float alpha)
+    private void DrawHelix(ICanvasRenderer renderer, Vector2 center, float height, float radius, float alpha)
     {
         var colorA = Fade(HelixColorA, alpha);
         var colorB = Fade(HelixColorB, alpha);
         var rung = Fade(GridColor, alpha * 4f);
-        float phase = Screen.Elapsed * 2.5f;
+        float phase = _reconstruction.Elapsed * 2.5f;
         float top = center.Y - height * 0.5f;
 
         Vector2 previousA = default, previousB = default;

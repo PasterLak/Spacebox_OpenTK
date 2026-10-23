@@ -25,7 +25,7 @@ public sealed class StorageComponent : BlockComponent, IContainerComponent, ISav
 
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
-        StorageUI.OpenStorage(Storage, player);
+        GameUi.Current?.Storage.OpenStorage(Storage, player);
     }
 
     public override void OnDestroyed(HitInfo info)

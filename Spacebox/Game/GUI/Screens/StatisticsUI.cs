@@ -2,28 +2,30 @@
 
 namespace Spacebox.Game.GUI;
 
-public static class StatisticsUI
+public sealed class StatisticsUI : IGameUiController
 {
-    private static bool _isVisible = false;
-    private static PlayerStatistics _statistics;
+    private bool _isVisible = false;
+    private PlayerStatistics _statistics;
 
-    public static bool IsVisible
+    public bool IsVisible
     {
         get => _isVisible && _statistics != null;
         set => _isVisible = value;
     }
 
-    public static PlayerStatistics Statistics => _statistics;
+    public PlayerStatistics Statistics => _statistics;
 
-    public static void Show(PlayerStatistics statistics)
+    public void Show(PlayerStatistics statistics)
     {
         _statistics = statistics;
         _isVisible = true;
     }
 
-    public static void Hide()
+    public void Hide()
     {
         _isVisible = false;
         _statistics = null;
     }
+
+    public void Reset() => Hide();
 }

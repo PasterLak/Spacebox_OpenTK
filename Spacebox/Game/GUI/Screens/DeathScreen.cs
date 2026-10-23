@@ -7,7 +7,7 @@ namespace Spacebox.Game.GUI
 {
     public class DeathScreen
     {
-        public static bool IsVisible = false;
+        public bool IsVisible { get; private set; }
 
         private float currentTime = 0f;
         private float transitionDuration = 2f;

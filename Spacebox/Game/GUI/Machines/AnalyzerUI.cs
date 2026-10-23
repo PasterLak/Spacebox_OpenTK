@@ -12,24 +12,24 @@ using System.Linq;
 
 namespace Spacebox.Game.GUI
 {
-    public class AnalyzerUI
+    public sealed class AnalyzerUI : IGameUiController
     {
-        private static AnalyzerBlock analyzerBlock;
-        private static SpaceEntity currentEntity;
-        private static string blockName = "Analyzer";
-        private static bool _wasScanning;
+        private AnalyzerBlock analyzerBlock;
+        private SpaceEntity currentEntity;
+        private string blockName = "Analyzer";
+        private bool _wasScanning;
 
-        private static bool _hasPower = false;
-        private static bool _wasVisible = false;
+        private bool _hasPower = false;
+        private bool _wasVisible = false;
 
-        private static ulong _lastCheckedMass = ulong.MaxValue;
-        private static int _lastBlockCount = 0;
+        private ulong _lastCheckedMass = ulong.MaxValue;
+        private int _lastBlockCount = 0;
 
-        private static AudioSource scanSound;
-        private static AudioSource finishSound;
-        private static AudioSource clickSound;
+        private AudioSource scanSound;
+        private AudioSource finishSound;
+        private AudioSource clickSound;
 
-        public static void Initialize()
+        private void EnsureSounds()
         {
             if (scanSound == null || scanSound.IsDisposed)
             {
@@ -49,9 +49,9 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Open(AnalyzerBlock block, ref HitInfo hit)
+        public void Open(AnalyzerBlock block, ref HitInfo hit)
         {
-            Initialize();
+            EnsureSounds();
             analyzerBlock = block;
             currentEntity = hit.chunk.SpaceEntity;
             blockName = GameAssets.GetBlockDataById(block.Id).Name;
@@ -62,14 +62,14 @@ namespace Spacebox.Game.GUI
             UIManager.Open("analyzer");
         }
 
-        public static void Close()
+        public void Close()
         {
             analyzerBlock = null;
             currentEntity = null;
             UIManager.CloseTop();
         }
 
-        private static void CheckPower()
+        private void CheckPower()
         {
             if (currentEntity == null || analyzerBlock == null)
             {
@@ -80,7 +80,7 @@ namespace Spacebox.Game.GUI
             _hasPower = analyzerBlock.IsActive;
         }
 
-        private static void CountBlocksIfMassChanged()
+        private void CountBlocksIfMassChanged()
         {
             if (currentEntity == null) return;
             if (currentEntity.Mass == _lastCheckedMass) return;
@@ -89,7 +89,7 @@ namespace Spacebox.Game.GUI
             _lastBlockCount = AnalyzerScanner.CountBlocks(currentEntity);
         }
 
-        private static void UpdateScanSounds()
+        private void UpdateScanSounds()
         {
             bool isScanning = analyzerBlock.IsScanning;
             if (isScanning == _wasScanning) return;
@@ -107,16 +107,16 @@ namespace Spacebox.Game.GUI
             _wasScanning = isScanning;
         }
 
-        public static bool IsOpen => UIManager.IsOpen("analyzer") && analyzerBlock != null && currentEntity != null;
-        public static AnalyzerBlock Block => analyzerBlock;
-        public static string BlockName => blockName;
-        public static bool HasPower => _hasPower;
+        public bool IsOpen => UIManager.IsOpen("analyzer") && analyzerBlock != null && currentEntity != null;
+        public AnalyzerBlock Block => analyzerBlock;
+        public string BlockName => blockName;
+        public bool HasPower => _hasPower;
 
-        public static float ScanSeconds => analyzerBlock == null ? 0f
+        public float ScanSeconds => analyzerBlock == null ? 0f
             : analyzerBlock.IsScanning && analyzerBlock.ScanDurationTicks > 0 ? analyzerBlock.ScanDurationTicks / 20f
             : AnalyzerScanner.GetScanSeconds(analyzerBlock, _lastBlockCount);
 
-        public static void Update()
+        public void OnGUI()
         {
             bool isVisible = UIManager.IsOpen("analyzer");
 
@@ -146,18 +146,23 @@ namespace Spacebox.Game.GUI
             UpdateScanSounds();
         }
 
-        public static void Request(AnalyzerAction action)
+        public void Request(AnalyzerAction action)
         {
             if (analyzerBlock == null) return;
             clickSound?.Play();
             AnalyzerNetwork.Request(analyzerBlock, action);
         }
 
-        public static void Dispose()
+        public void Reset()
         {
             analyzerBlock = null;
             currentEntity = null;
-            
+            _wasScanning = false;
+            _wasVisible = false;
+            scanSound?.Dispose();
+            finishSound?.Dispose();
+            clickSound?.Dispose();
+            scanSound = finishSound = clickSound = null;
         }
     }
 }

@@ -142,7 +142,7 @@ public class StorageBlock : InteractiveBlock, IContainerBlock
 
         base.Use(player, ref hit);
 
-        StorageUI.OpenStorage(this, player);
+        GameUi.Current?.Storage.OpenStorage(this, player);
 
     }
 }

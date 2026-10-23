@@ -23,7 +23,7 @@ public sealed class ChatView : GameScreen
     private readonly VBoxContainer _column = new VBoxContainer { MouseFilter = MouseFilter.Ignore };
     private readonly ChatScroll _scroll = new ChatScroll { SizeFlagsVertical = SizeFlags.ExpandFill, MouseFilter = MouseFilter.Ignore };
     private readonly VBoxContainer _lines = new VBoxContainer { Alignment = BoxAlignment.End, MouseFilter = MouseFilter.Ignore };
-    private readonly ConsoleInput _input = new ConsoleInput { Name = "ChatInput", MaxLength = Chat.MaxInputLength, Visible = false, PlaceholderText = "Message or /command" };
+    private readonly ConsoleInput _input = new ConsoleInput { Name = "ChatInput", MaxLength = ChatController.MaxInputLength, Visible = false, PlaceholderText = "Message or /command" };
     private readonly PanelContainer _suggestionPanel = new PanelContainer { Name = "ChatSuggestions", ThemeTypeVariation = "PopupPanel", MouseFilter = MouseFilter.Ignore, Visible = false };
     private readonly VBoxContainer _suggestionList = new VBoxContainer { MouseFilter = MouseFilter.Ignore };
     private readonly Label _usage = new Label { ThemeTypeVariation = "MutedLabel", Autowrap = true, MouseFilter = MouseFilter.Ignore };
@@ -40,8 +40,13 @@ public sealed class ChatView : GameScreen
     private bool _onLeft = true;
     private bool _syncingInput;
 
-    public ChatView()
+    private readonly ChatController _chat;
+    private readonly WorldLoadingController _loading;
+
+    public ChatView(ChatController chat, WorldLoadingController loading)
     {
+        _chat = chat;
+        _loading = loading;
         Name = "Chat";
         _area.SetAnchorsPreset(LayoutPreset.FullRect);
         AddChild(_area);
@@ -62,21 +67,21 @@ public sealed class ChatView : GameScreen
 
         _input.TextChanged += text =>
         {
-            if (!_syncingInput) Chat.SetInput(text);
+            if (!_syncingInput) _chat.SetInput(text);
         };
         _input.TextSubmitted += text =>
         {
             _input.ReleaseFocus();
-            Chat.Submit(text);
+            _chat.Submit(text);
         };
-        _input.CompletionRequested += Chat.Complete;
-        _input.HistoryRequested += step => Chat.Navigate(step < 0);
+        _input.CompletionRequested += _chat.Complete;
+        _input.HistoryRequested += step => _chat.Navigate(step < 0);
         PlaceBox();
     }
 
-    public override bool IsShown => _input.HasFocus || (Chat.IsVisible && !WorldLoadingScreen.IsActive);
+    public override bool IsShown => _input.HasFocus || (_chat.IsVisible && !_loading.IsActive);
 
-    public override bool WantsInput => Chat.IsTyping;
+    public override bool WantsInput => _chat.IsTyping;
 
     public bool IsTypingShown => _typing;
 
@@ -84,12 +89,13 @@ public sealed class ChatView : GameScreen
 
     protected override void Refresh(float deltaTime)
     {
-        bool typing = Chat.IsTyping && !WorldLoadingScreen.IsActive;
-        Present(Chat.Log, Engine.Time.Total, Chat.HideDelay, typing, Chat.PlaceOnLeft);
+        bool typing = _chat.IsTyping && !_loading.IsActive;
+        Present(_chat.Log, Engine.Time.Total, _chat.HideDelay, typing, _chat.PlaceOnLeft);
         if (!typing) return;
 
-        SyncInput(Chat.InputText, Chat.InputRevision);
-        PresentSuggestions(ChatCommandInput.Usage, ChatCommandInput.Suggestions, ChatCommandInput.Selected, ChatCommandInput.Version);
+        SyncInput(_chat.InputText, _chat.InputRevision);
+        var commands = _chat.Commands;
+        PresentSuggestions(commands.Usage, commands.Suggestions, commands.Selected, commands.Version);
     }
 
     public void Present(ChatLog log, float now, float hideDelay, bool typing, bool onLeft)

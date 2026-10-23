@@ -13,12 +13,15 @@ public sealed class ShipConsoleWindow : GameWindow
     private readonly Label _speed = new Label();
     private readonly Label _flightHint = new Label { ThemeTypeVariation = "MutedLabel", Autowrap = true, CustomMinimumSize = new Vector2(Width, 0f), Text = "Movement keys fly, roll keys roll, mouse steers (hold Alt to look around), sprint brakes" };
     private readonly VBoxContainer _groups = new VBoxContainer();
+
+    private readonly ShipConsoleUI _shipConsole;
     private readonly List<(Label Count, Button Key)> _groupRows = new List<(Label, Button)>();
     private readonly Label _camera = StatusText.Create("", StatusKind.Muted);
     private int _builtGroups = -1;
 
-    public ShipConsoleWindow() : base("Ship Console")
+    public ShipConsoleWindow(ShipConsoleUI shipConsole) : base("Ship Console")
     {
+        _shipConsole = shipConsole;
         Name = "ShipConsole";
         Body.AddChild(_parts);
         Body.AddChild(_speed);
@@ -30,18 +33,18 @@ public sealed class ShipConsoleWindow : GameWindow
 
         var actions = Body.AddChild(new HBoxContainer());
         var bind = actions.AddChild(new Button { Text = "Bind blocks", SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        bind.Pressed += _ => ShipConsoleUI.BindBlocks();
+        bind.Pressed += _ => _shipConsole.BindBlocks();
         var leave = actions.AddChild(new Button { Text = "Leave seat", SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        leave.Pressed += _ => ShipConsoleUI.LeaveSeat();
+        leave.Pressed += _ => _shipConsole.LeaveSeat();
         Body.AddChild(new Label { Text = "Binding: LMB or mouse wheel changes group (camera: toggle), RMB exits", ThemeTypeVariation = "MutedLabel", Autowrap = true, CustomMinimumSize = new Vector2(Width, 0f) });
     }
 
-    public override bool IsOpen => ShipConsoleUI.IsOpen && ShipConsoleUI.Bindings != null;
+    public override bool IsOpen => _shipConsole.IsOpen && _shipConsole.Bindings != null;
 
     protected override void Refresh()
     {
-        var console = ShipConsoleUI.Console;
-        var bindings = ShipConsoleUI.Bindings;
+        var console = _shipConsole.Console;
+        var bindings = _shipConsole.Bindings;
         string title = GameAssets.GetBlockDataById(console.Id)?.Name ?? "Ship Console";
         if (TitleLabel.Text != title) TitleLabel.Text = title;
 
@@ -52,12 +55,12 @@ public sealed class ShipConsoleWindow : GameWindow
         _flightHint.Visible = console.Data.Flight;
 
         if (bindings.GroupCount != _builtGroups) BuildGroups(bindings.GroupCount);
-        var counts = ShipConsoleUI.CountGroups(bindings);
+        var counts = _shipConsole.CountGroups(bindings);
         for (int group = 0; group < _groupRows.Count; group++)
         {
             var (count, key) = _groupRows[group];
             SetText(count, $"Group {group + 1}: {counts[group]} blocks");
-            bool waiting = ShipConsoleUI.WaitingGroup == group;
+            bool waiting = _shipConsole.WaitingGroup == group;
             string label = waiting ? "Press a key..." : ShipKeys.GetName(bindings.GetKey(group));
             if (key.Text != label) key.Text = label;
         }
@@ -77,7 +80,7 @@ public sealed class ShipConsoleWindow : GameWindow
             row.AddChild(new ColorRect { Color = new Color4(color.R, color.G, color.B, 1f), CustomMinimumSize = new Vector2(SwatchSize, SwatchSize), SizeFlagsVertical = SizeFlags.ShrinkCenter });
             var label = row.AddChild(new Label { SizeFlagsHorizontal = SizeFlags.ExpandFill, VerticalAlignment = VerticalAlignment.Center });
             var key = row.AddChild(new Button { ThemeTypeVariation = "SmallButton", CustomMinimumSize = new Vector2(140f, 0f), TooltipText = "Click, then press the key for this group" });
-            key.Pressed += _ => ShipConsoleUI.ToggleWaiting(index);
+            key.Pressed += _ => _shipConsole.ToggleWaiting(index);
             _groupRows.Add((label, key));
         }
     }

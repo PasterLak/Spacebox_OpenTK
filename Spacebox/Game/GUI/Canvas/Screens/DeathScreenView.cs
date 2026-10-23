@@ -49,7 +49,7 @@ public sealed class DeathScreenView : GameScreen
         set => _screen = value;
     }
 
-    public override bool IsShown => DeathScreen.IsVisible && _screen != null;
+    public override bool IsShown => _screen != null && _screen.IsVisible;
 
     public override bool WantsInput => IsShown;
 

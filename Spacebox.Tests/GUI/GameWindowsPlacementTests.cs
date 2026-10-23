@@ -11,7 +11,7 @@ public class GameWindowsPlacementTests
     {
         var root = new CanvasRoot { Theme = GameCanvasThemes.Create(GameUiDesign.Classic, ShowcaseFixture.Assets.Font) };
         GameCanvas.Configure(root.Stretch);
-        var view = root.Add(new GameWindowsView(), UiLayer.Windows);
+        var view = root.Add(new GameWindowsView(new Spacebox.Game.GUI.GameUi()), UiLayer.Windows);
         view.SetAnchorsPreset(LayoutPreset.FullRect);
         root.Resize(new OpenTK.Mathematics.Vector2(1280f, 720f));
         return (root, view);

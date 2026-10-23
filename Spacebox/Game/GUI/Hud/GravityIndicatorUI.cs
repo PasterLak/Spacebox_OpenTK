@@ -1,6 +1,6 @@
 namespace Spacebox.Game.GUI;
 
-public static class GravityIndicatorUI
+public sealed class GravityIndicatorUI : IGameUiController
 {
-    public static bool IsInGravity { get; set; }
+    public bool IsInGravity { get; set; }
 }

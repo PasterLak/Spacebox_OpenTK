@@ -120,7 +120,7 @@ public static class ShipPilot
             }
         }
 
-        Spacebox.Game.GUI.ShipConsoleUI.HandleInput();
+        Spacebox.Game.GUI.GameUi.Current?.ShipConsole.HandleInput();
         ShipBindingTool.Update(player);
 
         var bindings = entity.ShipControl.GetBindings(console.LocalCell);

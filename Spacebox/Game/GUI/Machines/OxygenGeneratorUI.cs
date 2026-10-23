@@ -7,17 +7,17 @@ using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.GUI;
 
-public static class OxygenGeneratorUI
+public sealed class OxygenGeneratorUI : IGameUiController
 {
     private const string WindowId = "oxygenGenerator";
     public const int TankSteps = 3;
 
-    private static OxygenGeneratorBlock _block;
-    private static LocalAstronaut _player;
-    private static string _blockName = "Oxygen Generator";
-    private static bool _wasVisible;
+    private OxygenGeneratorBlock _block;
+    private LocalAstronaut _player;
+    private string _blockName = "Oxygen Generator";
+    private bool _wasVisible;
 
-    public static void Open(OxygenGeneratorBlock block, LocalAstronaut player)
+    public void Open(OxygenGeneratorBlock block, LocalAstronaut player)
     {
         _block = block;
         _player = player;
@@ -33,10 +33,10 @@ public static class OxygenGeneratorUI
             UIManager.Open(WindowId, "inventory");
     }
 
-    public static bool IsOpen => UIManager.IsOpen(WindowId) && _block != null;
-    public static string BlockName => _blockName;
+    public bool IsOpen => UIManager.IsOpen(WindowId) && _block != null;
+    public string BlockName => _blockName;
 
-    public static void Update()
+    public void OnGUI()
     {
         bool isVisible = IsOpen;
         if (_wasVisible && !isVisible) OnClosed();
@@ -44,11 +44,11 @@ public static class OxygenGeneratorUI
         if (isVisible && Input.IsKeyDown(Keys.Escape)) UIManager.CloseAll();
     }
 
-    public static OxygenGeneratorBlock Block => _block;
-    public static ItemSlot WaterSlot => _block?.WaterStorage.GetSlot(0, 0);
-    public static AtlasSprite WaterIcon => UIAtlas.Get("water");
+    public OxygenGeneratorBlock Block => _block;
+    public ItemSlot WaterSlot => _block?.WaterStorage.GetSlot(0, 0);
+    public AtlasSprite WaterIcon => UIAtlas.Get("water");
 
-    public static (string Text, Spacebox.Game.GUI.Canvas.Windows.StatusKind Kind, string Detail) Status()
+    public (string Text, Spacebox.Game.GUI.Canvas.Windows.StatusKind Kind, string Detail) Status()
     {
         if (_block == null) return ("", Spacebox.Game.GUI.Canvas.Windows.StatusKind.Muted, "");
         if (!_block.IsActive) return ("NO POWER", Spacebox.Game.GUI.Canvas.Windows.StatusKind.Bad, "");
@@ -59,7 +59,7 @@ public static class OxygenGeneratorUI
         return ("Working", Spacebox.Game.GUI.Canvas.Windows.StatusKind.Good, $"Next water use: {secondsLeft:0}s");
     }
 
-    public static void OnSlotClicked(ItemSlot slot)
+    public void OnSlotClicked(ItemSlot slot)
     {
         if (slot.HasItem && Input.IsAction("storage_item_quick_transfer"))
         {
@@ -67,14 +67,14 @@ public static class OxygenGeneratorUI
         }
     }
 
-    public static void Reset()
+    public void Reset()
     {
         _block = null;
         _player = null;
         _wasVisible = false;
     }
 
-    private static void OnClosed()
+    private void OnClosed()
     {
         if (_player != null)
         {

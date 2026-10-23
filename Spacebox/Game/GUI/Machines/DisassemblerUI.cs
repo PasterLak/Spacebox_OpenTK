@@ -9,19 +9,24 @@ using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.GUI;
 
-public static class DisassemblerUI
+public sealed class DisassemblerUI : IGameUiController
 {
     public const string WindowId = "disassembler";
 
-    private static readonly Action<DisassemblerBlock> _onDisassembled = OnDisassembled;
+    private readonly Action<DisassemblerBlock> _onDisassembled;
 
-    private static DisassemblerBlock _block;
-    private static LocalAstronaut _player;
-    private static string _blockName = "Disassembler";
-    private static bool _wasVisible;
-    private static AudioSource _craftedSound;
+    private DisassemblerBlock _block;
+    private LocalAstronaut _player;
+    private string _blockName = "Disassembler";
+    private bool _wasVisible;
+    private AudioSource _craftedSound;
 
-    public static void Open(DisassemblerBlock block, LocalAstronaut player)
+    public DisassemblerUI()
+    {
+        _onDisassembled = OnDisassembled;
+    }
+
+    public void Open(DisassemblerBlock block, LocalAstronaut player)
     {
         if (_block != null) _block.OnDisassembled -= _onDisassembled;
 
@@ -45,13 +50,13 @@ public static class DisassemblerUI
             UIManager.Open(WindowId, "inventory");
     }
 
-    public static bool IsOpen => UIManager.IsOpen(WindowId) && _block != null;
-    public static DisassemblerBlock Block => _block;
-    public static string BlockName => _blockName;
-    public static AtlasSprite InputIcon => UIAtlas.Get("disassemblerinput");
-    public static AtlasSprite OutputIcon => UIAtlas.Get("furnaceoutput");
+    public bool IsOpen => UIManager.IsOpen(WindowId) && _block != null;
+    public DisassemblerBlock Block => _block;
+    public string BlockName => _blockName;
+    public AtlasSprite InputIcon => UIAtlas.Get("disassemblerinput");
+    public AtlasSprite OutputIcon => UIAtlas.Get("furnaceoutput");
 
-    public static void Update()
+    public void OnGUI()
     {
         bool isVisible = IsOpen;
         if (_wasVisible && !isVisible) OnClosed();
@@ -59,9 +64,9 @@ public static class DisassemblerUI
         if (isVisible && Input.IsKeyDown(Keys.Escape)) UIManager.CloseAll();
     }
 
-    public static float Progress => _block != null && _block.HasPower ? _block.ProgressNormalized : 0f;
+    public float Progress => _block != null && _block.HasPower ? _block.ProgressNormalized : 0f;
 
-    public static (string Text, Spacebox.Game.GUI.Canvas.Windows.StatusKind Kind) Status()
+    public (string Text, Spacebox.Game.GUI.Canvas.Windows.StatusKind Kind) Status()
     {
         if (_block == null) return ("", Spacebox.Game.GUI.Canvas.Windows.StatusKind.Muted);
         if (!_block.HasPower) return ("NO POWER", Spacebox.Game.GUI.Canvas.Windows.StatusKind.Bad);
@@ -76,14 +81,14 @@ public static class DisassemblerUI
         };
     }
 
-    public static DisassemblyRecipe PreviewRecipe()
+    public DisassemblyRecipe PreviewRecipe()
     {
         if (_block == null) return null;
         var item = GetPreviewItem();
         return item != null && DisassemblyRecipes.TryGet(item, out var recipe) ? recipe : null;
     }
 
-    private static Item GetPreviewItem()
+    private Item GetPreviewItem()
     {
         if (_block.CurrentItemId != 0 && GameAssets.TryGetItemById(_block.CurrentItemId, out var current)) return current;
 
@@ -95,7 +100,7 @@ public static class DisassemblerUI
         return null;
     }
 
-    public static void OnSlotClicked(ItemSlot slot)
+    public void OnSlotClicked(ItemSlot slot)
     {
         if (slot.HasItem && Input.IsAction("storage_item_quick_transfer"))
         {
@@ -103,7 +108,7 @@ public static class DisassemblerUI
         }
     }
 
-    private static void OnDisassembled(DisassemblerBlock block)
+    private void OnDisassembled(DisassemblerBlock block)
     {
         if (block != _block || !UIManager.IsOpen(WindowId) || _craftedSound == null) return;
         if (HasFinishedSound(block)) return;
@@ -112,17 +117,19 @@ public static class DisassemblerUI
         _craftedSound.Play();
     }
 
-    private static bool HasFinishedSound(DisassemblerBlock block) => !string.IsNullOrEmpty(GameAssets.GetBlockDataById(block.Id).FinishedSound);
+    private bool HasFinishedSound(DisassemblerBlock block) => !string.IsNullOrEmpty(GameAssets.GetBlockDataById(block.Id).FinishedSound);
 
-    public static void Reset()
+    public void Reset()
     {
         if (_block != null) _block.OnDisassembled -= _onDisassembled;
+        _craftedSound?.Dispose();
+        _craftedSound = null;
         _block = null;
         _player = null;
         _wasVisible = false;
     }
 
-    private static void OnClosed()
+    private void OnClosed()
     {
         if (_player != null)
         {

@@ -28,8 +28,11 @@ public sealed class ShipLibraryWindow : GameWindow
     private ShipLibraryEntry _shown;
     private bool _infoBuilt;
 
-    public ShipLibraryWindow() : base("Ships")
+    private readonly ShipLibraryUI _shipLibrary;
+
+    public ShipLibraryWindow(ShipLibraryUI shipLibrary) : base("Ships")
     {
+        _shipLibrary = shipLibrary;
         Name = "Ships";
         var hint = Body.AddChild(StatusText.Create("Export ships in the main menu: Mods > Ship viewer.", StatusKind.Muted));
         hint.Autowrap = true;
@@ -56,20 +59,20 @@ public sealed class ShipLibraryWindow : GameWindow
         var footer = Body.AddChild(new HBoxContainer());
         footer.AddThemeConstantOverride("separation", ColumnGap);
         footer.AddChild(_place);
-        _place.Pressed += _ => ShipLibraryUI.PlaceSelected();
+        _place.Pressed += _ => _shipLibrary.PlaceSelected();
         var folder = footer.AddChild(new Button { Text = "Open folder", SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        folder.Pressed += _ => ShipLibraryUI.OpenFolder();
+        folder.Pressed += _ => _shipLibrary.OpenFolder();
         var close = footer.AddChild(new Button { Text = "Close", SizeFlagsHorizontal = SizeFlags.ExpandFill });
-        close.Pressed += _ => ShipLibraryUI.Close();
+        close.Pressed += _ => _shipLibrary.Close();
     }
 
-    public override bool IsOpen => ShipLibraryUI.IsOpen;
+    public override bool IsOpen => _shipLibrary.IsOpen;
 
     protected override void Refresh()
     {
-        var selected = ShipLibraryUI.Selected;
+        var selected = _shipLibrary.Selected;
         bool changed = !_infoBuilt || !ReferenceEquals(selected, _shown);
-        Show(ShipLibraryUI.Entries, selected, changed ? ShipLibraryUI.MissingGameSetsOf(selected?.Ship) : null);
+        Show(_shipLibrary.Entries, selected, changed ? ShipLibraryUI.MissingGameSetsOf(selected?.Ship) : null);
     }
 
     public void Show(IReadOnlyList<ShipLibraryEntry> entries, ShipLibraryEntry selected, IReadOnlyList<string> missingGameSets)
@@ -104,8 +107,8 @@ public sealed class ShipLibraryWindow : GameWindow
         {
             var row = _rows.AddChild(new SelectableRow(0f) { Metadata = entry });
             row.AddLine(entry.Title, entry.Ship != null ? "Label" : "WarningLabel");
-            row.Selected += r => ShipLibraryUI.Select((ShipLibraryEntry)r.Metadata);
-            row.Activated += _ => ShipLibraryUI.PlaceSelected();
+            row.Selected += r => _shipLibrary.Select((ShipLibraryEntry)r.Metadata);
+            row.Activated += _ => _shipLibrary.PlaceSelected();
             _rowItems.Add(row);
         }
     }

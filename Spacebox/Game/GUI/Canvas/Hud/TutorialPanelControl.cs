@@ -9,11 +9,18 @@ public sealed class TutorialPanelControl : HudOverlayControl
 
     private readonly TutorialCanvas _canvas = new TutorialCanvas();
 
-    protected override bool IsShown() => TutorialUI.IsShown;
+    private readonly TutorialUI _tutorial;
+
+    public TutorialPanelControl(TutorialUI tutorial)
+    {
+        _tutorial = tutorial;
+    }
+
+    protected override bool IsShown() => _tutorial.IsShown;
 
     protected override void DrawOverlay(ICanvasRenderer renderer)
     {
         _canvas.Begin(renderer, GetThemeFont());
-        TutorialUI.Draw(_canvas, new System.Numerics.Vector2(LocalRect.Width, LocalRect.Height), BaseSize);
+        _tutorial.Draw(_canvas, new System.Numerics.Vector2(LocalRect.Width, LocalRect.Height), BaseSize);
     }
 }

@@ -227,7 +227,6 @@ namespace Spacebox.Game.Player
 
             _gameModeBase.OnEnable();
             CollisionEnabled = definition.Rules.Collide;
-            Spacebox.Game.GUI.CreativeWindowUI.Enabled = definition.Rules.CreativeInventory;
             _flashlightBinder?.Apply();
             PanelUI.ResetLastSelected();
             PanelUI.SetSelectedSlot(0);
@@ -273,7 +272,8 @@ namespace Spacebox.Game.Player
             }
 
             HitImage.Update();
-            GravityIndicatorUI.IsInGravity = Gravity.IsActive;
+            var ui = GameUi.Current;
+            if (ui != null) ui.GravityIndicator.IsInGravity = Gravity.IsActive;
             DeathScreen.Update();
 
             if (!IsControllingView) return;

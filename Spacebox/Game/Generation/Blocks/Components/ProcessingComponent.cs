@@ -116,8 +116,10 @@ public sealed class ProcessingComponent : BlockComponent, IContainerComponent, I
 
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
-        ResourceProcessingGUI.Toggle(player);
-        ResourceProcessingGUI.Activate(this, player);
+        var processing = GameUi.Current?.Processing;
+        if (processing == null) return;
+        processing.Toggle(player);
+        processing.Activate(this, player);
     }
 
     public override void OnDestroyed(HitInfo info)

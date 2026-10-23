@@ -9,7 +9,14 @@ public sealed class GravityIndicatorControl : HudOverlayControl
     private const float SizeRatio = 5f;
     private const float MarginRatio = 2f;
 
-    protected override bool IsShown() => base.IsShown() && GravityIndicatorUI.IsInGravity;
+    private readonly GravityIndicatorUI _gravityIndicator;
+
+    public GravityIndicatorControl(GravityIndicatorUI gravityIndicator)
+    {
+        _gravityIndicator = gravityIndicator;
+    }
+
+    protected override bool IsShown() => base.IsShown() && _gravityIndicator.IsInGravity;
 
     protected override void DrawOverlay(ICanvasRenderer renderer)
     {

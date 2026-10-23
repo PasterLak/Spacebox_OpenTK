@@ -16,8 +16,13 @@ public sealed class StatisticsPanel : PanelContainer
     private PlayerStatistics _shown;
     private float _timer;
 
-    public StatisticsPanel()
+    private readonly PauseUI _pause;
+    private readonly StatisticsUI _statisticsUi;
+
+    public StatisticsPanel(PauseUI pause, StatisticsUI statisticsUi)
     {
+        _pause = pause;
+        _statisticsUi = statisticsUi;
         Name = "Statistics";
         Visible = false;
         SizeFlagsVertical = SizeFlags.ShrinkCenter;
@@ -26,13 +31,13 @@ public sealed class StatisticsPanel : PanelContainer
         AddChild(frame.Root);
         _rows.AddThemeConstantOverride("separation", 3f);
         frame.Body.AddChild(MenuLayout.ScrollList(_rows, ListHeight));
-        frame.Footer.AddChild(MenuLayout.Button(null, "Close", PauseUI.ToggleStatistics, false));
+        frame.Footer.AddChild(MenuLayout.Button(null, "Close", _pause.ToggleStatistics, false));
         frame.Footer.AddChild(MenuLayout.Spacer());
     }
 
     public void Sync(float deltaTime)
     {
-        bool shown = StatisticsUI.IsVisible;
+        bool shown = _statisticsUi.IsVisible;
         if (Visible != shown) Visible = shown;
         if (!shown)
         {
@@ -41,8 +46,8 @@ public sealed class StatisticsPanel : PanelContainer
         }
 
         _timer -= deltaTime;
-        if (ReferenceEquals(_shown, StatisticsUI.Statistics) && _timer > 0f) return;
-        _shown = StatisticsUI.Statistics;
+        if (ReferenceEquals(_shown, _statisticsUi.Statistics) && _timer > 0f) return;
+        _shown = _statisticsUi.Statistics;
         _timer = RefreshInterval;
         Show(StatisticsRows.Build(_shown, GameTime.ToString()));
     }

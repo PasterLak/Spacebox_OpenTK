@@ -20,9 +20,10 @@ public sealed class GameCanvas : IDisposable
     }
 
     private readonly CanvasLayer _layer = new CanvasLayer("Game interface");
-    private readonly HudView _hud = new HudView();
-    private readonly Windows.GameWindowsView _windows = new Windows.GameWindowsView();
-    private readonly Screens.GameScreensView _screens = new Screens.GameScreensView();
+    private readonly GameUi _ui;
+    private readonly HudView _hud;
+    private readonly Windows.GameWindowsView _windows;
+    private readonly Screens.GameScreensView _screens;
     private readonly Sounds.ButtonHoverSounds _hoverSounds = new Sounds.ButtonHoverSounds();
     private SkiaCanvasFont _font;
     private GameUiDesign _design = (GameUiDesign)(-1);
@@ -55,8 +56,12 @@ public sealed class GameCanvas : IDisposable
     public CanvasRoot Root => _layer.Root;
     public bool WantsPointer => _layer.Root.WantsPointer;
 
-    public GameCanvas()
+    public GameCanvas(GameUi ui)
     {
+        _ui = ui;
+        _hud = new HudView(ui);
+        _windows = new Windows.GameWindowsView(ui);
+        _screens = new Screens.GameScreensView(ui);
         Current = this;
         var root = _layer.Root;
         Configure(root.Stretch);
@@ -87,8 +92,7 @@ public sealed class GameCanvas : IDisposable
     public void Update(LocalAstronaut player, float deltaTime)
     {
         if (!UIManager.IsUIMode) Items.SlotDrag.Cancel();
-        HitMarkerUI.Update(deltaTime);
-        bool interfaceShown = (Settings.ShowInterface || HudVisibility.ShowHotbar) && !WorldLoadingScreen.IsActive;
+        bool interfaceShown = (Settings.ShowInterface || HudVisibility.ShowHotbar) && !_ui.Loading.IsActive;
         if (_hud.Visible != interfaceShown) _hud.Visible = interfaceShown;
         if (_windows.Visible != interfaceShown) _windows.Visible = interfaceShown;
         if (interfaceShown)

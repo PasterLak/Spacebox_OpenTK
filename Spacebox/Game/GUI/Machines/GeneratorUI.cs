@@ -6,30 +6,25 @@ using Spacebox.Game.Player;
 
 namespace Spacebox.Game.GUI
 {
-    public class GeneratorUI
+    public sealed class GeneratorUI : IGameUiController
     {
-        private static ElectricalBlock generatorBlock;
+        private ElectricalBlock generatorBlock;
 
-        public static void Reset()
+        public void Reset()
         {
             generatorBlock = null;
         }
-        static int power;
-        static int consum;
-        static string blockName = "Generator";
+        private int power;
+        private int consum;
+        private string blockName = "Generator";
 
-        public static bool IsOpen => UIManager.IsOpen("generator") && generatorBlock != null;
-        public static ElectricalBlock Block => generatorBlock;
-        public static string BlockName => blockName;
-        public static int NetworkPower => power;
-        public static int NetworkConsumption => consum;
+        public bool IsOpen => UIManager.IsOpen("generator") && generatorBlock != null;
+        public ElectricalBlock Block => generatorBlock;
+        public string BlockName => blockName;
+        public int NetworkPower => power;
+        public int NetworkConsumption => consum;
 
-        public static void Initialize()
-        {
-
-        }
-
-        public static void Open(ElectricalBlock block, Astronaut astronaut, ref HitInfo hit)
+        public void Open(ElectricalBlock block, Astronaut astronaut, ref HitInfo hit)
         {
             generatorBlock = block;
             var pos = hit.blockPositionEntity;
@@ -41,20 +36,20 @@ namespace Spacebox.Game.GUI
             UIManager.Open("generator");
         }
 
-        public static void Close()
+        public void Close()
         {
             generatorBlock = null;
             UIManager.CloseTop();
         }
 
-        public static void Update()
+        public void OnGUI()
         {
             if (!IsOpen) return;
             if (Input.IsActionDown("inventory") || Input.IsKeyDown(Keys.Escape)) Close();
         }
 
-        public static float FreeShare => power <= 0 ? 0f : 1f - Math.Min(0.99f, consum / (float)power);
+        public float FreeShare => power <= 0 ? 0f : 1f - Math.Min(0.99f, consum / (float)power);
 
-        public static int RemainingPercent => power == 0 ? 100 : (int)(100 - consum / (float)power * 100);
+        public int RemainingPercent => power == 0 ? 100 : (int)(100 - consum / (float)power * 100);
     }
 }

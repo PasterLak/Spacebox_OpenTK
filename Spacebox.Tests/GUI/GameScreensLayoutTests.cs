@@ -12,6 +12,7 @@ namespace Spacebox.Tests.GUI;
 public class GameScreensLayoutTests
 {
     private static readonly LayoutRules Rules = new LayoutRules { MinHitTargetPixels = 12f };
+    private readonly GameUi _ui = new GameUi();
 
     public static IEnumerable<object[]> Designs() => new[] { new object[] { GameUiDesign.Classic }, new object[] { GameUiDesign.Modern } };
 
@@ -43,7 +44,7 @@ public class GameScreensLayoutTests
     [MemberData(nameof(Designs))]
     public void PauseMenu_WithStatisticsAndPlayers_LaysOutCleanly(GameUiDesign design)
     {
-        var pause = new PauseScreen();
+        var pause = new PauseScreen(_ui.Pause, _ui.Statistics);
         pause.Statistics.Visible = true;
         pause.Statistics.Show(StatisticsRows.Build(SampleStatistics(), "Day 3, 12:00"));
         pause.Players.Visible = true;
@@ -57,7 +58,7 @@ public class GameScreensLayoutTests
     [MemberData(nameof(Designs))]
     public void WelcomeScreen_LaysOutCleanly(GameUiDesign design)
     {
-        var report = LayoutHarness.ValidateAll(Root(design, new WelcomeScreen()), ScreenProfiles.All, Rules);
+        var report = LayoutHarness.ValidateAll(Root(design, new WelcomeScreen(_ui.Welcome)), ScreenProfiles.All, Rules);
         Assert.True(report.IsClean, report.Format());
     }
 
@@ -66,14 +67,14 @@ public class GameScreensLayoutTests
     public void DeathAndLoadingScreens_LayOutCleanly(GameUiDesign design)
     {
         Assert.True(LayoutHarness.ValidateAll(Root(design, new DeathScreenView()), ScreenProfiles.All, Rules) is var death && death.IsClean, death.Format());
-        Assert.True(LayoutHarness.ValidateAll(Root(design, new LoadingScreenView()), ScreenProfiles.All, Rules) is var loading && loading.IsClean, loading.Format());
+        Assert.True(LayoutHarness.ValidateAll(Root(design, new LoadingScreenView(_ui.Loading)), ScreenProfiles.All, Rules) is var loading && loading.IsClean, loading.Format());
     }
 
     [Theory]
     [MemberData(nameof(Designs))]
     public void TutorialPrompt_LaysOutCleanly(GameUiDesign design)
     {
-        var report = LayoutHarness.ValidateAll(Root(design, new TutorialPromptScreen()), ScreenProfiles.All, Rules);
+        var report = LayoutHarness.ValidateAll(Root(design, new TutorialPromptScreen(_ui.TutorialPrompt)), ScreenProfiles.All, Rules);
         Assert.True(report.IsClean, report.Format());
     }
 
@@ -81,7 +82,7 @@ public class GameScreensLayoutTests
     [MemberData(nameof(Designs))]
     public void TutorialMenu_LaysOutCleanly(GameUiDesign design)
     {
-        var report = LayoutHarness.ValidateAll(Root(design, new TutorialMenuScreen()), ScreenProfiles.All, Rules);
+        var report = LayoutHarness.ValidateAll(Root(design, new TutorialMenuScreen(_ui.TutorialMenu, _ui.Pause)), ScreenProfiles.All, Rules);
         Assert.True(report.IsClean, report.Format());
     }
 }

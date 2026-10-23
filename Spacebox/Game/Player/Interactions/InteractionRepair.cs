@@ -36,7 +36,7 @@ public class InteractionRepair : InteractionMode
 
     public override void OnDisable()
     {
-        RepairTargetUI.Hide();
+        GameUi.Current?.RepairTarget.Hide();
         _sound?.Stop();
     }
 
@@ -44,7 +44,7 @@ public class InteractionRepair : InteractionMode
     {
         if (_slot?.Item is not RepairToolItem tool || !player.CanMove)
         {
-            RepairTargetUI.Hide();
+            GameUi.Current?.RepairTarget.Hide();
             return;
         }
 
@@ -53,7 +53,7 @@ public class InteractionRepair : InteractionMode
         var ray = new Ray(player.Position, player.Front, tool.Range);
         if (World.CurrentSector == null || !World.CurrentSector.Raycast(ray, out HitInfo hit) || hit.block == null || hit.block.IsAir)
         {
-            RepairTargetUI.Hide();
+            GameUi.Current?.RepairTarget.Hide();
             ResetProgress();
             return;
         }
@@ -68,7 +68,7 @@ public class InteractionRepair : InteractionMode
         if (repairing) Repair(player, tool, (byte)max, tally.Max);
         else ResetProgress();
 
-        RepairTargetUI.Show(data?.Name ?? "Block", tally.Current, tally.Max, repairing);
+        GameUi.Current?.RepairTarget.Show(data?.Name ?? "Block", tally.Current, tally.Max, repairing);
     }
 
     private void Repair(LocalAstronaut player, RepairToolItem tool, byte max, int totalMax)

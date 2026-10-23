@@ -51,7 +51,7 @@ public class PipeBlock : InteractiveBlock, IEntityBlockListener, IContainerBlock
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);
-        StorageUI.OpenStorage(Storage, player);
+        GameUi.Current?.Storage.OpenStorage(Storage, player);
     }
 
     public string ContainerWindowId => "storage";

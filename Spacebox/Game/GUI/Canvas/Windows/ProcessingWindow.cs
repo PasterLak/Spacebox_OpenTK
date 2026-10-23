@@ -18,8 +18,11 @@ public sealed class ProcessingWindow : GameWindow
     private readonly StorageGridControl _buffer = new StorageGridControl { Visible = false, SizeFlagsHorizontal = SizeFlags.ShrinkCenter };
     private ProcessingComponent _shownBlock;
 
-    public ProcessingWindow() : base("Machine")
+    private readonly ResourceProcessingGUI _processing;
+
+    public ProcessingWindow(ResourceProcessingGUI processing) : base("Machine")
     {
+        _processing = processing;
         Name = "Processing";
         MatchInventorySize();
         var row = Body.AddChild(new HBoxContainer());
@@ -32,10 +35,10 @@ public sealed class ProcessingWindow : GameWindow
         slots.AddChild(_input);
         slots.AddChild(_arrow);
         slots.AddChild(_output);
-        _input.Clicked += ResourceProcessingGUI.MoveItems;
-        _output.Clicked += ResourceProcessingGUI.MoveItems;
+        _input.Clicked += _processing.MoveItems;
+        _output.Clicked += _processing.MoveItems;
         left.AddChild(_buffer);
-        _buffer.SlotClicked += ResourceProcessingGUI.MoveItems;
+        _buffer.SlotClicked += _processing.MoveItems;
 
         row.AddChild(new VSeparator());
         var right = row.AddChild(new VBoxContainer());
@@ -45,36 +48,36 @@ public sealed class ProcessingWindow : GameWindow
         _recipes.AddThemeConstantOverride("separation", 4f);
     }
 
-    public override bool IsOpen => ResourceProcessingGUI.IsOpen;
+    public override bool IsOpen => _processing.IsOpen;
 
-    public override bool LacksPower => ResourceProcessingGUI.Block is { RequiresPower: true, HasPower: false };
+    public override bool LacksPower => _processing.Block is { RequiresPower: true, HasPower: false };
 
     protected override void Refresh()
     {
-        if (TitleLabel.Text != ResourceProcessingGUI.WindowName) TitleLabel.Text = ResourceProcessingGUI.WindowName;
-        if (ResourceProcessingGUI.Block.HasPower) StatusText.Set(_status, ResourceProcessingGUI.Status, StatusKind.Normal);
+        if (TitleLabel.Text != _processing.WindowName) TitleLabel.Text = _processing.WindowName;
+        if (_processing.Block.HasPower) StatusText.Set(_status, _processing.Status, StatusKind.Normal);
         else StatusText.Set(_status, "NO POWER", StatusKind.Bad);
-        _arrow.Progress = ResourceProcessingGUI.Progress;
-        ShowEnergy(ResourceProcessingGUI.Block.Host.ConsumptionRate);
+        _arrow.Progress = _processing.Progress;
+        ShowEnergy(_processing.Block.Host.ConsumptionRate);
 
-        if (!ReferenceEquals(_shownBlock, ResourceProcessingGUI.Block))
+        if (!ReferenceEquals(_shownBlock, _processing.Block))
         {
-            _shownBlock = ResourceProcessingGUI.Block;
-            _input.Bind(ResourceProcessingGUI.InputSlot, ResourceProcessingGUI.InputIcon);
-            _output.Bind(ResourceProcessingGUI.OutputSlot, ResourceProcessingGUI.OutputIcon);
+            _shownBlock = _processing.Block;
+            _input.Bind(_processing.InputSlot, _processing.InputIcon);
+            _output.Bind(_processing.OutputSlot, _processing.OutputIcon);
             BuildRecipes();
         }
 
         _input.Refresh();
         _output.Refresh();
-        _buffer.Visible = ResourceProcessingGUI.Buffer != null;
-        _buffer.Show(ResourceProcessingGUI.Buffer);
+        _buffer.Visible = _processing.Buffer != null;
+        _buffer.Show(_processing.Buffer);
     }
 
     private void BuildRecipes()
     {
         _recipes.ClearChildren();
-        foreach (var recipe in ResourceProcessingGUI.Recipes)
+        foreach (var recipe in _processing.Recipes)
         {
             if (recipe?.Ingredient.Item == null || recipe.Product.Item == null) continue;
 
@@ -84,7 +87,7 @@ public sealed class ProcessingWindow : GameWindow
             input.Set(recipe.Ingredient.Item.Icon, recipe.Ingredient.Quantity, recipe.Ingredient.Item.Name);
             row.AddChild(new Label { Text = "->", VerticalAlignment = VerticalAlignment.Center, SizeFlagsVertical = SizeFlags.ShrinkCenter });
             var output = row.AddChild(new ItemIconControl(RecipeIconSize));
-            output.Set(recipe.Product.Item.Icon, recipe.Product.Quantity, recipe.Product.Item.Name, $"Time: {ResourceProcessingGUI.RecipeSeconds(recipe):0.#}s");
+            output.Set(recipe.Product.Item.Icon, recipe.Product.Quantity, recipe.Product.Item.Name, $"Time: {_processing.RecipeSeconds(recipe):0.#}s");
         }
     }
 }

@@ -4,7 +4,7 @@ using Spacebox.Game.Player.Respawn;
 
 namespace Spacebox.Game.GUI;
 
-public static class DnaReconstructionScreen
+public sealed class DnaReconstructionScreen : IGameUiController
 {
     public const float SkeletonEnd = 0.35f;
     public const float MuscleEnd = 0.62f;
@@ -59,16 +59,16 @@ public static class DnaReconstructionScreen
         (SkinEnd, "RECONSTRUCTION COMPLETE")
     };
 
-    private static float _duration = 5f;
-    private static float _elapsed;
-    private static Action _onComplete;
-    private static IReconstructionEffects _effects;
+    private float _duration = 5f;
+    private float _elapsed;
+    private Action _onComplete;
+    private IReconstructionEffects _effects;
 
-    public static bool IsActive { get; private set; }
-    public static float Elapsed => _elapsed;
-    public static float Progress => Math.Clamp(_elapsed / _duration, 0f, 1f);
+    public bool IsActive { get; private set; }
+    public float Elapsed => _elapsed;
+    public float Progress => Math.Clamp(_elapsed / _duration, 0f, 1f);
 
-    public static void Play(float duration, Action onComplete, IReconstructionEffects effects = null)
+    public void Play(float duration, Action onComplete, IReconstructionEffects effects = null)
     {
         _effects?.End();
         _duration = MathF.Max(0.1f, duration);
@@ -80,7 +80,7 @@ public static class DnaReconstructionScreen
         Input.HideCursor();
     }
 
-    public static void Update()
+    public void Tick()
     {
         if (!IsActive) return;
 
@@ -95,7 +95,7 @@ public static class DnaReconstructionScreen
         ColorOverlay.FadeOut(System.Numerics.Vector3.One, 1f, FlashFadeDuration);
     }
 
-    public static void Reset()
+    public void Reset()
     {
         _effects?.End();
         _effects = null;

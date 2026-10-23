@@ -52,7 +52,7 @@ public class DnaReconstructorBlock : InteractiveBlock, IEntityBlockListener, ICo
     public override void Use(LocalAstronaut player, ref HitInfo hit)
     {
         base.Use(player, ref hit);
-        DnaReconstructorUI.Open(this, player);
+        GameUi.Current?.DnaReconstructor.Open(this, player);
     }
 
     public string ContainerWindowId => "dnaReconstructor";

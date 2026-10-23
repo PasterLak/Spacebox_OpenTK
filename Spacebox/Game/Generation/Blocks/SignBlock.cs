@@ -29,7 +29,7 @@ public class SignBlock : InteractiveBlock, IEntityBlockListener, INetworkStateBl
         base.Use(player, ref hit);
 
         var origin = HasMultiblockOffset ? FindOrigin(ref hit) : this;
-        if (origin != null) SignUI.Open(origin);
+        if (origin != null) GameUi.Current?.Sign.Open(origin);
     }
 
     public bool SetText(string text)

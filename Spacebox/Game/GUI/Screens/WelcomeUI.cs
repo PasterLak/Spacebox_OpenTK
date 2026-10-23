@@ -4,7 +4,7 @@ using Spacebox.Game.Generation;
 
 namespace Spacebox.Game.GUI
 {
-    public class WelcomeUI
+    public sealed class WelcomeUI : IGameUiController
     {
         public const string Title = "Welcome to Spacebox!";
         public const string BannerPath = "Resources/Textures/UI/welcome.jpg";
@@ -13,26 +13,26 @@ namespace Spacebox.Game.GUI
             "If you find any bugs, please be sure to let me know!\n\nPress F6  to see the controls." +
             "\n\nEnjoy the game!";
 
-        private static bool _wasVisible = false;
-        private static AudioSource clickAudio;
-        private static bool _playTutorial = true;
+        private bool _wasVisible = false;
+        private AudioSource clickAudio;
+        private bool _playTutorial = true;
 
-        public static bool IsVisible => UIManager.IsOpen("welcome");
+        public bool IsVisible => UIManager.IsOpen("welcome");
 
-        public static bool HasTutorial => Spacebox.Game.Tutorial.TutorialService.HasTutorialFor(CurrentMode());
+        public bool HasTutorial => Spacebox.Game.Tutorial.TutorialService.HasTutorialFor(CurrentMode());
 
-        public static bool PlayTutorial
+        public bool PlayTutorial
         {
             get => _playTutorial;
             set => _playTutorial = value;
         }
 
-        public static void Init()
+        public void Initialize(Spacebox.Game.Player.LocalAstronaut player)
         {
             clickAudio = new AudioSource(Resources.Load<AudioClip>("click1"), AudioChannel.UI);
         }
 
-        public static void OnPlayerSpawned(bool savedState)
+        public void OnPlayerSpawned(bool savedState)
         {
             if (savedState)
             {
@@ -42,7 +42,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Update()
+        public void OnGUI()
         {
             bool isVisible = IsVisible;
 
@@ -53,7 +53,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Start()
+        public void Start()
         {
             if (!IsVisible) return;
             bool hasTutorial = HasTutorial;
@@ -80,7 +80,7 @@ namespace Spacebox.Game.GUI
             }
         }
 
-        public static void Dispose()
+        public void Reset()
         {
             clickAudio?.Dispose();
             clickAudio = null;

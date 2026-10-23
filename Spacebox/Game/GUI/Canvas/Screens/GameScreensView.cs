@@ -7,18 +7,18 @@ public sealed class GameScreensView : ScreenOverlay
     private readonly List<GameScreen> _screens = new List<GameScreen>();
     private readonly DeathScreenView _death = new DeathScreenView();
 
-    public GameScreensView()
+    public GameScreensView(GameUi ui)
     {
         Name = "GameScreens";
-        Add(new LoadingScreenView());
-        Add(new WelcomeScreen());
-        Add(new TutorialPromptScreen());
+        Add(new LoadingScreenView(ui.Loading));
+        Add(new WelcomeScreen(ui.Welcome));
+        Add(new TutorialPromptScreen(ui.TutorialPrompt));
         Add(new ControlsOverlayView());
-        Add(new ChatView());
-        Add(new PauseScreen());
-        Add(new TutorialMenuScreen());
+        Add(new ChatView(ui.Chat, ui.Loading));
+        Add(new PauseScreen(ui.Pause, ui.Statistics));
+        Add(new TutorialMenuScreen(ui.TutorialMenu, ui.Pause));
         Add(_death);
-        Add(new DnaReconstructionView());
+        Add(new DnaReconstructionView(ui.DnaReconstruction));
         Add(new FadeOverlayView());
     }
 

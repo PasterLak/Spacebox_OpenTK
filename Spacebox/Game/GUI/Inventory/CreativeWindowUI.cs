@@ -43,36 +43,36 @@ public class CreativeWindowCategory
     }
 }
 
-public static class CreativeWindowUI
+public sealed class CreativeWindowUI : IGameUiController
 {
     public const int Columns = 5;
 
-    public static bool Enabled { get; set; } = false;
+    public bool Enabled => player != null && player.GameModeRules.CreativeInventory;
 
-    private static LocalAstronaut player;
-    private static Storage storageAll;
-    private static CreativeWindowCategory[] categories;
-    private static AudioSource scrollAudio;
-    private static Storage selectedStorage;
-    static int hovered = -1;
+    private LocalAstronaut player;
+    private Storage storageAll;
+    private CreativeWindowCategory[] categories;
+    private AudioSource scrollAudio;
+    private Storage selectedStorage;
+    private int hovered = -1;
 
     private const uint SearchMaxLength = 64;
-    private static string _search = "";
-    private static string _appliedSearch = "";
-    private static Storage _searchResults;
-    private static readonly List<(Item Item, int Score)> _matches = new List<(Item, int)>();
+    private string _search = "";
+    private string _appliedSearch = "";
+    private Storage _searchResults;
+    private readonly List<(Item Item, int Score)> _matches = new List<(Item, int)>();
 
-    public static bool IsSearching => _appliedSearch.Length > 0;
-    public static bool IsVisible => Enabled && UIManager.IsOpen("creative") && storageAll != null;
-    public static CreativeWindowCategory[] Categories => categories;
-    public static Storage AllItems => storageAll;
-    public static Storage SelectedStorage => selectedStorage;
-    public static Storage ShownStorage => IsSearching ? _searchResults : selectedStorage;
-    public static bool HasNoResults => IsSearching && _matches.Count == 0;
-    public static string AppliedSearch => _appliedSearch;
-    public static string SearchText => _search;
+    public bool IsSearching => _appliedSearch.Length > 0;
+    public bool IsVisible => Enabled && UIManager.IsOpen("creative") && storageAll != null;
+    public CreativeWindowCategory[] Categories => categories;
+    public Storage AllItems => storageAll;
+    public Storage SelectedStorage => selectedStorage;
+    public Storage ShownStorage => IsSearching ? _searchResults : selectedStorage;
+    public bool HasNoResults => IsSearching && _matches.Count == 0;
+    public string AppliedSearch => _appliedSearch;
+    public string SearchText => _search;
 
-    public static int TotalItems
+    public int TotalItems
     {
         get
         {
@@ -82,14 +82,14 @@ public static class CreativeWindowUI
         }
     }
 
-    public static void Search(string text)
+    public void Search(string text)
     {
         _search = text ?? "";
         string query = _search.Trim();
         if (query != _appliedSearch) ApplySearch(query);
     }
 
-    public static void PlayHoverSound(int slotId)
+    public void PlayHoverSound(int slotId)
     {
         if (SpaceboxWindow.Instance != null && !SpaceboxWindow.Instance.IsFocused) return;
         if (hovered == slotId || scrollAudio == null) return;
@@ -99,9 +99,9 @@ public static class CreativeWindowUI
         scrollAudio.Play();
     }
 
-    public static void SetDefaultIcon(LocalAstronaut player)
+    public void Initialize(LocalAstronaut player)
     {
-        CreativeWindowUI.player = player;
+        this.player = player;
         storageAll = GameAssets.CreateCreativeStorage(Columns, GameAssets.Items.Values.ToList());
 
         categories = GetCategories0()
@@ -117,6 +117,13 @@ public static class CreativeWindowUI
         scrollAudio = new AudioSource(Resources.Get<AudioClip>("scroll"), AudioChannel.UI);
     }
 
+    public void Reset()
+    {
+        scrollAudio?.Dispose();
+        scrollAudio = null;
+        player = null;
+    }
+
     private static Type[] GetCategories0()
     {
         HashSet<Type> cats = new HashSet<Type>();
@@ -128,7 +135,7 @@ public static class CreativeWindowUI
         return cats.ToArray();
     }
 
-    private static void ApplySearch(string query)
+    private void ApplySearch(string query)
     {
         _appliedSearch = query;
         _matches.Clear();
@@ -157,14 +164,14 @@ public static class CreativeWindowUI
         return $"{item.Id_string} {item.Category} {item.GetType().Name}";
     }
 
-    public static void Select(Storage storage)
+    public void Select(Storage storage)
     {
         selectedStorage = storage;
         _search = "";
         ApplySearch("");
     }
 
-    public static void OnSlotClicked(ItemSlot slot)
+    public void OnSlotClicked(ItemSlot slot)
     {
         if (slot.HasItem)
         {

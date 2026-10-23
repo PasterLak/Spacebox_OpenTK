@@ -12,19 +12,22 @@ public sealed class CreativeWindow : GameWindow
 
     private readonly LineEdit _search = new LineEdit { ThemeTypeVariation = "HeaderField", PlaceholderText = "Search items", MaxLength = 64, CustomMinimumSize = new Vector2(SearchWidth, 0f), SizeFlagsVertical = SizeFlags.ShrinkCenter, TooltipText = "Name, id or category; case and word order do not matter" };
     private readonly VBoxContainer _categories = new VBoxContainer();
+
+    private readonly CreativeWindowUI _creative;
     private readonly List<(CategoryTile Tile, Storage Storage)> _tiles = new List<(CategoryTile, Storage)>();
     private readonly StorageGridControl _grid = new StorageGridControl(ConfigureSlot);
     private readonly Label _nothing = new Label { ThemeTypeVariation = "MutedLabel", Visible = false };
     private CreativeWindowCategory[] _builtFor;
 
-    public CreativeWindow() : base("Creative")
+    public CreativeWindow(CreativeWindowUI creative) : base("Creative")
     {
+        _creative = creative;
         Name = "Creative";
         Header.AddChild(_search);
-        _search.TextChanged += CreativeWindowUI.Search;
+        _search.TextChanged += _creative.Search;
         _categories.AddThemeConstantOverride("separation", 0f);
-        _grid.SlotClicked += CreativeWindowUI.OnSlotClicked;
-        _grid.SlotHovered += slot => CreativeWindowUI.PlayHoverSound(slot.SlotId);
+        _grid.SlotClicked += _creative.OnSlotClicked;
+        _grid.SlotHovered += slot => _creative.PlayHoverSound(slot.SlotId);
 
         float height = VisibleRows * ItemSlotControl.DefaultSize;
         var row = Body.AddChild(new HBoxContainer());
@@ -38,31 +41,31 @@ public sealed class CreativeWindow : GameWindow
         items.AddChild(_grid);
     }
 
-    public override bool IsOpen => CreativeWindowUI.IsVisible;
+    public override bool IsOpen => _creative.IsVisible;
 
     protected override void Refresh()
     {
-        if (!ReferenceEquals(_builtFor, CreativeWindowUI.Categories)) BuildCategories();
-        if (_search.Text != CreativeWindowUI.SearchText && !_search.HasFocus) _search.Text = CreativeWindowUI.SearchText;
+        if (!ReferenceEquals(_builtFor, _creative.Categories)) BuildCategories();
+        if (_search.Text != _creative.SearchText && !_search.HasFocus) _search.Text = _creative.SearchText;
 
-        var selected = CreativeWindowUI.SelectedStorage;
-        foreach (var (tile, storage) in _tiles) tile.Selected = ReferenceEquals(storage, selected) && !CreativeWindowUI.IsSearching;
+        var selected = _creative.SelectedStorage;
+        foreach (var (tile, storage) in _tiles) tile.Selected = ReferenceEquals(storage, selected) && !_creative.IsSearching;
 
-        bool nothing = CreativeWindowUI.HasNoResults;
+        bool nothing = _creative.HasNoResults;
         _nothing.Visible = nothing;
-        if (nothing) _nothing.Text = $"Nothing found for \"{CreativeWindowUI.AppliedSearch}\"";
+        if (nothing) _nothing.Text = $"Nothing found for \"{_creative.AppliedSearch}\"";
         _grid.Visible = !nothing;
-        _grid.Show(CreativeWindowUI.ShownStorage);
+        _grid.Show(_creative.ShownStorage);
     }
 
     private void BuildCategories()
     {
-        _builtFor = CreativeWindowUI.Categories;
+        _builtFor = _creative.Categories;
         _categories.ClearChildren();
         _tiles.Clear();
         if (_builtFor == null) return;
 
-        AddTile(new CategoryTile(AtlasSprite.None, "ALL\nTYPES", $"Show all items ({CreativeWindowUI.TotalItems})"), CreativeWindowUI.AllItems);
+        AddTile(new CategoryTile(AtlasSprite.None, "ALL\nTYPES", $"Show all items ({_creative.TotalItems})"), _creative.AllItems);
         foreach (var category in _builtFor)
         {
             if (category.Storage == null) continue;
@@ -76,7 +79,7 @@ public sealed class CreativeWindow : GameWindow
         tile.Clicked += () =>
         {
             _search.Text = "";
-            CreativeWindowUI.Select(storage);
+            _creative.Select(storage);
         };
         _tiles.Add((tile, storage));
         _categories.AddChild(tile);

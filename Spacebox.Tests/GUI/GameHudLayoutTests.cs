@@ -15,7 +15,7 @@ public class GameHudLayoutTests
         root.Stretch.Mode = StretchMode.Expand;
         root.Stretch.VirtualSize = GameCanvas.VirtualSize;
         root.Stretch.UiScale = uiScale;
-        var hud = root.Add(new HudView(), UiLayer.Hud);
+        var hud = root.Add(new HudView(new Spacebox.Game.GUI.GameUi()), UiLayer.Hud);
         hud.SetAnchorsPreset(LayoutPreset.FullRect);
         hud.Present(new Storage(1, 10), 3, true);
         hud.SetBars((100, 100, null), (100, 100, "Infinite"), (37, 100, null));

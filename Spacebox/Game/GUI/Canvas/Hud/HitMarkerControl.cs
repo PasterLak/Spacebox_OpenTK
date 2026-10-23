@@ -11,14 +11,21 @@ public sealed class HitMarkerControl : HudOverlayControl
     private static readonly Color4 HeadshotColor = new Color4(1f, 0.2f, 0.2f, 1f);
     private static readonly Vector2[] Directions = { new Vector2(-1f, -1f), new Vector2(1f, -1f), new Vector2(-1f, 1f), new Vector2(1f, 1f) };
 
-    protected override bool IsShown() => HitMarkerUI.IsVisible;
+    private readonly HitMarkerUI _hitMarker;
+
+    public HitMarkerControl(HitMarkerUI hitMarker)
+    {
+        _hitMarker = hitMarker;
+    }
+
+    protected override bool IsShown() => _hitMarker.IsVisible;
 
     protected override void DrawOverlay(ICanvasRenderer renderer)
     {
         float length = Unit * SizeRatio;
         float gap = Unit * GapRatio;
-        float thickness = HitMarkerUI.IsHeadshot ? 3f : 2f;
-        var color = HitMarkerUI.IsHeadshot ? HeadshotColor : HitColor;
+        float thickness = _hitMarker.IsHeadshot ? 3f : 2f;
+        var color = _hitMarker.IsHeadshot ? HeadshotColor : HitColor;
         foreach (var direction in Directions)
         {
             var normal = direction.Normalized();

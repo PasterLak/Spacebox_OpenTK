@@ -58,6 +58,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     protected BlockMaterial blockMaterial;
     protected SpaceSceneArgs SceneArgs;
     protected RadarUI radarWindow;
+    protected GameUi ui;
 
     private FreeCamera freeCamera;
     private NetworkSession _networkSession;
@@ -79,6 +80,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
     public override void LoadContent()
     {
+        ui = new GameUi();
+        ui.MakeCurrent();
         GameTime.Init();
         if (!Application.IsHeadless) CreateSky();
 
@@ -92,7 +95,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         AddChild(localPlayer);
 
         localPlayer.SetSkinColor(SceneArgs.skinColor);
-        PanelUI.Player = localPlayer;
+        ui.Panel.Player = localPlayer;
 
         if (GameSession.IsRemoteClient && GameSession.RemoteWorld != null)
             World.LoadRemoteWorldInfo(GameSession.RemoteWorld);
@@ -165,13 +168,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new ProtectedListCommand(localPlayer));
 
         Spacebox.Game.GUI.Sounds.UiSounds.Initialize();
-        InventoryUI.Initialize();
-        StorageUI.Initialize();
-        PanelUI.Initialize(localPlayer);
-        _gameCanvas = new Spacebox.Game.GUI.Canvas.GameCanvas();
-        GeneratorUI.Initialize();
-        InventoryUI.Player = localPlayer;
-        CreativeWindowUI.SetDefaultIcon(localPlayer);
+        _gameCanvas = new Spacebox.Game.GUI.Canvas.GameCanvas(ui);
+        ui.Initialize(localPlayer);
 
         freeCamera = AddChild(new FreeCamera(localPlayer.Position));
         freeCamera.FOV = localPlayer.FOV;
@@ -179,12 +177,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Camera.Main = localPlayer;
 
         world.PreloadAroundPlayer();
-        WorldLoadingScreen.Begin(localPlayer);
+        ui.Loading.Begin(localPlayer);
 
-        WelcomeUI.OnPlayerSpawned(World.WorldData.Info.ShowWelcomeWindow);
-        WelcomeUI.Init();
-        Spacebox.Game.Tutorial.UI.TutorialUI.Init();
-        PauseUI.Init();
+        ui.Welcome.OnPlayerSpawned(World.WorldData.Info.ShowWelcomeWindow);
         AttachComponent(new SpheresPool());
 
         AddChild(new ProjectileHitEffectsManager());
@@ -221,6 +216,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Lighting.Skybox = skybox;
 
         radarWindow = new RadarUI(texture);
+        ui.AttachRadar(radarWindow);
     }
 
     public override void Start()
@@ -231,9 +227,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         BlackScreenOverlay.IsEnabled = false;
 
         Time.OnTick += UpdateTickTasks;
-        CraftingGUI.Init();
 
-        Chat.Write("Welcome to Spacebox!", Color4.Yellow);
+        ui.Chat.Write("Welcome to Spacebox!", Color4.Yellow);
     }
 
     private Spacebox.Game.GUI.Canvas.GameCanvas _gameCanvas;
@@ -248,14 +243,14 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         MainThreadDispatcher.Instance.ExecutePending(StreamingBudget.DispatcherBudgetMs);
         _networkSession?.Update();
         TutorialService.Update(Time.Delta);
-        WorldLoadingScreen.Update();
-        if (!WorldSaveState.IsTracking && !WorldLoadingScreen.IsActive) World.Instance?.StartTrackingChanges();
-        DnaReconstructionScreen.Update();
+        ui.Loading.Tick();
+        if (!WorldSaveState.IsTracking && !ui.Loading.IsActive) World.Instance?.StartTrackingChanges();
+        ui.DnaReconstruction.Tick();
         Spacebox.Game.Rendering.CameraFeedController.Update();
         Spacebox.Game.Rendering.FlashlightGlareController.Update(localPlayer);
         Spacebox.Game.Protection.ClaimRegistry.Update(Time.Delta);
         Spacebox.Game.Rendering.VignetteController.SetWarning(Spacebox.Game.Player.OxygenWarning.For(localPlayer));
-        Spacebox.Game.Player.LowOxygenAlarm.Update(localPlayer, Time.Delta, WorldLoadingScreen.IsActive);
+        Spacebox.Game.Player.LowOxygenAlarm.Update(localPlayer, Time.Delta, ui.Loading.IsActive);
         Spacebox.Game.Effects.Machines.MachineSounds.Update(Time.Delta);
 
 #if DEBUG
@@ -300,7 +295,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         {
             if (Input.IsKeyDown(Keys.KeyPadEnter) && !UIManager.IsUIMode)
             {
-                PauseUI.RequestGoToMenu();
+                ui.Pause.RequestGoToMenu();
             }
             if (Input.IsKeyDown(Keys.F8))
             {
@@ -308,18 +303,14 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             }
         }
 
-        Chat.Update();
-        PanelUI.Update();
-        Spacebox.Game.Tutorial.UI.TutorialUI.Update();
+        ui.Update();
         InputOverlay.Update();
-        Spacebox.Game.Waypoints.WaypointWindowUI.Update();
-        Spacebox.Game.Ships.Sharing.ShipLibraryUI.Update(localPlayer);
     }
 
     public Action OnRenderCenter;
     public override void Render()
     {
-        if (WorldLoadingScreen.IsActive)
+        if (ui.Loading.IsActive)
         {
             RenderSkybox();
             return;
@@ -338,39 +329,22 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         OnRenderCenter?.Invoke();
 
-        if (!WorldLoadingScreen.IsActive)
+        if (!ui.Loading.IsActive)
         {
-            PanelUI.DrawItemModel();
-            EquipmentUI.RenderPreview();
+            ui.Panel.DrawItemModel();
+            ui.Equipment.RenderPreview();
         }
     }
 
     public override void OnGUI()
     {
         _gameCanvas?.Render();
-        if (WorldLoadingScreen.IsActive) return;
+        if (ui.Loading.IsActive) return;
 
         base.OnGUI();
         ColorOverlay.Update();
 
-        radarWindow?.Update();
-        ResourceProcessingGUI.Update();
-        CraftingGUI.Update();
-
-
-        InventoryUI.Update();
-        StorageUI.Update();
-        WelcomeUI.Update();
-        PauseUI.Update();
-        GeneratorUI.Update();
-        AnalyzerUI.Update();
-        OxygenGeneratorUI.Update();
-        ClaimBeaconUI.Update();
-        DisassemblerUI.Update();
-        GravityGeneratorUI.Update();
-        SignUI.Update();
-        ShipConsoleUI.Update();
-        DnaReconstructorUI.Update();
+        ui.OnGUI();
 
         if (VisualDebug.Enabled)
         {
@@ -399,22 +373,12 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Time.OnTick -= UpdateTickTasks;
         MainThreadDispatcher.Instance.Clear();
         PerlinWorms.ClearCache();
-        ResourceProcessingGUI.Reset();
-        OxygenGeneratorUI.Reset();
-        ClaimBeaconUI.Reset();
-        DisassemblerUI.Reset();
-        WorldLoadingScreen.Reset();
         Spacebox.Game.Protection.EntityProtection.Reset();
         Spacebox.Game.Protection.ClaimRegistry.Reset();
         Spacebox.Network.Players.PlayerGameModes.Current.Reset();
         Spacebox.Game.Protection.ClaimVisuals.Reset();
         Spacebox.Game.Protection.ClaimSettings.ClearOverride();
-        GravityGeneratorUI.Reset();
-        GeneratorUI.Reset();
-        AnalyzerUI.Dispose();
         CreativeTools.Reset();
-        SignUI.Reset();
-        DnaReconstructorUI.Reset();
         Spacebox.Game.Pictures.PictureFrameInteraction.Reset();
         if (!GameSession.IsDedicated)
         {
@@ -423,11 +387,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
             Spacebox.Game.Mobs.MobRules.FriendlyMobs = false;
         }
         Spacebox.Game.Pictures.PictureTextures.Clear();
-        DnaReconstructionScreen.Reset();
-        HitMarkerUI.Reset();
-        RepairTargetUI.Reset();
-        EquipmentUI.Reset();
-        ShipConsoleUI.Reset();
         ShipPilot.Reset();
         Spacebox.Game.Rendering.CameraFeedController.Reset();
         Spacebox.Game.Rendering.BodyOutlineRenderer.Reset();
@@ -445,25 +404,14 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Player.Footsteps.FootstepSounds.Clear();
         ShipNetwork.Reset();
         ShipWeapons.Reset();
-        TutorialService.Detach();
-        Spacebox.Game.Waypoints.WaypointWindowUI.Reset();
-        Spacebox.Game.Ships.Sharing.ShipLibraryUI.Reset();
-        PanelUI.Reset();
-        DeathScreen.IsVisible = false;
-
         TickTaskManager.Dispose();
-        radarWindow?.Dispose();
 
         Projectile.PointLightsPool = null;
-        Chat.Clear();
 
         UIManager.CloseAll();
 
-        StorageUI.Dispose();
-        PauseUI.Dispose();
-        CraftingGUI.Dispose();
-        WelcomeUI.Dispose();
-        Spacebox.Game.Tutorial.UI.TutorialUI.Dispose();
+        TutorialService.Detach();
+        ui.Reset();
 
         GameAssets.DisposeAll();
         GameTime.Dispose();
