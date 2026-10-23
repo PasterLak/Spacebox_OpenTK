@@ -56,9 +56,13 @@ public static class WorldEditNetwork
 
         if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell)) return;
         if (network.IsServer && !IsInReach(sender, entity, message.Cell)) return;
+        if (network.IsServer && !CanRepair(sender)) return;
 
         var block = chunk.Blocks[index.X, index.Y, index.Z];
         if (block == null || block.IsAir || block.Id != message.BlockId) return;
+
+        if (network.IsServer) message.Amount = ContentBlockEditLimits.Current.ClampRepair(message.Amount);
+        if (message.Amount == 0) return;
 
         byte max = GameAssets.GetBlockDataById(block.Id)?.Durability ?? block.Durability;
         byte before = block.Durability;
@@ -110,10 +114,18 @@ public static class WorldEditNetwork
         if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
         if (network.IsServer && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell)) return;
         if (network.IsServer && !IsInReach(sender, entity, message.Cell)) return;
+        if (network.IsServer && !CanDamage(sender)) return;
         if (!entity.TryGetBlockLocal(message.Cell, out var chunk, out var index)) return;
 
         var block = chunk.Blocks[index.X, index.Y, index.Z];
         if (block == null || block.IsAir || block.Id != message.BlockId || Spacebox.Game.Generation.Blocks.UnbreakableBlocks.Is(block)) return;
+
+        if (network.IsServer)
+        {
+            byte blockMax = GameAssets.GetBlockDataById(block.Id)?.Durability ?? block.Durability;
+            message.Damage = ContentBlockEditLimits.Current.ClampDamage(message.Damage, block.IsTransparent, blockMax);
+        }
+        if (message.Damage == 0) return;
 
         byte before = block.Durability;
         block.Durability = BlockDamage.Apply(block.Durability, message.Damage);
@@ -134,15 +146,29 @@ public static class WorldEditNetwork
             return false;
         }
 
-        BulkBlockEdit.Apply(entity, min, max, blockId);
-
         var network = NetworkManager.Instance;
-        if (!network.IsActive) return true;
-
         var message = new BulkBlockEditMessage { EntityId = entity.EntityID, Min = min, Max = max, BlockId = blockId };
-        if (network.IsServer) network.SendToClients(message);
-        else network.SendToServer(message);
+        if (network.IsRemoteClient)
+        {
+            network.SendToServer(message);
+            return true;
+        }
+
+        BulkBlockEdit.Apply(entity, min, max, blockId);
+        if (network.IsActive) network.SendToClients(message);
         return true;
+    }
+
+    private static bool CanDamage(int sender)
+    {
+        return sender == NetworkManager.Instance.LocalPeerId || Players.PlayerGameModeService.RulesOf(PlayerRegistry.GetName(sender)).BreakBlocks;
+    }
+
+    private static bool CanRepair(int sender)
+    {
+        if (sender == NetworkManager.Instance.LocalPeerId) return true;
+        var rules = Players.PlayerGameModeService.RulesOf(PlayerRegistry.GetName(sender));
+        return rules.PlaceBlocks && rules.UseItems;
     }
 
     private const float EditSoundMinDistance = 2f;
@@ -162,6 +188,7 @@ public static class WorldEditNetwork
         PendingEdits.Clear();
         DamageMessages.Clear();
         Removals.Clear();
+        ContentBlockEditLimits.Reset();
     }
 
     public static void ForgetPeer(int peer)
@@ -281,7 +308,7 @@ public static class WorldEditNetwork
 
         if (known && ProtectionNetwork.BlocksPeer(sender, entity, message.Cell))
         {
-            SendCorrection(sender, entity, message.Cell);
+            SendRejection(sender, entity, message);
             if (!message.IsRemoval) SendRefund(sender, message.BlockId);
             ProtectionNetwork.Deny(sender);
             return;
@@ -294,7 +321,7 @@ public static class WorldEditNetwork
             string error = Spacebox.Game.Protection.ClaimRegistry.CheckPlacement(entity, message.Cell, senderName);
             if (error != null)
             {
-                SendCorrection(sender, entity, message.Cell);
+                SendRejection(sender, entity, message);
                 SendRefund(sender, message.BlockId);
                 ChatService.SendToPlayer(senderName, error, OpenTK.Mathematics.Color4.Red);
                 return;
@@ -308,16 +335,18 @@ public static class WorldEditNetwork
         bool placeDenied = !message.IsRemoval && sender != network.LocalPeerId && !Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).PlaceBlocks;
         if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || unbroken || placeDenied || !IsInReach(sender, entity, message.Cell)))
         {
-            SendCorrection(sender, entity, message.Cell);
+            SendRejection(sender, entity, message);
             if (!message.IsRemoval) SendRefund(sender, message.BlockId);
             return;
         }
 
-        Apply(message);
-        if (known && isBeacon) Spacebox.Game.Protection.ClaimPlacement.AssignOwner(entity, message.Cell, senderName);
-        network.SendToClients(message, DeliveryMode.Reliable, sender);
+        if (Apply(message))
+        {
+            if (known && isBeacon) Spacebox.Game.Protection.ClaimPlacement.AssignOwner(entity, message.Cell, senderName);
+            network.SendToClients(message, DeliveryMode.Reliable, sender);
+        }
 
-        if (known && NeedsCorrection(entity, message, previousId)) SendCorrection(sender, entity, message.Cell);
+        if (known && NeedsCorrection(entity, message, previousId)) SendRejection(sender, entity, message);
         if (!message.IsRemoval && (!known || GetBlockId(entity, message.Cell) != message.BlockId))
             SendRefund(sender, message.BlockId);
     }
@@ -360,25 +389,54 @@ public static class WorldEditNetwork
         return currentId != message.BlockId || previousId != 0;
     }
 
-    private static void SendCorrection(int peer, SpaceEntity entity, Vector3i cell)
+    private static readonly List<MultiblockCell> RejectedFootprint = new List<MultiblockCell>();
+    private static readonly HashSet<Vector3i> CorrectedCells = new HashSet<Vector3i>();
+
+    private static void SendRejection(int peer, SpaceEntity entity, BlockEditMessage message)
     {
-        var correction = new BlockEditMessage { EntityId = entity.EntityID, Cell = cell, IsRemoval = true };
-
-        if (entity.TryGetBlockLocal(cell, out var chunk, out var index))
+        if (message.IsRemoval || !GameAssets.Blocks.TryGetValue(message.BlockId, out var data) || !data.IsMultiblock)
         {
-            var block = chunk.Blocks[index.X, index.Y, index.Z];
-            if (block != null && !block.IsAir)
-            {
-                if (block.HasMultiblockOffset) return;
-
-                correction.IsRemoval = false;
-                correction.BlockId = block.Id;
-                correction.Direction = (byte)block.Direction;
-                correction.Rotation = (byte)block.Rotation;
-            }
+            SendCorrection(peer, entity, message.Cell);
+            return;
         }
 
-        NetworkManager.Instance.Send(peer, correction);
+        var network = NetworkManager.Instance;
+        network.Send(peer, new BlockEditMessage { EntityId = entity.EntityID, Cell = message.Cell, IsRemoval = true });
+
+        MultiblockLayout.GetCells(data, (Direction)message.Direction, (Rotation)message.Rotation, RejectedFootprint);
+        CorrectedCells.Clear();
+        for (int i = 0; i < RejectedFootprint.Count; i++)
+        {
+            if (TryBuildCorrection(entity, message.Cell + RejectedFootprint[i].Offset, out var correction) && !correction.IsRemoval && CorrectedCells.Add(correction.Cell))
+                network.Send(peer, correction);
+        }
+    }
+
+    private static void SendCorrection(int peer, SpaceEntity entity, Vector3i cell)
+    {
+        if (TryBuildCorrection(entity, cell, out var correction)) NetworkManager.Instance.Send(peer, correction);
+    }
+
+    private static bool TryBuildCorrection(SpaceEntity entity, Vector3i cell, out BlockEditMessage correction)
+    {
+        correction = new BlockEditMessage { EntityId = entity.EntityID, Cell = cell, IsRemoval = true };
+        if (!entity.TryGetBlockLocal(cell, out var chunk, out var index)) return true;
+
+        var block = chunk.Blocks[index.X, index.Y, index.Z];
+        if (block == null || block.IsAir) return true;
+
+        if (block.HasMultiblockOffset)
+        {
+            if (!entity.TryGetStructureOrigin(chunk, index, out var originChunk, out var originIndex)) return false;
+            block = originChunk.Blocks[originIndex.X, originIndex.Y, originIndex.Z];
+            correction.Cell = Spacebox.Game.Protection.ProtectionRules.CellOf(originChunk, originIndex);
+        }
+
+        correction.IsRemoval = false;
+        correction.BlockId = block.Id;
+        correction.Direction = (byte)block.Direction;
+        correction.Rotation = (byte)block.Rotation;
+        return true;
     }
 
     private static void OnBulkEdit(int sender, BulkBlockEditMessage message)
@@ -414,7 +472,7 @@ public static class WorldEditNetwork
 
         message.Min = min;
         message.Max = max;
-        if (network.IsServer) network.SendToClients(message, DeliveryMode.Reliable, sender);
+        if (network.IsServer) network.SendToClients(message);
     }
 
     private static void InvokeDestroy(SpaceEntity entity, Vector3i cell)
@@ -434,10 +492,10 @@ public static class WorldEditNetwork
         });
     }
 
-    private static void Apply(BlockEditMessage message)
+    private static bool Apply(BlockEditMessage message)
     {
         var world = World.Instance;
-        if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return;
+        if (world == null || !world.TryFindEntity(message.EntityId, out var entity)) return false;
 
         var local = new Vector3(message.Cell.X, message.Cell.Y, message.Cell.Z);
 
@@ -447,13 +505,16 @@ public static class WorldEditNetwork
             if (NetworkManager.Instance.IsServer) InvokeDestroy(entity, message.Cell);
             entity.RemoveBlockAtLocal(local, new Vector3SByte(0, 0, 0));
             if (removedId > 0) PlayEditSound(entity, message.Cell, removedId, BlockInteractionType.Destroy);
-            return;
+            return true;
         }
 
         var block = GameAssets.CreateBlockFromId(message.BlockId);
         block.Direction = (Direction)message.Direction;
         block.Rotation = (Rotation)message.Rotation;
-        if (entity.TryPlaceBlockLocal(local, block)) PlayEditSound(entity, message.Cell, message.BlockId, BlockInteractionType.Place);
+        if (!entity.TryPlaceBlockLocal(local, block)) return false;
+
+        PlayEditSound(entity, message.Cell, message.BlockId, BlockInteractionType.Place);
+        return true;
     }
 
     private static short GetBlockId(SpaceEntity entity, Vector3i cell)

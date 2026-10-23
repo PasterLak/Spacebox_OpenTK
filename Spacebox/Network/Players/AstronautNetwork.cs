@@ -545,8 +545,10 @@ public sealed class AstronautNetwork : NetworkTransform
         PlayerDied?.Invoke(OwnerPeer);
 
         string victim = Spacebox.Network.Combat.CombatNetwork.GetPlayerName(OwnerPeer);
-        string killer = killerPeer > 0 && killerPeer != OwnerPeer ? Spacebox.Network.Combat.CombatNetwork.GetPlayerName(killerPeer) : null;
-        string text = DeathMessageFormatter.Format(victim, killer, reason);
+        bool validKiller = killerPeer > 0 && killerPeer != OwnerPeer && Spacebox.Network.Combat.CombatNetwork.WasRecentlyHitBy(OwnerPeer, killerPeer);
+        string killer = validKiller ? Spacebox.Network.Combat.CombatNetwork.GetPlayerName(killerPeer) : null;
+        Spacebox.Network.Combat.CombatNetwork.ForgetAttackersOf(OwnerPeer);
+        string text = DeathMessageFormatter.Format(victim, killer, DeathMessageFormatter.Sanitize(reason));
 
         ChatService.Broadcast(text, new Color4(1f, 0.35f, 0.35f, 1f));
     }

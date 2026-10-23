@@ -20,3 +20,21 @@ public struct MobSpawnRequestMessage : INetMessage
         Position = reader.ReadVector3();
     }
 }
+
+public struct MobSpawnRefundMessage : INetMessage
+{
+    public short ItemId;
+    public int Seq;
+
+    public void Serialize(NetWriter writer)
+    {
+        writer.Write(ItemId);
+        writer.Write(Seq);
+    }
+
+    public void Deserialize(NetReader reader)
+    {
+        ItemId = reader.ReadShort();
+        Seq = reader.ReadInt();
+    }
+}

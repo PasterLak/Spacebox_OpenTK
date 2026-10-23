@@ -160,24 +160,6 @@ public sealed class ContainerServer
         return total;
     }
 
-    public bool TryTake(ContainerKey key, short itemId, int amount)
-    {
-        if (amount <= 0 || !GameAssets.TryGetItemById(itemId, out var item)) return false;
-        if (!ContainerResolver.TryResolve(key, out var block)) return false;
-
-        var slots = ContainerSlots.GetSlots(block.GetContainerStorages());
-        int available = 0;
-        for (int i = 0; i < slots.Count; i++)
-        {
-            if (slots[i].HasItem && slots[i].Item.Id == itemId) available += slots[i].Count;
-        }
-
-        if (available < amount) return false;
-
-        ContainerSlots.RemoveUpTo(slots, item, amount);
-        return true;
-    }
-
     public void Update()
     {
         _stateTimer += Time.Delta;

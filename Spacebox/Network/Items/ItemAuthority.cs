@@ -165,8 +165,8 @@ public static class ItemAuthority
     {
         if (!NetworkManager.Instance.IsServer || !TryGetTracked(sender, out var player)) return;
 
-        string key = message.TutorialId + "/" + message.RewardKey;
-        var rewards = TutorialRewardKeys.Find(TutorialLibrary.Find(message.TutorialId), message.RewardKey);
+        var rewards = TutorialRewardClaims.Resolve(TutorialLibrary.Find(message.TutorialId), message.RewardKey,
+            PlayerGameModeService.Of(player.Name), PlayerGameModeService.IdOf(player.Name), out string key);
         if (rewards.Count == 0 || !player.Ledger.ClaimedRewards.Add(key)) return;
 
         foreach (var reward in rewards) player.Ledger.Gain(reward.ItemId, reward.Count);

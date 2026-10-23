@@ -11,8 +11,6 @@ public static class ContainerNetwork
 {
     private static readonly ContainerServer _server = new ContainerServer();
     private static readonly ContainerClient _client = new ContainerClient();
-    private static readonly Dictionary<int, Action<bool>> _takeCallbacks = new Dictionary<int, Action<bool>>();
-    private static int _nextTakeRequest = 1;
     private static IContainer _localOpenBlock;
     private static ContainerKey _localOpenKey;
 
@@ -23,8 +21,6 @@ public static class ContainerNetwork
         network.Messages.Register<ContainerChangeMessage>((peer, message) => { if (network.IsServer && peer != network.LocalPeerId && !Denied(peer, message.Key)) _server.HandleChange(peer, message); });
         network.Messages.Register<ContainerSnapshotMessage>((peer, message) => { if (!network.IsServer) _client.OnSnapshot(message); });
         network.Messages.Register<ContainerChangeResultMessage>((peer, message) => { if (!network.IsServer) _client.OnResult(message); });
-        network.Messages.Register<ContainerTakeRequestMessage>(OnTakeRequest);
-        network.Messages.Register<ContainerTakeResultMessage>(OnTakeResult);
         network.PeerDisconnected += (peer, _) => _server.RemovePeer(peer);
     }
 
@@ -59,21 +55,6 @@ public static class ContainerNetwork
         return slot == null || !_client.IsMirrored(slot.Storage);
     }
 
-    public static void RequestTake(ContainerKey key, Item item, int amount, Action<bool> callback)
-    {
-        var network = NetworkManager.Instance;
-
-        if (network.IsServer)
-        {
-            callback(_server.TryTake(key, item.Id, amount));
-            return;
-        }
-
-        int requestId = _nextTakeRequest++;
-        _takeCallbacks[requestId] = callback;
-        network.SendToServer(new ContainerTakeRequestMessage { Key = key, ItemId = item.Id, Amount = amount, RequestId = requestId });
-    }
-
     public static void Update()
     {
         CloseWindowIfContainerRemoved();
@@ -104,7 +85,6 @@ public static class ContainerNetwork
         _localOpenBlock = null;
         _server.Clear();
         _client.Clear();
-        _takeCallbacks.Clear();
     }
 
     private static bool Denied(int peer, ContainerKey key)
@@ -112,32 +92,5 @@ public static class ContainerNetwork
         if (!ProtectionNetwork.BlocksPeerKey(peer, key)) return false;
         ProtectionNetwork.Deny(peer);
         return true;
-    }
-
-    private static void OnTakeRequest(int peer, ContainerTakeRequestMessage message)
-    {
-        var network = NetworkManager.Instance;
-        if (!network.IsServer) return;
-
-        bool granted = IsReconstructionTake(peer, message) && !ProtectionNetwork.BlocksPeerKey(peer, message.Key) && _server.TryTake(message.Key, message.ItemId, message.Amount);
-        network.Send(peer, new ContainerTakeResultMessage { RequestId = message.RequestId, Granted = granted });
-    }
-
-    private static bool IsReconstructionTake(int peer, ContainerTakeRequestMessage message)
-    {
-        if (!ContainerResolver.TryResolveBlock(message.Key, out var block, out _) || block is not DnaReconstructorBlock reconstructor) return false;
-        var requester = Players.AstronautNetwork.Find(peer);
-        return IsValidReconstructionTake(reconstructor.Data.DnaItem, message.ItemId, message.Amount, requester == null || requester.IsAlive);
-    }
-
-    public static bool IsValidReconstructionTake(Item dnaItem, short itemId, int amount, bool requesterAlive)
-    {
-        return dnaItem != null && dnaItem.Id == itemId && amount == 1 && !requesterAlive;
-    }
-
-    private static void OnTakeResult(int peer, ContainerTakeResultMessage message)
-    {
-        if (NetworkManager.Instance.IsServer || !_takeCallbacks.Remove(message.RequestId, out var callback)) return;
-        callback(message.Granted);
     }
 }
