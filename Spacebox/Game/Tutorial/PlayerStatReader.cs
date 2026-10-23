@@ -14,6 +14,20 @@ public static class PlayerStatReader
 
     private static readonly Dictionary<string, Accessor> _accessors = new Dictionary<string, Accessor>(StringComparer.OrdinalIgnoreCase);
 
+    public static IReadOnlyList<string> Names
+    {
+        get
+        {
+            var names = new List<string>();
+            foreach (var property in typeof(PlayerStatistics).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (Create(property) != null) names.Add(property.Name);
+            }
+            names.Sort(StringComparer.OrdinalIgnoreCase);
+            return names;
+        }
+    }
+
     public static bool IsKnown(string stat)
     {
         return Find(stat) != null;

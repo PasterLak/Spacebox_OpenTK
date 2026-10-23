@@ -35,6 +35,8 @@ public static class TutorialTaskFactory
             { "any_of", d => new CompositeTask(d, CreateChildren(d), false) }
         };
 
+    public static readonly string[] ToggleTargets = { "magnet", "flashlight" };
+
     public static IEnumerable<string> Types => _types.Keys;
 
     public static bool IsKnown(string type)

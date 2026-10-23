@@ -6,6 +6,10 @@ namespace Spacebox.Editor.Data;
 public sealed class FieldHelp
 {
     public const string RelativePath = "Resources/Editor/field-help.json";
+    public const string BlockTypes = "BlockTypes";
+    public const string ItemTypes = "ItemTypes";
+    public const string MobBehaviours = "MobBehaviours";
+    public const string TutorialTasks = "TutorialTasks";
 
     private static FieldHelp _default;
     private readonly Dictionary<string, Dictionary<string, string>> _texts;
@@ -58,6 +62,12 @@ public sealed class FieldHelp
         }
 
         return null;
+    }
+
+    public string Text(string group, string key)
+    {
+        if (string.IsNullOrEmpty(group) || string.IsNullOrEmpty(key)) return null;
+        return _texts.TryGetValue(group, out var map) && map.TryGetValue(key, out var text) ? text : null;
     }
 
     public bool Has(Type declaringType, string property)

@@ -105,12 +105,14 @@ public sealed class ReferenceFieldWidget : IFieldWidget
     private readonly Func<FieldContext, bool> _matches;
     private readonly Func<EditorContext, IReadOnlyList<string>> _options;
     private readonly Func<EditorContext, string, AtlasSprite> _icon;
+    private readonly Func<string, string> _describe;
 
-    public ReferenceFieldWidget(Func<FieldContext, bool> matches, Func<EditorContext, IReadOnlyList<string>> options, Func<EditorContext, string, AtlasSprite> icon = null)
+    public ReferenceFieldWidget(Func<FieldContext, bool> matches, Func<EditorContext, IReadOnlyList<string>> options, Func<EditorContext, string, AtlasSprite> icon = null, Func<string, string> describe = null)
     {
         _matches = matches;
         _options = options;
         _icon = icon;
+        _describe = describe;
     }
 
     public bool CanEdit(FieldContext context) => context.Value is JsonValue && context.StringValue != null && _matches(context);
@@ -123,8 +125,14 @@ public sealed class ReferenceFieldWidget : IFieldWidget
         {
             var item = combo.AddOption(option);
             if (_icon != null) item.WithIcon(_icon(editor, option));
+            if (_describe != null) item.Tooltip = _describe(option) ?? "";
         }
-        combo.ValueChanged += value => commit(JsonValue.Create(value));
+        combo.TooltipText = _describe?.Invoke(combo.Value) ?? "";
+        combo.ValueChanged += value =>
+        {
+            if (_describe != null) combo.TooltipText = _describe(value) ?? "";
+            commit(JsonValue.Create(value));
+        };
         return combo;
     }
 }

@@ -10,6 +10,8 @@ public static class MobBrainFactory
             ["parasite"] = context => new ParasiteBrain(context)
         };
 
+    public static IEnumerable<string> Types => _builders.Keys;
+
     public static void Register(string behaviour, Func<MobContext, IMobBrain> builder)
     {
         _builders[behaviour] = builder;

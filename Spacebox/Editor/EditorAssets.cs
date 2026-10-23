@@ -17,6 +17,9 @@ public sealed class EditorAssets
     private readonly List<string> _lootTables = new List<string>();
     private readonly List<string> _asteroids = new List<string>();
     private readonly List<string> _biomes = new List<string>();
+    private readonly List<string> _recipeTypes = new List<string>();
+    private readonly List<string> _pictureItems = new List<string>();
+    private readonly List<string> _gameSetIds = new List<string>();
 
     public int Version { get; private set; }
     public string ModId => GameSetLoader.ModInfo?.ModId ?? "default";
@@ -32,6 +35,9 @@ public sealed class EditorAssets
     public IReadOnlyList<string> LootTables => _lootTables;
     public IReadOnlyList<string> Asteroids => _asteroids;
     public IReadOnlyList<string> Biomes => _biomes;
+    public IReadOnlyList<string> RecipeTypes => _recipeTypes;
+    public IReadOnlyList<string> PictureItems => _pictureItems;
+    public IReadOnlyList<string> GameSetIds => _gameSetIds;
 
     public void Refresh()
     {
@@ -46,9 +52,22 @@ public sealed class EditorAssets
         Fill(_asteroids, Game.Generation.World.WorldGenerator?.loadedAsteroids.Keys, name => name);
         Fill(_biomes, Game.Generation.World.WorldGenerator?.loadedBiomes.Keys, name => name);
 
+        Fill(_recipeTypes, GameAssets.Recipes.Keys, name => name);
+        Fill(_pictureItems, GameAssets.ItemsStr.Where(pair => pair.Value is Spacebox.Game.PictureItem).Select(pair => pair.Key), ShortId);
+        Fill(_gameSetIds, GameSetIdsWithAll(), name => name);
+
         _projectiles.Clear();
         foreach (var projectile in GameAssets.Projectiles.Values) _projectiles.Add(projectile.Name);
         _projectiles.Sort(StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static IEnumerable<string> GameSetIdsWithAll()
+    {
+        yield return Spacebox.Game.Resource.Content.ExtensionTargets.Any;
+        foreach (var gameSet in Spacebox.Game.Resource.Content.InstalledGameSets.Scan(Spacebox.Game.Resource.Content.ModFolders.Local))
+        {
+            if (!string.IsNullOrWhiteSpace(gameSet.Config.ModId)) yield return gameSet.Config.ModId;
+        }
     }
 
     public static string ShortId(string fullId)

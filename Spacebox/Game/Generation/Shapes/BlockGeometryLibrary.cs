@@ -12,6 +12,19 @@ public static class BlockGeometryLibrary
         [SignPlateGeometry.Name] = SignPlateGeometry.Create()
     };
 
+    public static IReadOnlyList<string> Names
+    {
+        get
+        {
+            lock (Sync)
+            {
+                var names = new List<string>(Geometries.Keys);
+                names.Sort(StringComparer.OrdinalIgnoreCase);
+                return names;
+            }
+        }
+    }
+
     public static void Register(string name, BlockGeometry geometry)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Geometry name is empty", nameof(name));

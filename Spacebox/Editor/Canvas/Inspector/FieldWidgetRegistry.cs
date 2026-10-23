@@ -20,17 +20,32 @@ public sealed class FieldWidgetRegistry
         var widgets = new FieldWidgetRegistry();
         widgets.Add(new ColorFieldWidget());
         widgets.Add(new HexColorFieldWidget(c => c.Scope == EditorScopes.GameModes && c.NameIs("TagColor") && IsTopLevel(c)));
+        widgets.Add(new HexColorFieldWidget(c => c.Scope == EditorScopes.Blocks && c.PathContains("Sign") && c.NameIs("TextColor")));
         widgets.Add(new VectorFieldWidget());
         widgets.Add(new NumberRangeFieldWidget(c => c.Scope == EditorScopes.Asteroids && c.NameIs("MinRadius", "MaxRadius"), AsteroidRadius.Min, AsteroidRadius.Max));
 
-        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.PathContains("Textures"), e => e.Assets.BlockTextures, (e, n) => e.Assets.BlockTexture(n)));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && (c.PathContains("Textures") || c.PathContains("Cable")), e => e.Assets.BlockTextures, (e, n) => e.Assets.BlockTexture(n)));
         widgets.Add(new ReferenceFieldWidget(c => c.NameIs("Sprite"), e => e.Assets.ItemSprites, (e, n) => e.Assets.ItemSprite(n)));
         widgets.Add(new ReferenceFieldWidget(IsItemReference, e => e.Assets.ItemIds, (e, n) => e.Assets.ItemIcon(n)));
         widgets.Add(new ReferenceFieldWidget(IsBlockReference, e => e.Assets.ItemIds, (e, n) => e.Assets.ItemIcon(n)));
         widgets.Add(new ReferenceFieldWidget(c => c.NameIs("Projectile"), e => e.Assets.Projectiles));
         widgets.Add(new ReferenceFieldWidget(IsSoundReference, e => e.Assets.Sounds));
-        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.NameIs("Type") && IsTopLevel(c), _ => GameSetCatalog.BlockTypeNames.OrderBy(t => t).ToArray()));
-        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Items && c.NameIs("Type") && IsTopLevel(c), _ => GameSetCatalog.ItemTypeNames.ToArray()));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.NameIs("Type") && IsTopLevel(c), _ => EditorOptions.BlockTypes(), describe: Describe(FieldHelp.BlockTypes)));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Items && c.NameIs("Type") && IsTopLevel(c), _ => GameSetCatalog.ItemTypeNames.ToArray(), describe: Describe(FieldHelp.ItemTypes)));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.NameIs("Model") && IsTopLevel(c), EditorOptions.BlockModels));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.NameIs("MoveDirection"), _ => EditorOptions.Directions));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && (c.PathContains("InputSides") || c.PathContains("OutputSides")), _ => EditorOptions.Directions));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.PathContains("Sign") && c.NameIs("Align"), _ => EditorOptions.SignAlignments));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.PathContains("Sign") && c.NameIs("Font"), _ => EditorOptions.Fonts()));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Blocks && c.PathContains("Pictures"), e => e.Assets.PictureItems, (e, n) => e.Assets.ItemIcon(n)));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Items && c.NameIs("ArmorModel"), EditorOptions.ProjectModels));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Items && c.NameIs("ArmorTexture"), EditorOptions.ArmorTextures));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Items && c.NameIs("Picture"), EditorOptions.Pictures));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Mobs && c.NameIs("Behaviour") && IsTopLevel(c), _ => EditorOptions.MobBehaviours(), describe: Describe(FieldHelp.MobBehaviours)));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Mobs && c.NameIs("Model") && IsTopLevel(c), EditorOptions.MobModels));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Mobs && c.NameIs("Texture") && IsTopLevel(c), EditorOptions.MobTextures));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Config && c.NameIs("Extends") && IsTopLevel(c), e => e.Assets.GameSetIds));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Recipes && c.NameIs("Type"), e => e.Assets.RecipeTypes));
         widgets.Add(new ReferenceFieldWidget(c => c.NameIs("Category") && IsTopLevel(c), e => e.Assets.Categories));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Items && c.NameIs("Slot"), _ => EquipmentSlots));
         widgets.Add(new ReferenceFieldWidget(c => c.NameIs("Mob"), e => e.Assets.Mobs));
@@ -40,7 +55,14 @@ public sealed class FieldWidgetRegistry
         widgets.Add(new ReferenceFieldWidget(c => c.PathContains("ExcludedAsteroids"), e => e.Assets.Asteroids));
         widgets.Add(new ReferenceFieldWidget(c => c.NameIs("PutIn"), _ => Spacebox.Game.Player.StartItemPlacement.All));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.GameModes && c.NameIs("Base") && IsTopLevel(c), _ => GameModeBases));
-        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Type"), _ => Spacebox.Game.Tutorial.Tasks.TutorialTaskFactory.Types.OrderBy(t => t).ToArray()));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Type"), _ => EditorOptions.TutorialTaskTypes(), describe: Describe(FieldHelp.TutorialTasks)));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Stat"), _ => EditorOptions.Statistics()));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Window"), _ => EditorOptions.Windows()));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("What"), _ => EditorOptions.ToggleTargets()));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Machine"), e => e.Assets.RecipeTypes));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Slot"), _ => EquipmentSlots));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && (c.NameIs("RequiresGameMode") || c.PathContains("GameModes")), _ => EditorOptions.GameModeNames));
+        widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Icon"), e => e.Assets.ItemIds, (e, n) => e.Assets.ItemIcon(n)));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Action"), _ => InputActions()));
         widgets.Add(new ReferenceFieldWidget(c => c.Scope == EditorScopes.Tutorials && c.NameIs("Block"), e => e.Assets.ItemIds, (e, n) => e.Assets.ItemIcon(n)));
 
@@ -50,6 +72,8 @@ public sealed class FieldWidgetRegistry
     }
 
     private static readonly string[] GameModeBases = { "survival", "creative", "spectator" };
+
+    private static Func<string, string> Describe(string group) => key => FieldHelp.Default.Text(group, key);
 
     public void Add(IFieldWidget widget) => _widgets.Add(widget);
 
@@ -88,7 +112,7 @@ public sealed class FieldWidgetRegistry
 
     private static bool IsItemReference(FieldContext context)
     {
-        if (context.NameIs("Item", "Drop", "Ammo", "DnaItem")) return true;
+        if (context.NameIs("Item", "Drop", "Ammo", "DnaItem", "WaterItem")) return true;
         if (context.Scope == EditorScopes.Loot && context.NameIs("ID")) return true;
         if (context.Scope == EditorScopes.Crafting && context.NameIs("Icon")) return true;
         return context.NameIs("ID") && (context.PathContains("ItemsOnStart") || context.PathContains("GiveItemsOnStart"));
@@ -103,6 +127,7 @@ public sealed class FieldWidgetRegistry
     private static bool IsSoundReference(FieldContext context)
     {
         if (context.NameIs("Sound", "ShotSound", "UseSound")) return true;
-        return context.Scope == EditorScopes.Blocks && context.PathContains("Sounds");
+        if (context.Name.EndsWith("Sound", StringComparison.OrdinalIgnoreCase)) return true;
+        return context.PathContains("Sounds");
     }
 }
