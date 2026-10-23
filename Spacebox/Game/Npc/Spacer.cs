@@ -162,8 +162,12 @@ namespace Spacebox.Game
         private void GenerateLoot()
         {
             Storage.Clear();
-            AddItems(Storage);
             _lootWasGenerated = true;
+            var info = World.WorldData?.Info;
+            if (info != null && info.SpacerLooted) return;
+
+            AddItems(Storage);
+            if (info != null) info.SpacerLooted = true;
         }
 
         private void OnKilled()

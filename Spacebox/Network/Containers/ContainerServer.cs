@@ -123,7 +123,8 @@ public sealed class ContainerServer
 
     private static bool HasDeposits(int peer, List<ItemAmount> deltas)
     {
-        if (deltas == null || !Items.ItemAuthority.IsTracked(peer)) return true;
+        if (deltas == null) return true;
+        if (!Items.ItemAuthority.IsTracked(peer)) return UntrackedMayChange(peer, deltas);
 
         var deposits = new List<ItemAmount>(deltas.Count);
         for (int i = 0; i < deltas.Count; i++)
@@ -136,6 +137,14 @@ public sealed class ContainerServer
             if (Items.ItemAuthority.Available(peer, deposits[i].ItemId) < deposits[i].Amount) return false;
         }
         return true;
+    }
+
+    private static bool UntrackedMayChange(int peer, List<ItemAmount> deltas)
+    {
+        if (peer == NetworkManager.Instance.LocalPeerId) return true;
+
+        var rules = Players.PlayerGameModeService.RulesOf(PlayerRegistry.GetName(peer));
+        return ContainerAccessRules.Allows(rules.UseItems, rules.CreativeInventory, deltas);
     }
 
     private static void ApplyToPlayer(int peer, List<ItemAmount> deltas, List<ItemAmount> denied, List<ItemAmount> rejected)

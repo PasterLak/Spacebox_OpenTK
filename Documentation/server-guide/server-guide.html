@@ -250,7 +250,7 @@
 <table>
   <tr><th>Path</th><th>Content</th></tr>
   <tr><td>Multiplayer/serverconfig.json</td><td>Server settings (also the server icon and this guide are in <code>Multiplayer/</code>)</td></tr>
-  <tr><td>Worlds/&lt;WorldName&gt;/</td><td>The world: sectors and asteroids, <code>world.nbt</code> (world settings), <code>Players/</code> (one <code>.player</code> file per player; all world files are NBT), <code>moderation.json</code> (bans, mutes), <code>accounts.json</code> (passwords in registration mode)</td></tr>
+  <tr><td>Worlds/&lt;WorldName&gt;/</td><td>The world: sectors and asteroids, <code>world.nbt</code> (world settings), <code>Players/</code> (one <code>.player</code> file per player, written together with the world on save, autosave and stop, so a crash rolls players and world back to the same moment; all world files are NBT), <code>skins.nbt</code> (suit colors set with <code>skin</code>), <code>moderation.json</code> (bans, mutes), <code>accounts.json</code> (passwords in registration mode)</td></tr>
   <tr><td>Worlds/_backups/</td><td>Zip backups made automatically before a world is converted to a new game version</td></tr>
   <tr><td>Multiplayer/Dashboard/</td><td><code>admin.json</code> (dashboard login), <code>setup-key.txt</code> (only before the first registration), <code>certificates/</code> (automatic HTTPS)</td></tr>
   <tr><td>Mods/</td><td><code>GameSets/</code> (content packs: blocks, items, recipes), <code>Extensions/</code> (extensions of a GameSet, chosen per world), <code>TexturePacks/</code> (texture packs; list ids in <code>TexturePacks</code> in serverconfig.json to send them to every player)</td></tr>

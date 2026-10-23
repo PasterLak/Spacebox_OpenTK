@@ -7762,7 +7762,7 @@
         },
         "Product": {
           "Item": "sand",
-          "Quantity": 5
+          "Quantity": 3
         },
         "Type": "crusher"
       },
@@ -7774,7 +7774,7 @@
         },
         "Product": {
           "Item": "sand",
-          "Quantity": 5
+          "Quantity": 4
         },
         "Type": "crusher"
       },

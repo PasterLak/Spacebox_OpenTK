@@ -19,6 +19,7 @@ public class WorldInfo
     public int Day { get; set; } = 0;
     public string FolderName { get; set; } = "";
     public bool ShowWelcomeWindow { get; set; } = true;
+    public bool SpacerLooted { get; set; }
     public float[] SpawnPoint { get; set; }
     public int GeneratorVersion { get; set; } = Spacebox.Game.Generation.GeneratorVersions.Legacy;
 

@@ -77,7 +77,7 @@ public sealed class ExplosionBlockBreaker
             if (chunk.ClearCellForBulkEdit(index.X, index.Y, index.Z)) Cleared(chunk, cell);
         }
 
-        RemoveSpecialBlocks(entity, data, isReplica);
+        RemoveSpecialBlocks(entity, origin, data, isReplica);
 
         foreach (var chunk in _touchedChunks)
             chunk.FinishBulkEdit();
@@ -92,7 +92,7 @@ public sealed class ExplosionBlockBreaker
 
     private static bool NeedsFullRemoval(Block block) => Spacebox.Game.Generation.Tools.BlockRemovalRules.NeedsFullRemoval(block);
 
-    private void RemoveSpecialBlocks(SpaceEntity entity, ExplosiveBlockData data, bool isReplica)
+    private void RemoveSpecialBlocks(SpaceEntity entity, Vector3i origin, ExplosiveBlockData data, bool isReplica)
     {
         for (int i = 0; i < _specialCells.Count; i++)
         {
@@ -112,7 +112,7 @@ public sealed class ExplosionBlockBreaker
             };
 
             if (!isReplica && !data.DestroyStorageItems) block.OnDestroy?.Invoke(hit);
-            chunk.RemoveBlock(index.X, index.Y, index.Z, 0, 0, 0, data.DropBlocks && !isReplica);
+            chunk.RemoveBlock(index.X, index.Y, index.Z, 0, 0, 0, data.DropBlocks && !isReplica && cell != origin);
         }
     }
 

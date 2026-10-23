@@ -26,6 +26,7 @@ public sealed class NetworkSession : IDisposable
     private float _playerSyncTimer;
     private readonly AutoSaveTimer _autoSave = new AutoSaveTimer();
     private readonly PlayerDataFlush _playerDataFlush = new PlayerDataFlush();
+    private readonly UnsavedPlayerData _departedPlayers = new UnsavedPlayerData();
     private readonly AdmissionWatch _admission = new AdmissionWatch();
     private bool _disposed;
     private int _playerDataSequence;
@@ -257,6 +258,7 @@ public sealed class NetworkSession : IDisposable
         var world = World.Instance;
         if (world == null || World.WorldData == null || GameSession.IsRemoteClient) return;
 
+        if (reason != AutosaveReason) RequestRemotePlayerDataAndWait();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         try
         {
@@ -319,6 +321,9 @@ public sealed class NetworkSession : IDisposable
             player.LastPlayerJson = Items.ItemAuthority.ReconcileForSave(player.Peer, player.LastPlayerJson);
             PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
         }
+
+        string folder = World.WorldData.WorldFolderPath;
+        _departedPlayers.Flush((name, json) => PlayerSaveLoadManager.WritePlayerJson(folder, name, json));
     }
 
     private void SendLocalPlayerDataAndWait()
@@ -339,7 +344,7 @@ public sealed class NetworkSession : IDisposable
 
         FlushPlayerData(null);
         if (_playerDataFlush.IsRunning && !network.PollUntil(() => !_playerDataFlush.IsRunning, LeaveSaveTimeout))
-            Debug.Warning("[Server] Some players did not send their latest data before the server closed");
+            Debug.Warning("[Server] Some players did not send their latest data before the save");
     }
 
     private void OnPlayerDataAck(int sender, PlayerDataAckMessage message)
@@ -362,8 +367,7 @@ public sealed class NetworkSession : IDisposable
 
         var network = NetworkManager.Instance;
         SendLocalPlayerDataAndWait();
-        RequestRemotePlayerDataAndWait();
-        SaveRemotePlayers();
+        _departedPlayers.Clear();
 
         network.PeerDisconnected -= OnPeerDisconnected;
         network.PeerConnected -= OnPeerConnected;
@@ -474,7 +478,7 @@ public sealed class NetworkSession : IDisposable
         network.AdmitPeer(sender);
 
         var info = World.WorldData.Info;
-        string playerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false);
+        string playerJson = _departedPlayers.TryTake(name, out var unsavedJson) ? unsavedJson : PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false);
         Items.ItemAuthority.OnJoin(sender, name, playerJson);
         network.Send(sender, new JoinAcceptedMessage
         {
@@ -562,8 +566,6 @@ public sealed class NetworkSession : IDisposable
         if (json == null) return;
 
         player.LastPlayerJson = Players.PlayerGameModes.Current.ApplyTo(player.Name, json);
-        if (World.WorldData != null)
-            PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, player.LastPlayerJson);
         NetworkManager.Instance.Send(sender, new PlayerDataAckMessage { Sequence = message.Sequence }, DeliveryMode.Reliable);
     }
 
@@ -601,8 +603,8 @@ public sealed class NetworkSession : IDisposable
         Items.ItemAuthority.OnLeave(peer);
         if (!PlayerRegistry.Remove(peer, out var player)) return;
 
-        if (!string.IsNullOrEmpty(player.LastPlayerJson) && World.WorldData != null)
-            PlayerSaveLoadManager.WritePlayerJson(World.WorldData.WorldFolderPath, player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
+        if (!string.IsNullOrEmpty(player.LastPlayerJson))
+            _departedPlayers.Store(player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
 
         PlayerListNetwork.MarkDirty();
         Statistics.ServerStatisticsService.PlayerLeft(player.JoinedAtUtc);
