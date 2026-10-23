@@ -135,7 +135,6 @@ namespace Spacebox.Game.GUI.Menu
 
                 bool canvasDialogs = Spacebox.Game.GUI.MenuUi.MenuCanvas.Current != null;
                 if (showDeleteWindow && !canvasDialogs) deleteWindow.Render();
-                if (showVersionConvertWindow && !canvasDialogs) updateVersionWindow.Render();
                 messageWindow.Render(this);
             }
         }

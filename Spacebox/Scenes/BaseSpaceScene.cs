@@ -357,11 +357,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         InventoryUI.Update();
         StorageUI.Update();
-        Chat.OnGUI();
         Spacebox.Game.Tutorial.UI.TutorialUI.OnGUI();
         WelcomeUI.Update();
         PauseUI.Update();
-        Spacebox.Game.Ships.Sharing.ShipLibraryUI.OnGUI();
         GeneratorUI.Update();
         AnalyzerUI.Update();
         OxygenGeneratorUI.Update();

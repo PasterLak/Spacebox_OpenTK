@@ -23,6 +23,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     private GameSetEditorArgs _args;
     private EditorContext _context;
     private Spacebox.Editor.Canvas.EditorHost _host;
+    private readonly Spacebox.Game.GUI.Canvas.Screens.FadeOverlayView _fade = new Spacebox.Game.GUI.Canvas.Screens.FadeOverlayView();
     private Vector3 _previousAmbient;
     private Spacebox.Game.Resource.Content.GameSetAssetIndex _baseTextures;
 
@@ -52,6 +53,7 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         _context.Assets.Refresh();
         var pages = IsTexturePack ? Spacebox.Editor.Canvas.EditorPages.CreateTexturePack() : Spacebox.Editor.Canvas.EditorPages.CreateDefault(project);
         _host = new Spacebox.Editor.Canvas.EditorHost(_context, pages, _args.StartPanel);
+        _host.Root.Add(_fade, Engine.CanvasUI.UiLayer.Tooltip);
         Input.ShowCursor();
     }
 
@@ -67,6 +69,8 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
         if (_context == null) return;
 
         _context.Update(Time.Delta);
+        ColorOverlay.Update();
+        _fade.Sync(Time.Delta);
         _host?.Update(Time.Delta);
 
         if (_context.ReloadRequested)
@@ -95,7 +99,6 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     public override void OnGUI()
     {
         _host?.Render();
-        ColorOverlay.OnGUI();
     }
 
     public override void UnloadContent()

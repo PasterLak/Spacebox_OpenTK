@@ -214,18 +214,9 @@ namespace Spacebox.Scenes
             if (ConnectionScreen.IsVisible && menuCanvas != null)
             {
                 menuCanvas.Render();
-                ColorOverlay.OnGUI();
                 return;
             }
 
-            if (ConnectionScreen.IsVisible)
-            {
-                ConnectionScreen.OnGUI();
-                AuthPromptWindow.OnGUI();
-                ColorOverlay.OnGUI();
-                return;
-            }
-            
             menuCanvas?.Render();
             if (menuCanvas == null)
             {
@@ -237,7 +228,6 @@ namespace Spacebox.Scenes
             //devLogWindow.Render();
             //canvas.Draw();
             // ImGui.PopFont();
-            ColorOverlay.OnGUI();
 
             //CenteredText.Hide();
         }
@@ -256,6 +246,7 @@ namespace Spacebox.Scenes
         {
             base.Update();
             CenteredImageMenu.Update();
+            ColorOverlay.Update();
             menuCanvas?.Update(Time.Delta);
             InputOverlay.Update();
 
