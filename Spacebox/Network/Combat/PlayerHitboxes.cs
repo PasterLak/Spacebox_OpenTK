@@ -34,10 +34,12 @@ public static class PlayerHitboxes
 
     private static readonly Dictionary<int, List<State>> _history = new Dictionary<int, List<State>>();
     private static readonly List<int> _stalePeers = new List<int>();
+    private static readonly HashSet<int> _seenPeers = new HashSet<int>();
 
     public static void Record()
     {
         float now = (float)Time.Total;
+        _seenPeers.Clear();
 
         foreach (var networkObject in NetworkManager.Instance.Spawner.Objects)
         {
@@ -45,6 +47,7 @@ public static class PlayerHitboxes
             if (astronautNetwork == null || networkObject.Owner is not Astronaut) continue;
 
             GetAuthoritativeState(astronautNetwork, out var position, out var rotation);
+            _seenPeers.Add(networkObject.OwnerPeer);
 
             if (!_history.TryGetValue(networkObject.OwnerPeer, out var states))
             {
@@ -53,13 +56,15 @@ public static class PlayerHitboxes
             }
 
             states.Add(new State(now, position, rotation));
-            while (states.Count > 2 && now - states[0].Time > HistoryLength) states.RemoveAt(0);
+            int expired = 0;
+            while (states.Count - expired > 2 && now - states[expired].Time > HistoryLength) expired++;
+            if (expired > 0) states.RemoveRange(0, expired);
         }
 
         _stalePeers.Clear();
         foreach (var peer in _history.Keys)
         {
-            if (FindPlayer(peer) == null) _stalePeers.Add(peer);
+            if (!_seenPeers.Contains(peer)) _stalePeers.Add(peer);
         }
         for (int i = 0; i < _stalePeers.Count; i++) _history.Remove(_stalePeers[i]);
     }

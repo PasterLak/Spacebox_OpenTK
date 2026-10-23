@@ -766,6 +766,7 @@ namespace Spacebox.Game.Generation
         public override void Update()
         {
             base.Update();
+            ElectricManager.FlushRebuild();
             _shipControl?.Update(Time.Delta);
             Ship?.Update(Time.Delta);
             HandleTag();
@@ -1062,8 +1063,6 @@ namespace Spacebox.Game.Generation
 
                 if (dis < Settings.CHUNK_VISIBLE_RADIUS * Settings.CHUNK_VISIBLE_RADIUS)
                 {
-                    chunk.SetLOD(dis);
-
                     bool visible = chunk.GeometryBoundingBox.Contains(cameraEntitySpace);
 
                     if (!visible)
@@ -1142,11 +1141,18 @@ namespace Spacebox.Game.Generation
 
             var collideInfo2 = new CollideInfo();
 
-            for (int i = 0; i < Chunks.Count; i++)
+            if (volume is BoundingSphere probe && TryCollideNearbyChunks(probe, out c, out collideInfo))
             {
-                c = Chunks[i].IsColliding(volume, out collideInfo);
-
                 if (c) return true;
+            }
+            else
+            {
+                for (int i = 0; i < Chunks.Count; i++)
+                {
+                    c = Chunks[i].IsColliding(volume, out collideInfo);
+
+                    if (c) return true;
+                }
             }
             collideInfo = collideInfo2;
 
@@ -1155,6 +1161,30 @@ namespace Spacebox.Game.Generation
                 return true;
 
             return false;
+        }
+
+        private bool TryCollideNearbyChunks(BoundingSphere probe, out bool colliding, out CollideInfo collideInfo)
+        {
+            colliding = false;
+            collideInfo = default;
+            var local = probe.Center - PositionWorld;
+            float radius = probe.Radius + 1f;
+            int minX = (int)MathF.Floor((local.X - radius) / Chunk.Size), maxX = (int)MathF.Floor((local.X + radius) / Chunk.Size);
+            int minY = (int)MathF.Floor((local.Y - radius) / Chunk.Size), maxY = (int)MathF.Floor((local.Y + radius) / Chunk.Size);
+            int minZ = (int)MathF.Floor((local.Z - radius) / Chunk.Size), maxZ = (int)MathF.Floor((local.Z + radius) / Chunk.Size);
+            if ((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1) > Chunks.Count) return false;
+
+            for (int x = minX; x <= maxX; x++)
+            for (int y = minY; y <= maxY; y++)
+            for (int z = minZ; z <= maxZ; z++)
+            {
+                if (x < sbyte.MinValue || x > sbyte.MaxValue || y < sbyte.MinValue || y > sbyte.MaxValue || z < sbyte.MinValue || z > sbyte.MaxValue) continue;
+                if (!_chunksByIndex.TryGetValue(new Vector3SByte((sbyte)x, (sbyte)y, (sbyte)z), out var chunk)) continue;
+                if (!chunk.IsColliding(probe, out collideInfo)) continue;
+                colliding = true;
+                return true;
+            }
+            return true;
         }
 
         public bool IsPositionWithinEntitySize(Vector3 worldPosition)

@@ -78,10 +78,20 @@ namespace Spacebox.Game.Generation
             UpdateChangedChunks();
         }
 
+        private bool _rebuildRequested;
+
         public void Rebuild()
         {
+            _rebuildRequested = false;
             RebuildAllNetworks();
             UpdateAllNetworksForced();
+        }
+
+        public void RequestRebuild() => _rebuildRequested = true;
+
+        public void FlushRebuild()
+        {
+            if (_rebuildRequested) Rebuild();
         }
 
         private void GetPotentiallyAffectedBlocks((int x, int y, int z) globalPos)

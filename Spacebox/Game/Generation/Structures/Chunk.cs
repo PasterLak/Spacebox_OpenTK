@@ -240,6 +240,7 @@ namespace Spacebox.Game.Generation
 
         public void RegisterElectricalBlocks()
         {
+            bool addedElectrical = false;
             for (int x = 0; x < Chunk.Size; x++)
             {
                 for (int y = 0; y < Chunk.Size; y++)
@@ -267,11 +268,12 @@ namespace Spacebox.Game.Generation
                             int worldZ = PositionIndex.Z * Size + z;
                             var globalPos = (worldX, worldY, worldZ);
                             SpaceEntity.ElectricManager.AddBlockFast(globalPos, eBlock, this);
+                            addedElectrical = true;
                         }
                     }
                 }
             }
-            SpaceEntity.ElectricManager.Rebuild();
+            if (addedElectrical) SpaceEntity.ElectricManager.RequestRebuild();
         }
 
         public static Vector3 GetChunkWorldPosition(Vector3SByte chunkIndex, Vector3 spaceEntityPosition)

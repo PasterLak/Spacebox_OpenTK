@@ -1040,10 +1040,17 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             var entity = Entities[i];
 
             var worldBounds = entity.ToWorldBounds(entity.GeometryBoundingBox);
-            if (!cam.Frustum.IsInFrustum(worldBounds))
-                continue;
-
             float distSqr = Vector3.DistanceSquared(worldBounds.Center, cam.Position);
+            if (!cam.Frustum.IsInFrustum(worldBounds))
+            {
+                if (ShouldUnload(worldBounds.Center, distSqr))
+                {
+                    UnloadEntity(entity);
+                    i--;
+                }
+                continue;
+            }
+
             bool isWithinRenderDistance = distSqr < visibleRadiusSqr;
 
             if (isWithinRenderDistance)
@@ -1064,8 +1071,7 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
             else
             {
 
-                if (distSqr >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE &&
-                    !WorldObservers.IsNearRemote(worldBounds.Center, Settings.ENTITY_UNLOAD_DISTANCE))
+                if (ShouldUnload(worldBounds.Center, distSqr))
                 {
                     UnloadEntity(entity);
                     i--;
@@ -1075,6 +1081,12 @@ public class Sector : SpatialCell, IDisposable, ISpaceStructure
                 entity.RenderEffect(distSqr);
             }
         }
+    }
+
+    private static bool ShouldUnload(Vector3 center, float distanceSquared)
+    {
+        return distanceSquared >= Settings.ENTITY_UNLOAD_DISTANCE * Settings.ENTITY_UNLOAD_DISTANCE &&
+               !WorldObservers.IsNearRemote(center, Settings.ENTITY_UNLOAD_DISTANCE);
     }
 
     private bool IsPlayerInsideOrVeryClose(NotGeneratedEntity data)

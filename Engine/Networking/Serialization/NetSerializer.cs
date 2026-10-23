@@ -10,7 +10,13 @@ public static class NetSerializer
         public Func<NetReader, object> Read;
     }
 
-    private static readonly Dictionary<Type, Entry> _entries = new Dictionary<Type, Entry>();
+    private static class Typed<T>
+    {
+        public static Action<NetWriter, T> Write;
+        public static Func<NetReader, T> Read;
+    }
+
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, Entry> _entries = new System.Collections.Concurrent.ConcurrentDictionary<Type, Entry>();
     private static readonly object _lock = new object();
 
     static NetSerializer()
@@ -39,6 +45,8 @@ public static class NetSerializer
     {
         lock (_lock)
         {
+            Typed<T>.Write = write;
+            Typed<T>.Read = read;
             _entries[typeof(T)] = new Entry
             {
                 Write = (w, v) => write(w, (T)v),
@@ -54,12 +62,15 @@ public static class NetSerializer
 
     public static void Write<T>(NetWriter writer, T value)
     {
-        Write(writer, typeof(T), value);
+        var write = Typed<T>.Write;
+        if (write != null) write(writer, value);
+        else Write(writer, typeof(T), value);
     }
 
     public static T Read<T>(NetReader reader)
     {
-        return (T)Read(reader, typeof(T));
+        var read = Typed<T>.Read;
+        return read != null ? read(reader) : (T)Read(reader, typeof(T));
     }
 
     public static void Write(NetWriter writer, Type type, object value)
@@ -76,6 +87,8 @@ public static class NetSerializer
 
     private static Entry GetEntry(Type type)
     {
+        if (_entries.TryGetValue(type, out var cached)) return cached;
+
         lock (_lock)
         {
             if (_entries.TryGetValue(type, out var entry)) return entry;
