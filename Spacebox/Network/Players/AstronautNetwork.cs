@@ -445,6 +445,7 @@ public sealed class AstronautNetwork : NetworkTransform
         foreach (var gift in _finishedGifts)
         {
             if (gift.GiverPeer != peer) Find(gift.GiverPeer)?.SendRpc(nameof(GiftResult), gift.RequestId, false, "The player left", RefundGift(gift.GiverPeer, gift.ItemId));
+            else if (gift.TargetPeer != peer) Items.ItemAuthority.Gain(gift.TargetPeer, gift.ItemId, 1);
         }
     }
 

@@ -528,9 +528,11 @@ public static class ShipNetwork
         long id = message.EntityId;
         if (_deferredStates.ContainsKey(id))
         {
-            if (World.Instance == null || !World.Instance.TryFindEntity(id, out _))
+            var world = World.Instance;
+            if (world == null || !world.TryFindEntity(id, out _))
             {
-                _deferredStates[id] = message;
+                if (world != null && world.IsEntityLoading(id)) _deferredStates[id] = message;
+                else _deferredStates.Remove(id);
                 return;
             }
             _deferredStates.Remove(id);

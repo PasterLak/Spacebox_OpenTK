@@ -22,5 +22,6 @@ public sealed class RadarWindow : GameWindow
     protected override void Refresh()
     {
         _display.Radar = _ui.Radar;
+        ShowEnergy(_ui.Radar?.Block?.ConsumptionRate ?? 0);
     }
 }

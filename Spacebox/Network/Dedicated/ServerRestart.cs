@@ -49,6 +49,10 @@ public static class ServerRestart
                 Save("Restart");
                 NetworkSession.Current?.Dispose();
             }
+            catch (Exception ex)
+            {
+                Debug.Error($"[Server] Restart cleanup failed: {ex.Message}");
+            }
             finally
             {
                 _stopping = false;

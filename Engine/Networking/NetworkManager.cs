@@ -138,16 +138,35 @@ public sealed class NetworkManager
         return true;
     }
 
+    public bool IsPolling { get; private set; }
+
     public bool PollUntil(Func<bool> done, TimeSpan timeout)
     {
+        if (IsPolling) return done();
+
         var timer = System.Diagnostics.Stopwatch.StartNew();
         while (!done())
         {
             if (Mode == NetworkMode.None || _transport == null || timer.Elapsed >= timeout) return false;
-            _transport.Poll();
+            PollTransport();
             if (!done()) Thread.Sleep(5);
         }
         return true;
+    }
+
+    private void PollTransport()
+    {
+        if (_transport == null || IsPolling) return;
+
+        IsPolling = true;
+        try
+        {
+            _transport.Poll();
+        }
+        finally
+        {
+            IsPolling = false;
+        }
     }
 
     public void Shutdown(string reason = "Shutdown")
@@ -195,7 +214,7 @@ public sealed class NetworkManager
     {
         if (Mode == NetworkMode.None) return;
 
-        _transport?.Poll();
+        PollTransport();
         Transfers.Update();
 
         _tickTimer += Time.Delta;

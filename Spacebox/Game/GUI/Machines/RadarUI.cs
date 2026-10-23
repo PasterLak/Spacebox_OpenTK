@@ -1,6 +1,7 @@
 ﻿using Engine;
 using Engine.Audio;
 using Spacebox.Game.Player;
+using Spacebox.Game.Generation.Blocks;
 using OpenTK.Mathematics;
 using System;
 
@@ -33,9 +34,9 @@ public sealed class RadarUI : IGameUiController, IDisposable
 
     private bool _isScanWaveActive = false;
     private bool _showSpaceBackground = false;
-    private bool _isTargetPointVisible = false;
 
-    private float _pointVisibilityTimer = 2;
+    private readonly Spacebox.Game.Radar.RadarScanner _scanner = new Spacebox.Game.Radar.RadarScanner();
+    private Astronaut _viewer;
 
     public RadarUI(Texture2D skyboxTexture)
     {
@@ -47,6 +48,10 @@ public sealed class RadarUI : IGameUiController, IDisposable
         _scanningTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/Radar/scanning.png");
         _maskTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/Radar/radarMask.png");
 
+        Spacebox.Game.Radar.RadarTextures.ClipToCircle(_gridTexture, false);
+        Spacebox.Game.Radar.RadarTextures.ClipToCircle(_scanningTexture, false);
+        Spacebox.Game.Radar.RadarTextures.ClipToCircle(_maskTexture, true);
+
         _gridTexture.FilterMode = FilterMode.Nearest;
         _lineTexture.FilterMode = FilterMode.Nearest;
         _scanningTexture.FilterMode = FilterMode.Nearest;
@@ -56,9 +61,9 @@ public sealed class RadarUI : IGameUiController, IDisposable
         _foundAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("radarFound"), AudioChannel.UI);
     }
 
-    public const float PointBearingDegrees = 255f;
-    public const float PointDistance = 500f;
-    public const float MaxDistance = 1000f;
+    public RadarBlock Block { get; private set; }
+    public float Range => Spacebox.Game.Radar.RadarScanner.Range;
+    public IReadOnlyList<Spacebox.Game.Radar.RadarContact> Blips => _scanner.Blips;
 
     public bool IsOpen => UIManager.IsOpen("radar");
     public Texture2D SpaceBackground => _spaceBackground;
@@ -72,9 +77,6 @@ public sealed class RadarUI : IGameUiController, IDisposable
     public float Angle => _radarRotationAngle;
     public bool IsScanWaveActive => _isScanWaveActive;
     public float ScanWaveProgress => _scanWaveProgress;
-    public bool IsTargetVisible => _isTargetPointVisible;
-    public float TargetAlpha => Math.Clamp(_pointVisibilityTimer / 2f, 0f, 1f);
-    public Vector2 TargetDirection => GetDirectionFromDegrees(PointBearingDegrees);
 
     public void OnGUI()
     {
@@ -96,21 +98,18 @@ public sealed class RadarUI : IGameUiController, IDisposable
         if (!isVisible) return;
 
         UpdateBackgroundUV();
+        float previousAngle = _radarRotationAngle;
         UpdateRadarLogic();
         UpdateRadarAudio();
-        UpdateTargetPoint();
+        UpdateContacts(previousAngle);
         UpdateScanWave();
     }
 
-    private void UpdateTargetPoint()
+    private void UpdateContacts(float previousAngle)
     {
-        if (!_isTargetPointVisible) return;
-
-        _pointVisibilityTimer -= Time.Delta;
-        if (_pointVisibilityTimer > 0) return;
-
-        _pointVisibilityTimer = 2;
-        _isTargetPointVisible = false;
+        float fadePerSecond = _rotationSpeed / (MathF.PI * 2f);
+        if (_scanner.Sweep(_viewer, previousAngle, _radarRotationAngle, fadePerSecond, Time.Delta) && !_foundAudio.IsPlaying)
+            _foundAudio.Play();
     }
 
     private void UpdateScanWave()
@@ -141,36 +140,8 @@ public sealed class RadarUI : IGameUiController, IDisposable
                 _isScanWaveActive = true;
             }
         }
-
-        if (_radarRotationAngle >= 4.99f && _radarRotationAngle < 5.1f)
-        {
-            if (!_foundAudio.IsPlaying)
-            {
-                _foundAudio.Play();
-                _isTargetPointVisible = true;
-            }
-        }
     }
 
-    public float MapDistanceToRadarRadius(float currentDistance, float maxDistance)
-    {
-        if (maxDistance <= 0) return 0.1f;
-        float t = Math.Clamp(currentDistance / maxDistance, 0f, 1f);
-        return 0.1f + (0.85f - 0.1f) * t;
-    }
-
-    private Vector2 GetDirectionFromRadians(float radians)
-    {
-        float x = MathF.Cos(radians);
-        float y = -MathF.Sin(radians);
-        return new Vector2(x, y);
-    }
-
-    private Vector2 GetDirectionFromDegrees(float degrees)
-    {
-        float radians = (MathF.PI / 180f) * degrees;
-        return GetDirectionFromRadians(radians);
-    }
 
     private void UpdateBackgroundUV()
     {
@@ -198,12 +169,21 @@ public sealed class RadarUI : IGameUiController, IDisposable
         return next;
     }
 
-    public void Toggle(Astronaut _)
+    public void Open(RadarBlock block, Astronaut viewer)
     {
-        UIManager.Toggle("radar");
+        Block = block;
+        _viewer = viewer;
+        _scanner.Clear();
+        UIManager.Open("radar");
     }
 
-    public void Reset() => Dispose();
+    public void Reset()
+    {
+        Block = null;
+        _viewer = null;
+        _scanner.Clear();
+        Dispose();
+    }
 
     public void Dispose()
     {

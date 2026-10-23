@@ -323,7 +323,7 @@ public sealed class NetworkSession : IDisposable
         }
 
         string folder = World.WorldData.WorldFolderPath;
-        _departedPlayers.Flush((name, json) => PlayerSaveLoadManager.WritePlayerJson(folder, name, json));
+        _departedPlayers.Flush((name, json) => PlayerSaveLoadManager.WritePlayerJson(folder, name, Players.PlayerGameModes.Current.ApplyTo(name, json)));
     }
 
     private void SendLocalPlayerDataAndWait()
@@ -343,6 +343,7 @@ public sealed class NetworkSession : IDisposable
         if (!network.IsListening) return;
 
         FlushPlayerData(null);
+        if (network.IsPolling) return;
         if (_playerDataFlush.IsRunning && !network.PollUntil(() => !_playerDataFlush.IsRunning, LeaveSaveTimeout))
             Debug.Warning("[Server] Some players did not send their latest data before the save");
     }
@@ -464,6 +465,11 @@ public sealed class NetworkSession : IDisposable
     {
         var network = NetworkManager.Instance;
         string name = message.Name.Trim();
+        if (Moderation.ServerModeration.IsBanned(name, network.GetPeerAddress(sender)))
+        {
+            RejectJoin(sender, Moderation.ServerModeration.BannedReason);
+            return;
+        }
         if (PlayerRegistry.TryGetByName(name, out var existing))
         {
             if (!IsSameAddress(existing, sender))
@@ -478,7 +484,13 @@ public sealed class NetworkSession : IDisposable
         network.AdmitPeer(sender);
 
         var info = World.WorldData.Info;
-        string playerJson = _departedPlayers.TryTake(name, out var unsavedJson) ? unsavedJson : PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false);
+        string playerJson;
+        if (_departedPlayers.TryTake(name, out var unsavedJson))
+        {
+            playerJson = Players.PlayerGameModes.Current.ApplyTo(name, unsavedJson);
+            if (PlayerRegistry.TryGet(sender, out var rejoining)) rejoining.LastPlayerJson = playerJson;
+        }
+        else playerJson = PlayerSaveLoadManager.ReadPlayerJson(World.WorldData.WorldFolderPath, name, false);
         Items.ItemAuthority.OnJoin(sender, name, playerJson);
         network.Send(sender, new JoinAcceptedMessage
         {
@@ -604,7 +616,7 @@ public sealed class NetworkSession : IDisposable
         if (!PlayerRegistry.Remove(peer, out var player)) return;
 
         if (!string.IsNullOrEmpty(player.LastPlayerJson))
-            _departedPlayers.Store(player.Name, Players.PlayerGameModes.Current.ApplyTo(player.Name, player.LastPlayerJson));
+            _departedPlayers.Store(player.Name, player.LastPlayerJson);
 
         PlayerListNetwork.MarkDirty();
         Statistics.ServerStatisticsService.PlayerLeft(player.JoinedAtUtc);
