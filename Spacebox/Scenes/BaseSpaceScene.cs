@@ -320,6 +320,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         base.Render();
         _flashlightBeams?.Render();
+        if (Spacebox.Game.Rendering.WorldPreviewCapture.IsActive) return;
         _bodyOutlines?.Render();
         Spacebox.Game.Protection.ClaimVisuals.Update(localPlayer, Time.Delta);
         if (VisualDebug.Enabled)

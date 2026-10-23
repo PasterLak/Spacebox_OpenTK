@@ -512,6 +512,7 @@ namespace Spacebox.Game.Player
         public override void Render()
         {
             base.Render();
+            if (Spacebox.Game.Rendering.WorldPreviewCapture.IsActive) return;
 
             if (_gameModeBase != null)
             {

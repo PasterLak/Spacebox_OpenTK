@@ -184,33 +184,7 @@ namespace Engine
                 Time.StartRender();
                 FrameLimiter.Update();
 
-                using (Prof.Time(T_LightSystemUpdate))
-                {
-                    LightSystem.Update();
-                }
-
-                ViewModelProjection.Reset();
-                _sceneRenderer.Render(() => RenderScene());
-
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-                GLState.DepthTest(false);
-                GLState.CullFace(false);
-
-                using (GPUDebug.Group("POST PROCESSING"))
-                {
-                    using (Prof.Time(T_PostProcessing))
-                    {
-                        _processManager.Process(_sceneRenderer, ClientSize);
-                        if (RenderDebugView.ShowsBuffer)
-                        {
-                            _gbufferDebug ??= new GBufferDebugPass();
-                            _gbufferDebug.Draw(_sceneRenderer, ClientSize, RenderDebugView.Mode);
-                        }
-                    }
-                }
+                RenderWorld();
 
                 using (Prof.Time(T_OnGUI))
                 {
@@ -273,6 +247,43 @@ namespace Engine
                 if (!Application.IsHeadless) GlobalUniforms.Push();
                 Time.EndUpdate();
                 AudioDevice.Instance.Update();
+            }
+        }
+
+        public void RenderWorldFrame()
+        {
+            if (Application.IsHeadless || IsQuitting) return;
+            RenderWorld();
+        }
+
+        private void RenderWorld()
+        {
+            using (Prof.Time(T_LightSystemUpdate))
+            {
+                LightSystem.Update();
+            }
+
+            ViewModelProjection.Reset();
+            _sceneRenderer.Render(() => RenderScene());
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GLState.DepthTest(false);
+            GLState.CullFace(false);
+
+            using (GPUDebug.Group("POST PROCESSING"))
+            {
+                using (Prof.Time(T_PostProcessing))
+                {
+                    _processManager.Process(_sceneRenderer, ClientSize);
+                    if (RenderDebugView.ShowsBuffer)
+                    {
+                        _gbufferDebug ??= new GBufferDebugPass();
+                        _gbufferDebug.Draw(_sceneRenderer, ClientSize, RenderDebugView.Mode);
+                    }
+                }
             }
         }
 

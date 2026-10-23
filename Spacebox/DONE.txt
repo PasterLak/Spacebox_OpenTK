@@ -136,6 +136,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- world preview: saving renders a clean world frame (no pause menu, HUD, held item, build preview or outlines)
 - chat input and suggestions are see-through again; gravity generator on/off is a switch; doors open while binding ship parts; hull blocks moved to Building
 - world load: the world no longer flashes before the fade-in; furnace/crusher finish and disassembler sounds now play for multiplayer clients
 - new worlds without asteroids no longer crash when the player spawns (start at the sector center); a GameSet's own Biomes folder no longer also loads Default's biomes

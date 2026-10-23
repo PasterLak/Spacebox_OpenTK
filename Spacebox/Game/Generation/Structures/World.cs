@@ -142,7 +142,12 @@ public class World : Component, ISpaceStructure
 
         try
         {
-            FramebufferCapture.SaveWorldPreview(screenSize, Path.Combine(WorldData.WorldFolderPath, "preview.jpg"));
+            string path = Path.Combine(WorldData.WorldFolderPath, "preview.jpg");
+            Spacebox.Game.Rendering.WorldPreviewCapture.Run(() =>
+            {
+                SpaceboxWindow.Instance.RenderWorldFrame();
+                FramebufferCapture.SaveWorldPreview(screenSize, path);
+            });
         }
         catch (Exception ex)
         {
