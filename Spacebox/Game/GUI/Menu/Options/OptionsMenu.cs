@@ -20,14 +20,15 @@ public sealed class OptionsMenu : IOptionsNavigator
     private readonly Dictionary<Type, MenuWindow> _windows = new Dictionary<Type, MenuWindow>();
     private readonly AudioSource _click;
     private readonly Action _onClose;
-    private readonly UnsavedChangesPrompt _unsavedPrompt = new UnsavedChangesPrompt();
+    private readonly IUnsavedChangesPrompt _unsavedPrompt;
     private MenuWindow _current;
     private string _savedState;
 
-    public OptionsMenu(AudioSource click, Action onClose)
+    public OptionsMenu(AudioSource click, Action onClose, IUnsavedChangesPrompt unsavedPrompt = null)
     {
         _click = click;
         _onClose = onClose;
+        _unsavedPrompt = unsavedPrompt ?? new UnsavedChangesPrompt();
 
         Register(new OptionsWindow(this));
         Register(new AudioWindow(this));
@@ -38,11 +39,18 @@ public sealed class OptionsMenu : IOptionsNavigator
         _current = _windows[typeof(OptionsWindow)];
     }
 
-    public void Render()
+    public MenuWindow Current => _current;
+
+    public void Update()
     {
         if (_current is ControlsWindow controls) controls.Update();
+    }
+
+    public void Render()
+    {
+        Update();
         _current?.Render();
-        _unsavedPrompt.Render(Save, LeaveWithoutSaving, PlayClick);
+        _unsavedPrompt.Render();
     }
 
     public void PlayClick()
@@ -74,7 +82,7 @@ public sealed class OptionsMenu : IOptionsNavigator
         PlayClick();
         if (_current is IOptionsCategory category && category.CaptureState() != _savedState)
         {
-            _unsavedPrompt.Open();
+            _unsavedPrompt.Open(Save, LeaveWithoutSaving, PlayClick);
             return;
         }
 
@@ -124,8 +132,10 @@ public sealed class OptionsHostWindow : MenuWindow
 
     public OptionsHostWindow(GameMenu menu)
     {
-        Options = new OptionsMenu(menu.Click1, menu.SetStateToMain);
+        Options = new OptionsMenu(menu.Click1, menu.SetStateToMain, new Spacebox.Game.GUI.MenuUi.CanvasUnsavedChangesPrompt());
     }
+
+    protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.OptionsHostPage(Options);
 
     public override void Render()
     {

@@ -38,6 +38,7 @@ namespace Spacebox.Game.GUI.Menu
         public AudioSource Click1;
         public bool showDeleteWindow = false;
         public bool showVersionConvertWindow = false;
+        public UpdateVersionWindow VersionWindow => updateVersionWindow;
         public bool IsEditMode = false;
 
 
@@ -132,8 +133,9 @@ namespace Spacebox.Game.GUI.Menu
                 if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var wnd) && wnd.Page == null)
                     wnd.Render();
 
-                if (showDeleteWindow) deleteWindow.Render();
-                if (showVersionConvertWindow) updateVersionWindow.Render();
+                bool canvasDialogs = Spacebox.Game.GUI.MenuUi.MenuCanvas.Current != null;
+                if (showDeleteWindow && !canvasDialogs) deleteWindow.Render();
+                if (showVersionConvertWindow && !canvasDialogs) updateVersionWindow.Render();
                 messageWindow.Render(this);
             }
         }

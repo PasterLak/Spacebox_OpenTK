@@ -74,7 +74,7 @@ namespace Spacebox.Game.GUI
             }
 
             RenderPause();
-            _leavePrompt.Render(SaveAndLeave, LeaveWithoutSaving, CancelLeave);
+            _leavePrompt.Render();
             if (IsMultiplayerActive()) PlayerListUI.Draw();
             RenderPauseTitle();
             StatisticsUI.OnGUI();
@@ -247,7 +247,7 @@ namespace Spacebox.Game.GUI
 
             _pendingLeave = leave;
             if (!UIManager.IsOpen("pause")) UIManager.Open("pause");
-            _leavePrompt.Open();
+            _leavePrompt.Open(SaveAndLeave, LeaveWithoutSaving, CancelLeave);
             return true;
         }
 

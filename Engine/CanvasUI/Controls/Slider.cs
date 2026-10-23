@@ -19,6 +19,7 @@ public class HSlider : Control
     public Color4? FillColor { get; set; }
 
     public event Action<double> ValueChanged;
+    public event Action DragEnded;
 
     public double Value
     {
@@ -42,7 +43,11 @@ public class HSlider : Control
         if (pressed && IsMouseDown) SetFromX(localPosition.X);
     }
 
-    protected internal override bool OnMouseUp(Vector2 localPosition, MouseButton button, bool inside) => true;
+    protected internal override bool OnMouseUp(Vector2 localPosition, MouseButton button, bool inside)
+    {
+        if (button == MouseButton.Left) DragEnded?.Invoke();
+        return true;
+    }
 
     protected internal override bool OnScroll(Vector2 localPosition, float delta)
     {

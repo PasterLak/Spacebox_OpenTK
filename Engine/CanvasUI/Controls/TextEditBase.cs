@@ -60,6 +60,8 @@ public abstract class TextEditBase : Control
 
     public void SelectAll() => State.SelectAll();
 
+    protected virtual ICanvasClipboard Clipboard => Root?.Clipboard;
+
     public override void Process(float deltaTime)
     {
         _blink = HasFocus ? (_blink + deltaTime) % BlinkPeriod : 0f;
@@ -70,7 +72,7 @@ public abstract class TextEditBase : Control
         if (!HasFocus) return false;
         if (KeyFilter != null && KeyFilter(press)) return true;
 
-        var result = TextEditKeys.Handle(State, press, Root?.Clipboard, Editable, PageLines());
+        var result = TextEditKeys.Handle(State, press, Clipboard, Editable, PageLines());
         switch (result)
         {
             case TextEditResult.Ignored:

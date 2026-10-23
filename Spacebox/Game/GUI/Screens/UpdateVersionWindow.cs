@@ -32,7 +32,13 @@ namespace Spacebox.Game.GUI
             _reason = null;
         }
 
-        private void EnsureChecked(WorldInfo world)
+        public GameMenu Menu => menu;
+        public string Error => _error;
+        public WorldUpgradeResult Result => _result;
+        public WorldUpgradeStatus Status => _status;
+        public string Reason => _reason;
+
+        public void EnsureChecked(WorldInfo world)
         {
             if (_checkedWorld == world) return;
 
@@ -152,7 +158,7 @@ namespace Spacebox.Game.GUI
             });
         }
 
-        private void Convert(WorldInfo world)
+        public void Convert(WorldInfo world)
         {
             menu.Click1.Play();
             if (!VersionConverter.Convert(world, Application.Version))
@@ -175,7 +181,7 @@ namespace Spacebox.Game.GUI
             Close();
         }
 
-        private void Close()
+        public void Close()
         {
             Reset();
             menu.showVersionConvertWindow = false;

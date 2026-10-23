@@ -23,6 +23,8 @@ public sealed class TexturePacksWindow : MenuWindow
         TexturePackService.Rescan();
     }
 
+    protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.TexturePacksPage(_menu);
+
     public override void Render()
     {
         var display = ImGui.GetIO().DisplaySize;

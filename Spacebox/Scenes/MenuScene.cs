@@ -210,6 +210,13 @@ namespace Spacebox.Scenes
             // ImGui.PushFont(myFont);
             BlackScreenOverlay.OnGUI();
 
+            if (ConnectionScreen.IsVisible && menuCanvas != null)
+            {
+                menuCanvas.Render();
+                ColorOverlay.OnGUI();
+                return;
+            }
+
             if (ConnectionScreen.IsVisible)
             {
                 ConnectionScreen.OnGUI();

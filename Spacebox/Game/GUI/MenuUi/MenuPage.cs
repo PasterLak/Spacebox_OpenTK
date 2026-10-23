@@ -18,6 +18,8 @@ public abstract class MenuPage : CenterContainer
         Build();
     }
 
+    public virtual bool ShowsLogo => true;
+
     protected abstract void Build();
 
     public virtual void OnShow()

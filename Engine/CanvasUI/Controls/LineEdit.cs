@@ -5,6 +5,7 @@ namespace Engine.CanvasUI;
 public class LineEdit : TextEditBase
 {
     private float _scroll;
+    private string _mask = "";
 
     public LineEdit() : base(false)
     {
@@ -16,6 +17,21 @@ public class LineEdit : TextEditBase
     }
 
     public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
+    public bool Secret { get; set; }
+    public char SecretCharacter { get; set; } = '*';
+
+    protected override ICanvasClipboard Clipboard => Secret ? new PasteOnlyClipboard(base.Clipboard) : base.Clipboard;
+
+    private string DisplayText
+    {
+        get
+        {
+            if (!Secret) return State.Text;
+            int length = State.Text.Length;
+            if (_mask.Length != length || (length > 0 && _mask[0] != SecretCharacter)) _mask = new string(SecretCharacter, length);
+            return _mask;
+        }
+    }
 
     protected virtual float RightPadding => 0f;
 
@@ -41,7 +57,7 @@ public class LineEdit : TextEditBase
         float origin = TextOrigin(font, size, inner);
 
         renderer.PushClip(inner);
-        string text = State.Text;
+        string text = DisplayText;
         if (text.Length == 0 && !HasFocus && PlaceholderText.Length > 0)
         {
             CanvasDraw.Text(renderer, font, new Vector2(origin, y), PlaceholderText, size, GetThemeColor("placeholder_color", new Color4(1f, 1f, 1f, 0.35f)));
@@ -68,7 +84,7 @@ public class LineEdit : TextEditBase
         if (font == null) return 0;
         var inner = InnerRect();
         float size = GetThemeFontSize();
-        return TextMetrics.IndexAt(font, State.Text, localPosition.X - TextOrigin(font, size, inner), size);
+        return TextMetrics.IndexAt(font, DisplayText, localPosition.X - TextOrigin(font, size, inner), size);
     }
 
     protected override void EnsureCaretVisible()
@@ -78,10 +94,11 @@ public class LineEdit : TextEditBase
 
         float size = GetThemeFontSize();
         float width = InnerRect().Width;
-        float caret = TextMetrics.XOf(font, State.Text, State.Caret, size);
+        string text = DisplayText;
+        float caret = TextMetrics.XOf(font, text, State.Caret, size);
         if (caret - _scroll > width - 2f) _scroll = caret - width + 2f;
         if (caret - _scroll < 0f) _scroll = caret;
-        float total = font.MeasureWidth(State.Text, size);
+        float total = font.MeasureWidth(text, size);
         _scroll = Math.Clamp(_scroll, 0f, MathF.Max(0f, total - width + 2f));
     }
 
@@ -102,8 +119,24 @@ public class LineEdit : TextEditBase
         float x = inner.X - _scroll;
         if (Alignment == HorizontalAlignment.Left || HasFocus) return MathF.Floor(x);
 
-        float width = font.MeasureWidth(State.Text, size);
+        float width = font.MeasureWidth(DisplayText, size);
         if (width >= inner.Width) return MathF.Floor(x);
         return MathF.Floor(Alignment == HorizontalAlignment.Center ? inner.X + (inner.Width - width) * 0.5f : inner.End.X - width);
+    }
+}
+
+internal sealed class PasteOnlyClipboard : ICanvasClipboard
+{
+    private readonly ICanvasClipboard _inner;
+
+    public PasteOnlyClipboard(ICanvasClipboard inner)
+    {
+        _inner = inner;
+    }
+
+    public string GetText() => _inner?.GetText() ?? "";
+
+    public void SetText(string text)
+    {
     }
 }

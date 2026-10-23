@@ -3,22 +3,28 @@ using ImGuiNET;
 
 namespace Spacebox.Game.GUI.Menu;
 
-public sealed class UnsavedChangesPrompt
+public sealed class UnsavedChangesPrompt : IUnsavedChangesPrompt
 {
     private const string PopupId = "Unsaved changes##options";
     private const string Question = "Save changes?";
 
     private bool _openRequested;
+    private Action _onSave;
+    private Action _onDiscard;
+    private Action _onCancel;
 
     public bool IsOpen { get; private set; }
 
-    public void Open()
+    public void Open(Action onSave, Action onDiscard, Action onCancel)
     {
+        _onSave = onSave;
+        _onDiscard = onDiscard;
+        _onCancel = onCancel;
         _openRequested = true;
         IsOpen = true;
     }
 
-    public void Render(Action onSave, Action onDiscard, Action onCancel)
+    public void Render()
     {
         if (!IsOpen) return;
         if (_openRequested)
@@ -49,11 +55,11 @@ public sealed class UnsavedChangesPrompt
         ImGui.Text(Question);
         ImGui.Dummy(new Vector2(0, spacing));
 
-        Button("Save", buttonWidth, buttonHeight, onSave);
+        Button("Save", buttonWidth, buttonHeight, _onSave);
         ImGui.Dummy(new Vector2(0, spacing));
-        Button("Don't Save", buttonWidth, buttonHeight, onDiscard);
+        Button("Don't Save", buttonWidth, buttonHeight, _onDiscard);
         ImGui.Dummy(new Vector2(0, spacing));
-        Button("Cancel", buttonWidth, buttonHeight, onCancel);
+        Button("Cancel", buttonWidth, buttonHeight, _onCancel);
 
         ImGui.EndPopup();
     }
@@ -64,7 +70,7 @@ public sealed class UnsavedChangesPrompt
         {
             IsOpen = false;
             ImGui.CloseCurrentPopup();
-            onClick();
+            onClick?.Invoke();
         });
     }
 }

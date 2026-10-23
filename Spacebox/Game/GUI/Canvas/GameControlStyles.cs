@@ -66,6 +66,10 @@ public static class GameControlStyles
         theme.SetStyleBox("PanelContainer", "panel", Raised(p, p.Panel, 12f));
         theme.SetStyleBox("PopupPanel", "panel", Raised(p, p.Panel, 6f));
         theme.SetStyleBox("PopupMenu", "panel", Raised(p, p.Panel, 3f));
+        theme.SetTypeVariation("MenuItem", "Button");
+        theme.SetStyleBox("MenuItem", "normal", new StyleBoxFlat(new Color4(0f, 0f, 0f, 0f)).SetContentMargins(8f, 3f));
+        theme.SetStyleBox("MenuItem", "hover", new StyleBoxFlat(p.Selected).SetContentMargins(8f, 3f));
+        theme.SetStyleBox("MenuItem", "pressed", new StyleBoxFlat(p.Selected).SetContentMargins(8f, 3f));
         theme.SetStyleBox("TooltipPanel", "panel", new StyleBoxFlat(new Color4(0.05f, 0.05f, 0.07f, 0.96f), 6f).SetBorder(1f, new Color4(0.4f, 0.42f, 0.5f, 1f)));
         theme.SetColor("TooltipPanel", "font_color", new Color4(0.95f, 0.95f, 0.97f, 1f));
         theme.SetColor("Label", "tooltip_font_color", new Color4(0.95f, 0.95f, 0.97f, 1f));
@@ -78,6 +82,8 @@ public static class GameControlStyles
 
         theme.SetTypeVariation("MenuTitle", "Label");
         theme.SetColor("MenuTitle", "font_color", p.TitleText);
+        theme.SetTypeVariation("SectionLabel", "Label");
+        theme.SetColor("SectionLabel", "font_color", p.Heading);
         theme.SetTypeVariation("MutedLabel", "Label");
         theme.SetColor("MutedLabel", "font_color", p.TextMuted);
         theme.SetTypeVariation("ErrorLabel", "Label");

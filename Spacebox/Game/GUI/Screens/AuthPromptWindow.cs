@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using ImGuiNET;
 using Spacebox.Game.GUI.Menu;
 using Spacebox.Network;
@@ -101,7 +101,7 @@ public static class AuthPromptWindow
         _localError = error;
     }
 
-    private static void Cancel()
+    public static void Cancel()
     {
         Close();
         ClientConnector.Cancel();

@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using Engine;
 using ImGuiNET;
 using Spacebox.Game.Player;
@@ -27,6 +27,10 @@ public sealed class ShipViewerWindow : MenuWindow, IDisposable
         string worldsDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Globals.Menu.WorldsFolder);
         _session = new ShipViewerSession(worldsDirectory, VersionConverter.Registry, Application.Version);
     }
+
+    public ShipViewerSession Session => _session;
+
+    protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.ShipViewerPage(_menu, _session);
 
     public override void OnWindowChanged()
     {

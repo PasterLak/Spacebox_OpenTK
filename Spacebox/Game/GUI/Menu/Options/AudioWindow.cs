@@ -1,58 +1,33 @@
-﻿using ImGuiNET;
-using System.Numerics;
-
 namespace Spacebox.Game.GUI.Menu
 {
-    public class AudioWindow : SettingsCategoryWindow
+    public class AudioWindow : RowsCategoryWindow
     {
-        private readonly IOptionsNavigator _options;
-
-        public AudioWindow(IOptionsNavigator options)
+        public AudioWindow(IOptionsNavigator options) : base(options)
         {
-            _options = options;
         }
 
-        public override void Render()
+        public override string Title => "Audio";
+
+        protected override IReadOnlyList<OptionRow> BuildRows()
+        {
+            var percent = SliderRow.Suffix("%");
+            return new OptionRow[]
+            {
+                new SliderRow("Master Volume", "Volume of everything the game plays. The other sliders are scaled by this one.", 0, 100, () => Settings.Audio.Master, v => Apply(a => a.Master = v), percent),
+                new SliderRow("Music Volume", "Volume of the menu music.", 0, 100, () => Settings.Audio.Music, v => Apply(a => a.Music = v), percent),
+                new SliderRow("Ambient Volume", "Volume of the space background and mood sounds.", 0, 100, () => Settings.Audio.Ambient, v => Apply(a => a.Ambient = v), percent),
+                new SliderRow("Effects Volume", "Volume of gameplay sounds: blocks, tools, weapons, explosions, machines, mobs and players.", 0, 100, () => Settings.Audio.Effects, v => Apply(a => a.Effects = v), percent),
+                new SliderRow("Interface Volume", "Volume of buttons, inventory, storages and other windows.", 0, 100, () => Settings.Audio.UI, v => Apply(a => a.UI = v), percent),
+                new CheckRow("Mute When Unfocused", "Silences the game while its window is not active.", () => Settings.Audio.MuteWhenUnfocused, v => Apply(a => a.MuteWhenUnfocused = v)),
+                new CheckRow("Menu Music", "Plays music in the main menu. Same as the note button in the menu corner.", () => Settings.Audio.MenuMusic, v => Apply(a => a.MenuMusic = v))
+            };
+        }
+
+        private static void Apply(Action<AudioSettings> change)
         {
             var audio = Settings.Audio;
-
-            SettingsUI.Render("Audio", "Audio", 5,
-                (listSize, rowH) =>
-                {
-                    var rows = OptionsRows.Begin("table##audio", listSize.X);
-                    bool changed = false;
-
-                    int master = audio.Master;
-                    changed |= rows.Slider("Master Volume", "Volume of everything the game plays. The other sliders are scaled by this one.", ref master, 0, 100, "%d%%");
-                    int music = audio.Music;
-                    changed |= rows.Slider("Music Volume", "Volume of the menu music.", ref music, 0, 100, "%d%%");
-                    int ambient = audio.Ambient;
-                    changed |= rows.Slider("Ambient Volume", "Volume of the space background and mood sounds.", ref ambient, 0, 100, "%d%%");
-                    int effects = audio.Effects;
-                    changed |= rows.Slider("Effects Volume", "Volume of gameplay sounds: blocks, tools, weapons, explosions, machines, mobs and players.", ref effects, 0, 100, "%d%%");
-                    int ui = audio.UI;
-                    changed |= rows.Slider("Interface Volume", "Volume of buttons, inventory, storages and other windows.", ref ui, 0, 100, "%d%%");
-
-                    bool mute = audio.MuteWhenUnfocused;
-                    changed |= rows.Checkbox("Mute When Unfocused", "Silences the game while its window is not active.", ref mute);
-                    bool menuMusic = audio.MenuMusic;
-                    changed |= rows.Checkbox("Menu Music", "Plays music in the main menu. Same as the note button in the menu corner.", ref menuMusic);
-
-                    rows.End();
-
-                    if (!changed) return;
-                    audio.Master = master;
-                    audio.Music = music;
-                    audio.Ambient = ambient;
-                    audio.Effects = effects;
-                    audio.UI = ui;
-                    audio.MuteWhenUnfocused = mute;
-                    audio.MenuMusic = menuMusic;
-                    SettingsApplier.ApplyAudio(audio);
-                },
-                _options.Save,
-                _options.Back
-            );
+            change(audio);
+            SettingsApplier.ApplyAudio(audio);
         }
     }
 }

@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using ImGuiNET;
 using Spacebox.Network;
 
@@ -25,6 +25,10 @@ public static class ConnectionScreen
 
     public static bool IsVisible { get; private set; }
     public static bool HasError => _error != null;
+    public static string Title => _title;
+    public static string Error => _error;
+    public static float? Progress => _progress;
+    public static IReadOnlyList<string> Steps => _steps;
 
     public static void Show(string title)
     {
@@ -115,6 +119,12 @@ public static class ConnectionScreen
         if (!AuthPromptWindow.IsVisible) DrawButton(displaySize, y + lineHeight);
     }
 
+    public static void Leave()
+    {
+        if (ClientConnector.IsConnecting) ClientConnector.Cancel();
+        Hide();
+    }
+
     private static void DrawButton(Vector2 displaySize, float y)
     {
         string label = _error != null ? "Back to menu" : "Cancel";
@@ -125,11 +135,7 @@ public static class ConnectionScreen
         ImGui.SetNextWindowSize(buttonSize + padding * 2f);
         ImGui.Begin("ConnectionScreenButton", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoSavedSettings);
 
-        if (ImGui.Button(label, buttonSize))
-        {
-            if (ClientConnector.IsConnecting) ClientConnector.Cancel();
-            Hide();
-        }
+        if (ImGui.Button(label, buttonSize)) Leave();
 
         ImGui.End();
     }

@@ -346,6 +346,7 @@ Fixes
 - developer panel (F3) rebuilt on the new UI: scenes, lighting, hierarchy and node inspector in the editor style
 - debug console rebuilt on the new UI: filters with counts, copy all, select mode, right-click copies a line, Tab completion and history; drawn above the game interface
 - new interface system for the game: hotbar and health, oxygen and power bars rebuilt; Options > Interface: Design (Classic or Modern) and UI Scale
+- main menu rebuilt on the new interface system (Classic and Modern designs): worlds, new world, GameSets, texture packs, multiplayer with server info, ship viewer with export, all options with key bindings, world conversion, joining and login
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine
@@ -355,6 +356,7 @@ Engine
 - the log starts with a system report: OS, .NET, CPU, cores, RAM, GPU with driver and OpenGL/GLSL version, monitor
 - shader tests: every game and engine shader is checked with the GLSL reference compiler (strict like AMD/Intel drivers) and a lint for removed core-profile names
 - CanvasUI: HFlowContainer; ItemList clips its rows and scrolls to the selection after the first layout
+- CanvasUI: LineEdit password mode (Secret, never copied), HSlider DragEnded
 - WAV sounds load from read-only installs (files opened read-only and shared)
 - console log keeps the last 5000 messages, draws the last 400, thread-safe for every log call; no log line per disposed GL object
 - archives from servers are checked before extraction (2 GB, 100000 entries, path traversal also on case-sensitive systems)

@@ -197,6 +197,8 @@ public class Control : CanvasItem
         (_colorOverrides ??= new Dictionary<string, Color4>())[name] = color;
     }
 
+    public void RemoveThemeColorOverride(string name) => _colorOverrides?.Remove(name);
+
     public void AddThemeConstantOverride(string name, float value)
     {
         (_constantOverrides ??= new Dictionary<string, float>())[name] = value;

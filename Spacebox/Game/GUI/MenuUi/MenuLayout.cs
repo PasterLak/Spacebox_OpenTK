@@ -55,6 +55,17 @@ public static class MenuLayout
         return button;
     }
 
+    public static PanelContainer ScrollList(Control content, float height)
+    {
+        var box = new PanelContainer { ThemeTypeVariation = "InsetPanel", CustomMinimumSize = new Vector2(0f, height) };
+        var scroll = new ScrollContainer();
+        var margin = new MarginContainer { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand }.SetMargins(0f, 0f, 14f, 0f);
+        margin.AddChild(content);
+        scroll.AddChild(margin);
+        box.AddChild(scroll);
+        return box;
+    }
+
     public static Label Caption(string text) => new Label { Text = text, ThemeTypeVariation = "MutedLabel" };
 
     public static VBoxContainer Field(string caption, Control control)

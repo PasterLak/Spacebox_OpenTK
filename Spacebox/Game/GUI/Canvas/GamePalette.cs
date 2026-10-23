@@ -23,6 +23,7 @@ public sealed class GamePalette
     public Color4 SelectedText { get; init; }
     public Color4 Hover { get; init; }
     public Color4 Accent { get; init; }
+    public Color4 Heading { get; init; }
     public Color4 Error { get; init; }
     public Color4 Warning { get; init; }
     public Color4 Success { get; init; }
@@ -49,6 +50,7 @@ public sealed class GamePalette
         SelectedText = new Color4(0.08f, 0.08f, 0.08f, 1f),
         Hover = new Color4(0f, 0f, 0f, 0.08f),
         Accent = new Color4(1f, 0.72f, 0.1f, 1f),
+        Heading = new Color4(0.45f, 0.27f, 0f, 1f),
         Error = new Color4(0.7f, 0.05f, 0.05f, 1f),
         Warning = new Color4(0.55f, 0.32f, 0f, 1f),
         Success = new Color4(0.05f, 0.45f, 0.1f, 1f),
@@ -76,6 +78,7 @@ public sealed class GamePalette
         SelectedText = Color4.White,
         Hover = new Color4(1f, 1f, 1f, 0.07f),
         Accent = new Color4(1f, 0.77f, 0.16f, 1f),
+        Heading = new Color4(1f, 0.77f, 0.16f, 1f),
         Error = new Color4(1f, 0.45f, 0.38f, 1f),
         Warning = new Color4(1f, 0.75f, 0.3f, 1f),
         Success = new Color4(0.45f, 0.85f, 0.45f, 1f),

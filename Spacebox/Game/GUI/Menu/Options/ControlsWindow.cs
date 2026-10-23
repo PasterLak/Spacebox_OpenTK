@@ -46,9 +46,30 @@ public class ControlsWindow : MenuWindow, IOptionsCategory
 
     public void Discard() => InputManager.Instance.LoadConfiguration(OptionsMenu.InputConfigPath);
 
+    public bool IsRemapping => isRemapping;
+    public string RemappingAction => remappingAction;
+    public float RemapTimeLeft => remapTimeout;
+    public float RemapProgress => remapTimeout / MAX_REMAP_TIME;
+    public int BindingsVersion { get; private set; }
+    public IOptionsNavigator Options => _options;
+
+    public bool IsDuplicate(string bindingText) => sameKeys.Contains(bindingText);
+
+    public string BindingText(InputAction action) => GetBindingDisplayText(action);
+
+    public void Remap(string actionId) => StartRemapping(actionId);
+
+    public void Cancel()
+    {
+        if (isRemapping) CancelRemapping();
+    }
+
+    protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.ControlsPage(this);
+
     public override void OnWindowChanged()
     {
         sameKeys = ValidateSameBindings();
+        BindingsVersion++;
     }
 
     private void RenderControlsTable(Vector2 listSize, float rowH)
@@ -296,6 +317,7 @@ public class ControlsWindow : MenuWindow, IOptionsCategory
                 isRemapping = false;
                 remappingAction = null;
                 sameKeys = ValidateSameBindings();
+                BindingsVersion++;
             }
         }
     }
@@ -306,5 +328,6 @@ public class ControlsWindow : MenuWindow, IOptionsCategory
         isRemapping = false;
         remappingAction = null;
         sameKeys = ValidateSameBindings();
+        BindingsVersion++;
     }
 }

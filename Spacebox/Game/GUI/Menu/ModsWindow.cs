@@ -14,6 +14,8 @@ public class ModsWindow : MenuWindow
         _menu = menu;
     }
 
+    protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.ModsPage(_menu);
+
     public override void Render()
     {
         var display = ImGui.GetIO().DisplaySize;

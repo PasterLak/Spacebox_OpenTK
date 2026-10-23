@@ -329,4 +329,21 @@ public class CanvasEditingTests
         Click(root, new Vector2(700, 500));
         Assert.True(hidden);
     }
+
+    [Fact]
+    public void SecretLineEdit_PastesButNeverCopiesItsText()
+    {
+        var root = CreateRoot();
+        root.Clipboard.SetText("pasted");
+        var edit = root.Add(new LineEdit { Secret = true });
+        edit.GrabFocus();
+        Type(root, "hunter2");
+        Key(root, Keys.A, control: true);
+        Key(root, Keys.C, control: true);
+        Assert.Equal("pasted", root.Clipboard.GetText());
+
+        Key(root, Keys.End);
+        Key(root, Keys.V, control: true);
+        Assert.Equal("hunter2pasted", edit.Text);
+    }
 }

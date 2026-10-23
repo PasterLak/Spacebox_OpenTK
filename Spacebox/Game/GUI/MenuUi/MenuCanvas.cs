@@ -21,6 +21,9 @@ public sealed class MenuCanvas : IDisposable
     private readonly IconButton _musicButton = new IconButton(LinkSize);
     private readonly Label _version = new Label { Text = $"Version {Application.Version} alpha" };
     private readonly Label _author = new Label { Text = "Made by PasterLak" };
+    private readonly UpgradeWorldDialog _upgrade;
+    private readonly ConnectionView _connection = new ConnectionView();
+    private readonly AuthDialog _auth = new AuthDialog();
     private SkiaCanvasFont _font;
     private GameUiDesign _design = (GameUiDesign)(-1);
     private float _scale = -1f;
@@ -43,6 +46,7 @@ public sealed class MenuCanvas : IDisposable
         root.Stretch.VirtualSize = GameCanvas.VirtualSize;
         _font = new SkiaCanvasFont(Path.Combine(AppContext.BaseDirectory, GameCanvasThemes.FontPath), (int)GameCanvasThemes.FontSize);
         _logo.Texture = logo;
+        _upgrade = new UpgradeWorldDialog(menu.VersionWindow);
         Build(root);
         Apply(Settings.Interface);
     }
@@ -59,6 +63,10 @@ public sealed class MenuCanvas : IDisposable
         column.AddChild(_logo);
         column.AddChild(_pageHolder);
         column.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 32f), MouseFilter = MouseFilter.Ignore });
+
+        var connection = root.Add(new SafeArea { Name = "ConnectionArea", MouseFilter = MouseFilter.Ignore }, UiLayer.Windows);
+        connection.SetAnchorsPreset(LayoutPreset.FullRect);
+        connection.AddChild(_connection);
 
         var hud = root.Add(new SafeArea { Name = "MenuDecor", MouseFilter = MouseFilter.Ignore }, UiLayer.Hud);
         hud.SetAnchorsPreset(LayoutPreset.FullRect);
@@ -125,17 +133,23 @@ public sealed class MenuCanvas : IDisposable
         _musicButton.SetSprite(UIAtlas.Get(_music.IsEnabled ? "musicon" : "musicoff"));
         _musicButton.TooltipText = _music.IsEnabled ? "Menu music: on" : "Menu music: off";
 
-        bool menuVisible = GameMenu.IsVisible && !_menu.IsHidden;
-        _logo.Visible = CenteredImageMenu.IsVisible;
-        _pressAnyKey.Visible = CenteredImageMenu.ShowText && CenteredImageMenu.IsVisible;
+        bool connecting = ConnectionScreen.IsVisible;
+        bool menuVisible = GameMenu.IsVisible && !_menu.IsHidden && !connecting;
+        _connection.Visible = connecting;
+        if (connecting) _connection.Sync();
+        _auth.Sync(_layer.Root);
+        _pressAnyKey.Visible = CenteredImageMenu.ShowText && CenteredImageMenu.IsVisible && !connecting;
         _pressAnyKey.Modulate = new Color4(1f, 1f, 1f, 0.5f * (MathF.Sin(_time * 2f) + 1f));
-        _links.Visible = VerticalLinks.IsVisible;
-        _version.Visible = CenteredImageMenu.IsVisible;
-        _author.Visible = CenteredImageMenu.IsVisible;
-        _musicButton.Visible = !_menu.IsHidden;
+        _links.Visible = VerticalLinks.IsVisible && !connecting;
+        _version.Visible = CenteredImageMenu.IsVisible && !connecting;
+        _author.Visible = CenteredImageMenu.IsVisible && !connecting;
+        _musicButton.Visible = !_menu.IsHidden && !connecting;
 
+        if (Input.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape)) MenuModal.CloseTop();
         SyncPage(menuVisible ? _menu.CurrentWindowType : null);
+        _logo.Visible = CenteredImageMenu.IsVisible && !connecting && (_page?.ShowsLogo ?? true);
         _page?.Tick(deltaTime);
+        _upgrade.Sync(_layer.Root);
         _layer.InputEnabled = !Engine.Debug.IsVisible;
         _layer.Update(deltaTime);
     }

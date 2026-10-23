@@ -14,6 +14,8 @@ namespace Spacebox.Game.GUI.Menu
             Settings.LoadSettings();
         }
 
+        protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.OptionsListPage(_options);
+
         public override void Render()
         {
             Vector2 windowSize = ImGui.GetIO().DisplaySize;

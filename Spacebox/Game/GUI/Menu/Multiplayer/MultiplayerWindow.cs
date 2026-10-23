@@ -26,6 +26,29 @@ namespace Spacebox.Game.GUI.Menu
         private ServerBrowser _browser;
 
         public ClientConfig Config => config;
+        public IReadOnlyList<string> Colors => availableColors;
+        public int SelectedColorIndex => selectedColorIndex;
+        public string Nickname => nickname;
+        public ServerIconCache Icons => _icons;
+
+        public ServerBrowser Browser
+        {
+            get
+            {
+                EnsureBrowser();
+                return _browser;
+            }
+        }
+
+        public ServerListItem Selected
+        {
+            get => _list.Selected;
+            set => _list.Selected = value;
+        }
+
+        public bool CanEdit(ServerListItem item) => item != null && IsListed(item);
+
+        protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.MultiplayerPage(this);
 
         public MultiplayerWindow(GameMenu menu)
         {
@@ -79,11 +102,46 @@ namespace Spacebox.Game.GUI.Menu
             }
         }
 
-        public override void Render()
+        public void UpdateBrowser(float deltaTime)
         {
             if (config == null) LoadConfig();
             EnsureBrowser();
-            _browser.Update(Time.Delta);
+            _browser.Update(deltaTime);
+        }
+
+        public void SetNickname(string value)
+        {
+            nickname = value ?? "";
+            if (string.IsNullOrWhiteSpace(nickname)) return;
+            config.PlayerNickname = nickname.Trim();
+            SaveConfig();
+        }
+
+        public void SelectColor(int index)
+        {
+            if (index < 0 || index >= availableColors.Length) return;
+            selectedColorIndex = index;
+            ChangePlayerTexture(availableColors[index]);
+            SaveConfig();
+        }
+
+        public void JoinOrCancel()
+        {
+            if (ClientConnector.IsConnecting) ClientConnector.Cancel();
+            else Join(_list.Selected);
+        }
+
+        public void Back()
+        {
+            _info.Close();
+            menu.SetStateToMain();
+        }
+
+        public static Vector4 ColorOf(string colorName) => GetColorVector(colorName);
+
+        public override void Render()
+        {
+            UpdateBrowser(Time.Delta);
 
             var display = ImGui.GetIO().DisplaySize;
             float width = MathF.Min(MathF.Max(display.X * 0.5f, 620f), display.X * 0.95f);
@@ -219,7 +277,7 @@ namespace Spacebox.Game.GUI.Menu
             });
         }
 
-        private bool IsListed(ServerListItem item)
+        public bool IsListed(ServerListItem item)
         {
             foreach (var saved in _browser.Saved)
                 if (saved == item) return true;
@@ -228,7 +286,7 @@ namespace Spacebox.Game.GUI.Menu
             return false;
         }
 
-        private void SaveServer(ServerListItem item, string name, string host, int port)
+        public void SaveServer(ServerListItem item, string name, string host, int port)
         {
             ServerEntry entry;
             if (item != null && item.IsSaved)
@@ -263,7 +321,7 @@ namespace Spacebox.Game.GUI.Menu
             }
         }
 
-        private void RemoveServer(ServerListItem item)
+        public void RemoveServer(ServerListItem item)
         {
             if (item == null || !item.IsSaved) return;
 
@@ -285,7 +343,7 @@ namespace Spacebox.Game.GUI.Menu
             _browser.DirectedBroadcasts = LocalBroadcastAddresses.Collect();
         }
 
-        private void Join(ServerListItem item)
+        public void Join(ServerListItem item)
         {
             if (item == null) return;
             Connect(item.Entry, item.Status?.Name ?? item.DisplayName);

@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Engine.Light;
 using Spacebox.Editor.Preview;
 using Spacebox.Game.Versioning;
@@ -46,6 +46,7 @@ public sealed class ShipViewerSession : IDisposable
     public string Status { get; private set; } = "";
     public string GameSetNotice => _gameSet.Notice;
     public ShipPreviewContent Content => _viewport?.Content as ShipPreviewContent;
+    public Spacebox.Editor.Preview.PreviewViewport Viewport => _viewport;
     public float AmbientLight { get; set; } = 1f;
 
     public bool Powered
