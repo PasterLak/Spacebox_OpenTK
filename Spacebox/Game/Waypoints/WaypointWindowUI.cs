@@ -34,7 +34,7 @@ public sealed class WaypointWindowUI : IGameUiController
         {
             if (UIManager.IsTop(WindowId)) UIManager.CloseTop();
         }
-        else if (!UIManager.IsUIMode)
+        else if (!UIManager.IsUIMode && World.Instance?.Player?.IsAlive != false)
         {
             _confirmDelete = false;
             UIManager.Open(WindowId);

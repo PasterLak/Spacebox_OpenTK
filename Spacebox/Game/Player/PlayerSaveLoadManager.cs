@@ -123,8 +123,18 @@ namespace Spacebox.Game.Player
             if (!LoadPlayerFromJson(player, json) && !string.IsNullOrEmpty(json)) BackupUnreadablePlayer(worldFolder, json);
         }
 
+        public static bool PendingSafeSpawn { get; private set; }
+
+        public static void SettleSpawn(LocalAstronaut player)
+        {
+            if (!PendingSafeSpawn) return;
+            PendingSafeSpawn = false;
+            player.SetPosition(Respawn.SafeSpawnFinder.FindFreePosition(player.Position));
+        }
+
         public static bool LoadPlayerFromJson(LocalAstronaut player, string json)
         {
+            PendingSafeSpawn = false;
             if (!string.IsNullOrEmpty(json) && Apply(player, json)) return true;
 
             ApplyNewPlayer(player);
@@ -151,8 +161,9 @@ namespace Spacebox.Game.Player
 
             if (Respawn.WorldSpawn.TryGet(out var worldSpawn))
             {
-                player.SetPosition(Respawn.SafeSpawnFinder.FindFreePosition(worldSpawn));
+                player.SetPosition(worldSpawn);
                 player.SpawnPosition = worldSpawn;
+                PendingSafeSpawn = true;
             }
             else
             {
@@ -281,10 +292,9 @@ namespace Spacebox.Game.Player
         private static void RespawnSavedDeadPlayer(LocalAstronaut player)
         {
             Debug.Warning("[PlayerSaveLoadManager] The player was saved dead, respawning at the spawn point.");
-            player.SetPosition(Respawn.SafeSpawnFinder.FindFreePosition(Respawn.WorldSpawn.For(player)));
-            player.HealthBar.StatsData.Value = player.HealthBar.StatsData.MaxValue;
-            player.PowerBar.StatsData.Value = player.PowerBar.StatsData.MaxValue;
-            player.OxygenBar.StatsData.Fill();
+            player.SetPosition(Respawn.WorldSpawn.For(player));
+            PendingSafeSpawn = true;
+            player.ApplySpawnStats();
         }
 
         private static List<SavedItemSlot> CollectSlots(Storage storage)

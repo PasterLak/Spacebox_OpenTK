@@ -48,7 +48,7 @@ public sealed class ShipLibraryUI : IGameUiController
             return;
         }
 
-        if (UIManager.IsUIMode || ShipPlacementMode.IsActive) return;
+        if (UIManager.IsUIMode || ShipPlacementMode.IsActive || !player.IsAlive) return;
         if (!player.GameModeRules.ShipLibrary)
         {
             _chat.Write("Your game mode cannot place saved ships", WarningChatColor);

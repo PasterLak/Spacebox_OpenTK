@@ -200,7 +200,7 @@
         {
           "Id": "power",
           "Title": "Power",
-          "Text": "Drilling empties your power. Smelt water into liquid hydrogen, then craft and use a power pack.",
+          "Text": "Drilling empties your power. Smelt water into liquid hydrogen, then craft and use a {item:power}.",
           "Icon": "power",
           "Tasks": [
             { "Type": "process", "Item": "liquid_hydrogen", "Machine": "furnace" },
@@ -327,6 +327,7 @@
           "Title": "Titanium and uranium",
           "Text": "Titanium makes the best armor and ship parts, uranium powers reactors and the gravity generator.",
           "Icon": "titanium_ore",
+          "Hint": "Obscurium ore is even harder: only the {item:titanium_drill} or better can drill it.",
           "Tasks": [
             { "Type": "have_item", "Item": "titanium_ore", "Count": 5 },
             { "Type": "have_item", "Item": "uranium_ore", "Count": 2 }
@@ -461,8 +462,9 @@
         {
           "Id": "gravity",
           "Title": "Gravity",
-          "Text": "A gravity generator lets you walk inside your base or ship. It starts switched off: open it with {key:use} and turn on Gravity. Hold {key:crouch} to crouch through low gaps. Careful: now you can fall!",
+          "Text": "A gravity generator lets you walk inside your base or ship. It needs power and starts switched off: connect it to a power block, open it with {key:use} and turn on Gravity. Careful: now you can fall!",
           "Icon": "gravity_generator",
+          "Hint": "Hold {key:crouch} to crouch through low gaps.",
           "Tasks": [
             { "Type": "place_block", "Block": "gravity_generator" },
             { "Type": "use_block", "Block": "gravity_generator" },

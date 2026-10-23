@@ -41,6 +41,32 @@ namespace Engine
             if (_stack.Count == 0) return;
 
             _stack.Pop();
+            RebuildActiveWindows();
+            UpdateState();
+        }
+
+        public static void Close(string windowName)
+        {
+            if (!_activeWindows.Contains(windowName)) return;
+
+            var kept = new List<HashSet<string>>(_stack.Count);
+            foreach (var layer in _stack)
+            {
+                if (!layer.Contains(windowName)) kept.Add(layer);
+            }
+
+            _stack.Clear();
+            for (int i = kept.Count - 1; i >= 0; i--)
+            {
+                _stack.Push(kept[i]);
+            }
+
+            RebuildActiveWindows();
+            UpdateState();
+        }
+
+        private static void RebuildActiveWindows()
+        {
             _activeWindows.Clear();
 
             foreach (var layer in _stack)
@@ -50,8 +76,6 @@ namespace Engine
                     _activeWindows.Add(window);
                 }
             }
-
-            UpdateState();
         }
 
         public static void CloseAll()

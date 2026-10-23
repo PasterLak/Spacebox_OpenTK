@@ -158,7 +158,7 @@ public class World : Component, ISpaceStructure
     public bool HasUnsavedChanges()
     {
         if (Spacebox.Network.GameSession.IsRemoteClient || !Spacebox.Network.GameSession.HasLocalPlayer || Player == null) return false;
-        return WorldSaveState.HasUnsavedChanges(PlayerSaveLoadManager.Serialize(Player));
+        return WorldSaveState.HasUnsavedChanges(PlayerSaveLoadManager.Serialize(Player), Player.GameModeId, WorldData.Info.GameMode);
     }
 
     public void StartTrackingChanges()

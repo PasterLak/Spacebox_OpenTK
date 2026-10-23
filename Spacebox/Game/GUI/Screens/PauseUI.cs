@@ -26,6 +26,7 @@ namespace Spacebox.Game.GUI
         private readonly StatisticsUI _statistics;
         private readonly Spacebox.Game.Tutorial.UI.TutorialMenuUI _tutorialMenu;
         private Action _pendingLeave;
+        private bool _interfaceBeforePause = true;
 
         public PauseUI(StatisticsUI statistics, Spacebox.Game.Tutorial.UI.TutorialMenuUI tutorialMenu)
         {
@@ -61,6 +62,7 @@ namespace Spacebox.Game.GUI
                     if (!IsMultiplayerActive()) Time.TimeSize = 0;
                     saveButtonText = "Save";
                     networkButtonText = GameSession.IsRemoteClient ? "Connected to server" : Engine.Networking.NetworkManager.Instance.IsListening ? $"Open on port {GameSession.Port}" : "Open to network";
+                    _interfaceBeforePause = Settings.ShowInterface;
                     Settings.ShowInterface = false;
                 }
                 else
@@ -68,7 +70,7 @@ namespace Spacebox.Game.GUI
                     _statistics.IsVisible = false;
                     Time.TimeSize = 1;
                     saveButtonText = "Save";
-                    Settings.ShowInterface = true;
+                    Settings.ShowInterface = _interfaceBeforePause;
                 }
                 _wasVisible = isVisible;
             }

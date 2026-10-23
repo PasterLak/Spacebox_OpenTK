@@ -42,6 +42,13 @@ namespace Spacebox.Game.GUI
                 UIManager.Open("storage", "inventory");
         }
 
+        public void CloseFor(StorageBlock storageBlock)
+        {
+            if (storageBlock == null || StorageBlock != storageBlock) return;
+            UIManager.Close("storage");
+            CloseStorage();
+        }
+
         private void CloseStorage()
         {
             Storage?.DisconnectStorage();

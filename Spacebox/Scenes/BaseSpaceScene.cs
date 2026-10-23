@@ -112,6 +112,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         var world = new World(localPlayer, blockMaterial);
         AttachComponent(world);
         world.Load();
+        localPlayer.GameMode = World.WorldData.Info.GameMode;
         if (GameSession.IsRemoteClient)
             PlayerSaveLoadManager.LoadPlayerFromJson(localPlayer, GameSession.PendingPlayerJson);
         else
@@ -183,7 +184,11 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Camera.Main = localPlayer;
 
         world.PreloadAroundPlayer();
-        ui.Loading.Begin(localPlayer, () => ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 0), 1f, WorldRevealFade));
+        ui.Loading.Begin(localPlayer, () =>
+        {
+            PlayerSaveLoadManager.SettleSpawn(localPlayer);
+            ColorOverlay.FadeOut(new System.Numerics.Vector3(0, 0, 0), 1f, WorldRevealFade);
+        });
 
         ui.Welcome.OnPlayerSpawned(World.WorldData.Info.ShowWelcomeWindow);
         AttachComponent(new SpheresPool());
@@ -280,7 +285,10 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         if (Input.IsKeyDown(Keys.Escape) && !UIManager.IsTop("chat"))
         {
-            if (Spacebox.Game.Ships.Sharing.ShipPlacementMode.IsActive && !UIManager.IsUIMode)
+            if (ui.ShipConsole.IsWaitingForKey)
+            {
+            }
+            else if (Spacebox.Game.Ships.Sharing.ShipPlacementMode.IsActive && !UIManager.IsUIMode)
             {
                 Spacebox.Game.Ships.Sharing.ShipPlacementMode.Cancel();
             }

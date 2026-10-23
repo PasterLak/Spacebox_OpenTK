@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.Generation;
 
@@ -27,6 +28,12 @@ public static class WorldSaveState
     {
         if (!_tracking) return false;
         return _worldChanged || !string.Equals(_savedPlayerJson, Fingerprint(currentPlayerJson), StringComparison.Ordinal);
+    }
+
+    public static bool HasUnsavedChanges(string currentPlayerJson, GameMode currentMode, GameMode savedMode)
+    {
+        if (!_tracking) return false;
+        return currentMode != savedMode || HasUnsavedChanges(currentPlayerJson);
     }
 
     public static string Fingerprint(string playerJson)

@@ -29,6 +29,7 @@ public sealed class ShipConsoleUI : IGameUiController
 
     public bool IsOpen => UIManager.IsOpen(WindowId);
     public int WaitingGroup => _waitingGroup;
+    public bool IsWaitingForKey => IsOpen && _waitingGroup >= 0;
     public ShipConsoleBlock Console => ShipPilot.Console;
     public ConsoleBindings Bindings => Console?.Entity?.ShipControl.GetBindings(Console.LocalCell);
 

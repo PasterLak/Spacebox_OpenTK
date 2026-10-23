@@ -1,5 +1,6 @@
 using Spacebox.Game;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Tests.Game;
 
@@ -30,6 +31,18 @@ public class WorldSaveStateTests
         WorldSaveState.MarkSaved(Player);
         Assert.False(WorldSaveState.HasUnsavedChanges(Player));
         WorldSaveState.Reset();
+    }
+
+    [Fact]
+    public void ChangedGameModeIsUnsaved()
+    {
+        WorldSaveState.Reset();
+        WorldSaveState.MarkSaved(Player);
+
+        Assert.False(WorldSaveState.HasUnsavedChanges(Player, GameMode.Survival, GameMode.Survival));
+        Assert.True(WorldSaveState.HasUnsavedChanges(Player, GameMode.Creative, GameMode.Survival));
+        WorldSaveState.Reset();
+        Assert.False(WorldSaveState.HasUnsavedChanges(Player, GameMode.Creative, GameMode.Survival));
     }
 
     [Fact]

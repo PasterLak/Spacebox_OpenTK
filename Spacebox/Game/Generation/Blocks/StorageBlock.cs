@@ -62,6 +62,7 @@ public class StorageBlock : InteractiveBlock, IContainerBlock
 
     private void OnStorageDestroy(HitInfo info)
     {
+        GameUi.Current?.Storage.CloseFor(this);
         if (_storage != null && info.block != null)
         {
             World.DropEffectManager.DropStorage(_storage, info.blockPositionWorld, 2, 0.1f, 2, 4);
