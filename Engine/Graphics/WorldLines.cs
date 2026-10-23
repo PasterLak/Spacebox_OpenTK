@@ -86,8 +86,8 @@ public static class WorldLines
 
         GL.BindVertexArray(_buffer.VAO);
         GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer.VBO);
-        float[] data = _triangles.ToArray();
-        GL.BufferData(BufferTarget.ArrayBuffer, data.Length * sizeof(float), data, BufferUsageHint.DynamicDraw);
+        var data = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(_triangles);
+        GL.BufferData(BufferTarget.ArrayBuffer, data.Length * sizeof(float), ref System.Runtime.InteropServices.MemoryMarshal.GetReference(data), BufferUsageHint.DynamicDraw);
         GL.DrawArrays(PrimitiveType.Triangles, 0, data.Length / 7);
         GL.BindVertexArray(0);
 
