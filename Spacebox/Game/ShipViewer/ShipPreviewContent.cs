@@ -183,14 +183,8 @@ public sealed class ShipPreviewContent : IPreviewContent, IPreviewClickTarget
         {
             if (_cancelled) return;
 
-            var tag = _loadTag();
-            var chunks = new Dictionary<Vector3SByte, Block[,,]>();
-            foreach (var chunkTag in ChunkTagAccess.Chunks(tag))
-            {
-                if (_cancelled) return;
-                var blocks = NBTHelper.TagToChunkBlocks(chunkTag, out var index);
-                chunks[index] = blocks;
-            }
+            var chunks = ShipChunkMesher.ReadChunks(_loadTag(), () => _cancelled);
+            if (_cancelled) return;
 
             if (LightManager.EnableLighting) ShipLightFlood.Propagate(chunks);
             if (kind == MeshPassKind.Initial)
@@ -300,27 +294,8 @@ public sealed class ShipPreviewContent : IPreviewContent, IPreviewClickTarget
         {
             if (_cancelled || pass.Generation != Volatile.Read(ref _generation)) return;
 
-            var padded = ShipChunkPadding.Build(chunks, index, air);
-            try
-            {
-                var meshData = new MeshGenerator(index, padded, false).GenerateMeshData();
-                try
-                {
-                    bool empty = meshData.VertexCount == 0 || meshData.IndexCount == 0;
-                    if (!_cancelled)
-                        _ready.Enqueue(empty
-                            ? new ChunkMeshData(index, null, null, pass)
-                            : new ChunkMeshData(index, meshData.Vertices.AsSpan(0, meshData.VertexCount).ToArray(), meshData.Indices.AsSpan(0, meshData.IndexCount).ToArray(), pass));
-                }
-                finally
-                {
-                    meshData.Release();
-                }
-            }
-            finally
-            {
-                PaddedArrayPools.Blocks.Return(padded);
-            }
+            var mesh = ShipChunkMesher.Mesh(chunks, index, air);
+            if (!_cancelled) _ready.Enqueue(new ChunkMeshData(index, mesh.Vertices, mesh.Indices, pass));
 
             if (pass.Kind == MeshPassKind.Initial) Interlocked.Increment(ref _meshedChunks);
         }

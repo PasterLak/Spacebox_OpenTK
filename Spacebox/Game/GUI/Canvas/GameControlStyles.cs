@@ -108,6 +108,8 @@ public static class GameControlStyles
         theme.SetStyleBox("TitleBar", "panel", new StyleBoxFlat(p.TitleBar).SetContentMargins(10f, 4f));
         theme.SetTypeVariation("InsetPanel", "PanelContainer");
         theme.SetStyleBox("InsetPanel", "panel", Sunken(p, p.List, 8f, 6f));
+        theme.SetTypeVariation("ImagePanel", "PanelContainer");
+        theme.SetStyleBox("ImagePanel", "panel", Sunken(p, p.List, 2f));
 
         theme.SetConstant("BoxContainer", "separation", 6f);
         theme.SetConstant("GridContainer", "h_separation", 8f);

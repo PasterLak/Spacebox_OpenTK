@@ -42,7 +42,7 @@ public sealed class WorldSelectPage : MenuPage
         var top = new HBoxContainer();
         top.AddThemeConstantOverride("separation", 10f);
         top.AddChild(_list);
-        var previewBox = new PanelContainer { ThemeTypeVariation = "InsetPanel", ClipContents = true, CustomMinimumSize = new Vector2(ListHeight, ListHeight), SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
+        var previewBox = new PanelContainer { ThemeTypeVariation = "ImagePanel", ClipContents = true, CustomMinimumSize = new Vector2(ListHeight, ListHeight), SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
         previewBox.AddChild(_preview);
         previewBox.AddChild(_noPreview);
         top.AddChild(previewBox);

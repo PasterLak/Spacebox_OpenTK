@@ -7,7 +7,10 @@ namespace Engine.Light
 {
     public static class Lighting
     {
-        public static Vector3 AmbientColor = new Vector3(1);
+        public static readonly Vector3 DefaultAmbientColor = new Vector3(1);
+        public const int DefaultFogDensity = 10;
+
+        public static Vector3 AmbientColor = DefaultAmbientColor;
         public static Vector3 FogColor;
 
         private static int _fogDensity = 10 ;
@@ -32,6 +35,13 @@ namespace Engine.Light
                 }
                 _skybox = value;
             }
+        }
+
+        public static void ResetToDefaults()
+        {
+            AmbientColor = DefaultAmbientColor;
+            FogColor = Vector3.Zero;
+            _fogDensity = DefaultFogDensity;
         }
 
         public static void AddAmbient()

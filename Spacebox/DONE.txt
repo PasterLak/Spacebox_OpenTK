@@ -363,9 +363,12 @@ Fixes
 - game mode rules: Collide, UseGravity, MobsAttack, ConsumeItems, DropItemsOnDeath, UseItems, CreativeInventory, InstantBreak, BreakUnbreakable, AreaTools, ShipLibrary, FreeFlashlight, FullRadar, CountStatistics, StartItems (the old survival/creative/spectator checks now read these rules)
 - Mods: red X on the selected mod deletes it after asking; the question lists the worlds and mods that will stop working (Empty and Default cannot be deleted)
 - Ship placing: textured block preview of the ship (merged cells for huge ships), ship lines up with the player when picked, R / Y / U turn around the ship axes (Shift reverse, Ctrl 15 degrees), Backspace re-aligns
+- Ship placing: the preview is the real ship model, built in the background while you already aim (block preview until it is ready)
+- menu is no longer darker after leaving a world (the GameSet lighting stayed); world preview fills its box
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine
+- Lighting.ResetToDefaults() (ambient, fog)
 - OpenTK 4.9.4 (GLFW 3.4); Linux picks the window system: native Wayland on Wayland desktops, X11 otherwise, each with the other as fallback, --window-system x11|wayland|auto or SPACEBOX_WINDOW_SYSTEM to force one; GLFW errors are logged instead of crashing
 - dedicated servers run without a window or GPU on every OS (Linux servers no longer need X11, Wayland or xvfb)
 - laptops with integrated and dedicated graphics run the game on the dedicated GPU (NVIDIA Optimus, Windows graphics preference, Linux PRIME offload)

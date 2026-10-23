@@ -43,6 +43,7 @@ namespace Spacebox.Scenes
 
     
             InputManager.Instance.LoadConfiguration("Resources/default_input.json");
+            Lighting.ResetToDefaults();
 
             var player = new CameraStatic(new Vector3(0, 0, 0));
             AddChild(player);
