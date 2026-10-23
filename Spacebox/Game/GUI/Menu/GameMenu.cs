@@ -625,6 +625,37 @@ namespace Spacebox.Game.GUI.Menu
 
         }
 
+        public bool CanDeleteGameSet(ModConfig mod) => Spacebox.Game.Resource.Content.GameSetDependents.CanDelete(FindInstalled(mod));
+
+        public Spacebox.Game.Resource.Content.GameSetDependents DependentsOf(ModConfig mod)
+        {
+            var uses = new List<Spacebox.Game.Resource.Content.WorldGameSetUse>(worlds.Count);
+            foreach (var world in worlds)
+                uses.Add(new Spacebox.Game.Resource.Content.WorldGameSetUse(world.Name, world.ModId, WorldGameSetCheck.ExtensionsOf(world)));
+            return Spacebox.Game.Resource.Content.GameSetDependents.Find(FindInstalled(mod), installedGameSets, uses);
+        }
+
+        public string DeleteGameSet(ModConfig mod)
+        {
+            var installed = FindInstalled(mod);
+            if (!Spacebox.Game.Resource.Content.GameSetDependents.CanDelete(installed)) return "This GameSet cannot be deleted";
+
+            try
+            {
+                Directory.Delete(installed.Folder, true);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                return "Could not delete the folder: " + ex.Message;
+            }
+
+            Debug.Log($"[Mods] Deleted '{installed.Id}' ({installed.Folder})");
+            NewWorldExtensions.RemoveAll(id => installed.Matches(id));
+            LoadGameSets();
+            selectedGameSetIndex = Math.Clamp(selectedGameSetIndex, 0, Math.Max(0, gameSets.Count - 1));
+            return null;
+        }
+
         public string CreateGameSet(Spacebox.Game.Resource.Content.NewGameSetRequest request)
         {
             var result = Spacebox.Game.Resource.Content.GameSetCreator.Create(Spacebox.Game.Resource.Content.ModFolders.Local, request, installedGameSets);

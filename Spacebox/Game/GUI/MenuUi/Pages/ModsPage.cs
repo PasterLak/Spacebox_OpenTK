@@ -13,6 +13,8 @@ public sealed class ModsPage : MenuPage
     private readonly GameMenu _menu;
     private readonly VBoxContainer _rows = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
     private readonly List<SelectableRow> _rowControls = new List<SelectableRow>();
+    private readonly Dictionary<SelectableRow, Button> _deleteButtons = new Dictionary<SelectableRow, Button>();
+    private readonly ConfirmDialog _confirm = new ConfirmDialog();
     private ModConfig _selected;
     private CreateGameSetDialog _create;
     private int _shownVersion = -1;
@@ -59,6 +61,7 @@ public sealed class ModsPage : MenuPage
         _shownVersion = _menu.GameSetsVersion;
         _rows.ClearChildren();
         _rowControls.Clear();
+        _deleteButtons.Clear();
         foreach (var mod in _menu.AllGameSets)
         {
             var row = new SelectableRow(IconSize) { Metadata = mod, Icon = mod.Icon, FlipIcon = true };
@@ -71,6 +74,7 @@ public sealed class ModsPage : MenuPage
                 string includes = mod.Includes != null && mod.Includes.Count > 0 ? $", includes {string.Join(", ", mod.Includes)}" : "";
                 row.AddLine($"Extension of {Spacebox.Game.Resource.Content.ExtensionTargets.Describe(mod.Extends)}{includes} - pick it when creating a world", "MutedLabel");
             }
+            if (_menu.CanDeleteGameSet(mod)) _deleteButtons[row] = AddDeleteButton(row, mod);
             row.Selected += Select;
             row.Activated += r => _menu.OpenGameSetEditor((ModConfig)r.Metadata, "Overview");
             _rows.AddChild(row);
@@ -79,12 +83,59 @@ public sealed class ModsPage : MenuPage
 
         if (_selected == null || !_menu.AllGameSets.Contains(_selected)) _selected = _menu.AllGameSets.Count > 0 ? _menu.AllGameSets[0] : null;
         foreach (var row in _rowControls) row.IsSelected = ReferenceEquals(row.Metadata, _selected);
+        UpdateDeleteButtons();
+    }
+
+    private Button AddDeleteButton(SelectableRow row, ModConfig mod)
+    {
+        var button = new Button { Text = "X", ThemeTypeVariation = "SmallButton", SizeFlagsVertical = SizeFlags.ShrinkCenter, CustomMinimumSize = new Vector2(24f, 22f), TooltipText = "Delete this mod" };
+        button.AddThemeColorOverride("font_color", DeleteColor);
+        button.AddThemeColorOverride("font_hover_color", DeleteColor);
+        button.Pressed += _ => AskDelete(mod);
+        row.Row.AddChild(button);
+        return button;
+    }
+
+    private static readonly Color4 DeleteColor = new Color4(0.85f, 0.15f, 0.1f, 1f);
+    private const int MaxListed = 8;
+
+    private void UpdateDeleteButtons()
+    {
+        foreach (var pair in _deleteButtons) pair.Value.Visible = pair.Key.IsSelected;
+    }
+
+    private void AskDelete(ModConfig mod)
+    {
+        _menu.Click1?.Play();
+        var dependents = _menu.DependentsOf(mod);
+        string message = $"Delete '{mod.ModName}' for good? Its folder is removed from the disk.";
+        if (dependents.Any)
+        {
+            message += "\n\nWarning: these will no longer work:";
+            if (dependents.Worlds.Count > 0) message += "\nWorlds: " + Listed(dependents.Worlds);
+            if (dependents.Mods.Count > 0) message += "\nMods: " + Listed(dependents.Mods.Select(m => m.DisplayName).ToList());
+        }
+
+        _confirm.Show(Root, "Delete mod", message, new[] { "Delete", "Cancel" }, result =>
+        {
+            if (result != 0) return;
+            string error = _menu.DeleteGameSet(mod);
+            if (error != null) _menu.ShowMessage("Delete mod", error);
+        });
+    }
+
+    private static string Listed(IReadOnlyList<string> names)
+    {
+        var shown = names.Take(MaxListed).ToList();
+        string text = string.Join(", ", shown);
+        return names.Count > MaxListed ? $"{text} and {names.Count - MaxListed} more" : text;
     }
 
     private void Select(SelectableRow row)
     {
         _selected = (ModConfig)row.Metadata;
         foreach (var other in _rowControls) other.IsSelected = ReferenceEquals(other, row);
+        UpdateDeleteButtons();
     }
 
     private void OpenEditor(string panel)

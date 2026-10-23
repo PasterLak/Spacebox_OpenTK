@@ -361,6 +361,7 @@ Fixes
 - GameSet editor: Target selector for extensions (All GameSets or only one GameSet, saved into Bases/<id>/)
 - extension projectiles, mobs, loot tables, crafting categories and folder files are namespaced too; --editor accepts extension ids; Mods: Generation editor button removed (Generation is a page of the GameSet editor)
 - game mode rules: Collide, UseGravity, MobsAttack, ConsumeItems, DropItemsOnDeath, UseItems, CreativeInventory, InstantBreak, BreakUnbreakable, AreaTools, ShipLibrary, FreeFlashlight, FullRadar, CountStatistics, StartItems (the old survival/creative/spectator checks now read these rules)
+- Mods: red X on the selected mod deletes it after asking; the question lists the worlds and mods that will stop working (Empty and Default cannot be deleted)
 - faster: electrical networks are rebuilt once per entity instead of once per loaded chunk; sphere collisions only test nearby chunks; entity lookups are cached; far entities behind the camera unload too
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 Engine
