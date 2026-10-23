@@ -29,13 +29,18 @@ public class CheckBox : BaseButton
     }
 
     public float BoxSize => GetThemeConstant("box_size", 14f);
+    public Texture2D Icon { get; set; }
+    public Rect2? IconRegion { get; set; }
+    public float IconSize { get; set; } = 16f;
+
+    private float IconWidth => Icon == null ? 0f : IconSize + GetThemeConstant("h_separation", 6f);
 
     public override Vector2 GetMinimumSize()
     {
         var font = GetThemeFont();
         var text = font == null || _text.Length == 0 ? Vector2.Zero : font.Measure(_text, GetThemeFontSize());
-        float gap = text.X > 0f ? GetThemeConstant("h_separation", 6f) : 0f;
-        return new Vector2(BoxSize + gap + text.X, MathF.Max(BoxSize, text.Y));
+        float gap = text.X > 0f || Icon != null ? GetThemeConstant("h_separation", 6f) : 0f;
+        return new Vector2(BoxSize + gap + IconWidth + text.X, MathF.Max(MathF.Max(BoxSize, text.Y), Icon != null ? IconSize : 0f));
     }
 
     protected override void Draw(ICanvasRenderer renderer)
@@ -52,10 +57,18 @@ public class CheckBox : BaseButton
             renderer.DrawRect(boxRect.Shrink(inset, inset, inset, inset), GetThemeColor("check_color", new Color4(1f, 0.77f, 0.16f, 1f)));
         }
 
+        float x = box + GetThemeConstant("h_separation", 6f);
+        if (Icon != null)
+        {
+            var tint = Disabled ? new Color4(1f, 1f, 1f, 0.5f) : Color4.White;
+            renderer.DrawTexture(Icon, new Rect2(x, MathF.Floor((Size.Y - IconSize) * 0.5f), IconSize, IconSize), CanvasDraw.UvOf(Icon, IconRegion), tint);
+            x += IconWidth;
+        }
+
         if (_text.Length == 0) return;
         var font = GetThemeFont();
         var textSize = font.Measure(_text, GetThemeFontSize());
         var color = Disabled ? GetThemeColor("font_disabled_color", Color4.Gray) : GetThemeColor("font_color", Color4.White);
-        CanvasDraw.Text(renderer, font, new Vector2(box + GetThemeConstant("h_separation", 6f), MathF.Floor((Size.Y - textSize.Y) * 0.5f)), _text, GetThemeFontSize(), color);
+        CanvasDraw.Text(renderer, font, new Vector2(x, MathF.Floor((Size.Y - textSize.Y) * 0.5f)), _text, GetThemeFontSize(), color);
     }
 }

@@ -128,7 +128,9 @@ public sealed class NewWorldPage : MenuPage
             var check = new CheckBox($"{extension.DisplayName}  v{extension.Config.Version}", Contains(selected, extension.Id))
             {
                 Disabled = readOnly,
-                TooltipText = Tooltip(extension)
+                TooltipText = Tooltip(extension),
+                Icon = extension.Config.Icon,
+                IconRegion = extension.Config.Icon == null ? null : new Rect2(0f, extension.Config.Icon.Height, extension.Config.Icon.Width, -extension.Config.Icon.Height)
             };
             string id = extension.Id;
             check.Toggled += (_, on) =>
