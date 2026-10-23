@@ -10,7 +10,7 @@ public sealed class CreativeWindow : GameWindow
     private const int VisibleRows = 7;
     private const float SearchWidth = 150f;
 
-    private readonly LineEdit _search = new LineEdit { PlaceholderText = "Search items", MaxLength = 64, CustomMinimumSize = new Vector2(SearchWidth, 0f), TooltipText = "Name, id or category; case and word order do not matter" };
+    private readonly LineEdit _search = new LineEdit { ThemeTypeVariation = "HeaderField", PlaceholderText = "Search items", MaxLength = 64, CustomMinimumSize = new Vector2(SearchWidth, 0f), SizeFlagsVertical = SizeFlags.ShrinkCenter, TooltipText = "Name, id or category; case and word order do not matter" };
     private readonly VBoxContainer _categories = new VBoxContainer();
     private readonly List<(CategoryTile Tile, Storage Storage)> _tiles = new List<(CategoryTile, Storage)>();
     private readonly StorageGridControl _grid = new StorageGridControl(ConfigureSlot);

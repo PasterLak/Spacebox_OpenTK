@@ -10,6 +10,7 @@ public sealed class ItemSlotControl : Control, ISlotDropTarget
     public const float DefaultSize = 43f;
     private const float IconPaddingRatio = 0.14f;
     private const float DragThreshold = 4f;
+    private const float TooltipImageScale = 2.5f;
     private const string CreativeMark = "c";
     private static readonly Color4 CreativeColor = new Color4(1f, 0.8f, 0f, 1f);
     private static readonly Color4 BackgroundTint = new Color4(1f, 1f, 1f, 0.35f);
@@ -62,7 +63,7 @@ public sealed class ItemSlotControl : Control, ISlotDropTarget
         _count = count;
         _hint = hint;
         _countText = count > 1 ? count.ToString() : "";
-        TooltipText = BuildTooltip();
+        UpdateTooltip();
     }
 
     public void AcceptDrop(ItemSlot source)
@@ -159,16 +160,34 @@ public sealed class ItemSlotControl : Control, ISlotDropTarget
         }
     }
 
-    private string BuildTooltip()
+    private void UpdateTooltip()
     {
-        if (_slot == null) return "";
-        if (!_slot.HasItem)
+        TooltipImage = null;
+        TooltipImageFlipV = false;
+        TooltipImageSize = Vector2.Zero;
+        if (_slot == null)
         {
-            string name = _slot.Name ?? "";
-            return string.IsNullOrEmpty(_hint) ? name : name + "\n" + _hint;
+            TooltipTitle = "";
+            TooltipText = "";
+            return;
         }
 
-        string text = _slot.Item.Name + ItemTooltipText.Details(_slot.Item, ShowsStackSize, ShowsDescription, ShowsId).TrimEnd();
-        return string.IsNullOrEmpty(_hint) ? text : text + "\n" + _hint;
+        if (!_slot.HasItem)
+        {
+            TooltipTitle = _slot.Name ?? "";
+            TooltipText = _hint;
+            return;
+        }
+
+        TooltipTitle = _slot.Item.Name;
+        string details = ItemTooltipText.Details(_slot.Item, ShowsStackSize, ShowsDescription, ShowsId).Trim();
+        TooltipText = string.IsNullOrEmpty(_hint) ? details : (details.Length > 0 ? details + "\n" : "") + _hint;
+        if (_slot.Item is IItemTooltipImage picture && picture.TooltipImage != null)
+        {
+            TooltipImage = picture.TooltipImage;
+            TooltipImageFlipV = true;
+            float height = MathF.Round(Size.Y > 0f ? Size.Y * TooltipImageScale : DefaultSize * TooltipImageScale);
+            TooltipImageSize = new Vector2(MathF.Round(height * Math.Clamp(picture.TooltipImageAspect, 0.25f, 4f)), height);
+        }
     }
 }

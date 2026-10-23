@@ -8,6 +8,7 @@ public abstract class GameWindow : PanelContainer
     protected GameWindow(string title)
     {
         MouseFilter = MouseFilter.Stop;
+        ThemeTypeVariation = "GameWindow";
         SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
         SizeFlagsVertical = SizeFlags.ShrinkEnd;
         Visible = false;
@@ -15,11 +16,11 @@ public abstract class GameWindow : PanelContainer
         var column = AddChild(new VBoxContainer());
         column.AddThemeConstantOverride("separation", 6f);
 
-        var bar = column.AddChild(new PanelContainer { ThemeTypeVariation = "TitleBar" });
+        var bar = column.AddChild(new PanelContainer { ThemeTypeVariation = "GameTitleBar" });
         var row = bar.AddChild(new HBoxContainer());
         row.AddThemeConstantOverride("separation", 6f);
         TitleLabel = row.AddChild(new Label { Text = title, ThemeTypeVariation = "MenuTitle", SizeFlagsHorizontal = SizeFlags.ExpandFill, VerticalAlignment = VerticalAlignment.Center });
-        Header = row.AddChild(new HBoxContainer { CustomMinimumSize = new Vector2(0f, HeaderButtonSize) });
+        Header = row.AddChild(new HBoxContainer { CustomMinimumSize = new Vector2(0f, HeaderHeight) });
         Header.AddThemeConstantOverride("separation", 4f);
 
         Body = column.AddChild(new VBoxContainer());
@@ -41,11 +42,12 @@ public abstract class GameWindow : PanelContainer
 
     protected abstract void Refresh();
 
-    public const float HeaderButtonSize = 32f;
+    public const float HeaderHeight = 18f;
+    public const float HeaderButtonSize = 18f;
 
     protected Button AddHeaderButton(string text, string tooltip, Action onPressed)
     {
-        var button = Header.AddChild(new Button { Text = text, ThemeTypeVariation = "SmallButton", TooltipText = tooltip, SizeFlagsVertical = SizeFlags.ShrinkCenter, CustomMinimumSize = new Vector2(HeaderButtonSize, HeaderButtonSize) });
+        var button = Header.AddChild(new Button { Text = text, ThemeTypeVariation = "HeaderButton", TooltipText = tooltip, SizeFlagsVertical = SizeFlags.ShrinkCenter, CustomMinimumSize = new Vector2(HeaderButtonSize + 6f, HeaderButtonSize) });
         button.Pressed += _ => onPressed();
         return button;
     }

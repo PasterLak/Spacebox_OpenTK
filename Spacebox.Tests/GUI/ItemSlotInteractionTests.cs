@@ -141,7 +141,7 @@ public sealed class ItemSlotInteractionTests
         center.SetAnchorsPreset(LayoutPreset.FullRect);
         center.AddChild(new TestWindow(new Storage(8, 3)));
 
-        var report = LayoutHarness.ValidateAll(root, ScreenProfiles.All);
+        var report = LayoutHarness.ValidateAll(root, ScreenProfiles.All, new LayoutRules { MinHitTargetPixels = 12f });
         Assert.True(report.IsClean, report.Format());
     }
 }

@@ -12,7 +12,7 @@ public sealed class StorageWindow : GameWindow
 
     private readonly StorageGridControl _grid = new StorageGridControl();
     private readonly IconButton _rename = new IconButton(HeaderButtonSize) { TooltipText = "Rename" };
-    private readonly LineEdit _nameEdit = new LineEdit { MaxLength = MaxNameLength, CustomMinimumSize = new Vector2(140f, 0f), Visible = false };
+    private readonly LineEdit _nameEdit = new LineEdit { ThemeTypeVariation = "HeaderField", SizeFlagsVertical = SizeFlags.ShrinkCenter, MaxLength = MaxNameLength, CustomMinimumSize = new Vector2(140f, 0f), Visible = false };
     private readonly Button _save;
     private readonly Button _combine;
     private readonly Button _sort;

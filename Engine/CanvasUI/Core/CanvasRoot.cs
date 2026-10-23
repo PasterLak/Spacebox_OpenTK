@@ -84,7 +84,8 @@ public sealed class CanvasRoot
     public event Action<KeyPress> UnhandledKeyPress;
     public bool IsLayoutDirty => _layoutDirty;
     public PopupPanel TooltipPanel => _tooltip.Panel;
-    public string TooltipText => _hovered != null && _hoverTime >= TooltipDelay && !string.IsNullOrEmpty(_hovered.TooltipText) ? _hovered.TooltipText : null;
+    public string TooltipText => TooltipSource?.TooltipText is { Length: > 0 } text ? text : null;
+    public Control TooltipSource => _hovered != null && _hoverTime >= TooltipDelay && _hovered.HasTooltip ? _hovered : null;
 
     public CanvasRoot()
     {
@@ -166,7 +167,7 @@ public sealed class CanvasRoot
         if (pointer.Scroll != 0f) BubbleScroll(_hovered, pointer.Scroll);
         _previous = pointer;
         HandleKeyboard(keyboard);
-        _tooltip.Update(this, TooltipText, PointerPosition);
+        _tooltip.Update(this, TooltipSource, PointerPosition);
     }
 
     public void SetFocus(Control control)

@@ -23,6 +23,7 @@ public class Label : Control
     public Vector2 ShadowOffset { get; set; } = new Vector2(1f, 1f);
     public Color4 OutlineColor { get; set; } = new Color4(0f, 0f, 0f, 0f);
     public float OutlineSize { get; set; }
+    public bool Bold { get; set; }
 
     public Label()
     {
@@ -176,9 +177,10 @@ public class Label : Control
             CanvasDraw.Text(renderer, font, position + ShadowOffset, line, size, ShadowColor);
         }
         CanvasDraw.Text(renderer, font, position, line, size, color);
+        if (Bold) CanvasDraw.Text(renderer, font, position + new Vector2(1f, 0f), line, size, color);
     }
 
-    private Vector2 OutlinePadding() => OutlineSize > 0f && OutlineColor.A > 0f ? new Vector2(OutlineSize * 2f) : Vector2.Zero;
+    private Vector2 OutlinePadding() => (OutlineSize > 0f && OutlineColor.A > 0f ? new Vector2(OutlineSize * 2f) : Vector2.Zero) + (Bold ? new Vector2(1f, 0f) : Vector2.Zero);
 
     private List<string> Lines(CanvasFont font, float size, float width)
     {

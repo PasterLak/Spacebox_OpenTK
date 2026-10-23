@@ -106,6 +106,18 @@ public static class GameControlStyles
         theme.SetColor("SuccessLabel", "font_color", p.Success);
         theme.SetTypeVariation("TitleBar", "PanelContainer");
         theme.SetStyleBox("TitleBar", "panel", new StyleBoxFlat(p.TitleBar).SetContentMargins(10f, 4f));
+        theme.SetTypeVariation("GameWindow", "PanelContainer");
+        theme.SetStyleBox("GameWindow", "panel", new StyleBoxFlat(p.Panel).SetBorder(1f, p.PanelDark).SetCornerRadius(WindowCornerRadius).SetContentMargins(8f));
+        theme.SetTypeVariation("GameTitleBar", "PanelContainer");
+        theme.SetStyleBox("GameTitleBar", "panel", new StyleBoxFlat(p.TitleBar).SetCornerRadius(WindowCornerRadius - 2f).SetContentMargins(8f, 2f));
+        theme.SetTypeVariation("HeaderButton", "Button");
+        theme.SetStyleBox("HeaderButton", "normal", Raised(p, p.Button, 3f, 0f));
+        theme.SetStyleBox("HeaderButton", "hover", Raised(p, p.ButtonHover, 3f, 0f, true));
+        theme.SetStyleBox("HeaderButton", "pressed", Sunken(p, p.ButtonPressed, 3f, 0f));
+        theme.SetStyleBox("HeaderButton", "disabled", Raised(p, WithAlpha(p.Button, 0.6f), 3f, 0f));
+        theme.SetTypeVariation("HeaderField", "LineEdit");
+        theme.SetStyleBox("HeaderField", "normal", Sunken(p, p.Field, 4f, 1f));
+        theme.SetStyleBox("HeaderField", "focus", Focused(p, p.Field, 4f, 1f));
         theme.SetTypeVariation("InsetPanel", "PanelContainer");
         theme.SetStyleBox("InsetPanel", "panel", Sunken(p, p.List, 8f, 6f));
         theme.SetTypeVariation("ImagePanel", "PanelContainer");
@@ -118,6 +130,8 @@ public static class GameControlStyles
         theme.SetConstant("Control", "box_size", 14f);
         theme.SetConstant("Control", "v_padding", 6f);
     }
+
+    public const float WindowCornerRadius = 6f;
 
     private static StyleBox RowBox(Color4 color, Color4 line) => new StyleBoxFlat(color) { BorderBottom = 1f, BorderColor = line }.SetContentMargins(6f, 4f);
 
