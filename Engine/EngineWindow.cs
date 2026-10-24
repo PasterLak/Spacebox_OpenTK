@@ -262,7 +262,7 @@ namespace Engine
 
             var device = Gpu.Device;
             device.BindFramebuffer(FramebufferHandle.Default);
-            device.SetViewport(0, 0, ClientSize.X, ClientSize.Y);
+            device.SetViewport(0, 0, PixelSize.X, PixelSize.Y);
             device.Clear(ClearTargets.Color | ClearTargets.Depth);
 
             GLState.DepthTest(false);
@@ -272,11 +272,11 @@ namespace Engine
             {
                 using (Prof.Time(T_PostProcessing))
                 {
-                    _processManager.Process(_sceneRenderer, ClientSize);
+                    _processManager.Process(_sceneRenderer, PixelSize);
                     if (RenderDebugView.ShowsBuffer)
                     {
                         _gbufferDebug ??= new GBufferDebugPass();
-                        _gbufferDebug.Draw(_sceneRenderer, ClientSize, RenderDebugView.Mode);
+                        _gbufferDebug.Draw(_sceneRenderer, PixelSize, RenderDebugView.Mode);
                     }
                 }
             }
@@ -387,7 +387,11 @@ namespace Engine
 
         protected SceneRenderer SceneRenderer => _sceneRenderer;
 
-        private Vector2i SceneSize => new Vector2i(Math.Max(1, (int)(ClientSize.X * _renderScale)), Math.Max(1, (int)(ClientSize.Y * _renderScale)));
+        private Vector2i SceneSize => new Vector2i(Math.Max(1, (int)(PixelSize.X * _renderScale)), Math.Max(1, (int)(PixelSize.Y * _renderScale)));
+
+        public Vector2i PixelSize => Application.IsHeadless ? ClientSize : Engine.PixelSize.Resolve(FramebufferSize, ClientSize);
+
+        public float PixelScale => Engine.PixelSize.Scale(PixelSize, ClientSize);
 
         public void SetVSync(bool enabled)
         {
@@ -548,13 +552,24 @@ namespace Engine
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-            if (!Application.IsHeadless) Gpu.Device.SetViewport(0, 0, ClientSize.X, ClientSize.Y);
             _minimizedWindowSize = ClientSize;
-            _sceneRenderer?.Resize(SceneSize.X, SceneSize.Y);
-            _processManager?.UpdateResolution(ClientSize);
+            ApplyPixelSize();
             OnResized?.Invoke(Size);
             if (Camera.Main != null && Size.X > 0 && Size.Y > 0)
                 Camera.Main.AspectRatio = (float)Size.X / Size.Y;
+        }
+
+        protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
+        {
+            base.OnFramebufferResize(e);
+            ApplyPixelSize();
+        }
+
+        private void ApplyPixelSize()
+        {
+            if (!Application.IsHeadless) Gpu.Device.SetViewport(0, 0, PixelSize.X, PixelSize.Y);
+            _sceneRenderer?.Resize(SceneSize.X, SceneSize.Y);
+            _processManager?.UpdateResolution(PixelSize);
         }
 
         protected abstract void OnRegisterScenes();

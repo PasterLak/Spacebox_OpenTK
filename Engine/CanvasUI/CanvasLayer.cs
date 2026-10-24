@@ -90,7 +90,7 @@ public sealed class CanvasLayer : IDisposable
 
         var screen = new Vector2(window.ClientSize.X, window.ClientSize.Y);
         Root.Resize(screen);
-        _renderer.Begin(screen, Root.ScreenTransform);
+        _renderer.Begin(screen, Root.ScreenTransform, window.PixelScale);
         Root.Draw(_renderer);
         if (ShowLayoutIssues) LayoutDebugOverlay.Draw(_renderer, Root, _report);
         _renderer.End();

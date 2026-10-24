@@ -56,9 +56,9 @@ namespace Engine.Light
             if (IsGpuInitialized) return;
 
             _cntUBO = new UniformBuffer<LightsCountGpu>("LightsCountBlock");
-            _dirUBO = new UniformBuffer<DirGpu>("DirBlock");
-            _ptUBO = new UniformBuffer<PointGpu>("PointBlock");
-            _spUBO = new UniformBuffer<SpotGpu>("SpotBlock");
+            _dirUBO = new UniformBuffer<DirGpu>("DirBlock", MAX_DIR);
+            _ptUBO = new UniformBuffer<PointGpu>("PointBlock", MAX_POINT);
+            _spUBO = new UniformBuffer<SpotGpu>("SpotBlock", MAX_SPOT);
         }
 
         public static void Register(LightBase l) { if (!_all.Contains(l)) _all.Add(l); }

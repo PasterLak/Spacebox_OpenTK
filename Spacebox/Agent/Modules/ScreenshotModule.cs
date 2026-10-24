@@ -17,7 +17,7 @@ public sealed class ScreenshotModule : IAgentModule
 
             var size = await MainThread.RunAfterRender(() =>
             {
-                var clientSize = EngineWindow.Instance.ClientSize;
+                var clientSize = EngineWindow.Instance.PixelSize;
                 FramebufferCapture.SaveScreenshotUsingTexture(clientSize, path);
                 return clientSize;
             });

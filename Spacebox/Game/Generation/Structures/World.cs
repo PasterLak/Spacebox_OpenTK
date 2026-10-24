@@ -137,7 +137,7 @@ public class World : Component, ISpaceStructure
 
     private void SavePreview()
     {
-        var screenSize = SpaceboxWindow.Instance.ClientSize;
+        var screenSize = SpaceboxWindow.Instance.PixelSize;
         if (screenSize.X <= 0 || screenSize.Y <= 0) return;
 
         try

@@ -45,7 +45,7 @@ namespace Engine
 
         public static void SaveScreenshot(GameWindow window)
         {
-            SaveScreenshot(window.ClientSize);
+            SaveScreenshot(window is EngineWindow engineWindow ? engineWindow.PixelSize : window.ClientSize);
         }
 
 

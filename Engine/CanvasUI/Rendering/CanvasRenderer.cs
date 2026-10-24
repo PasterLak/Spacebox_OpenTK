@@ -51,6 +51,7 @@ public sealed class CanvasRenderer : ICanvasRenderer, IDisposable
     private Transform2D _transform = Transform2D.Identity;
     private Transform2D _screenTransform = Transform2D.Identity;
     private Vector2 _screenSize;
+    private float _pixelScale = 1f;
     private bool _drawing;
 
     public Transform2D Transform
@@ -78,11 +79,12 @@ public sealed class CanvasRenderer : ICanvasRenderer, IDisposable
         CreateBuffers();
     }
 
-    public void Begin(Vector2 screenSize, Transform2D screenTransform)
+    public void Begin(Vector2 screenSize, Transform2D screenTransform, float pixelScale = 1f)
     {
         if (!_vao.IsValid) return;
         _drawing = true;
         _screenSize = screenSize;
+        _pixelScale = pixelScale > 0f ? pixelScale : 1f;
         _screen = screenTransform;
         _quadCount = 0;
         _texture = 0;
@@ -226,10 +228,10 @@ public sealed class CanvasRenderer : ICanvasRenderer, IDisposable
         }
 
         var clip = _clips.Peek();
-        int x = (int)MathF.Floor(clip.X);
-        int y = (int)MathF.Floor(_screenSize.Y - clip.End.Y);
+        int x = (int)MathF.Floor(clip.X * _pixelScale);
+        int y = (int)MathF.Floor((_screenSize.Y - clip.End.Y) * _pixelScale);
         device.SetScissorTest(true);
-        device.SetScissor(x, y, Math.Max(0, (int)MathF.Ceiling(clip.Width)), Math.Max(0, (int)MathF.Ceiling(clip.Height)));
+        device.SetScissor(x, y, Math.Max(0, (int)MathF.Ceiling(clip.Width * _pixelScale)), Math.Max(0, (int)MathF.Ceiling(clip.Height * _pixelScale)));
     }
 
     private void CreateBuffers()

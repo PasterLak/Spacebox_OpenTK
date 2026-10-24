@@ -152,6 +152,8 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- macOS: Retina screens render the whole window (GL uses the framebuffer size, the UI keeps window coordinates)
+- macOS: no crash after loading a world; light uniform buffers keep their full size instead of shrinking to the active lights (empty buffers crashed the AMD driver)
 - macOS: the game no longer crashes at start when the system OpenAL reports an error; a sound that fails to load is skipped and logged
 - leaving a world while holding an area tool (fill, eraser, copy) no longer leaks its outline meshes
 - placing a saved ship checks the ship's real blocks against other blocks and you, not its whole bounding box
