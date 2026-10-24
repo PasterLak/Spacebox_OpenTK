@@ -21,7 +21,7 @@ public static class WorldFormatProbe
         var format = WorldSaveFormat.Current;
         foreach (var file in WorldFileLayout.EntityFilePaths(worldFolder))
         {
-            var entity = NbtFileEditor.Read(file);
+            var entity = NbtFileEditor.TryRead(file);
             var detected = Detect(entity);
             if (detected == WorldSaveFormat.Legacy) return detected;
             if (detected == WorldSaveFormat.WorldSpacePositions) format = detected;

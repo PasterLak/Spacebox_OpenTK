@@ -26,6 +26,10 @@ public class WorldInfoSaver
                 worldInfo.FolderName = Path.GetFileName(worldFolder);
                 Save(worldInfo);
             }
+            else if (worldInfo.FolderName != Path.GetFileName(worldFolder))
+            {
+                worldInfo.FolderName = Path.GetFileName(worldFolder);
+            }
 
             worlds.Add(worldInfo);
 

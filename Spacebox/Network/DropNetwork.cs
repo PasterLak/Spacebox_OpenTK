@@ -18,7 +18,7 @@ public sealed class DropNetwork : IDropReplicator
     private const int MaxDeathDropStacks = 128;
 
     private static readonly PeerRateLimiter _spawnRequests = new PeerRateLimiter(60, 30);
-    private static readonly PeerRateLimiter _deathDropRequests = new PeerRateLimiter(1, 1.0 / 30);
+    private static readonly PeerRateLimiter _deathDropRequests = new PeerRateLimiter(3, 1.0 / 10);
 
     public bool IsAuthority => NetworkManager.Instance.IsServer;
 
@@ -89,7 +89,8 @@ public sealed class DropNetwork : IDropReplicator
         if (!NetValidation.IsFinite(message.Position)) return;
 
         var player = Combat.PlayerHitboxes.FindPlayer(sender);
-        if (player == null || Vector3.DistanceSquared(player.Position, message.Position) > MaxSpawnDistance * MaxSpawnDistance) return;
+        if (player == null) return;
+        var position = Vector3.DistanceSquared(player.Position, message.Position) > MaxSpawnDistance * MaxSpawnDistance ? player.Position : message.Position;
         if (!_deathDropRequests.TryConsume(sender, Time.Total)) return;
 
         var stacks = new List<ItemStack>(message.Items.Count);
@@ -102,7 +103,7 @@ public sealed class DropNetwork : IDropReplicator
             stacks.Add(new ItemStack(item, allowed));
         }
 
-        drops.DropDeathItems(message.Position, stacks);
+        drops.DropDeathItems(position, stacks);
     }
 
     public void RequestPickup(Drop drop)

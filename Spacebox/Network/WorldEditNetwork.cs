@@ -390,7 +390,7 @@ public static class WorldEditNetwork
                            !Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).BreakUnbreakable;
         bool unbroken = message.IsRemoval && known && !CanRemoveNow(sender, senderName, entity, message.Cell);
         bool placeDenied = !message.IsRemoval && sender != network.LocalPeerId && !Spacebox.Network.Players.PlayerGameModeService.RulesOf(senderName).PlaceBlocks;
-        if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || unbroken || placeDenied || !IsInReach(sender, entity, message.Cell)))
+        if (known && ((!message.IsRemoval && previousId != 0) || unbreakable || unbroken || placeDenied || !IsInReach(sender, entity, message.Cell) || IsBlockedByBody(entity, message)))
         {
             SendRejection(sender, entity, message);
             if (!message.IsRemoval) SendRefund(sender, message.BlockId);
@@ -406,6 +406,16 @@ public static class WorldEditNetwork
         if (known && NeedsCorrection(entity, message, previousId)) SendRejection(sender, entity, message);
         if (!message.IsRemoval && (!known || GetBlockId(entity, message.Cell) != message.BlockId))
             SendRefund(sender, message.BlockId);
+    }
+
+    private static bool IsBlockedByBody(SpaceEntity entity, BlockEditMessage message)
+    {
+        if (message.IsRemoval) return false;
+
+        var block = GameAssets.CreateBlockFromId(message.BlockId);
+        block.Direction = (Direction)message.Direction;
+        block.Rotation = (Rotation)message.Rotation;
+        return entity.IsBlockAreaOccupiedByBodyAtCell(message.Cell, block);
     }
 
     public const float MaxEditDistance = 16f;

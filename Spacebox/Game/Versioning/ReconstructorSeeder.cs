@@ -23,7 +23,7 @@ public static class ReconstructorSeeder
         {
             foreach (var file in Directory.GetFiles(folder, "*" + EntityFiles.Extension))
             {
-                var entity = NbtFileEditor.Read(file);
+                var entity = NbtFileEditor.TryRead(file);
                 var list = new List<ReconstructorRecord>();
                 Collect(entity, reconstructorIds, list);
                 foreach (var record in list)

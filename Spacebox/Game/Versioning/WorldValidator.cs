@@ -18,7 +18,7 @@ public static class WorldValidator
 
         foreach (var file in WorldFileLayout.EntityFilePaths(worldFolder))
         {
-            var entity = NbtFileEditor.Read(file);
+            var entity = NbtFileEditor.TryRead(file);
             foreach (var chunk in ChunkTagAccess.Chunks(entity))
             {
                 AddUnknown(ChunkTagAccess.ReadPalette(chunk, NBTKey.CHUNK.palette_blocks), ids.IsBlock, unknownBlocks);

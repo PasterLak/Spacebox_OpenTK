@@ -325,7 +325,7 @@
         {
           "Id": "titanium",
           "Title": "Titanium and uranium",
-          "Text": "Titanium makes the best armor and ship parts, uranium powers reactors and the gravity generator.",
+          "Text": "Titanium makes the best armor and ship parts, uranium powers the nuclear power blocks.",
           "Icon": "titanium_ore",
           "Hint": "Obscurium ore is even harder: only the {item:titanium_drill} or better can drill it.",
           "Tasks": [

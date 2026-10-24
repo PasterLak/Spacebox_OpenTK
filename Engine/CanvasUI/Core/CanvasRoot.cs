@@ -356,7 +356,7 @@ public sealed class CanvasRoot
             var target = pressed;
             pressed = null;
             target.IsMouseDown = false;
-            target.OnMouseUp(PointerPosition - target.Rect.Position, button, target.HasPoint(PointerPosition) && IsInsideClip(target));
+            target.OnMouseUp(PointerPosition - target.Rect.Position, button, target.Root == this && target.IsVisibleInTree && target.HasPoint(PointerPosition) && IsInsideClip(target));
         }
     }
 

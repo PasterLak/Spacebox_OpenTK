@@ -109,4 +109,20 @@ public class WorldFormatProbeTests : IDisposable
         Assert.Equal(WorldUpgradeStatus.Ok, status);
         Assert.Null(reason);
     }
+
+    [Fact]
+    public void CorruptEntityFile_DoesNotBlockTheUpgrade()
+    {
+        string folder = Build012World();
+        string goodFile = WorldFileLayout.EntityFilePaths(folder).First();
+        File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(goodFile), "999" + Path.GetExtension(goodFile)), new byte[] { 0x1f, 0x8b, 1, 2, 3 });
+        var info = new WorldInfo { Name = "W", GameVersion = "0.1.2" };
+
+        var check = Upgrader().Check(info, folder, Engine.Application.Version, out var reason);
+        var result = Upgrader().Upgrade(info, folder, Engine.Application.Version);
+
+        Assert.Equal(WorldUpgradeStatus.Ok, check);
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(Engine.Application.Version, info.GameVersion);
+    }
 }

@@ -24,8 +24,6 @@ namespace Engine
         private bool _isProcessingChange = false;
         private bool _isReloadingShader = false;
 
-        private int _previousHandle;
-        private Dictionary<string, int> _previousUniformLocations;
 
         private ShaderHotReloader _hotReloader;
         public bool IsDisposed { get; set; }
@@ -142,8 +140,6 @@ namespace Engine
             {
                 device.DeleteProgram(Program);
             }
-            _previousHandle = Handle;
-            _previousUniformLocations = _uniformLocations;
             Handle = newHandle;
             _uniformLocations = newUniforms;
             GPUDebug.LabelProgram(Handle, _shaderPath);
@@ -164,12 +160,6 @@ namespace Engine
             {
                 Debug.Error("[Shader] Shader reload failed: " + ex.Message);
                 Debug.Log("[Shader] Using previous working shader.");
-                if (Handle != _previousHandle)
-                {
-                    if (Handle != 0) Gpu.Device.DeleteProgram(Program);
-                    Handle = _previousHandle;
-                    _uniformLocations = _previousUniformLocations;
-                }
             }
             finally { _isReloadingShader = false; }
         }

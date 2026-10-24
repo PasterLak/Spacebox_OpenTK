@@ -567,6 +567,7 @@ namespace Engine
 
         private void ApplyPixelSize()
         {
+            if (PixelSize.X <= 0 || PixelSize.Y <= 0) return;
             if (!Application.IsHeadless) Gpu.Device.SetViewport(0, 0, PixelSize.X, PixelSize.Y);
             _sceneRenderer?.Resize(SceneSize.X, SceneSize.Y);
             _processManager?.UpdateResolution(PixelSize);

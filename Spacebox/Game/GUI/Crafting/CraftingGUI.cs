@@ -54,7 +54,7 @@ public sealed class CraftingGUI : IGameUiController
 
 
         scrollAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/scroll.ogg"), AudioChannel.UI);
-        clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/click1.ogg"), AudioChannel.UI);
+        clickAudio = new AudioSource(GameAssets.LoadResource<AudioClip>("Resources/Audio/UI/click1.ogg"), AudioChannel.UI);
     }
 
     public bool IsVisible { get; private set; }

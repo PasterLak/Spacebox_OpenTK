@@ -25,7 +25,7 @@ public static class BlockPaste
                 {
                     if (!entity.TryGetBlockLocal(new Vector3i(x, y, z), out var chunk, out var index)) continue;
                     var block = chunk.Blocks[index.X, index.Y, index.Z];
-                    if (block == null || block.IsAir || block.HasMultiblockOffset) continue;
+                    if (block == null || block.IsAir || block.HasMultiblockOffset || Spacebox.Game.Protection.ClaimPlacement.IsBeacon(block.Id)) continue;
 
                     if (cells.Count >= BlockClipboard.MaxCells)
                     {
@@ -62,6 +62,11 @@ public static class BlockPaste
                 error = "Invalid block in paste";
                 return false;
             }
+            if (Spacebox.Game.Protection.ClaimPlacement.IsBeacon(cell.BlockId))
+            {
+                error = "Claim beacons cannot be pasted";
+                return false;
+            }
         }
         return true;
     }
@@ -88,7 +93,7 @@ public static class BlockPaste
             block.Direction = cell.Direction;
             block.Rotation = cell.Rotation;
 
-            if (data.IsMultiblock)
+            if (data.IsMultiblock || BlockRemovalRules.NeedsFullRemoval(block))
             {
                 entity.TryPlaceBlockAtCell(target, block);
                 continue;

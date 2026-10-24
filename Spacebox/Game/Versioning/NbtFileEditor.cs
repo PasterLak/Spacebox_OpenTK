@@ -1,3 +1,4 @@
+using Engine;
 using SharpNBT;
 
 namespace Spacebox.Game.Versioning;
@@ -9,6 +10,19 @@ public static class NbtFileEditor
         return NbtFile.Read(path, FormatOptions.Java, CompressionType.GZip);
     }
 
+    public static CompoundTag TryRead(string path)
+    {
+        try
+        {
+            return Read(path);
+        }
+        catch (Exception ex)
+        {
+            Debug.Warning($"[WorldUpgrade] Skipping unreadable file {Path.GetFileName(path)}: {ex.Message}");
+            return null;
+        }
+    }
+
     public static void Write(string path, CompoundTag tag)
     {
         NbtFile.Write(path, tag, FormatOptions.Java, CompressionType.GZip);
@@ -18,7 +32,7 @@ public static class NbtFileEditor
     {
         if (!File.Exists(path)) return false;
 
-        var tag = Read(path);
+        var tag = TryRead(path);
         if (tag == null || !edit(tag)) return false;
 
         Write(path, tag);

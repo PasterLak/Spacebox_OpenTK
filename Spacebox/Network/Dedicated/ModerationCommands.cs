@@ -22,8 +22,9 @@ public sealed class BanCommand : CommandBase, Engine.Commands.IArgumentSuggestio
             return;
         }
 
-        if (ServerModeration.BanName(args[0])) Debug.Log($"Banned {args[0]}");
-        else Debug.Error($"{args[0]} cannot be banned");
+        string name = string.Join(' ', args);
+        if (ServerModeration.BanName(name)) Debug.Log($"Banned {name}");
+        else Debug.Error($"{name} cannot be banned");
     }
 }
 
@@ -40,8 +41,9 @@ public sealed class UnbanCommand : CommandBase
             return;
         }
 
-        if (ServerModeration.Unban(args[0])) Debug.Log($"Unbanned {args[0]}");
-        else Debug.Error($"{args[0]} is not banned");
+        string name = string.Join(' ', args);
+        if (ServerModeration.Unban(name)) Debug.Log($"Unbanned {name}");
+        else Debug.Error($"{name} is not banned");
     }
 }
 
@@ -70,7 +72,8 @@ public sealed class MuteCommand : CommandBase, Engine.Commands.IArgumentSuggesti
             return;
         }
 
-        if (!ServerModeration.SetMuted(args[0], _muted)) Debug.Warning(_muted ? $"{args[0]} is already muted" : $"{args[0]} is not muted");
+        string name = string.Join(' ', args);
+        if (!ServerModeration.SetMuted(name, _muted)) Debug.Warning(_muted ? $"{name} is already muted" : $"{name} is not muted");
     }
 }
 
@@ -92,7 +95,8 @@ public sealed class UnregisterCommand : CommandBase, Engine.Commands.IArgumentSu
             return;
         }
 
-        if (NetworkSession.Current != null && NetworkSession.Current.RemoveAccount(args[0])) Debug.Log($"Account {args[0]} was removed");
-        else Debug.Error($"{args[0]} has no account or registration is disabled");
+        string name = string.Join(' ', args);
+        if (NetworkSession.Current != null && NetworkSession.Current.RemoveAccount(name)) Debug.Log($"Account {name} was removed");
+        else Debug.Error($"{name} has no account or registration is disabled");
     }
 }

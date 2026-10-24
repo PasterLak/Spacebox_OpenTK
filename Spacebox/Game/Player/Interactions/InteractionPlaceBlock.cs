@@ -189,6 +189,7 @@ public class InteractionPlaceBlock : InteractionMode
                     var targetCell = TargetCell(hit);
                     if (Spacebox.Game.Protection.EntityProtection.CheckLocalEdit(chunk.SpaceEntity, targetCell) &&
                         Spacebox.Game.Protection.ClaimPlacement.CheckLocal(chunk.SpaceEntity, targetCell, newBlock) &&
+                        !chunk.SpaceEntity.IsBlockAreaOccupiedByBodyAtCell(targetCell, newBlock) &&
                         chunk.SpaceEntity.TryPlaceBlockAtCell(targetCell, newBlock))
                     {
                         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
@@ -405,7 +406,7 @@ public class InteractionPlaceBlock : InteractionMode
                         return;
                     }
 
-                    if (insideEntityRange && entity.TryPlaceBlockAtCell(cell, newBlock))
+                    if (insideEntityRange && !entity.IsBlockAreaOccupiedByBodyAtCell(cell, newBlock) && entity.TryPlaceBlockAtCell(cell, newBlock))
                     {
                         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(newBlock);
                         Spacebox.Game.Ships.ShipKeyMemory.OnPlacedLocally(newBlock);

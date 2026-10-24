@@ -157,6 +157,12 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- multiplayer: blocks placed by other players no longer go missing on clients whose own player or mobs stand near the cell
+- pasted doors, signs, frames, lights and machines work at once (claim beacons are not copied)
+- a second death within 30 s no longer loses the dropped items; death drops spawn at the server's player position when the reported one is off
+- server: ban, unban, mute, unmute and unregister accept names with spaces; dead or spectator players cannot hurt others with drills
+- 0.1.2 worlds with a damaged entity file still convert; a renamed world folder is converted and saved correctly
+- crafting window click sound plays again; tutorial no longer says the gravity generator needs uranium
 - Windows Debug/Release builds always get OpenAL32.dll next to the game, so sound works without copying it by hand
 - blocks can no longer be placed into mobs, players or NPCs (also checked by the server)
 - macOS: no window icon warning; audio device names use the enumeration the system supports
@@ -455,6 +461,7 @@ Fixes
 - fixed LAN: servers on ports 7778-7786 were not found, Open to network failed when 7777 was taken (now takes the next free port), a client port carried over into single player; joining a server of another version says which version it runs
 - fixed: players in a hosted game could run the host's local-only console commands (console, camera, teleport tools) through the chat
 Engine
+- minimizing no longer rebuilds render targets at 0x0, resizes rebuild scene targets once; a button hidden while held does not fire on release; a failed shader hot-reload keeps the working shader
 - multiplayer ships: moving ship states are sent per player by distance (20/s near, 5/s up to 1000 blocks, 1/s further), much less traffic with many ships; NetworkManager.SendToPeers / CopyAdmittedPeers
 - scene-owned GameScene context (GameScene.Current) holds creative tools, local pilot, skins, world rules, sprint toggle, claim visuals, picture frames, machine sounds and tags instead of statics reset on unload
 - ImGui removed, all interfaces are CanvasUI: F3 stats overlay, F4 world overlay (gizmo icons, axes, world text drawn as canvas shapes), F10 label, particle editor, test scenes; old ImGui menu fallbacks removed; agent `ui` reads canvas text

@@ -240,6 +240,8 @@ public sealed class AstronautNetwork : NetworkTransform
     {
         int attacker = RpcContext.SenderPeer;
         if (attacker == OwnerPeer || damage <= 0 || !IsAlive) return;
+        if (Find(attacker) is { IsAlive: false }) return;
+        if (attacker != NetworkManager.Instance.LocalPeerId && !Spacebox.Network.Players.PlayerGameModeService.RulesOf(PlayerRegistry.GetName(attacker)).BreakBlocks) return;
 
         var attackerAstronaut = Spacebox.Network.Combat.PlayerHitboxes.FindPlayer(attacker);
         if (attackerAstronaut == null) return;

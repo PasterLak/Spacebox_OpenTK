@@ -58,6 +58,8 @@ namespace Engine
 
         public void Resize(int newWidth, int newHeight)
         {
+            if (newWidth == width && newHeight == height) return;
+
             width = newWidth;
             height = newHeight;
 
