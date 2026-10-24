@@ -146,7 +146,7 @@ Small
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
 - the held block of the inventory player preview was not freed when leaving a world
-- debug console text turned into solid bars after loading a world (its font texture was freed on scene change)
+- debug console and F3 panel drew solid bars or a white box after loading a world (their font, texture and shader were freed on scene change)
 - ships: invalid console keys are rejected, pilots lose the seat when the console is destroyed, one pilot per console (host too), ships collide with entities from neighbour sectors, saved ships cannot be placed into blocks, players or foreign claims (red outline), console help shows the real use key
 - server: rejoining before a save keeps the unsaved player data, offline game mode changes are kept on save, /save from chat no longer re-enters the network loop, bans during login apply, restart relaunches even if cleanup fails, gifts are kept when the giver leaves mid-gift, stuck ship states are dropped
 - GameSet editor: safe folder names for new entries, Save keeps going past failed files, safer Convert (rollback, also the source folder), blueprint copies keep their product, wrong-kind files are no longer overwritten, typeless recipe groups editable; one bad processing recipe no longer drops the rest
