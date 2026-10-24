@@ -149,6 +149,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- leaving a world while holding an area tool (fill, eraser, copy) no longer leaks its outline meshes
 - placing a saved ship checks the ship's real blocks against other blocks and you, not its whole bounding box
 - seated at a ship console without a camera block, the view no longer turns with the ship (mouse steering kept spinning the ship)
 - Options > Interface > Font now changes the game and menu interface (Fusion Pixel or a smooth system font); ProggyClean was only an old debug font

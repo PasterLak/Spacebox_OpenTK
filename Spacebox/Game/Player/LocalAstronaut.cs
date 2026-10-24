@@ -526,6 +526,7 @@ namespace Spacebox.Game.Player
 
         public override void Destroy()
         {
+            _gameModeBase?.InteractionHandler?.Interaction?.OnDisable();
             base.Destroy();
         }
 
