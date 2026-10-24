@@ -24,14 +24,14 @@ public sealed class AudioOutputList
             for (int i = 0; i < available.Count; i++)
             {
                 if (string.IsNullOrWhiteSpace(available[i]) || devices.Contains(available[i])) continue;
-                labels.Add(available[i]);
+                labels.Add(Engine.Audio.AudioDeviceNames.Display(available[i]));
                 devices.Add(available[i]);
             }
         }
 
         if (!string.IsNullOrWhiteSpace(chosen) && !devices.Contains(chosen))
         {
-            labels.Add(chosen + MissingSuffix);
+            labels.Add(Engine.Audio.AudioDeviceNames.Display(chosen) + MissingSuffix);
             devices.Add(chosen);
         }
 

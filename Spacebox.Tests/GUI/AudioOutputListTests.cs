@@ -17,6 +17,18 @@ public class AudioOutputListTests
     }
 
     [Fact]
+    public void Labels_ShowOnlyTheDeviceName()
+    {
+        var list = AudioOutputList.Build(new[] { "OpenAL Soft on Speakers (Realtek(R) Audio)", "Headphones" }, "OpenAL Soft on USB Headset");
+
+        Assert.Equal("Speakers (Realtek(R) Audio)", list.Labels[1]);
+        Assert.Equal("Headphones", list.Labels[2]);
+        Assert.Equal("USB Headset" + AudioOutputList.MissingSuffix, list.Labels[3]);
+        Assert.Equal("OpenAL Soft on Speakers (Realtek(R) Audio)", list.DeviceAt(1));
+        Assert.Equal("OpenAL Soft", AudioDeviceNames.Display("OpenAL Soft"));
+    }
+
+    [Fact]
     public void UnpluggedChoice_StaysInTheList()
     {
         var list = AudioOutputList.Build(new[] { "Speakers" }, "Headphones");
