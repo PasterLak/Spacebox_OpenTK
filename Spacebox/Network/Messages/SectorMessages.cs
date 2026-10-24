@@ -80,6 +80,7 @@ public struct EntityCreateRequestMessage : INetMessage
     public short BlockId;
     public byte Direction;
     public byte Rotation;
+    public Quaternion Orientation;
 
     public void Serialize(NetWriter writer)
     {
@@ -87,6 +88,7 @@ public struct EntityCreateRequestMessage : INetMessage
         writer.Write(BlockId);
         writer.Write(Direction);
         writer.Write(Rotation);
+        writer.Write(Orientation);
     }
 
     public void Deserialize(NetReader reader)
@@ -95,6 +97,7 @@ public struct EntityCreateRequestMessage : INetMessage
         BlockId = reader.ReadShort();
         Direction = reader.ReadByte();
         Rotation = reader.ReadByte();
+        Orientation = reader.ReadQuaternion();
     }
 }
 
@@ -106,6 +109,7 @@ public struct EntityCreatedMessage : INetMessage
     public short BlockId;
     public byte Direction;
     public byte Rotation;
+    public Quaternion Orientation;
 
     public void Serialize(NetWriter writer)
     {
@@ -115,6 +119,7 @@ public struct EntityCreatedMessage : INetMessage
         writer.Write(BlockId);
         writer.Write(Direction);
         writer.Write(Rotation);
+        writer.Write(Orientation);
     }
 
     public void Deserialize(NetReader reader)
@@ -125,5 +130,6 @@ public struct EntityCreatedMessage : INetMessage
         BlockId = reader.ReadShort();
         Direction = reader.ReadByte();
         Rotation = reader.ReadByte();
+        Orientation = reader.ReadQuaternion();
     }
 }

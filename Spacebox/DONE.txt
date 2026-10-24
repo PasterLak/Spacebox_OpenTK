@@ -26,6 +26,7 @@ additional
 |------------------------------------------------------------------------------------------------------------------------------
 
 New
+- a block placed in free space starts a new entity turned like the player (up, right and forward follow the view), so you choose how a new build is rotated; the preview shows it
 - macOS builds (Intel and Apple Silicon) from Spacebox/Build/BuildMacOS.ps1 (not tested on a Mac yet)
 - Options > Audio > Output Device: pick the sound device by its name (or follow the system default); an unplugged device falls back to the default until it is back
 - hotbar size per game mode (HotbarSlots, HotbarRows up to 3): Creative has one row of 15, number keys pick the first 10, the wheel all; items in removed slots move to the inventory or drop (also on load)

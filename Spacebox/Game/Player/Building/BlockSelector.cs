@@ -300,7 +300,19 @@ public class BlockSelector : Node3D
         Vector3 newPosition = entity != null ? entity.ToWorldSpace(center) : center;
         Matrix4 entityRotation = entity != null && entity.HasRotation ? entity.RotationMatrix : Matrix4.Identity;
         bool shapeSupported = onSurface && IsShapeSupported(position, direction, rotation, entity);
+        ApplyPose(newPosition, entityRotation, direction, rotation, onSurface, shapeSupported);
+    }
 
+    public void UpdateFreePosition(Vector3 cornerWorld, Quaternion orientation, Direction direction, Rotation rotation)
+    {
+        _cellCorner = cornerWorld;
+        _entity = null;
+        Vector3 center = cornerWorld + Vector3.Transform(Vector3.One * 0.5f, orientation);
+        ApplyPose(center, Matrix4.CreateFromQuaternion(orientation), direction, rotation, false, false);
+    }
+
+    private void ApplyPose(Vector3 newPosition, Matrix4 entityRotation, Direction direction, Rotation rotation, bool onSurface, bool shapeSupported)
+    {
         if (SimpleBlock.Position == newPosition &&
             _shapeSupported == shapeSupported &&
             _blockDirection == direction &&

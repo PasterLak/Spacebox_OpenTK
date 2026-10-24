@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using Spacebox.Game;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
+using Spacebox.Game.Player.Building;
 using Spacebox.Network.Messages;
 
 namespace Spacebox.Network;
@@ -15,7 +16,7 @@ public static class EntityCreationNetwork
         network.Messages.Register<EntityCreatedMessage>(OnCreated);
     }
 
-    public static void PlaceNewEntity(Sector sector, Vector3 positionWorld, Block block)
+    public static void PlaceNewEntity(Sector sector, Vector3 positionWorld, Block block, Quaternion orientation)
     {
         if (sector == null || block == null) return;
 
@@ -27,7 +28,8 @@ public static class EntityCreationNetwork
                 PositionWorld = positionWorld,
                 BlockId = block.Id,
                 Direction = (byte)block.Direction,
-                Rotation = (byte)block.Rotation
+                Rotation = (byte)block.Rotation,
+                Orientation = orientation
             });
             return;
         }
@@ -40,13 +42,15 @@ public static class EntityCreationNetwork
             return;
         }
 
-        Create(sector, positionWorld, block, GameSession.PlayerName);
+        Create(sector, positionWorld, block, orientation, GameSession.PlayerName);
         Spacebox.Game.Protection.ClaimPlacement.OnPlacedLocally(block);
     }
 
-    private static SpaceEntity Create(Sector sector, Vector3 positionWorld, Block block, string owner)
+    private static SpaceEntity Create(Sector sector, Vector3 positionWorld, Block block, Quaternion orientation, string owner)
     {
+        orientation = PlayerAlignedFrame.Sanitize(orientation);
         var entity = sector.CreateNewEntity(positionWorld);
+        entity.SetPose(positionWorld, orientation);
         entity.CreateFirstBlock(block);
         Spacebox.Game.Protection.ClaimPlacement.AssignOwner(entity, Vector3i.Zero, owner);
 
@@ -57,7 +61,8 @@ public static class EntityCreationNetwork
             PositionWorld = positionWorld,
             BlockId = block.Id,
             Direction = (byte)block.Direction,
-            Rotation = (byte)block.Rotation
+            Rotation = (byte)block.Rotation,
+            Orientation = orientation
         });
         return entity;
     }
@@ -86,7 +91,7 @@ public static class EntityCreationNetwork
             return;
         }
 
-        Create(sector, message.PositionWorld, block, owner);
+        Create(sector, message.PositionWorld, block, message.Orientation, owner);
     }
 
     private static bool IsInReach(int peer, Vector3 positionWorld)
@@ -104,6 +109,7 @@ public static class EntityCreationNetwork
         if (world == null || !world.TryGetSector(message.Sector, out var sector) || world.TryFindEntity(message.EntityId, out _)) return;
 
         var entity = sector.CreateNewEntity(message.PositionWorld, message.EntityId);
+        entity.SetPose(message.PositionWorld, PlayerAlignedFrame.Sanitize(message.Orientation));
         entity.CreateFirstBlock(CreateBlock(message.BlockId, message.Direction, message.Rotation));
     }
 

@@ -248,6 +248,38 @@ public class InteractionPlaceBlock : InteractionMode
         blockPlace = new AudioSource(clip);
     }
 
+    private void OnFreeSpace(Ray ray, LocalAstronaut player, Rotation cachedBlockRotation, float placeDistance)
+    {
+        var orientation = Spacebox.Game.Player.Building.PlayerAlignedFrame.FromView(player.Front, player.Up);
+        var corner = Spacebox.Game.Player.Building.PlayerAlignedFrame.CornerForCenter(ray.Origin + ray.Direction * placeDistance, orientation);
+        var playerLocal = Vector3.Transform(player.Position - corner, Quaternion.Invert(orientation));
+        var blockData = BlockSelector.Instance.CurrentBlockData;
+
+        BlockPlacementHelper.CalculateOrientation(playerLocal, Vector3.Zero, Vector3.UnitY, Vector3.Zero, false, false, blockData, cachedBlockRotation, out var finalDir, out var finalRot);
+
+        BlockSelector.Instance.UpdateFreePosition(corner, orientation, finalDir, finalRot);
+        bool placeable = blockData?.Shape?.RequiresSupport != true;
+        BlockSelector.Instance.SetPlaceable(placeable);
+        BlockSelector.Instance.HideReservedArea();
+        lineRenderer.Enabled = false;
+
+        if (!placeable || !Input.IsActionDown("block_place") || !PanelUI.TryPlaceItem(out var id)) return;
+
+        Block newBlock = GameAssets.CreateBlockFromId(id);
+        newBlock.Direction = finalDir;
+        newBlock.Rotation = finalRot;
+        EntityCreationNetwork.PlaceNewEntity(World.CurrentSector, corner, newBlock, orientation);
+        player.PlayerStatistics.BlocksPlaced++;
+        PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
+
+        if (blockPlace != null)
+        {
+            PickPlaceSound(newBlock.Id);
+            blockPlace.Pitch = r.Next(9, 12) * 0.1f;
+            blockPlace.Play();
+        }
+    }
+
     private void OnNoEntityFound(Ray ray, LocalAstronaut player)
     {
         AImedBlockElement.AimedBlock = null;
@@ -273,6 +305,12 @@ public class InteractionPlaceBlock : InteractionMode
             //pos += Vector3.One * 0.5f;
 
             selectorPosition = entity.LocalPositionToWorld(localPos);
+        }
+
+        if (entity == null || !entity.IsPositionWithinEntitySize(selectorPosition) || !entity.IsWithinBuildRange(selectorPosition))
+        {
+            OnFreeSpace(ray, player, cachedBlockRotation, placeDistance);
+            return;
         }
 
 
@@ -382,7 +420,7 @@ public class InteractionPlaceBlock : InteractionMode
                     }
                     else
                     {
-                        EntityCreationNetwork.PlaceNewEntity(World.CurrentSector, entity.ToWorldSpace(selectorPosition), newBlock);
+                        EntityCreationNetwork.PlaceNewEntity(World.CurrentSector, entity.ToWorldSpace(selectorPosition), newBlock, entity.Orientation);
                         player.PlayerStatistics.BlocksPlaced++;
                         PlayerActivity.RaiseBlock(PlayerActivityKind.BlockPlaced, newBlock.Id);
                     }
