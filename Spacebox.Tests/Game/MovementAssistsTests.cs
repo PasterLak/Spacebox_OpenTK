@@ -6,14 +6,31 @@ namespace Spacebox.Tests.Game;
 
 public class MovementAssistsTests
 {
-    [Theory]
-    [InlineData(true, false, false, true)]
-    [InlineData(false, true, true, true)]
-    [InlineData(false, true, false, false)]
-    [InlineData(false, false, true, false)]
-    public void Sprint_HeldOrAutoWhileMovingForward(bool held, bool auto, bool forward, bool expected)
+    [Fact]
+    public void WithoutToggle_SprintFollowsTheHeldKey()
     {
-        Assert.Equal(expected, MovementAssists.IsSprinting(held, auto, forward));
+        var toggle = new SprintToggle();
+        Assert.True(toggle.Update(false, true, true, true));
+        Assert.False(toggle.Update(false, false, false, true));
+    }
+
+    [Fact]
+    public void Toggle_PressStartsAndPressAgainStops()
+    {
+        var toggle = new SprintToggle();
+        Assert.True(toggle.Update(true, true, true, true));
+        Assert.True(toggle.Update(true, false, false, true));
+        Assert.False(toggle.Update(true, true, true, true));
+        Assert.False(toggle.Update(true, false, false, true));
+    }
+
+    [Fact]
+    public void Toggle_StopsWhenMovementStops()
+    {
+        var toggle = new SprintToggle();
+        toggle.Update(true, true, true, true);
+        Assert.False(toggle.Update(true, false, false, false));
+        Assert.False(toggle.Update(true, false, false, true));
     }
 
     [Fact]

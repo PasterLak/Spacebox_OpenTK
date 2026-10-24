@@ -195,7 +195,7 @@ public class MovementMode : GameModeBase
 
 
 
-            isRunning = MovementAssists.WantsSprint();
+            isRunning = MovementAssists.WantsSprint(isMoving);
         }
 
         if (!isMoving) isRunning = false;

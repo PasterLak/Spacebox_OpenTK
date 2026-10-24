@@ -26,7 +26,7 @@ namespace Spacebox.Game.GUI.Menu
                 new CheckRow("Invert Mouse Y", "Moving the mouse up looks down, like in flight controls.", () => Settings.Gameplay.InvertMouseY, v => Apply(g => g.InvertMouseY = v)),
                 new CheckRow("Camera Sway", "The view sways slightly while you move. Turn it off if it makes you dizzy.", () => Settings.Gameplay.CameraSway, v => Settings.Gameplay.CameraSway = v),
                 new SectionRow("Movement"),
-                new CheckRow("Auto Sprint", "Moving forward always sprints, without holding the sprint key. Sprinting uses power while flying.", () => Settings.Gameplay.AutoSprint, v => Settings.Gameplay.AutoSprint = v),
+                new CheckRow("Auto Sprint", "Press the sprint key once to start sprinting and again to stop, instead of holding it. Sprinting stops when you stop moving and uses power while flying.", () => Settings.Gameplay.AutoSprint, v => Settings.Gameplay.AutoSprint = v),
                 new CheckRow("Auto Jump", "In gravity you jump onto one block high steps automatically when you walk into them.", () => Settings.Gameplay.AutoJump, v => Settings.Gameplay.AutoJump = v),
                 new SectionRow("Saving"),
                 new CheckRow("Autosave", "Saves your own worlds (single player and hosted games) automatically. Without it only the Save button in the pause menu saves.", () => Settings.Gameplay.Autosave, v => Settings.Gameplay.Autosave = v),

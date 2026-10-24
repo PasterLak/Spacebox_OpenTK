@@ -119,7 +119,7 @@ public sealed class GravityWalker
         var horizontal = _velocity - vertical;
 
         var wish = canMove ? GetWishDirection(player) : Vector3.Zero;
-        float speed = MoveSpeed(canMove);
+        float speed = MoveSpeed(canMove, wish != Vector3.Zero);
         float acceleration = _isGrounded ? GroundAcceleration : AirAcceleration;
         if (_isGrounded || wish != Vector3.Zero)
             horizontal = MoveTowards(horizontal, wish * speed, acceleration * deltaTime);
@@ -206,12 +206,12 @@ public sealed class GravityWalker
         return MovementAssists.ShouldAutoJump(true, _isGrounded, true, _stance.IsCrouching, blocked, clear);
     }
 
-    private float MoveSpeed(bool canMove)
+    private float MoveSpeed(bool canMove, bool moving)
     {
         IsSlowWalking = canMove && !_stance.IsCrouching && Input.IsAction("slow_walk");
         if (_stance.IsCrouching) return CrouchSpeed;
         if (IsSlowWalking) return SlowWalkSpeed;
-        return canMove && MovementAssists.WantsSprint() ? RunSpeed : WalkSpeed;
+        return canMove && MovementAssists.WantsSprint(moving) ? RunSpeed : WalkSpeed;
     }
 
     private void UpdateStance(LocalAstronaut player, bool wantsCrouch, float deltaTime)

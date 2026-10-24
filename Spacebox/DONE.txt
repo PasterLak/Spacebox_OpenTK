@@ -80,7 +80,7 @@ New
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 Small
 - health, oxygen and power bars keep the width of a 10 slot hotbar when the hotbar is longer
-- Options > Game > Movement: Auto Sprint and Auto Jump (one block steps in gravity), both off by default
+- Options > Game > Movement: Auto Sprint (the sprint key toggles sprinting instead of holding it) and Auto Jump (one block steps in gravity), both off by default
 - item tooltips show the item id in modes with the creative inventory (hotbar, inventory, storage, machines)
 - steel sign: 6 lines of 32 characters
 - ship viewer: unnamed builds without thrusters, cannons or ship consoles are listed as Base N instead of Ship N
