@@ -44,6 +44,7 @@ namespace Spacebox.Game.GUI.Menu
         {
             Click1 = new AudioSource(Resources.Load<AudioClip>("Resources/Audio/UI/click1.ogg", true), AudioChannel.UI);
             WorldInfoSaver.LoadWorlds(worlds);
+            WorldListOrder.Sort(worlds);
             GameSetsUnpacker.UnpackMods(true);
             LoadGameSets();
 
@@ -275,7 +276,7 @@ namespace Spacebox.Game.GUI.Menu
             SaveNewWorld(newWorld);
 
 
-            worlds.Add(newWorld);
+            worlds.Insert(0, newWorld);
             selectedWorld = newWorld;
         }
 
@@ -410,6 +411,7 @@ namespace Spacebox.Game.GUI.Menu
                 skinColor = clientConfig.SkinColor
             };
 
+            WorldInfoSaver.MarkOpened(world);
             Spacebox.Network.GameSession.SetPlayer(clientConfig.PlayerNickname, clientConfig.SkinColor);
             if (multiplayer)
                 Spacebox.Network.GameSession.BeginHost(Engine.Networking.NetworkManager.DefaultPort);

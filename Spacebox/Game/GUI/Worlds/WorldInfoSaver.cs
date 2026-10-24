@@ -82,6 +82,15 @@ public class WorldInfoSaver
         WorldInfoFiles.Write(worldFolder, worldInfo);
     }
 
+    public static void MarkOpened(WorldInfo worldInfo)
+    {
+        if (worldInfo == null) return;
+        worldInfo.LastOpenedDate = WorldInfo.GetCurrentDate();
+
+        string folder = GetWorldFolder(worldInfo);
+        if (folder != null) WorldInfoFiles.Write(folder, worldInfo);
+    }
+
     public static string GetWorldFolder(WorldInfo worldInfo)
     {
         if (worldInfo == null || string.IsNullOrWhiteSpace(worldInfo.FolderName)) return null;

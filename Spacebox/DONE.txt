@@ -83,6 +83,7 @@ New
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 - server commands: whois <player> (address, ping, game mode, position, admin/muted), kickall [reason], list (players with ping), seed (also in single player)
 Small
+- worlds list sorted by last opened or edited (new worlds on top); worlds remember when they were last opened
 - mobs stuck inside solid blocks take 5 damage per second
 - the block placement preview and its red line are semi-transparent (65%)
 - mods can also be dropped in as .7z and .tar(.gz/.bz2/.xz/.zst), not only .zip/.rar; texture pack archives in Mods/TexturePacks are unpacked too

@@ -15,6 +15,7 @@ public class WorldInfo
     public List<string> Extensions { get; set; } = new List<string>();
     public string GameVersion { get; set; }
     public string LastEditDate { get; set; }
+    public string LastOpenedDate { get; set; }
     public int Ticks { get; set; } = 0;
     public int Day { get; set; } = 0;
     public string FolderName { get; set; } = "";
