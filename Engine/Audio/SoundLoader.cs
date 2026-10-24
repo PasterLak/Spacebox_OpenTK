@@ -74,7 +74,14 @@ namespace Engine.Audio
                 channels = 1;
             }
             ALFormat format = GetSoundFormat(channels, bitsPerSample);
+            int length = PcmLayout.AlignedLength(data.Length, channels, bitsPerSample);
+            if (length <= 0)
+            {
+                Debug.Error($"[SoundLoader] Sound {path} has no samples");
+                return 0;
+            }
 
+            OpenAlErrors.Clear("SoundLoader", $"loading {path}");
             int buffer = AL.GenBuffer();
 
             GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
@@ -82,7 +89,7 @@ namespace Engine.Audio
             try
             {
                 IntPtr dataPtr = handle.AddrOfPinnedObject();
-                AL.BufferData(buffer, format, dataPtr, data.Length, sampleRate);
+                AL.BufferData(buffer, format, dataPtr, length, sampleRate);
 
             }
             catch (Exception ex)
@@ -100,7 +107,11 @@ namespace Engine.Audio
             }
 
             if (buffer == 0) return 0;
-            CheckALError($"Loading sound {path}");
+            if (!OpenAlErrors.Check("SoundLoader", $"loading sound {path}"))
+            {
+                AL.DeleteBuffer(buffer);
+                return 0;
+            }
 
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             Debug.Log($"[Audio][{buffer}] Loaded! - {TrimToRelativePath(path, baseDirectory)}", Color4.Turquoise);
@@ -122,13 +133,5 @@ namespace Engine.Audio
             return normalizedFullPath.Substring(normalizedBaseDir.Length).TrimStart(Path.DirectorySeparatorChar);
         }
 
-        private static void CheckALError(string operation)
-        {
-            ALError error = AL.GetError();
-            if (error != ALError.NoError)
-            {
-                throw new InvalidOperationException($"[SoundLoader] OpenAL error during {operation}: {AL.GetErrorString(error)}");
-            }
-        }
     }
 }

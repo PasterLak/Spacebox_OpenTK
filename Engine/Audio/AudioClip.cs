@@ -209,12 +209,7 @@ namespace Engine.Audio
 
         private void CheckALError(string operation)
         {
-            ALError error = AL.GetError();
-
-            if (error != ALError.NoError)
-            {
-                throw new InvalidOperationException($"[AudioClip] OpenAL error during {operation}: {AL.GetErrorString(error)}");
-            }
+            OpenAlErrors.Check("AudioClip", operation);
         }
 
         public string GetResourceInfo()
