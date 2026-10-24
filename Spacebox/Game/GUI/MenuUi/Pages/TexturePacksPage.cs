@@ -27,7 +27,7 @@ public sealed class TexturePacksPage : MenuPage
         _rows.AddThemeConstantOverride("separation", 0f);
         frame.Body.AddChild(new Label
         {
-            Text = $"Put packs into {TexturePackService.FolderName}/. Enabled packs override textures of every GameSet; the top one wins. Applied when a world loads.",
+            Text = $"Put packs (folders or archives) into {TexturePackService.FolderName}/; archives are unpacked on the next start. Enabled packs override textures of every GameSet; the top one wins. Applied when a world loads.",
             Autowrap = true,
             ThemeTypeVariation = "MutedLabel"
         });

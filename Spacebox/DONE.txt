@@ -82,7 +82,7 @@ New
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 - server commands: whois <player> (address, ping, game mode, position, admin/muted), kickall [reason], list (players with ping), seed (also in single player)
 Small
-- mods can also be dropped in as .7z and .tar(.gz/.bz2/.xz/.zst), not only .zip/.rar
+- mods can also be dropped in as .7z and .tar(.gz/.bz2/.xz/.zst), not only .zip/.rar; texture pack archives in Mods/TexturePacks are unpacked too
 - Options: double-click a slider to reset it to its default
 - interface font: any .ttf/.otf put into Resources/Fonts appears in the Font list; the smooth system font defaults to 12 px
 - world list selects the first world when it opens

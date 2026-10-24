@@ -179,5 +179,6 @@ Mods/TexturePacks/MyPack/
 ```
 
 - Only names that exist are replaced; folders inside `Blocks/` and `Items/` are free.
+- Archives: a pack packed as `.zip`, `.rar`, `.7z` or `.tar(.gz/.bz2/.xz/.zst)` dropped into `Mods/TexturePacks/` is extracted on the next start into a folder named after its `Name` (or the archive name). The pack can sit at the archive root or in one folder inside it and is recognised by `pack.json` or a `Blocks/`, `Items/`, `Emissions/` or `UI/` folder. A pack with the same `Id` is updated.
 - Enable packs in Mods -> Texture packs. Several packs can be active; the top one wins. The list is stored in `Resources/Settings.json` (`texture_packs.enabled`) and applies when a world is loaded.
 - Multiplayer: a server can share texture packs. A dedicated server lists them in `Multiplayer/serverconfig.json` (`"TexturePacks": [ "my_pack" ]`), a host shares the packs it has enabled. Joining players download them with the GameSet and see them below their own enabled packs; they are used only while playing on that server.

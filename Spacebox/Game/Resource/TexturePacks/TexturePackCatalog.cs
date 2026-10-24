@@ -11,7 +11,7 @@ public static class TexturePackCatalog
         Array.Sort(folders, StringComparer.OrdinalIgnoreCase);
         foreach (var folder in folders)
         {
-            if (Path.GetFileName(folder).StartsWith('_')) continue;
+            if (Path.GetFileName(folder).StartsWith('_') || ModFolderInstaller.IsTransient(folder)) continue;
             var pack = TexturePack.Load(folder);
             if (pack != null) packs.Add(pack);
         }
