@@ -5,7 +5,7 @@ namespace Engine.CanvasUI;
 
 public class Control : CanvasItem
 {
-    private static readonly Dictionary<Type, string[]> _typeChains = new Dictionary<Type, string[]>();
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, string[]> _typeChains = new System.Collections.Concurrent.ConcurrentDictionary<Type, string[]>();
 
     private float _anchorLeft, _anchorTop, _anchorRight, _anchorBottom;
     private float _offsetLeft, _offsetTop, _offsetRight, _offsetBottom;
@@ -560,8 +560,7 @@ public class Control : CanvasItem
         var names = new List<string>();
         for (var t = type; t != null && t != typeof(CanvasItem); t = t.BaseType) names.Add(t.Name);
         chain = names.ToArray();
-        _typeChains[type] = chain;
-        return chain;
+        return _typeChains.GetOrAdd(type, chain);
     }
 
     private Theme NextTheme(ref CanvasItem cursor, ref int stage)

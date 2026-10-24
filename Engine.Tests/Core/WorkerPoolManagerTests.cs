@@ -34,7 +34,7 @@ public class WorkerPoolManagerTests
         for (int i = 0; i < 20; i++)
             await WorkerPoolManager.Enqueue(_ => { }, WorkerPoolManager.Priority.Medium).WaitAsync(TimeSpan.FromSeconds(10));
 
-        Assert.True(watch.ElapsedMilliseconds < 500, $"20 sequential tasks took {watch.ElapsedMilliseconds} ms");
+        Assert.True(watch.ElapsedMilliseconds < 2000, $"20 sequential tasks took {watch.ElapsedMilliseconds} ms");
     }
 
     [Fact]

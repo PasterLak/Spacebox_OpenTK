@@ -136,7 +136,7 @@ public sealed class CanvasRoot
         InvalidateMinimumSizes();
     }
 
-    internal void InvalidateMinimumSizes() => _layoutStamp = ++_lastLayoutStamp;
+    internal void InvalidateMinimumSizes() => _layoutStamp = Interlocked.Increment(ref _lastLayoutStamp);
 
     public void Resize(Vector2 screenSize)
     {

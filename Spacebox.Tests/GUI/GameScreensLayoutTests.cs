@@ -9,6 +9,7 @@ using Spacebox.Network;
 
 namespace Spacebox.Tests.GUI;
 
+[Collection(Spacebox.Tests.GameAssetsCollection.Name)]
 public class GameScreensLayoutTests
 {
     private static readonly LayoutRules Rules = new LayoutRules { MinHitTargetPixels = 12f };
