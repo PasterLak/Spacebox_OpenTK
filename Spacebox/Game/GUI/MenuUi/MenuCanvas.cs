@@ -26,7 +26,7 @@ public sealed class MenuCanvas : IDisposable
     private readonly UpgradeWorldDialog _upgrade;
     private readonly ConnectionView _connection = new ConnectionView();
     private readonly AuthDialog _auth = new AuthDialog();
-    private SkiaCanvasFont _font;
+    private readonly Spacebox.Game.GUI.Canvas.InterfaceFontSlot _fonts = new Spacebox.Game.GUI.Canvas.InterfaceFontSlot();
     private GameUiDesign _design = (GameUiDesign)(-1);
     private float _scale = -1f;
     private MenuPage _page;
@@ -49,7 +49,6 @@ public sealed class MenuCanvas : IDisposable
         var root = _layer.Root;
         root.Stretch.Mode = StretchMode.Expand;
         root.Stretch.VirtualSize = GameCanvas.VirtualSize;
-        _font = new SkiaCanvasFont(Path.Combine(AppContext.BaseDirectory, GameCanvasThemes.FontPath), (int)GameCanvasThemes.FontSize);
         _logo.Texture = logo;
         _upgrade = new UpgradeWorldDialog(menu.VersionWindow);
         Build(root);
@@ -126,11 +125,13 @@ public sealed class MenuCanvas : IDisposable
     public void Apply(InterfaceSettings settings)
     {
         var design = GameUiDesigns.Parse(settings.Design);
-        if (design != _design)
+        bool fontChanged = _fonts.Update(settings, out var previousFont);
+        if (design != _design || fontChanged)
         {
             _design = design;
-            _layer.Root.Theme = GameCanvasThemes.Create(design, _font);
+            _layer.Root.Theme = GameCanvasThemes.Create(design, _fonts.Font);
         }
+        previousFont?.Dispose();
 
         float scale = Math.Clamp(settings.UiScale, InterfaceSettings.MinUiScale, InterfaceSettings.MaxUiScale);
         if (MathF.Abs(scale - _scale) < 0.001f) return;
@@ -212,7 +213,6 @@ public sealed class MenuCanvas : IDisposable
     {
         if (Current == this) Current = null;
         _layer.Dispose();
-        _font?.Dispose();
-        _font = null;
+        _fonts.Dispose();
     }
 }

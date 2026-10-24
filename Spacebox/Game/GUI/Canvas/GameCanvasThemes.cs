@@ -16,7 +16,7 @@ public static class GameCanvasThemes
 
     public static CanvasTheme Create(GameUiDesign design, CanvasFont font)
     {
-        var theme = new CanvasTheme { DefaultFont = font, DefaultFontSize = FontSize };
+        var theme = new CanvasTheme { DefaultFont = font, DefaultFontSize = font?.BaseSize ?? FontSize };
         GameControlStyles.Apply(theme, GamePalette.For(design));
         theme.SetColor("Control", "hud_text_color", Color4.White);
         if (design == GameUiDesign.Modern) ApplyModern(theme);

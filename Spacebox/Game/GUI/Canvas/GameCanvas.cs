@@ -25,7 +25,7 @@ public sealed class GameCanvas : IDisposable
     private readonly Windows.GameWindowsView _windows;
     private readonly Screens.GameScreensView _screens;
     private readonly Sounds.ButtonHoverSounds _hoverSounds = new Sounds.ButtonHoverSounds();
-    private SkiaCanvasFont _font;
+    private readonly InterfaceFontSlot _fonts = new InterfaceFontSlot();
     private GameUiDesign _design = (GameUiDesign)(-1);
     private float _scale = -1f;
 
@@ -70,18 +70,19 @@ public sealed class GameCanvas : IDisposable
         root.Add(_windows, UiLayer.Windows);
         root.Add(_screens, UiLayer.Popup);
         root.Add(new Items.SlotDragGhost(), UiLayer.Popup);
-        if (!Application.IsHeadless) _font = new SkiaCanvasFont(Path.Combine(AppContext.BaseDirectory, GameCanvasThemes.FontPath), (int)GameCanvasThemes.FontSize);
         Apply(Settings.Interface);
     }
 
     public void Apply(InterfaceSettings settings)
     {
         var design = GameUiDesigns.Parse(settings.Design);
-        if (design != _design)
+        bool fontChanged = _fonts.Update(settings, out var previousFont);
+        if (design != _design || fontChanged)
         {
             _design = design;
-            _layer.Root.Theme = GameCanvasThemes.Create(design, _font);
+            _layer.Root.Theme = GameCanvasThemes.Create(design, _fonts.Font);
         }
+        previousFont?.Dispose();
 
         float scale = Math.Clamp(settings.UiScale, InterfaceSettings.MinUiScale, InterfaceSettings.MaxUiScale);
         if (MathF.Abs(scale - _scale) < 0.001f) return;
@@ -116,7 +117,6 @@ public sealed class GameCanvas : IDisposable
     {
         if (Current == this) Current = null;
         _layer.Dispose();
-        _font?.Dispose();
-        _font = null;
+        _fonts.Dispose();
     }
 }

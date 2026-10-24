@@ -81,7 +81,7 @@ public sealed class InterfaceFontsTests : IDisposable
     {
         Assert.Equal(12f, InterfaceFonts.ToRequest(InterfaceFonts.FusionPixelId, 0).SizePixels);
         Assert.Equal(20f, InterfaceFonts.ToRequest(InterfaceFonts.FusionPixelId, 20).SizePixels);
-        Assert.True(InterfaceFonts.ToRequest(InterfaceFonts.BuiltInId, 13).IsBuiltIn);
+        Assert.True(InterfaceFonts.ToRequest(InterfaceFonts.SystemId, 14).IsBuiltIn);
         Assert.False(InterfaceFonts.ToRequest("unknown", 13).IsBuiltIn);
     }
 
@@ -97,8 +97,8 @@ public sealed class InterfaceFontsTests : IDisposable
 
         var builtIn = JsonSerializer.Deserialize<GameSettings>("{ \"interface\": { \"font\": \"proggy_clean\", \"font_size\": 2 } }", options)!;
         builtIn.ValidateAgainst(GameSettings.Default());
-        Assert.Equal(InterfaceFonts.BuiltInId, builtIn.Interface.Font);
-        Assert.Equal(13, builtIn.Interface.FontSize);
+        Assert.Equal(InterfaceFonts.FusionPixelId, builtIn.Interface.Font);
+        Assert.Equal(12, builtIn.Interface.FontSize);
 
         var old = JsonSerializer.Deserialize<GameSettings>("{ \"graphics\": { \"fov\": 70 } }", options)!;
         old.ValidateAgainst(GameSettings.Default());
