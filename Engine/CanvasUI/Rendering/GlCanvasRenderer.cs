@@ -72,6 +72,7 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
 
         _shader = new Shader(ShaderCode);
         _white = new Texture2D(new PixelData { Width = 1, Height = 1, Data = new byte[] { 255, 255, 255, 255 } }, FilterMode.Nearest);
+        Resources.RemoveResourceFromControll(_white);
         CreateBuffers();
     }
 

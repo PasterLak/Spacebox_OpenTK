@@ -17,7 +17,7 @@ public sealed class SkiaCanvasFont : CanvasFont, IDisposable
 
     public override float BaseSize => _baseSize;
     public override float LineHeight => _lineHeight;
-    public override Texture2D Atlas => _atlas ??= CreateAtlas();
+    public override Texture2D Atlas => _atlas is { IsDisposed: false } ? _atlas : _atlas = CreateAtlas();
 
     public SkiaCanvasFont(string path, int pixelSize, bool pixelated = true, IEnumerable<(char First, char Last)> ranges = null)
     {
@@ -129,7 +129,11 @@ public sealed class SkiaCanvasFont : CanvasFont, IDisposable
 
     private Texture2D CreateAtlas()
     {
-        return _pixels == null ? null : new Texture2D(_pixels, _filter);
+        if (_pixels == null) return null;
+
+        var atlas = new Texture2D(_pixels, _filter);
+        Resources.RemoveResourceFromControll(atlas);
+        return atlas;
     }
 
     private static int NextPowerOfTwo(int value)
