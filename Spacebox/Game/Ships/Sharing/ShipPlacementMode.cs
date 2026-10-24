@@ -20,6 +20,7 @@ public static class ShipPlacementMode
     private static ShipFile _ship;
     private static Vector3 _localCenter;
     private static Vector3 _halfSize;
+    private static ShipCellSet _cells;
     private static Quaternion _rotation = Quaternion.Identity;
     private static Quaternion _frame = Quaternion.Identity;
     private static bool _frameKnown;
@@ -46,6 +47,7 @@ public static class ShipPlacementMode
         _ship = ship;
         _localCenter = ((Vector3)ship.Min + (Vector3)ship.Max) * 0.5f;
         _halfSize = Vector3.ComponentMax((Vector3)ship.Size * 0.5f, new Vector3(0.5f));
+        _cells = ShipCellSet.FromEntity(ship.Entity);
         _rotation = Quaternion.Identity;
         _frame = Quaternion.Identity;
         _frameKnown = false;
@@ -64,6 +66,7 @@ public static class ShipPlacementMode
     {
         if (!IsActive) return;
         _ship = null;
+        _cells = null;
         _unblockPending = true;
         _preview?.Hide();
     }
@@ -72,6 +75,7 @@ public static class ShipPlacementMode
     {
         if (IsActive || _unblockPending) PanelUI.UnblockHands();
         _ship = null;
+        _cells = null;
         _unblockPending = false;
         _preview = null;
     }
@@ -106,7 +110,7 @@ public static class ShipPlacementMode
         if (Time.Total >= _nextCheck)
         {
             _nextCheck = Time.Total + CheckInterval;
-            _blockedReason = Spacebox.Network.ShipSharingNetwork.CheckLocal(new ShipPlacementBounds(center, _halfSize, _rotation), player.Position);
+            _blockedReason = Spacebox.Network.ShipSharingNetwork.CheckLocal(new ShipPlacementBounds(center, _halfSize, _rotation, _cells, _localCenter), player.Position);
         }
 
         var color = _blockedReason == null ? OutlineColor : BlockedColor;
@@ -157,7 +161,7 @@ public static class ShipPlacementMode
 
         var ship = _ship;
         var center = player.Position + player.Front * _distance;
-        string blocked = Spacebox.Network.ShipSharingNetwork.CheckLocal(new ShipPlacementBounds(center, _halfSize, _rotation), player.Position);
+        string blocked = Spacebox.Network.ShipSharingNetwork.CheckLocal(new ShipPlacementBounds(center, _halfSize, _rotation, _cells, _localCenter), player.Position);
         if (blocked != null)
         {
             _blockedReason = blocked;

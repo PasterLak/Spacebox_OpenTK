@@ -23,7 +23,7 @@ public static class ShipPlacer
     public static ShipPlacementBounds BoundsOf(CompoundTag shipEntity, Vector3 center, Quaternion rotation)
     {
         var stats = ShipTagReader.Measure(shipEntity);
-        return ShipPlacementBounds.FromLocal((Vector3)stats.Min, (Vector3)stats.Max, center, rotation);
+        return ShipPlacementBounds.FromLocal((Vector3)stats.Min, (Vector3)stats.Max, center, rotation, ShipCellSet.FromEntity(shipEntity));
     }
 
     public static bool TryPlace(CompoundTag shipEntity, Vector3 center, Quaternion rotation, string owner, bool isAdmin, Vector3? placerPosition, out string message, out SpaceEntity placed)

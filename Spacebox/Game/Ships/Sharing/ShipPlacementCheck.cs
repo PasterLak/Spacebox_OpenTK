@@ -19,7 +19,7 @@ public static class ShipPlacementCheck
 
     public static string Find(ShipPlacementBounds bounds, string player, bool isAdmin, Vector3? playerPosition)
     {
-        if (playerPosition is { } position && bounds.Contains(position, PlayerMargin)) return OverlapsPlayer;
+        if (playerPosition is { } position && bounds.Overlaps(position, PlayerMargin)) return OverlapsPlayer;
 
         var world = World.Instance;
         if (world == null) return null;
@@ -104,7 +104,7 @@ public static class ShipPlacementCheck
                 if (!BlockCollision.IsSolid(chunk.Blocks[x, y, z])) continue;
 
                 var center = new Vector3(origin.X + x + 0.5f, origin.Y + y + 0.5f, origin.Z + z + 0.5f);
-                if (bounds.Contains(entity.EntityLocalToWorld(center), CellMargin)) return true;
+                if (bounds.Overlaps(entity.EntityLocalToWorld(center), CellMargin)) return true;
             }
         }
 
