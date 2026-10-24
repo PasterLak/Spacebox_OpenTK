@@ -1,64 +1,74 @@
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.PostProcessing.Ssao;
 
 public sealed class SsaoTargets : IDisposable
 {
+    private static readonly SamplerState TargetSampler = SamplerState.NearestClamp with { MaxLevel = 0 };
+
+    private FramebufferHandle _depthFbo;
+    private TextureHandle _depthTexture;
+    private FramebufferHandle _occlusionFbo;
+    private TextureHandle _occlusionTexture;
+    private FramebufferHandle _blurFbo;
+    private TextureHandle _blurTexture;
+
     public Vector2i Size { get; private set; }
-    public int DepthFbo { get; private set; }
-    public int DepthTexture { get; private set; }
-    public int OcclusionFbo { get; private set; }
-    public int OcclusionTexture { get; private set; }
-    public int BlurFbo { get; private set; }
-    public int BlurTexture { get; private set; }
+    public int DepthFbo => _depthFbo.Id;
+    public int DepthTexture => _depthTexture.Id;
+    public int OcclusionFbo => _occlusionFbo.Id;
+    public int OcclusionTexture => _occlusionTexture.Id;
+    public int BlurFbo => _blurFbo.Id;
+    public int BlurTexture => _blurTexture.Id;
+    public FramebufferHandle DepthTarget => _depthFbo;
+    public FramebufferHandle OcclusionTarget => _occlusionFbo;
+    public FramebufferHandle BlurTarget => _blurFbo;
 
     public void EnsureSize(Vector2i size)
     {
         size = new Vector2i(Math.Max(1, size.X), Math.Max(1, size.Y));
-        if (size == Size && DepthFbo != 0) return;
+        if (size == Size && !_depthFbo.IsDefault) return;
 
         Release();
         Size = size;
 
-        (DepthFbo, DepthTexture) = CreateTarget(PixelInternalFormat.R32f, PixelType.Float);
-        (OcclusionFbo, OcclusionTexture) = CreateTarget(PixelInternalFormat.R8, PixelType.UnsignedByte);
-        (BlurFbo, BlurTexture) = CreateTarget(PixelInternalFormat.R8, PixelType.UnsignedByte);
+        var device = Gpu.Device;
+        (_depthFbo, _depthTexture) = CreateTarget(device, TextureFormat.R32F);
+        (_occlusionFbo, _occlusionTexture) = CreateTarget(device, TextureFormat.R8);
+        (_blurFbo, _blurTexture) = CreateTarget(device, TextureFormat.R8);
 
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        device.BindFramebuffer(FramebufferHandle.Default);
     }
 
-    private (int fbo, int texture) CreateTarget(PixelInternalFormat format, PixelType type)
+    private (FramebufferHandle fbo, TextureHandle texture) CreateTarget(IGraphicsDevice device, TextureFormat format)
     {
-        int texture = GL.GenTexture();
-        GL.BindTexture(TextureTarget.Texture2D, texture);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, format, Size.X, Size.Y, 0, PixelFormat.Red, type, IntPtr.Zero);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 0);
+        var texture = device.CreateTexture(TextureType.Texture2D);
+        device.SetTextureData2D(texture, 0, format, Size.X, Size.Y, ReadOnlySpan<byte>.Empty);
+        device.SetSampler(texture, TextureType.Texture2D, TargetSampler);
 
-        int fbo = GL.GenFramebuffer();
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);
-        GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+        var fbo = device.CreateFramebuffer();
+        device.BindFramebuffer(fbo);
+        device.AttachTexture(AttachmentPoint.Color0, texture, 0);
+        device.SetDrawBuffers(1);
         return (fbo, texture);
     }
 
     private void Release()
     {
-        DeleteTarget(DepthFbo, DepthTexture);
-        DeleteTarget(OcclusionFbo, OcclusionTexture);
-        DeleteTarget(BlurFbo, BlurTexture);
-        DepthFbo = DepthTexture = OcclusionFbo = OcclusionTexture = BlurFbo = BlurTexture = 0;
+        var device = Gpu.Device;
+        DeleteTarget(device, _depthFbo, _depthTexture);
+        DeleteTarget(device, _occlusionFbo, _occlusionTexture);
+        DeleteTarget(device, _blurFbo, _blurTexture);
+        _depthFbo = _occlusionFbo = _blurFbo = FramebufferHandle.Default;
+        _depthTexture = _occlusionTexture = _blurTexture = TextureHandle.None;
         Size = Vector2i.Zero;
     }
 
-    private static void DeleteTarget(int fbo, int texture)
+    private static void DeleteTarget(IGraphicsDevice device, FramebufferHandle fbo, TextureHandle texture)
     {
-        if (fbo != 0) GL.DeleteFramebuffer(fbo);
-        if (texture != 0) GL.DeleteTexture(texture);
+        device.DeleteFramebuffer(fbo);
+        device.DeleteTexture(texture);
     }
 
     public void Dispose()

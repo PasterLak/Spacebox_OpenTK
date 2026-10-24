@@ -10,7 +10,7 @@ public sealed class CanvasLayer : IDisposable
 
     private static readonly List<CanvasLayer> _active = new List<CanvasLayer>();
 
-    private readonly GlCanvasRenderer _renderer = new GlCanvasRenderer();
+    private readonly CanvasRenderer _renderer = new CanvasRenderer();
     private LayoutReport _report;
     private float _validationTimer;
 
@@ -18,7 +18,7 @@ public sealed class CanvasLayer : IDisposable
 
     public string Name { get; set; }
     public CanvasRoot Root { get; } = new CanvasRoot();
-    public GlCanvasRenderer Renderer => _renderer;
+    public CanvasRenderer Renderer => _renderer;
     public bool InputEnabled { get; set; } = true;
     public bool Visible { get; set; } = true;
     public bool ShowLayoutIssues { get; set; }

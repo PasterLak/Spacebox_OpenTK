@@ -10,7 +10,8 @@ using Engine.PostProcessing;
 using Engine.Graphics.Debugging;
 using Engine.SceneManagement;
 using Engine.UI;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
+using Engine.Graphics.Rhi.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -53,7 +54,11 @@ namespace Engine
             _minimizedWindowSize = nativeWindowSettings.ClientSize;
             if (Context == null && Graphics.Headless.NoOpGraphicsBindings.IsSupported) Graphics.Headless.NoOpGraphicsBindings.Install();
 
-            if (!Application.IsHeadless) GPUDebug.Initialize(true);
+            if (!Application.IsHeadless)
+            {
+                Gpu.Install(new OpenGlDevice());
+                GPUDebug.Initialize(true);
+            }
 
             _inputManager = InputManager.Instance;
             _inputManager.Initialize(this);
@@ -71,8 +76,8 @@ namespace Engine
                 LightSystem.InitializeGpu();
                 VisualDebug.InitializeGpu();
                 WorldLines.InitializeGpu();
+                Gpu.Device.ResetState();
                 _sceneRenderer = new SceneRenderer(SceneSize.X, SceneSize.Y);
-                GL.Enable(EnableCap.DepthTest);
             }
 
             LogSystemReport();
@@ -135,10 +140,10 @@ namespace Engine
                 Cpu = Diagnostics.CpuName.Detect(),
                 LogicalCores = Environment.ProcessorCount,
                 MemoryBytes = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes,
-                GpuRenderer = gpu ? GL.GetString(StringName.Renderer) : "",
-                GpuVendor = gpu ? GL.GetString(StringName.Vendor) : "",
-                OpenGlVersion = gpu ? GL.GetString(StringName.Version) : "",
-                GlslVersion = gpu ? GL.GetString(StringName.ShadingLanguageVersion) : "",
+                GpuRenderer = gpu ? Gpu.Device.Info.Renderer : "",
+                GpuVendor = gpu ? Gpu.Device.Info.Vendor : "",
+                OpenGlVersion = gpu ? Gpu.Device.Info.Version : "",
+                GlslVersion = gpu ? Gpu.Device.Info.ShadingLanguageVersion : "",
                 Monitor = monitor == null ? "" : $"{monitor.HorizontalResolution}x{monitor.VerticalResolution}"
             };
             foreach (var line in report.Lines()) Debug.Log(line);
@@ -255,9 +260,10 @@ namespace Engine
             ViewModelProjection.Reset();
             _sceneRenderer.Render(() => RenderScene());
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            var device = Gpu.Device;
+            device.BindFramebuffer(FramebufferHandle.Default);
+            device.SetViewport(0, 0, ClientSize.X, ClientSize.Y);
+            device.Clear(ClearTargets.Color | ClearTargets.Depth);
 
             GLState.DepthTest(false);
             GLState.CullFace(false);
@@ -283,7 +289,7 @@ namespace Engine
                 using (Prof.Time(T_SceneRender))
                 {
                     TransparentQueue.BeginScope();
-                    if (RenderDebugView.IsWireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                    if (RenderDebugView.IsWireframe) Gpu.Device.SetFillMode(FillMode.Wireframe);
                     Occlusion.BeginFrame(Camera.Main);
                     try
                     {
@@ -294,7 +300,7 @@ namespace Engine
                     {
                         using (Prof.Time(T_Transparent))
                             TransparentQueue.EndScope();
-                        if (RenderDebugView.IsWireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                        if (RenderDebugView.IsWireframe) Gpu.Device.SetFillMode(FillMode.Solid);
                     }
                 }
 
@@ -542,7 +548,7 @@ namespace Engine
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-            if (!Application.IsHeadless) GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
+            if (!Application.IsHeadless) Gpu.Device.SetViewport(0, 0, ClientSize.X, ClientSize.Y);
             _minimizedWindowSize = ClientSize;
             _sceneRenderer?.Resize(SceneSize.X, SceneSize.Y);
             _processManager?.UpdateResolution(ClientSize);

@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 
 namespace Engine
 {
@@ -6,7 +6,7 @@ namespace Engine
     {
         public string Name;
         public byte Size;
-        public VertexAttribPointerType Type;
+        public VertexComponentType Type;
         public bool Normalized;
 
         public BufferAttribute(string name, byte size)
@@ -15,23 +15,28 @@ namespace Engine
             Size = size;
         }
 
-        public VertexAttribPointerType ComponentType => Type == 0 ? VertexAttribPointerType.Float : Type;
+        public VertexComponentType ComponentType => Type;
 
         public int ByteSize => Size * ComponentSize(ComponentType);
 
-        public static int ComponentSize(VertexAttribPointerType type) => type switch
+        public static int ComponentSize(VertexComponentType type) => type switch
         {
-            VertexAttribPointerType.Byte or VertexAttribPointerType.UnsignedByte => 1,
-            VertexAttribPointerType.Short or VertexAttribPointerType.UnsignedShort or VertexAttribPointerType.HalfFloat => 2,
-            VertexAttribPointerType.Double => 8,
+            VertexComponentType.Byte or VertexComponentType.UnsignedByte => 1,
+            VertexComponentType.Short or VertexComponentType.UnsignedShort or VertexComponentType.HalfFloat => 2,
+            VertexComponentType.Double => 8,
             _ => 4
         };
     }
     public class MeshBuffer : IDisposable, IResource
     {
-        public int VAO { get; private set; }
-        public int VBO { get; private set; }
-        public int EBO { get; private set; }
+        public int VAO => _vertexArray.Id;
+        public int VBO => _vertexBuffer.Id;
+        public int EBO => _indexBuffer.Id;
+        public VertexArrayHandle VertexArray => _vertexArray;
+
+        private VertexArrayHandle _vertexArray;
+        private BufferHandle _vertexBuffer;
+        private BufferHandle _indexBuffer;
 
         private List<BufferAttribute> attributes = new List<BufferAttribute>();
         public byte FloatsPerVertex { get; private set; } = 0;
@@ -56,9 +61,10 @@ namespace Engine
         {
             if (Application.IsHeadless) return;
 
-            VAO = GL.GenVertexArray();
-            VBO = GL.GenBuffer();
-            EBO = GL.GenBuffer();
+            var device = Gpu.Device;
+            _vertexArray = device.CreateVertexArray();
+            _vertexBuffer = device.CreateBuffer();
+            _indexBuffer = device.CreateBuffer();
         }
 
         public void BindBuffer(ref float[] vertices, ref uint[] indices)
@@ -70,21 +76,18 @@ namespace Engine
         {
             if (VAO == 0) return;
 
-            GL.BindVertexArray(VAO);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexCount * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indexCount * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+            var device = Gpu.Device;
+            device.BindVertexArray(_vertexArray);
+            device.BufferData(BufferKind.Vertex, _vertexBuffer, new ReadOnlySpan<float>(vertices, 0, vertexCount), BufferUsage.Static);
+            device.BufferData(BufferKind.Index, _indexBuffer, new ReadOnlySpan<uint>(indices, 0, indexCount), BufferUsage.Static);
         }
 
         public void AddAttribute(string name, byte size)
         {
-            AddAttribute(name, size, VertexAttribPointerType.Float, false);
+            AddAttribute(name, size, VertexComponentType.Float, false);
         }
 
-        public void AddAttribute(string name, byte size, VertexAttribPointerType type, bool normalized)
+        public void AddAttribute(string name, byte size, VertexComponentType type, bool normalized)
         {
             if (attributes == null) attributes = new List<BufferAttribute>();
 
@@ -99,8 +102,9 @@ namespace Engine
         {
             if (VAO == 0) return;
 
-            GL.BindVertexArray(VAO);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            var device = Gpu.Device;
+            device.BindVertexArray(_vertexArray);
+            device.BindBuffer(BufferKind.Vertex, _vertexBuffer);
 
             int stride = sizeof(float) * FloatsPerVertex;
             int offset = 0;
@@ -108,16 +112,15 @@ namespace Engine
             for (byte i = 0; i < attributes.Count; i++)
             {
                 var atr = attributes[i];
-                AddAttribPointer(i, atr, stride, ref offset);
+                AddAttribPointer(device, i, atr, stride, ref offset);
             }
 
-            GL.BindVertexArray(0);
+            device.BindVertexArray(VertexArrayHandle.None);
         }
 
-        private static void AddAttribPointer(int index, BufferAttribute attribute, int stride, ref int offset)
+        private static void AddAttribPointer(IGraphicsDevice device, int index, BufferAttribute attribute, int stride, ref int offset)
         {
-            GL.VertexAttribPointer(index, attribute.Size, attribute.ComponentType, attribute.Normalized, stride, offset);
-            GL.EnableVertexAttribArray(index);
+            device.SetVertexAttribute(index, attribute.Size, attribute.ComponentType, attribute.Normalized, stride, offset);
             offset += attribute.ByteSize;
         }
 
@@ -127,9 +130,10 @@ namespace Engine
 
             if (VAO != 0)
             {
-                GL.DeleteBuffer(VBO);
-                GL.DeleteBuffer(EBO);
-                GL.DeleteVertexArray(VAO);
+                var device = Gpu.Device;
+                device.DeleteBuffer(_vertexBuffer);
+                device.DeleteBuffer(_indexBuffer);
+                device.DeleteVertexArray(_vertexArray);
             }
 
             IsDisposed = true;

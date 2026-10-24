@@ -1,90 +1,25 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 
 namespace Engine.Graphics
 {
     public static class GLState
     {
-        private static bool _depthTest = true;
-        private static bool _depthWrite = true;
-        private static bool _blend = false;
-        private static bool _cullFace = false;
-        private static CullFaceMode _cullMode = CullFaceMode.Back;
-        private static BlendingFactor _srcBlend = BlendingFactor.One;
-        private static BlendingFactor _dstBlend = BlendingFactor.Zero;
-        private static bool _gBufferWrite = true;
         public const int GBufferAttachment = 1;
 
-        public static void GBufferWrite(bool enable)
-        {
-            if (_gBufferWrite != enable)
-            {
-                GL.ColorMask(GBufferAttachment, enable, enable, enable, enable);
-                _gBufferWrite = enable;
-            }
-        }
+        public static void GBufferWrite(bool enable) => Gpu.Device.SetColorWrite(GBufferAttachment, enable);
 
-        public static void DepthTest(bool enable)
-        {
-            if (_depthTest != enable)
-            {
-                if (enable) GL.Enable(EnableCap.DepthTest);
-                else GL.Disable(EnableCap.DepthTest);
-                _depthTest = enable;
-            }
-        }
+        public static void DepthTest(bool enable) => Gpu.Device.SetDepthTest(enable);
 
-        public static void DepthMask(bool enable)
-        {
-            if (_depthWrite != enable)
-            {
-                GL.DepthMask(enable);
-                _depthWrite = enable;
-            }
-        }
+        public static void DepthMask(bool enable) => Gpu.Device.SetDepthWrite(enable);
 
-        public static void Blend(bool enable)
-        {
-            if (_blend != enable)
-            {
-                if (enable) GL.Enable(EnableCap.Blend);
-                else GL.Disable(EnableCap.Blend);
-                _blend = enable;
-            }
-        }
+        public static void Blend(bool enable) => Gpu.Device.SetBlend(enable);
 
-        public static void CullFace(bool enable)
-        {
-            if (_cullFace != enable)
-            {
-                if (enable) GL.Enable(EnableCap.CullFace);
-                else GL.Disable(EnableCap.CullFace);
-                _cullFace = enable;
-            }
-        }
+        public static void CullFace(bool enable) => Gpu.Device.SetCulling(enable);
 
-        public static void CullMode(CullFaceMode mode)
-        {
-            if (_cullMode != mode)
-            {
-                GL.CullFace(mode);
-                _cullMode = mode;
-            }
-        }
+        public static void CullMode(Rhi.CullFace mode) => Gpu.Device.SetCullFace(mode);
 
-        public static void BlendFunc(BlendingFactor src, BlendingFactor dst)
-        {
-            if (_srcBlend != src || _dstBlend != dst)
-            {
-                GL.BlendFunc(src, dst);
-                _srcBlend = src;
-                _dstBlend = dst;
-            }
-        }
+        public static void BlendFunc(BlendFactor src, BlendFactor dst) => Gpu.Device.SetBlendFunction(src, dst);
 
-        public static void InvalidateBlendFunc()
-        {
-            _srcBlend = (BlendingFactor)(-1);
-            _dstBlend = (BlendingFactor)(-1);
-        }
+        public static void InvalidateBlendFunc() => Gpu.Device.InvalidateBlendFunc();
     }
 }

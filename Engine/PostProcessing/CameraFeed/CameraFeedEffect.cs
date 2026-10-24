@@ -1,4 +1,4 @@
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.PostProcessing.CameraFeed;
@@ -47,8 +47,7 @@ public sealed class CameraFeedEffect : PostProcessEffect
         _shader.SetFloat("uTime", Time.Total);
         _shader.SetInt("uGrainSeed", (int)(Time.Total * GrainFrameRate));
         _shader.SetVector2("uResolution", new Vector2(clientSize.X, clientSize.Y));
-        GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, inputTexture);
+        Gpu.Device.BindTexture(0, inputTexture);
     }
 
     private void UpdateEnabled()

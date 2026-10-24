@@ -65,7 +65,7 @@ namespace Engine.GUI
             _ebo = GL.GenBuffer();
 
             GLState.Blend(true);
-            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
 
             GL.BindVertexArray(_vao);
 
@@ -160,7 +160,7 @@ namespace Engine.GUI
             _shader.SetVector2("tiling", tiling ?? Vector2.One);
 
 
-            _texture.Use(TextureUnit.Texture0);
+            _texture.Use(0);
             _shader.SetInt("spriteTexture", 0);
            // GL.BindTexture(TextureTarget.Texture2D, _texture.Handle);
 

@@ -2,7 +2,7 @@
 using Engine.Graphics;
 using Engine.Multithreading;
 using Engine.Utils;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using SkiaSharp;
 
@@ -23,10 +23,9 @@ namespace Engine
 
     public class Texture2D : IResource
     {
-        private static int[] _boundTextures = new int[32];
-        private static int _activeUnit = 0;
         public string Name;
         public int Handle { get; private set; }
+        public TextureHandle GpuHandle => new TextureHandle(Handle);
         public int Width { get; private set; }
         public int Height { get; private set; }
         private Color4[,] pixels;
@@ -60,13 +59,10 @@ namespace Engine
             _filterMode = filterMode;
             if (Application.IsHeadless) return;
 
-            Handle = GL.GenTexture();
-            GPUDebug.LabelTexture(Handle, "Texture2D PixelData");
+            Handle = CreateHandle("Texture2D PixelData");
             Use();
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0,
-                OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, pixelData.Data);
+            Gpu.Device.SetTextureData2D(GpuHandle, 0, TextureFormat.Rgba8, Width, Height, pixelData.Data);
             SetTextureParameters();
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
         public Texture2D(int width, int height, bool pixelated = false)
         {
@@ -154,7 +150,7 @@ namespace Engine
         {
             if (Application.IsHeadless) return 0;
 
-            int handle = GL.GenTexture();
+            int handle = Gpu.Device.CreateTexture(TextureType.Texture2D).Id;
             GPUDebug.LabelTexture(handle, label);
             return handle;
         }
@@ -182,8 +178,7 @@ namespace Engine
                     pixelData[index + 2] = (byte)(color.B * 255);
                     pixelData[index + 3] = (byte)(color.A * 255);
                 }
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0,
-                OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, pixelData);
+            Gpu.Device.SetTextureData2D(GpuHandle, 0, TextureFormat.Rgba8, Width, Height, pixelData);
         }
         private void CreatePinkTexture()
         {
@@ -197,13 +192,9 @@ namespace Engine
         {
             if (Handle == 0) return;
 
-            TextureMinFilter minFilter = _filterMode == FilterMode.Nearest ? TextureMinFilter.Nearest : TextureMinFilter.LinearMipmapLinear;
-            TextureMagFilter magFilter = _filterMode == FilterMode.Nearest ? TextureMagFilter.Nearest : TextureMagFilter.Linear;
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            var sampler = _filterMode == FilterMode.Nearest ? SamplerState.NearestRepeat : SamplerState.TrilinearRepeat;
+            Gpu.Device.SetSampler(GpuHandle, TextureType.Texture2D, sampler);
+            Gpu.Device.GenerateMipmaps(GpuHandle, TextureType.Texture2D);
         }
         public Color4 GetPixel(int x, int y)
         {
@@ -273,27 +264,14 @@ namespace Engine
 
         public static void ResetBindingCache()
         {
-            Array.Clear(_boundTextures);
-            _activeUnit = -1;
+            Gpu.Device.InvalidateTextureBindings();
         }
 
-        public void Use(TextureUnit unit = TextureUnit.Texture0)
+        public void Use(int unit = 0)
         {
             if (Handle == 0) return;
 
-            int unitIndex = (int)(unit - TextureUnit.Texture0);
-
-            if (_activeUnit != unitIndex)
-            {
-                GL.ActiveTexture(unit);
-                _activeUnit = unitIndex;
-            }
-
-            if (_boundTextures[unitIndex] != Handle)
-            {
-                GL.BindTexture(TextureTarget.Texture2D, Handle);
-                _boundTextures[unitIndex] = Handle;
-            }
+            Gpu.Device.BindTexture(unit, TextureType.Texture2D, GpuHandle);
         }
         public Color4[,] GetPixels() => pixels;
         public void SetPixelsData(Color4[,] newPixels)
@@ -337,8 +315,7 @@ namespace Engine
 
             Use();
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0,
-                OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.UnsignedByte, rawData);
+            Gpu.Device.SetTextureData2D(GpuHandle, 0, TextureFormat.Rgba8, Width, Height, rawData);
 
             _isDirty = false;
         }
@@ -353,9 +330,7 @@ namespace Engine
 
             Use();
             byte[] raw = new byte[Width * Height * 4];
-            GL.GetTexImage(TextureTarget.Texture2D, 0,
-                           OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
-                           PixelType.UnsignedByte, raw);
+            Gpu.Device.ReadTexture2D(GpuHandle, 0, TextureFormat.Rgba8, raw);
 
             pixels = new Color4[Width, Height];
             int i = 0;
@@ -499,13 +474,8 @@ namespace Engine
 
             if (Handle != 0)
             {
-                GL.DeleteTexture(Handle);
+                Gpu.Device.DeleteTexture(GpuHandle);
                 IsDisposed = true;
-                for (int i = 0; i < _boundTextures.Length; i++)
-                {
-                    if (_boundTextures[i] == Handle)
-                        _boundTextures[i] = 0;
-                }
             }
 
 
@@ -520,7 +490,7 @@ namespace Engine
                 return this;
             }
 
-            Handle = GL.GenTexture();
+            Handle = Gpu.Device.CreateTexture(TextureType.Texture2D).Id;
             Use();
             LoadTextureFromFile(path, true);
 

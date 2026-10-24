@@ -1,5 +1,5 @@
 using Engine.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.Tests.Graphics;
@@ -25,10 +25,10 @@ public class NormalMatrixTests
     }
 
     [Theory]
-    [InlineData(VertexAttribPointerType.UnsignedByte, 4, 4)]
-    [InlineData(VertexAttribPointerType.Float, 3, 12)]
-    [InlineData(VertexAttribPointerType.UnsignedShort, 2, 4)]
-    public void BufferAttribute_ByteSizeFollowsComponentType(VertexAttribPointerType type, byte size, int expected)
+    [InlineData(VertexComponentType.UnsignedByte, 4, 4)]
+    [InlineData(VertexComponentType.Float, 3, 12)]
+    [InlineData(VertexComponentType.UnsignedShort, 2, 4)]
+    public void BufferAttribute_ByteSizeFollowsComponentType(VertexComponentType type, byte size, int expected)
     {
         Assert.Equal(expected, new BufferAttribute("a", size) { Type = type }.ByteSize);
     }
@@ -36,6 +36,6 @@ public class NormalMatrixTests
     [Fact]
     public void BufferAttribute_DefaultsToFloat()
     {
-        Assert.Equal(VertexAttribPointerType.Float, new BufferAttribute { Name = "a", Size = 2 }.ComponentType);
+        Assert.Equal(VertexComponentType.Float, new BufferAttribute { Name = "a", Size = 2 }.ComponentType);
     }
 }

@@ -47,7 +47,7 @@ public sealed class BodyOutlineRenderer
         GLState.DepthTest(true);
         GLState.DepthMask(true);
         GLState.CullFace(true);
-        GLState.CullMode(CullFaceMode.Front);
+        GLState.CullMode(Engine.Graphics.Rhi.CullFace.Front);
 
         var components = target.Components;
         for (int i = 0; i < components.Count; i++)
@@ -60,6 +60,6 @@ public sealed class BodyOutlineRenderer
             renderer.Model.Mesh.Render();
         }
 
-        GLState.CullMode(CullFaceMode.Back);
+        GLState.CullMode(Engine.Graphics.Rhi.CullFace.Back);
     }
 }

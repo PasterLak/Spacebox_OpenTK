@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.PostProcessing
@@ -24,8 +24,7 @@ namespace Engine.PostProcessing
             vignetteShader.SetFloat("vignetteStrength", VignetteStrength);
             vignetteShader.SetFloat("vignetteRadius", VignetteRadius);
             vignetteShader.SetFloat("vignetteSoftness", VignetteSoftness);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, inputTexture);
+            Gpu.Device.BindTexture(0, inputTexture);
           
         }
     }

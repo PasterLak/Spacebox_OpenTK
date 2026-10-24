@@ -1,19 +1,20 @@
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Engine.Graphics.Rhi;
 using Engine.Graphics.Transparency;
 
 namespace Engine.Graphics;
 
 public sealed class RenderTexture : IDisposable
 {
-    private readonly int[] _viewport = new int[4];
-    private int _fbo;
-    private int _depth;
+    private FramebufferHandle _fbo;
+    private RenderbufferHandle _depth;
+    private TextureHandle _color;
     private bool _disposed;
 
     public int Width { get; private set; }
     public int Height { get; private set; }
-    public int ColorTexture { get; private set; }
+    public int ColorTexture => _color.Id;
+    public TextureHandle ColorTextureHandle => _color;
     public Color4 ClearColor { get; set; } = new Color4(0.08f, 0.08f, 0.1f, 1f);
 
     public RenderTexture(int width, int height)
@@ -35,8 +36,9 @@ public sealed class RenderTexture : IDisposable
     {
         if (_disposed || camera == null || draw == null) return;
 
-        int previousFbo = GL.GetInteger(GetPName.FramebufferBinding);
-        GL.GetInteger(GetPName.Viewport, _viewport);
+        var device = Gpu.Device;
+        var previousFbo = device.GetBoundFramebuffer();
+        var previousViewport = device.GetViewport();
         var previousCamera = Camera.Main;
 
         camera.AspectRatio = (float)Width / Height;
@@ -46,12 +48,12 @@ public sealed class RenderTexture : IDisposable
 
         try
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
-            GL.Viewport(0, 0, Width, Height);
+            device.BindFramebuffer(_fbo);
+            device.SetViewport(0, 0, Width, Height);
             GLState.DepthMask(true);
             GLState.DepthTest(true);
-            GL.ClearColor(ClearColor.R, ClearColor.G, ClearColor.B, ClearColor.A);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            device.SetClearColor(ClearColor);
+            device.Clear(ClearTargets.Color | ClearTargets.Depth);
             TransparentQueue.BeginScope();
             try
             {
@@ -64,8 +66,8 @@ public sealed class RenderTexture : IDisposable
         }
         finally
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, previousFbo);
-            GL.Viewport(_viewport[0], _viewport[1], _viewport[2], _viewport[3]);
+            device.BindFramebuffer(previousFbo);
+            device.SetViewport(previousViewport);
             Camera.Main = previousCamera;
             RenderSpace.UpdateOrigin();
             GlobalUniforms.Push();
@@ -75,11 +77,11 @@ public sealed class RenderTexture : IDisposable
     public byte[] ReadPixels()
     {
         var pixels = new byte[Width * Height * 4];
-        int previousFbo = GL.GetInteger(GetPName.FramebufferBinding);
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
-        GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
-        GL.ReadPixels(0, 0, Width, Height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, previousFbo);
+        var device = Gpu.Device;
+        var previousFbo = device.GetBoundFramebuffer();
+        device.BindFramebuffer(_fbo);
+        device.ReadPixels(0, 0, Width, Height, TextureFormat.Rgba8, pixels);
+        device.BindFramebuffer(previousFbo);
         return pixels;
     }
 
@@ -95,34 +97,30 @@ public sealed class RenderTexture : IDisposable
         Width = width;
         Height = height;
 
-        _fbo = GL.GenFramebuffer();
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
+        var device = Gpu.Device;
+        _fbo = device.CreateFramebuffer();
+        device.BindFramebuffer(_fbo);
 
-        ColorTexture = GL.GenTexture();
-        GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorTexture, 0);
+        _color = device.CreateTexture(TextureType.Texture2D);
+        device.SetTextureData2D(_color, 0, TextureFormat.Rgba8, width, height, ReadOnlySpan<byte>.Empty);
+        device.SetSampler(_color, TextureType.Texture2D, SamplerState.LinearRepeat);
+        device.AttachTexture(AttachmentPoint.Color0, _color, 0);
 
-        _depth = GL.GenRenderbuffer();
-        GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _depth);
-        GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, width, height);
-        GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, _depth);
+        _depth = device.CreateRenderbuffer(TextureFormat.Depth24, width, height);
+        device.AttachRenderbuffer(AttachmentPoint.Depth, _depth);
 
-        GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        GL.BindTexture(TextureTarget.Texture2D, 0);
-        Texture2D.ResetBindingCache();
+        device.SetDrawBuffers(1);
+        device.BindFramebuffer(FramebufferHandle.Default);
     }
 
     private void Delete()
     {
-        GL.DeleteFramebuffer(_fbo);
-        GL.DeleteTexture(ColorTexture);
-        GL.DeleteRenderbuffer(_depth);
-        _fbo = 0;
-        _depth = 0;
-        ColorTexture = 0;
+        var device = Gpu.Device;
+        device.DeleteFramebuffer(_fbo);
+        device.DeleteTexture(_color);
+        device.DeleteRenderbuffer(_depth);
+        _fbo = FramebufferHandle.Default;
+        _depth = RenderbufferHandle.None;
+        _color = TextureHandle.None;
     }
 }

@@ -1,4 +1,4 @@
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.PostProcessing.ColorGrading;
@@ -34,7 +34,6 @@ public sealed class ColorGradingEffect : PostProcessEffect
         _shader.SetFloat("uSaturation", _settings.Saturation);
         _shader.SetFloat("uGrain", _settings.FilmGrain);
         _shader.SetInt("uGrainSeed", _settings.FilmGrainAnimated ? (int)(Time.Total * GrainFrameRate) : 0);
-        GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, inputTexture);
+        Gpu.Device.BindTexture(0, inputTexture);
     }
 }

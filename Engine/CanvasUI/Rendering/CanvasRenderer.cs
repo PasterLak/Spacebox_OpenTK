@@ -1,10 +1,10 @@
 ﻿using Engine.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.CanvasUI;
 
-public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
+public sealed class CanvasRenderer : ICanvasRenderer, IDisposable
 {
     private const int MaxQuads = 8192;
     private const int FloatsPerVertex = 8;
@@ -43,7 +43,8 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
     private readonly Stack<Rect2> _clips = new Stack<Rect2>();
     private readonly Shader _shader;
     private readonly Texture2D _white;
-    private int _vao, _vbo, _ebo;
+    private VertexArrayHandle _vao;
+    private BufferHandle _vbo, _ebo;
     private int _quadCount;
     private int _texture;
     private Transform2D _screen = Transform2D.Identity;
@@ -66,7 +67,7 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
     public int DrawCalls { get; private set; }
     public int Quads { get; private set; }
 
-    public GlCanvasRenderer()
+    public CanvasRenderer()
     {
         if (Application.IsHeadless) return;
 
@@ -79,7 +80,7 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
 
     public void Begin(Vector2 screenSize, Transform2D screenTransform)
     {
-        if (_vao == 0) return;
+        if (!_vao.IsValid) return;
         _drawing = true;
         _screenSize = screenSize;
         _screen = screenTransform;
@@ -95,8 +96,8 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
         GLState.DepthMask(false);
         GLState.CullFace(false);
         GLState.Blend(true);
-        GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-        GL.Disable(EnableCap.ScissorTest);
+        GLState.BlendFunc(BlendFactor.SrcAlpha, BlendFactor.OneMinusSrcAlpha);
+        Gpu.Device.SetScissorTest(false);
 
         _shader.Use();
         _shader.SetVector2("screenSize", screenSize);
@@ -108,9 +109,8 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
         if (!_drawing) return;
         Flush();
         _drawing = false;
-        GL.Disable(EnableCap.ScissorTest);
-        GL.BindVertexArray(0);
-        Texture2D.ResetBindingCache();
+        Gpu.Device.SetScissorTest(false);
+        Gpu.Device.BindVertexArray(VertexArrayHandle.None);
         GLState.DepthMask(true);
         GLState.DepthTest(true);
     }
@@ -152,10 +152,12 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
 
     public void Dispose()
     {
-        if (_vao != 0) GL.DeleteVertexArray(_vao);
-        if (_vbo != 0) GL.DeleteBuffer(_vbo);
-        if (_ebo != 0) GL.DeleteBuffer(_ebo);
-        _vao = _vbo = _ebo = 0;
+        var device = Gpu.Device;
+        device.DeleteVertexArray(_vao);
+        device.DeleteBuffer(_vbo);
+        device.DeleteBuffer(_ebo);
+        _vao = VertexArrayHandle.None;
+        _vbo = _ebo = BufferHandle.None;
         _white?.Dispose();
         _shader?.Dispose();
     }
@@ -201,14 +203,13 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
 
     private void Flush()
     {
-        if (_quadCount == 0 || _vao == 0) return;
+        if (_quadCount == 0 || !_vao.IsValid) return;
 
-        GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, _texture);
-        GL.BindVertexArray(_vao);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _quadCount * FloatsPerQuad * sizeof(float), _vertices);
-        GL.DrawElements(PrimitiveType.Triangles, _quadCount * 6, DrawElementsType.UnsignedInt, 0);
+        var device = Gpu.Device;
+        device.BindTexture(0, TextureType.Texture2D, new TextureHandle(_texture));
+        device.BindVertexArray(_vao);
+        device.BufferSubData(BufferKind.Vertex, _vbo, 0, new ReadOnlySpan<float>(_vertices, 0, _quadCount * FloatsPerQuad));
+        device.DrawIndexed(PrimitiveTopology.Triangles, _quadCount * 6, IndexType.UnsignedInt, 0);
 
         DrawCalls++;
         Quads += _quadCount;
@@ -217,28 +218,29 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
 
     private void ApplyClip()
     {
+        var device = Gpu.Device;
         if (_clips.Count == 0)
         {
-            GL.Disable(EnableCap.ScissorTest);
+            device.SetScissorTest(false);
             return;
         }
 
         var clip = _clips.Peek();
         int x = (int)MathF.Floor(clip.X);
         int y = (int)MathF.Floor(_screenSize.Y - clip.End.Y);
-        GL.Enable(EnableCap.ScissorTest);
-        GL.Scissor(x, y, Math.Max(0, (int)MathF.Ceiling(clip.Width)), Math.Max(0, (int)MathF.Ceiling(clip.Height)));
+        device.SetScissorTest(true);
+        device.SetScissor(x, y, Math.Max(0, (int)MathF.Ceiling(clip.Width)), Math.Max(0, (int)MathF.Ceiling(clip.Height)));
     }
 
     private void CreateBuffers()
     {
-        _vao = GL.GenVertexArray();
-        _vbo = GL.GenBuffer();
-        _ebo = GL.GenBuffer();
+        var device = Gpu.Device;
+        _vao = device.CreateVertexArray();
+        _vbo = device.CreateBuffer();
+        _ebo = device.CreateBuffer();
 
-        GL.BindVertexArray(_vao);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+        device.BindVertexArray(_vao);
+        device.AllocateBuffer(BufferKind.Vertex, _vbo, _vertices.Length * sizeof(float), BufferUsage.Dynamic);
 
         var indices = new uint[MaxQuads * 6];
         for (uint q = 0, i = 0; q < MaxQuads; q++, i += 6)
@@ -251,16 +253,13 @@ public sealed class GlCanvasRenderer : ICanvasRenderer, IDisposable
             indices[i + 4] = v + 3;
             indices[i + 5] = v;
         }
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+        device.BufferData(BufferKind.Index, _ebo, new ReadOnlySpan<uint>(indices), BufferUsage.Static);
 
         int stride = FloatsPerVertex * sizeof(float);
-        GL.EnableVertexAttribArray(0);
-        GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, stride, 0);
-        GL.EnableVertexAttribArray(1);
-        GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, 2 * sizeof(float));
-        GL.EnableVertexAttribArray(2);
-        GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, stride, 4 * sizeof(float));
-        GL.BindVertexArray(0);
+        device.BindBuffer(BufferKind.Vertex, _vbo);
+        device.SetVertexAttribute(0, 2, VertexComponentType.Float, false, stride, 0);
+        device.SetVertexAttribute(1, 2, VertexComponentType.Float, false, stride, 2 * sizeof(float));
+        device.SetVertexAttribute(2, 4, VertexComponentType.Float, false, stride, 4 * sizeof(float));
+        device.BindVertexArray(VertexArrayHandle.None);
     }
 }

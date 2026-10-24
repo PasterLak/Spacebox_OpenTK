@@ -11,8 +11,8 @@ namespace Spacebox.Game
             MeshBuffer buffer = new MeshBuffer();
             buffer.AddAttribute("aPosition", 3);
             buffer.AddAttribute("aTexCoord", 2);
-            buffer.AddAttribute("aColor", 4, OpenTK.Graphics.OpenGL4.VertexAttribPointerType.UnsignedByte, true);
-            buffer.AddAttribute("aNormal", 4, OpenTK.Graphics.OpenGL4.VertexAttribPointerType.UnsignedByte, true);
+            buffer.AddAttribute("aColor", 4, Engine.Graphics.Rhi.VertexComponentType.UnsignedByte, true);
+            buffer.AddAttribute("aNormal", 4, Engine.Graphics.Rhi.VertexComponentType.UnsignedByte, true);
 
             return buffer;
         }

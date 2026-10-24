@@ -109,11 +109,11 @@ public class CubeRenderer2 : SceneNode, IDisposable, IGameComponent
             var cam = Camera.Main;
 
             GLState.Blend(true);
-            GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
             GLState.DepthTest(true);
 
             GLState.CullFace(true);
-            GLState.CullMode(CullFaceMode.Back);
+            GLState.CullMode(Engine.Graphics.Rhi.CullFace.Back);
 
             _shader.Use();
             var matModel = WorldMatrix;

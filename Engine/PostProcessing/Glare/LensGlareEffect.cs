@@ -1,4 +1,4 @@
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.PostProcessing.Glare;
@@ -38,7 +38,6 @@ public sealed class LensGlareEffect : PostProcessEffect
         _shader.SetVector3("uColor", Color);
         _shader.SetFloat("uAspect", clientSize.Y > 0 ? clientSize.X / (float)clientSize.Y : 1f);
         _shader.SetFloat("uTime", Time.Total);
-        GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, inputTexture);
+        Gpu.Device.BindTexture(0, inputTexture);
     }
 }

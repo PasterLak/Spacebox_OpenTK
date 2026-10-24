@@ -22,7 +22,7 @@ public sealed class EmbeddedShaderCompileTests
         {
             "error fallback" => ShaderSources.FromText(ResourceFallbacks.ShaderCode),
             "passthrough" => ShaderSources.FromText(EngineWindow.PassthroughShaderCode),
-            "canvas ui" => ShaderSources.FromLines(GlCanvasRenderer.ShaderCode),
+            "canvas ui" => ShaderSources.FromLines(CanvasRenderer.ShaderCode),
             "occlusion boxes" => ShaderSources.FromLines(OcclusionBoxRenderer.Source),
             _ => ShaderSources.FromLines(Engine.PostProcessing.GBufferDebugPass.Source)
         };

@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 
 
 namespace Engine.PostProcessing
@@ -32,12 +32,7 @@ namespace Engine.PostProcessing
 
             var tex = new Texture2D(new PixelData { Width = size, Height = size, Data = bytes }, filterMode: FilterMode.Nearest);
 
-            tex.Use();
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 0); 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            Gpu.Device.SetSampler(tex.GpuHandle, TextureType.Texture2D, SamplerState.NearestRepeat with { MaxLevel = 0 });
 
             ResourceScopes.Own(tex);
             return tex;

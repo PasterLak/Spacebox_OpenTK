@@ -1,6 +1,6 @@
 ﻿using Engine.Graphics;
 using Engine.Utils;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,9 +9,8 @@ namespace Engine
 {
     public class Shader : IResource
     {
-        private static int ACTIVE_SHADER = 0;
-
         public int Handle { get; private set; }
+        public ProgramHandle Program => new ProgramHandle(Handle);
         public int GetHandle() { return Handle; }
         private Dictionary<string, int> _uniformLocations;
         private const string ShaderFormat = ".glsl";
@@ -103,17 +102,16 @@ namespace Engine
             });
         }
 
-        private void BindUniformBlocks(int program)
+        private static void BindUniformBlocks(ProgramHandle program)
         {
-            GL.GetProgram(program, GetProgramParameterName.ActiveUniformBlocks, out int count);
+            var device = Gpu.Device;
+            int count = device.GetUniformBlockCount(program);
 
             for (int i = 0; i < count; i++)
             {
-                GL.GetActiveUniformBlockName(program, i, 64, out int len, out string raw);
-                string name = len > 0 ? raw.Substring(0, len) : raw;
-
+                string name = device.GetUniformBlockName(program, i);
                 int binding = BindingAllocator.GetOrAssign(name);
-                GL.UniformBlockBinding(program, i, binding);
+                device.SetUniformBlockBinding(program, i, binding);
             }
         }
 
@@ -134,35 +132,15 @@ namespace Engine
 
         private void Load(ref string vertexSrc, ref string fragmentSrc, ref string geometrySrc)
         {
-           
-            int vertexShader = CompileShader(ShaderType.VertexShader, vertexSrc);
-            int fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentSrc);
-            int geometryShader = 0;
-            if (!string.IsNullOrWhiteSpace(geometrySrc))
-                geometryShader = CompileShader(ShaderType.GeometryShader, geometrySrc);
+            var device = Gpu.Device;
+            var program = device.CreateProgram(new ShaderSources(vertexSrc, fragmentSrc, geometrySrc));
+            BindUniformBlocks(program);
+            int newHandle = program.Id;
 
-            int newHandle = GL.CreateProgram();
-            GL.AttachShader(newHandle, vertexShader);
-            if (geometryShader != 0)
-                GL.AttachShader(newHandle, geometryShader);
-            GL.AttachShader(newHandle, fragmentShader);
-            LinkProgram(newHandle);
-            BindUniformBlocks(newHandle);
-
-            GL.DetachShader(newHandle, vertexShader);
-            GL.DetachShader(newHandle, fragmentShader);
-            if (geometryShader != 0)
-                GL.DetachShader(newHandle, geometryShader);
-
-            GL.DeleteShader(vertexShader);
-            GL.DeleteShader(fragmentShader);
-            if (geometryShader != 0)
-                GL.DeleteShader(geometryShader);
-
-            var newUniforms = CacheUniformLocations(newHandle);
+            var newUniforms = CacheUniformLocations(program);
             if (Handle != 0)
             {
-                GL.DeleteProgram(Handle);
+                device.DeleteProgram(Program);
             }
             _previousHandle = Handle;
             _previousUniformLocations = _uniformLocations;
@@ -178,7 +156,7 @@ namespace Engine
 
             Debug.Log("[Shader] Reloading shader...");
             _isReloadingShader = true;
-            ACTIVE_SHADER = 0;
+            Gpu.Device.InvalidateProgram();
             try {
                 var r = LoadFromPath(_shaderPath);
                 Load(ref r.vertexSrc, ref r.fragmentSrc,ref r.geometrySrc); Debug.Log("[Shader] Shader reloaded successfully."); }
@@ -188,7 +166,7 @@ namespace Engine
                 Debug.Log("[Shader] Using previous working shader.");
                 if (Handle != _previousHandle)
                 {
-                    if (Handle != 0) GL.DeleteProgram(Handle);
+                    if (Handle != 0) Gpu.Device.DeleteProgram(Program);
                     Handle = _previousHandle;
                     _uniformLocations = _previousUniformLocations;
                 }
@@ -196,45 +174,10 @@ namespace Engine
             finally { _isReloadingShader = false; }
         }
 
-        private int CompileShader(ShaderType type, string source)
+        private static Dictionary<string, int> CacheUniformLocations(ProgramHandle program)
         {
-            int shader = GL.CreateShader(type);
-            if (shader == 0)
-                throw new Exception("Shader creation failed. Could not create shader handle.");
-            GL.ShaderSource(shader, source);
-            GL.CompileShader(shader);
-            GL.GetShader(shader, ShaderParameter.CompileStatus, out int code);
-            if (code != (int)All.True)
-            {
-                string infoLog = GL.GetShaderInfoLog(shader);
-                throw new Exception($"[Shader] Error compiling shader ({type}): {infoLog}");
-            }
-            return shader;
-        }
-
-        private void LinkProgram(int program)
-        {
-            if (program == 0)
-                throw new Exception("Program linking failed. Program handle is 0.");
-            GL.LinkProgram(program);
-            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int code);
-            if (code != (int)All.True)
-            {
-                string infoLog = GL.GetProgramInfoLog(program);
-                throw new Exception($"[Shader] Error linking program ({program}): {infoLog}");
-            }
-        }
-
-        private Dictionary<string, int> CacheUniformLocations(int programHandle)
-        {
-            GL.GetProgram(programHandle, GetProgramParameterName.ActiveUniforms, out int uniformCount);
             var locations = new Dictionary<string, int>();
-            for (int i = 0; i < uniformCount; i++)
-            {
-                string key = GL.GetActiveUniform(programHandle, i, out _, out _);
-                int location = GL.GetUniformLocation(programHandle, key);
-                locations.Add(key, location);
-            }
+            Gpu.Device.GetActiveUniforms(program, locations);
             return locations;
         }
 
@@ -242,64 +185,59 @@ namespace Engine
         {
             if (_isReloadingShader || Handle == 0) return;
 
-            if(ACTIVE_SHADER != Handle)
-            {
-                GL.UseProgram(Handle);
-                ACTIVE_SHADER = Handle;
-            }
-
+            Gpu.Device.UseProgram(Program);
         }
 
-        public int GetAttribLocation(string attribName) => Handle == 0 ? -1 : GL.GetAttribLocation(Handle, attribName);
+        public int GetAttribLocation(string attribName) => Handle == 0 ? -1 : Gpu.Device.GetAttributeLocation(Program, attribName);
 
         public void SetBool(string name, bool data)
         {
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform1(location, data ? 1 : 0);
+            Gpu.Device.SetUniform(location, data ? 1 : 0);
         }
         public void SetInt(string name, int data)
         {
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform1(location, data);
+            Gpu.Device.SetUniform(location, data);
         }
         public void SetFloat(string name, float data)
         {
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform1(location, data);
+            Gpu.Device.SetUniform(location, data);
         }
         public void SetMatrix4(string name, Matrix4 data, bool transpose = true)
         {
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.UniformMatrix4(location, transpose, ref data);
+            Gpu.Device.SetUniform(location, in data, transpose);
         }
         public void SetMatrix3(string name, Matrix3 data, bool transpose = true)
         {
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.UniformMatrix3(location, transpose, ref data);
+            Gpu.Device.SetUniform(location, in data, transpose);
         }
         public void SetVector2(string name, Vector2 data)
         {
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform2(location, data);
+            Gpu.Device.SetUniform(location, data);
         }
         public void SetVector3(string name, Vector3 data)
         {
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform3(location, data);
+            Gpu.Device.SetUniform(location, data);
         }
         public void SetVector3Array(string name, Vector3[] values)
         {
@@ -308,7 +246,7 @@ namespace Engine
             if (!TryGetUniformLocation(key, out int location))
                 return;
             Use();
-            GL.Uniform3(location, values.Length, ref values[0].X);
+            Gpu.Device.SetUniform(location, (ReadOnlySpan<Vector3>)values);
         }
 
         private bool TryGetUniformLocation(string name, out int location)
@@ -325,14 +263,14 @@ namespace Engine
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform4(location, data);
+            Gpu.Device.SetUniform(location, data);
         }
         public void SetVector4(string name, Color4 data)
         {
             if (!TryGetUniformLocation(name, out int location))
                 return;
             Use();
-            GL.Uniform4(location, data);
+            Gpu.Device.SetUniform(location, data);
         }
         public void Dispose()
         {
@@ -341,13 +279,7 @@ namespace Engine
             ResourceScopes.Forget(this);
 
             if (Handle != 0)
-                GL.DeleteProgram(Handle);
-
-            if(Handle != 0 && ACTIVE_SHADER == Handle)
-            {
-                GL.UseProgram(0);
-                ACTIVE_SHADER = 0;
-            }
+                Gpu.Device.DeleteProgram(Program);
             _watcher?.Dispose();
             _hotReloader?.Dispose();
             _hotReloader = null;

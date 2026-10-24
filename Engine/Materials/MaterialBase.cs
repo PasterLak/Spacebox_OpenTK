@@ -1,6 +1,6 @@
 ﻿
 using Engine.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -21,10 +21,10 @@ namespace Engine
 
         public bool TransposeMatrices = true;
 
-        readonly Dictionary<string, (TextureUnit unit, Texture2D tex)> _slots = new();
+        readonly Dictionary<string, (int unit, Texture2D tex)> _slots = new();
         readonly Dictionary<string, object> _parameters = new();
         const int GuaranteedTextureUnits = 16;
-        readonly int _maxUnits = Math.Max(GuaranteedTextureUnits, GL.GetInteger(GetPName.MaxCombinedTextureImageUnits));
+        readonly int _maxUnits = Math.Max(GuaranteedTextureUnits, Math.Min(Gpu.Device.Info.MaxTextureUnits, GpuStateTracker.MaxTextureUnits));
 
 
 
@@ -39,7 +39,7 @@ namespace Engine
             {
                 int n = _slots.Count;
                 if (n >= _maxUnits) throw new InvalidOperationException("Too many textures");
-                _slots[uniform] = (TextureUnit.Texture0 + n, tex);
+                _slots[uniform] = (n, tex);
             }
         }
         public void ReplaceTexture(string uniform, Texture2D newTexture)
@@ -79,7 +79,7 @@ namespace Engine
             foreach (var (name, slot) in _slots)
             {
                 slot.tex.Use(slot.unit);
-                Shader.SetInt(name, (int)(slot.unit - TextureUnit.Texture0));
+                Shader.SetInt(name, slot.unit);
             }
         }
 
@@ -112,7 +112,7 @@ namespace Engine
             }
 
             GLState.CullFace(true);
-            GLState.CullMode(face == RenderFace.Front ? CullFaceMode.Back : CullFaceMode.Front);
+            GLState.CullMode(face == RenderFace.Front ? CullFace.Back : CullFace.Front);
         }
         private void SetRenderMode(RenderMode mode)
         {
@@ -129,7 +129,7 @@ namespace Engine
 
             if (enableBlending)
             {
-                GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                GLState.BlendFunc(BlendFactor.SrcAlpha, BlendFactor.OneMinusSrcAlpha);
             }
            
         }

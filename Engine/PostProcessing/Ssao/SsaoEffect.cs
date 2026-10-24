@@ -1,5 +1,5 @@
 using Engine.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.PostProcessing.Ssao;
@@ -68,13 +68,14 @@ public sealed class SsaoEffect : PostProcessEffect, IDisposable
             Vector4 projMain = SsaoProjection.Pack(camera.GetProjectionMatrix());
             Vector4 projView = ViewModelProjection.Active ? SsaoProjection.Pack(ViewModelProjection.Projection) : projMain;
 
-            GL.Viewport(0, 0, _targets.Size.X, _targets.Size.Y);
+            var device = Gpu.Device;
+            device.SetViewport(0, 0, _targets.Size.X, _targets.Size.Y);
             RenderDepth(sceneSize, projMain, projView);
             RenderOcclusion(sceneSize, projMain, projView);
             RenderBlur();
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, outputFbo);
-            GL.Viewport(0, 0, clientSize.X, clientSize.Y);
+            device.BindFramebuffer(new FramebufferHandle(outputFbo));
+            device.SetViewport(0, 0, clientSize.X, clientSize.Y);
             BindComposite(inputTexture, true);
 
             var composite = _shaders.Composite;
@@ -90,16 +91,14 @@ public sealed class SsaoEffect : PostProcessEffect, IDisposable
             BindTexture(2, _targets.DepthTexture, composite, "uAoDepth");
             BindTexture(3, _renderer.DepthTexture, composite, "uSceneDepth");
             BindTexture(4, _renderer.NormalTexture, composite, "uSceneNormal");
-            GL.ActiveTexture(TextureUnit.Texture0);
+            device.BindTexture(0, inputTexture);
         }
-
-        Texture2D.ResetBindingCache();
     }
 
     private void RenderDepth(Vector2i sceneSize, Vector4 projMain, Vector4 projView)
     {
         var shader = _shaders.Depth;
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, _targets.DepthFbo);
+        Gpu.Device.BindFramebuffer(_targets.DepthTarget);
         shader.Use();
         BindTexture(0, _renderer.DepthTexture, shader, "uSceneDepth");
         BindTexture(1, _renderer.NormalTexture, shader, "uSceneNormal");
@@ -113,7 +112,7 @@ public sealed class SsaoEffect : PostProcessEffect, IDisposable
     private void RenderOcclusion(Vector2i sceneSize, Vector4 projMain, Vector4 projView)
     {
         var shader = _shaders.Occlusion;
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, _targets.OcclusionFbo);
+        Gpu.Device.BindFramebuffer(_targets.OcclusionTarget);
         shader.Use();
         UploadKernel(shader);
         BindTexture(0, _targets.DepthTexture, shader, "uDepth");
@@ -141,12 +140,12 @@ public sealed class SsaoEffect : PostProcessEffect, IDisposable
         shader.SetInt("uRadius", _blurRadius);
         BindTexture(1, _targets.DepthTexture, shader, "uDepth");
 
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, _targets.BlurFbo);
+        Gpu.Device.BindFramebuffer(_targets.BlurTarget);
         BindTexture(0, _targets.OcclusionTexture, shader, "uAo");
         shader.SetVector2("uDirection", Vector2.UnitX);
         PostProcessManager.RenderQuad();
 
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, _targets.OcclusionFbo);
+        Gpu.Device.BindFramebuffer(_targets.OcclusionTarget);
         BindTexture(0, _targets.BlurTexture, shader, "uAo");
         shader.SetVector2("uDirection", Vector2.UnitY);
         PostProcessManager.RenderQuad();
@@ -170,8 +169,7 @@ public sealed class SsaoEffect : PostProcessEffect, IDisposable
 
     private static void BindTexture(int unit, int texture, Shader shader, string uniform)
     {
-        GL.ActiveTexture(TextureUnit.Texture0 + unit);
-        GL.BindTexture(TextureTarget.Texture2D, texture);
+        Gpu.Device.BindTexture(unit, texture);
         shader.SetInt(uniform, unit);
     }
 

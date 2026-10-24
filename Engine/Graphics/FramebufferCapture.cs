@@ -1,5 +1,5 @@
 ﻿using Engine.Multithreading;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 using static Engine.Application;
@@ -107,7 +107,7 @@ namespace Engine
             int width = window.Size.X;
             int height = window.Size.Y;
             byte[] pixels = new byte[width * height * 4];
-            GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            Gpu.Device.ReadPixels(0, 0, width, height, TextureFormat.Rgba8, pixels);
             Color4[,] colorData = ConvertToColorArray(pixels, width, height);
             Texture2D texture = new Texture2D(width, height);
             texture.SetPixelsData(colorData);
@@ -121,7 +121,7 @@ namespace Engine
             int height = clientSize.Y;
             byte[] pixels = new byte[width * height * 4];
 
-            GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            Gpu.Device.ReadPixels(0, 0, width, height, TextureFormat.Rgba8, pixels);
             Texture2D texture = new Texture2D(width, height);
 
             Color4[,] colorData = ConvertToColorArray(pixels, width, height);
@@ -142,7 +142,7 @@ namespace Engine
             int dropXSize = (clientSize.X - height) / 2;
 
             byte[] pixels = new byte[width * height * 4];
-            GL.ReadPixels(dropXSize, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            Gpu.Device.ReadPixels(dropXSize, 0, width, height, TextureFormat.Rgba8, pixels);
             Color4[,] colorData = ConvertToColorArray(pixels, width, height);
             Color4[,] finalData;
 
@@ -214,13 +214,12 @@ namespace Engine
             int h = size.Y;
             byte[] rgba = new byte[w * h * 4];
 
-            GL.BindTexture(TextureTarget.Texture2D, textureId);
+            var texture = new TextureHandle(textureId);
 
             if (isDepth)
             {
                 float[] z = new float[w * h];
-                GL.GetTexImage(TextureTarget.Texture2D, 0,
-                               PixelFormat.DepthComponent, PixelType.Float, z);
+                Gpu.Device.ReadTexture2D<float>(texture, 0, TextureFormat.Depth24, z);
 
                 for (int i = 0; i < z.Length; i++)
                 {
@@ -242,8 +241,7 @@ namespace Engine
             }
             else
             {
-                GL.GetTexImage(TextureTarget.Texture2D, 0,
-                               PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
+                Gpu.Device.ReadTexture2D(texture, 0, TextureFormat.Rgba8, rgba);
             }
 
             Color4[,] colors = ConvertToColorArray(rgba, w, h);
@@ -257,7 +255,7 @@ namespace Engine
         public static async Task<byte[]> CaptureFrameAsPngAsync(int width, int height)
         {
             byte[] pixels = new byte[width * height * 4];
-            GL.ReadPixels(0, 0, width, height, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            Gpu.Device.ReadPixels(0, 0, width, height, TextureFormat.Rgba8, pixels);
             Color4[,] colorData = ConvertToColorArray(pixels, width, height);
             Texture2D texture = new Texture2D(width, height);
             texture.SetPixelsData(colorData);

@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 namespace Engine.PostProcessing
 {
@@ -20,12 +20,17 @@ namespace Engine.PostProcessing
         public Shader PresentShader { get; set; }
         private bool disposed = false;
         private static MeshBuffer fullscreenBuffer;
-        private int[] pingpongFBO = new int[2];
-        private int[] pingpongTexture = new int[2];
+        private FramebufferHandle[] pingpongFBO = new FramebufferHandle[2];
+        private TextureHandle[] pingpongTexture = new TextureHandle[2];
         private int currentPingPong = 0;
         private Vector2i currentBufferSize = new Vector2i(0, 0);
-        static PostProcessManager()
+        public PostProcessManager()
         {
+            EnsureFullscreenQuad();
+        }
+        private static void EnsureFullscreenQuad()
+        {
+            if (fullscreenBuffer != null) return;
             BufferAttribute[] attrs = new BufferAttribute[]
             {
                 new BufferAttribute { Name = "aPos", Size = 2 },
@@ -45,23 +50,22 @@ namespace Engine.PostProcessing
         }
         private void InitPingPongBuffers(Vector2i size)
         {
+            var device = Gpu.Device;
             for (int i = 0; i < 2; i++)
             {
-                if (pingpongFBO[i] != 0)
+                if (!pingpongFBO[i].IsDefault)
                 {
-                    GL.DeleteFramebuffer(pingpongFBO[i]);
-                    GL.DeleteTexture(pingpongTexture[i]);
+                    device.DeleteFramebuffer(pingpongFBO[i]);
+                    device.DeleteTexture(pingpongTexture[i]);
                 }
-                pingpongFBO[i] = GL.GenFramebuffer();
-                pingpongTexture[i] = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, pingpongTexture[i]);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, nint.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, pingpongFBO[i]);
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, pingpongTexture[i], 0);
+                pingpongFBO[i] = device.CreateFramebuffer();
+                pingpongTexture[i] = device.CreateTexture(TextureType.Texture2D);
+                device.SetTextureData2D(pingpongTexture[i], 0, TextureFormat.Rgba8, size.X, size.Y, ReadOnlySpan<byte>.Empty);
+                device.SetSampler(pingpongTexture[i], TextureType.Texture2D, SamplerState.LinearRepeat);
+                device.BindFramebuffer(pingpongFBO[i]);
+                device.AttachTexture(AttachmentPoint.Color0, pingpongTexture[i], 0);
             }
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            device.BindFramebuffer(FramebufferHandle.Default);
             currentPingPong = 0;
             currentBufferSize = size;
         }
@@ -104,38 +108,39 @@ namespace Engine.PostProcessing
         {
             if (currentBufferSize != clientSize)
                 InitPingPongBuffers(clientSize);
+            var device = Gpu.Device;
             int readTexture = sceneRenderer.ColorTexture;
             for (int i = 0; i < effects.Count; i++)
             {
                 if (!effects[i].ShouldApply(Enabled)) continue;
 
-                int writeFBO = pingpongFBO[currentPingPong];
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, writeFBO);
-                GL.Viewport(0, 0, clientSize.X, clientSize.Y);
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                effects[i].Apply(readTexture, writeFBO, clientSize);
+                var writeFBO = pingpongFBO[currentPingPong];
+                device.BindFramebuffer(writeFBO);
+                device.SetViewport(0, 0, clientSize.X, clientSize.Y);
+                device.Clear(ClearTargets.Color | ClearTargets.Depth);
+                effects[i].Apply(readTexture, writeFBO.Id, clientSize);
                 RenderQuad();
-                readTexture = pingpongTexture[currentPingPong];
+                readTexture = pingpongTexture[currentPingPong].Id;
                 currentPingPong = 1 - currentPingPong;
             }
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            device.BindFramebuffer(FramebufferHandle.Default);
            
-                GL.Viewport(0, 0, clientSize.X, clientSize.Y);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                device.SetViewport(0, 0, clientSize.X, clientSize.Y);
+            device.Clear(ClearTargets.Color | ClearTargets.Depth);
             if (PresentShader != null)
             {
                 PresentShader.Use();
                 PresentShader.SetInt("scene", 0);
             }
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, readTexture);
+            device.BindTexture(0, readTexture);
             RenderQuad();
         }
         public static void RenderQuad()
         {
-            GL.BindVertexArray(fullscreenBuffer.VAO);
-            GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, nint.Zero);
-            GL.BindVertexArray(0);
+            var device = Gpu.Device;
+            device.BindVertexArray(fullscreenBuffer.VertexArray);
+            device.DrawIndexed(PrimitiveTopology.Triangles, 6, IndexType.UnsignedInt, 0);
+            device.BindVertexArray(VertexArrayHandle.None);
         }
         public void Dispose()
         {
@@ -149,10 +154,11 @@ namespace Engine.PostProcessing
                 if (disposing)
                 {
                     ClearEffects();
+                    var device = Gpu.Device;
                     for (int i = 0; i < 2; i++)
                     {
-                        GL.DeleteFramebuffer(pingpongFBO[i]);
-                        GL.DeleteTexture(pingpongTexture[i]);
+                        device.DeleteFramebuffer(pingpongFBO[i]);
+                        device.DeleteTexture(pingpongTexture[i]);
                     }
                 }
                 disposed = true;

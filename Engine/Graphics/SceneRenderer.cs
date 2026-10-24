@@ -1,20 +1,28 @@
-﻿
-using Engine.Graphics;
-using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine
 {
     public class SceneRenderer : IDisposable
     {
-        public int Fbo { get; private set; }
-        public int ColorTexture { get; private set; }
-        public int NormalTexture { get; private set; }
-        public int DepthTexture { get; private set; }
+        public int Fbo => _fbo.Id;
+        public int ColorTexture => _color.Id;
+        public int NormalTexture => _normal.Id;
+        public int DepthTexture => _depth.Id;
+        public FramebufferHandle Framebuffer => _fbo;
+        public TextureHandle ColorTextureHandle => _color;
+        public TextureHandle NormalTextureHandle => _normal;
+        public TextureHandle DepthTextureHandle => _depth;
         public Vector2i Size => new Vector2i(width, height);
 
-        private static readonly float[] ClearGBuffer = { 0f, 0f, 0f, 0f };
+        private static readonly Color4 ClearGBuffer = new Color4(0f, 0f, 0f, 0f);
+        private static readonly Color4 ClearScene = new Color4(0f, 0f, 0f, 1f);
 
+        private FramebufferHandle _fbo;
+        private TextureHandle _color;
+        private TextureHandle _normal;
+        private TextureHandle _depth;
         private int width, height;
         private bool disposed = false;
 
@@ -27,38 +35,25 @@ namespace Engine
 
         private void Initialize()
         {
-            Fbo = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, Fbo);
+            var device = Gpu.Device;
+            _fbo = device.CreateFramebuffer();
+            device.BindFramebuffer(_fbo);
 
-            ColorTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, ColorTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorTexture, 0);
+            _color = CreateAttachment(device, TextureFormat.Rgba8, SamplerState.LinearRepeat, AttachmentPoint.Color0);
+            _normal = CreateAttachment(device, TextureFormat.Rgba8, SamplerState.LinearRepeat, AttachmentPoint.Color1);
+            _depth = CreateAttachment(device, TextureFormat.Depth24, SamplerState.NearestRepeat, AttachmentPoint.Depth);
 
-            NormalTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, NormalTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, NormalTexture, 0);
+            device.SetDrawBuffers(2);
+            device.BindFramebuffer(FramebufferHandle.Default);
+        }
 
-            DepthTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, DepthTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, DepthTexture, 0);
-
-            DrawBuffersEnum[] drawBuffers = new[]
-            {
-                DrawBuffersEnum.ColorAttachment0,
-                DrawBuffersEnum.ColorAttachment1
-            };
-            GL.DrawBuffers(drawBuffers.Length, drawBuffers);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        private TextureHandle CreateAttachment(IGraphicsDevice device, TextureFormat format, SamplerState sampler, AttachmentPoint attachment)
+        {
+            var texture = device.CreateTexture(TextureType.Texture2D);
+            device.SetTextureData2D(texture, 0, format, width, height, ReadOnlySpan<byte>.Empty);
+            device.SetSampler(texture, TextureType.Texture2D, sampler);
+            device.AttachTexture(attachment, texture, 0);
+            return texture;
         }
 
         public void Resize(int newWidth, int newHeight)
@@ -66,10 +61,7 @@ namespace Engine
             width = newWidth;
             height = newHeight;
 
-            GL.DeleteFramebuffer(Fbo);
-            GL.DeleteTexture(ColorTexture);
-            GL.DeleteTexture(NormalTexture);
-            GL.DeleteTexture(DepthTexture);
+            DeleteTargets();
 
             Initialize();
         }
@@ -78,31 +70,37 @@ namespace Engine
         {
             using (GPUDebug.Group("RENDER.SCENE"))
             {
-             
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, Fbo);
-                GL.Viewport(0, 0, width, height);
+                var device = Gpu.Device;
+                device.BindFramebuffer(_fbo);
+                device.SetViewport(0, 0, width, height);
                 GLState.DepthMask(true);
-                GL.ClearColor(0f, 0f, 0f, 1f);
+                device.SetClearColor(ClearScene);
                 GLState.GBufferWrite(true);
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                GL.ClearBuffer(ClearBuffer.Color, GLState.GBufferAttachment, ClearGBuffer);
+                device.Clear(ClearTargets.Color | ClearTargets.Depth);
+                device.ClearColorAttachment(GLState.GBufferAttachment, ClearGBuffer);
                 GLState.GBufferWrite(false);
                 GPUDebug.Marker("START");
                 renderScene.Invoke();
                 GPUDebug.Marker("END");
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                device.BindFramebuffer(FramebufferHandle.Default);
 
             }
+        }
+
+        private void DeleteTargets()
+        {
+            var device = Gpu.Device;
+            device.DeleteFramebuffer(_fbo);
+            device.DeleteTexture(_color);
+            device.DeleteTexture(_normal);
+            device.DeleteTexture(_depth);
         }
 
         public void Dispose()
         {
             if (!disposed)
             {
-                GL.DeleteFramebuffer(Fbo);
-                GL.DeleteTexture(ColorTexture);
-                GL.DeleteTexture(NormalTexture);
-                GL.DeleteTexture(DepthTexture);
+                DeleteTargets();
                 disposed = true;
             }
         }

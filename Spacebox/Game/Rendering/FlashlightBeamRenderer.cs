@@ -70,7 +70,7 @@ public sealed class FlashlightBeamRenderer
         GLState.CullFace(false);
         GLState.GBufferWrite(false);
         GLState.Blend(true);
-        GLState.BlendFunc(BlendingFactor.One, BlendingFactor.One);
+        GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.One, Engine.Graphics.Rhi.BlendFactor.One);
     }
 
     private void DrawBeam(Vector3 start, Vector3 direction, Vector3 right, Vector3 up, float length, float radius, Vector3 color, float intensity, float inside)
@@ -88,7 +88,7 @@ public sealed class FlashlightBeamRenderer
 
     private static void End()
     {
-        GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
         GLState.Blend(false);
         GLState.DepthMask(true);
     }

@@ -1,7 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Engine.Graphics
 {
@@ -14,7 +12,7 @@ namespace Engine.Graphics
 
     public sealed class UniformBuffer<T> where T : unmanaged
     {
-        readonly int _handle;
+        BufferHandle _handle;
         public int Binding { get; }
 
         public UniformBuffer(string blockName)
@@ -22,19 +20,27 @@ namespace Engine.Graphics
             Binding = BindingAllocator.GetOrAssign(blockName);
             if (Application.IsHeadless) return;
 
-            _handle = GL.GenBuffer();
-            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, Binding, _handle);
+            EnsureCreated();
+        }
+
+        void EnsureCreated()
+        {
+            if (_handle.IsValid || !Gpu.IsAvailable) return;
+
+            _handle = Gpu.Device.CreateBuffer();
+            Gpu.Device.BindBufferBase(BufferKind.Uniform, Binding, _handle);
         }
 
         public void Update(ReadOnlySpan<T> data)
         {
-            if (_handle == 0) return;
+            if (!_handle.IsValid)
+            {
+                if (Application.IsHeadless) return;
+                EnsureCreated();
+                if (!_handle.IsValid) return;
+            }
 
-            GL.BindBuffer(BufferTarget.UniformBuffer, _handle);
-            GL.BufferData(BufferTarget.UniformBuffer,
-                data.Length * Unsafe.SizeOf<T>(),
-                ref MemoryMarshal.GetReference(data),
-                BufferUsageHint.DynamicDraw);
+            Gpu.Device.BufferData(BufferKind.Uniform, _handle, data, BufferUsage.Dynamic);
         }
     }
 }

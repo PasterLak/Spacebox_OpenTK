@@ -1,7 +1,7 @@
 ﻿using Engine.Graphics;
 using Engine.Physics;
 using Engine.Utils;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -55,7 +55,7 @@ namespace Engine
 
             _indexCount = indexCount;
             buffer.Upload(vertices, vertexCount, indices, indexCount);
-            if (buffer.VAO != 0) GL.BindVertexArray(0);
+            if (buffer.VAO != 0) Gpu.Device.BindVertexArray(VertexArrayHandle.None);
         }
 
         public Mesh(float[] vertices, int[] indices)
@@ -138,9 +138,10 @@ namespace Engine
         {
             if (buffer == null || buffer.VAO == 0) return;
 
-            GL.BindVertexArray(buffer.VAO);
-            GL.DrawElements(PrimitiveType.Triangles, _indexCount, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+            var device = Gpu.Device;
+            device.BindVertexArray(buffer.VertexArray);
+            device.DrawIndexed(PrimitiveTopology.Triangles, _indexCount, IndexType.UnsignedInt, 0);
+            device.BindVertexArray(VertexArrayHandle.None);
         }
 
         public List<Vector3> GetRandomPoints(int count)

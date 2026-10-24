@@ -82,7 +82,7 @@ public static class WorldLines
         GLState.DepthMask(false);
         GLState.GBufferWrite(false);
         GLState.Blend(true);
-        GLState.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
 
         GL.BindVertexArray(_buffer.VAO);
         GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer.VBO);

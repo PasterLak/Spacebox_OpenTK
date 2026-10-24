@@ -1,6 +1,6 @@
 ﻿using Engine.Graphics;
 using Engine.Graphics.Debugging;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.PostProcessing;
@@ -69,8 +69,9 @@ public sealed class GBufferDebugPass : IDisposable
         };
 
         var camera = Camera.Main;
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        GL.Viewport(0, 0, clientSize.X, clientSize.Y);
+        var device = Gpu.Device;
+        device.BindFramebuffer(FramebufferHandle.Default);
+        device.SetViewport(0, 0, clientSize.X, clientSize.Y);
         GLState.DepthTest(false);
         GLState.Blend(false);
 
@@ -81,12 +82,10 @@ public sealed class GBufferDebugPass : IDisposable
         _shader.SetFloat("uNear", camera?.DepthNear ?? 0.1f);
         _shader.SetFloat("uFar", camera?.DepthFar ?? 800f);
 
-        GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, scene.NormalTexture);
-        GL.ActiveTexture(TextureUnit.Texture1);
-        GL.BindTexture(TextureTarget.Texture2D, scene.DepthTexture);
+        device.BindTexture(0, TextureType.Texture2D, scene.NormalTextureHandle);
+        device.BindTexture(1, TextureType.Texture2D, scene.DepthTextureHandle);
         PostProcessManager.RenderQuad();
-        GL.ActiveTexture(TextureUnit.Texture0);
+        device.BindTexture(0, TextureType.Texture2D, scene.NormalTextureHandle);
     }
 
     public void Dispose()
