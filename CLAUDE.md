@@ -61,7 +61,7 @@ Spacebox/Build/BuildMacOS.ps1   # Final macOS builds (osx-x64, osx-arm64) into F
 
 - `Engine.Tests`, `Spacebox.Tests` and `Spacebox.Benchmarks` are marked non-buildable in `Release`; use `Debug` for them.
 - `Debug`/`Profile` define `PROFILING` and `ASSERTS` (also via `Directory.Build.props`); `Release` defines only `TRACE`; `Release` and `Final` build the game as `WinExe` (no terminal window; `--server` attaches or opens its own console via `TerminalConsole`).
-- `Spacebox/Build/AddAfterBuild/OpenAL32.dll` (Windows audio) is bundled into Windows publishes by `Spacebox.csproj`; normal builds don't copy it.
+- `Spacebox/Build/AddAfterBuild/OpenAL32.dll` (Windows audio) is copied by `Spacebox.csproj` into every Windows build output and into Windows publishes.
 - There is no linter/formatter configured.
 
 ## Solution layout

@@ -49,9 +49,9 @@
 		<LaunchScripts Condition="'$(LaunchScripts)' == ''">unix</LaunchScripts>
 	</PropertyGroup>
 
-	<ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
+	<ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win')) Or ('$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOSPlatform('Windows')))">
 		<None Include="Build\AddAfterBuild\OpenAL32.dll" Link="OpenAL32.dll" Visible="false">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</None>
 	</ItemGroup>

@@ -156,6 +156,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- Windows Debug/Release builds always get OpenAL32.dll next to the game, so sound works without copying it by hand
 - blocks can no longer be placed into mobs, players or NPCs (also checked by the server)
 - macOS: no window icon warning; audio device names use the enumeration the system supports
 - macOS: Retina screens render the whole window (GL uses the framebuffer size, the UI keeps window coordinates)
