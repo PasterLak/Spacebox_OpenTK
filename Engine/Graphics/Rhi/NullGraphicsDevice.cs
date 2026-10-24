@@ -99,6 +99,16 @@ public sealed class NullGraphicsDevice : IGraphicsDevice
     public void SetLineWidth(float width) { }
     public void SetDepthBias(bool enabled, float factor, float units) { }
 
+    public QueryHandle CreateOcclusionQuery() => QueryHandle.None;
+    public void DeleteQuery(QueryHandle query) { }
+    public void BeginOcclusionQuery(QueryHandle query) { }
+    public void EndOcclusionQuery() { }
+    public bool TryGetOcclusionQueryResult(QueryHandle query, out bool anySamplesPassed)
+    {
+        anySamplesPassed = true;
+        return true;
+    }
+
     public bool InitializeDebugOutput(bool installCallback, bool synchronous) => false;
     public void PushDebugGroup(string name) { }
     public void PopDebugGroup() { }

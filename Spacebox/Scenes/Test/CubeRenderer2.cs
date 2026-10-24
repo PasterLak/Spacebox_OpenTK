@@ -1,6 +1,6 @@
 ﻿
 using OpenTK.Mathematics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using Engine;
 using Engine.Graphics;
 using Spacebox.Scenes.Test;
@@ -109,11 +109,11 @@ public class CubeRenderer2 : SceneNode, IDisposable, IGameComponent
             var cam = Camera.Main;
 
             GLState.Blend(true);
-            GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
+            GLState.BlendFunc(BlendFactor.SrcAlpha, BlendFactor.OneMinusSrcAlpha);
             GLState.DepthTest(true);
 
             GLState.CullFace(true);
-            GLState.CullMode(Engine.Graphics.Rhi.CullFace.Back);
+            GLState.CullMode(CullFace.Back);
 
             _shader.Use();
             var matModel = WorldMatrix;
@@ -122,9 +122,7 @@ public class CubeRenderer2 : SceneNode, IDisposable, IGameComponent
             _shader.SetMatrix4("projection", cam.GetProjectionMatrix());
             _shader.SetVector4("color", (Vector4)_color);
 
-            GL.BindVertexArray(_buffer.VAO);
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+            _buffer.DrawIndexed(PrimitiveTopology.Triangles, _indices.Length);
 
             GLState.CullFace(false);
         }

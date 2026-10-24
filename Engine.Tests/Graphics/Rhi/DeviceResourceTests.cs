@@ -244,6 +244,29 @@ public sealed class DeviceResourceTests : IDisposable
     }
 
     [Fact]
+    public void OcclusionQuery_RunsThroughTheDevice()
+    {
+        var query = new Engine.Graphics.Occlusion.OcclusionQuery();
+
+        query.Begin();
+        query.End();
+        bool ready = query.TryGetResult(out bool visible);
+        query.Dispose();
+        query.Dispose();
+
+        Assert.True(ready);
+        Assert.False(visible);
+        Assert.Equal(new[]
+        {
+            "CreateOcclusionQuery 1",
+            "BeginOcclusionQuery 1",
+            "EndOcclusionQuery",
+            "TryGetOcclusionQueryResult 1",
+            "DeleteQuery 1"
+        }, Device.Calls);
+    }
+
+    [Fact]
     public void NullDevice_IsInstalledByDefault()
     {
         _scope.Dispose();

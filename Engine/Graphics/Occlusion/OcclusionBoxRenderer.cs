@@ -1,5 +1,5 @@
 ﻿using Engine.Graphics.Debugging;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine.Graphics.Occlusion;
@@ -55,32 +55,34 @@ public sealed class OcclusionBoxRenderer : IDisposable
 
     public void Begin()
     {
-        if (RenderDebugView.IsWireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        var device = Gpu.Device;
+        if (RenderDebugView.IsWireframe) device.SetFillMode(FillMode.Solid);
         GLState.Blend(false);
         GLState.CullFace(false);
         GLState.DepthTest(true);
         GLState.DepthMask(false);
         GLState.GBufferWrite(false);
-        GL.ColorMask(0, false, false, false, false);
-        GL.DepthFunc(DepthFunction.Lequal);
+        device.SetColorWrite(0, false);
+        device.SetDepthFunction(CompareFunction.LessOrEqual);
         _shader.Use();
-        GL.BindVertexArray(_cube.VAO);
+        device.BindVertexArray(_cube.VertexArray);
     }
 
     public void Draw(Matrix4 model, Vector3 min, Vector3 max)
     {
         var box = Matrix4.CreateScale(max - min) * Matrix4.CreateTranslation(min) * model;
         _shader.SetMatrix4("model", box);
-        GL.DrawElements(PrimitiveType.Triangles, 36, DrawElementsType.UnsignedInt, 0);
+        Gpu.Device.DrawIndexed(PrimitiveTopology.Triangles, 36, IndexType.UnsignedInt, 0);
     }
 
     public void End()
     {
-        GL.BindVertexArray(0);
-        GL.DepthFunc(DepthFunction.Less);
-        GL.ColorMask(0, true, true, true, true);
+        var device = Gpu.Device;
+        device.BindVertexArray(VertexArrayHandle.None);
+        device.SetDepthFunction(CompareFunction.Less);
+        device.SetColorWrite(0, true);
         GLState.DepthMask(true);
-        if (RenderDebugView.IsWireframe) GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        if (RenderDebugView.IsWireframe) device.SetFillMode(FillMode.Wireframe);
     }
 
     public void Dispose()

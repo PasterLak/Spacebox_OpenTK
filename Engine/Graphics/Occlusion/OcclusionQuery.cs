@@ -1,44 +1,39 @@
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 
 namespace Engine.Graphics.Occlusion;
 
 public sealed class OcclusionQuery : IDisposable
 {
-    private int _handle;
+    private QueryHandle _handle;
 
     public OcclusionQuery()
     {
-        if (!Application.IsHeadless) _handle = GL.GenQuery();
+        if (!Application.IsHeadless) _handle = Gpu.Device.CreateOcclusionQuery();
     }
 
     public void Begin()
     {
-        if (_handle != 0) GL.BeginQuery(QueryTarget.AnySamplesPassed, _handle);
+        if (_handle.IsValid) Gpu.Device.BeginOcclusionQuery(_handle);
     }
 
     public void End()
     {
-        if (_handle != 0) GL.EndQuery(QueryTarget.AnySamplesPassed);
+        if (_handle.IsValid) Gpu.Device.EndOcclusionQuery();
     }
 
     public bool TryGetResult(out bool anySamplesPassed)
     {
         anySamplesPassed = true;
-        if (_handle == 0) return true;
+        if (!_handle.IsValid) return true;
 
-        GL.GetQueryObject(_handle, GetQueryObjectParam.QueryResultAvailable, out int available);
-        if (available == 0) return false;
-
-        GL.GetQueryObject(_handle, GetQueryObjectParam.QueryResult, out int result);
-        anySamplesPassed = result != 0;
-        return true;
+        return Gpu.Device.TryGetOcclusionQueryResult(_handle, out anySamplesPassed);
     }
 
     public void Dispose()
     {
-        if (_handle == 0) return;
+        if (!_handle.IsValid) return;
 
-        GL.DeleteQuery(_handle);
-        _handle = 0;
+        Gpu.Device.DeleteQuery(_handle);
+        _handle = QueryHandle.None;
     }
 }

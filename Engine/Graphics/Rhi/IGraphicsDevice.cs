@@ -93,6 +93,12 @@ public interface IGraphicsDevice
     void SetLineWidth(float width);
     void SetDepthBias(bool enabled, float factor, float units);
 
+    QueryHandle CreateOcclusionQuery();
+    void DeleteQuery(QueryHandle query);
+    void BeginOcclusionQuery(QueryHandle query);
+    void EndOcclusionQuery();
+    bool TryGetOcclusionQueryResult(QueryHandle query, out bool anySamplesPassed);
+
     bool InitializeDebugOutput(bool installCallback, bool synchronous);
     void PushDebugGroup(string name);
     void PopDebugGroup();

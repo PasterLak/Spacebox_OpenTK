@@ -502,6 +502,31 @@ public sealed unsafe class OpenGlDevice : IGraphicsDevice
         GL.PolygonOffset(factor, units);
     }
 
+    public QueryHandle CreateOcclusionQuery() => new QueryHandle(GL.GenQuery());
+
+    public void DeleteQuery(QueryHandle query)
+    {
+        if (query.IsValid) GL.DeleteQuery(query.Id);
+    }
+
+    public void BeginOcclusionQuery(QueryHandle query) => GL.BeginQuery(QueryTarget.AnySamplesPassed, query.Id);
+
+    public void EndOcclusionQuery() => GL.EndQuery(QueryTarget.AnySamplesPassed);
+
+    public bool TryGetOcclusionQueryResult(QueryHandle query, out bool anySamplesPassed)
+    {
+        GL.GetQueryObject(query.Id, GetQueryObjectParam.QueryResultAvailable, out int available);
+        if (available == 0)
+        {
+            anySamplesPassed = true;
+            return false;
+        }
+
+        GL.GetQueryObject(query.Id, GetQueryObjectParam.QueryResult, out int result);
+        anySamplesPassed = result != 0;
+        return true;
+    }
+
     public bool InitializeDebugOutput(bool installCallback, bool synchronous) => _debug.Initialize(installCallback, synchronous);
 
     public void PushDebugGroup(string name) => _debug.PushGroup(name);

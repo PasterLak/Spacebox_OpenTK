@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using Engine;
 
 public class LineRenderer2 : SceneNode, IDisposable
@@ -172,9 +172,7 @@ public class LineRenderer2 : SceneNode, IDisposable
         _shader.SetMatrix4("uProjection", camera.GetProjectionMatrix(), false);
         _shader.SetVector4("uColor", (Vector4)_color);
 
-        GL.BindVertexArray(_buffer.VAO);
-        GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
-        GL.BindVertexArray(0);
+        _buffer.DrawIndexed(PrimitiveTopology.Triangles, _indices.Length);
     }
 
     public void Dispose()

@@ -1,6 +1,6 @@
 ﻿using System;
 using OpenTK.Mathematics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using Engine;
 
     public class AxesTest : SceneNode, IDisposable
@@ -61,9 +61,7 @@ using Engine;
 
             if (_buffer != null)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer.VBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                _buffer.UploadVertices(vertices, BufferUsage.Dynamic);
             }
         }
 
@@ -77,17 +75,11 @@ using Engine;
             _shader.Use();
             Matrix4 model = WorldMatrix;
 
-            int modelLocation = GL.GetUniformLocation(_shader.Handle, "model");
-            int viewLocation = GL.GetUniformLocation(_shader.Handle, "view");
-            int projectionLocation = GL.GetUniformLocation(_shader.Handle, "projection");
+            _shader.SetMatrix4("model", model, false);
+            _shader.SetMatrix4("view", view, false);
+            _shader.SetMatrix4("projection", projection, false);
 
-            GL.UniformMatrix4(modelLocation, false, ref model);
-            GL.UniformMatrix4(viewLocation, false, ref view);
-            GL.UniformMatrix4(projectionLocation, false, ref projection);
-
-            GL.BindVertexArray(_buffer.VAO);
-            GL.DrawElements(PrimitiveType.Lines, indices.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+            _buffer.DrawIndexed(PrimitiveTopology.Lines, indices.Length);
         }
 
         public void SetPosition(Vector3 newPosition)

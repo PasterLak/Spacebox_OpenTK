@@ -120,6 +120,17 @@ public sealed class RecordingGraphicsDevice : IGraphicsDevice
     public void SetLineWidth(float width) => Record($"SetLineWidth {width}");
     public void SetDepthBias(bool enabled, float factor, float units) => Record($"SetDepthBias {enabled} {factor} {units}");
 
+    public QueryHandle CreateOcclusionQuery() { var h = new QueryHandle(Next()); Record($"CreateOcclusionQuery {h.Id}"); return h; }
+    public void DeleteQuery(QueryHandle query) => Record($"DeleteQuery {query.Id}");
+    public void BeginOcclusionQuery(QueryHandle query) => Record($"BeginOcclusionQuery {query.Id}");
+    public void EndOcclusionQuery() => Record("EndOcclusionQuery");
+    public bool TryGetOcclusionQueryResult(QueryHandle query, out bool anySamplesPassed)
+    {
+        Record($"TryGetOcclusionQueryResult {query.Id}");
+        anySamplesPassed = false;
+        return true;
+    }
+
     public bool InitializeDebugOutput(bool installCallback, bool synchronous) => false;
     public void PushDebugGroup(string name) { }
     public void PopDebugGroup() { }

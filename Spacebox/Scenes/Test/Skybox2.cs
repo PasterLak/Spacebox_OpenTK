@@ -1,6 +1,5 @@
 ﻿using Engine;
 using Engine.Light;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 
@@ -31,8 +30,6 @@ namespace Spacebox.Scenes.Test
 
          
                 SetPosition(camera.Position); 
-
-            bool cullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
 
             Material.Apply(WorldMatrix);
 
