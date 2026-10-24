@@ -15,7 +15,7 @@ public sealed class DevConsole : IDisposable
         ("Error", Debug.MessageType.Error, DarkTheme.Error)
     };
 
-    private readonly CanvasLayer _layer = new CanvasLayer("Console");
+    private readonly DebugCanvas _canvas = new DebugCanvas("Console");
     private readonly ItemList _lines = new ItemList { SizeFlagsVertical = SizeFlags.Fill | SizeFlags.Expand };
     private readonly TextEdit _selectable = new TextEdit { Editable = false, Visible = false, SizeFlagsVertical = SizeFlags.Fill | SizeFlags.Expand };
     private readonly ConsoleInput _input = new ConsoleInput { PlaceholderText = "Command, Tab completes, Up/Down for history", SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand };
@@ -23,15 +23,12 @@ public sealed class DevConsole : IDisposable
     private readonly long[] _shownCounts = new long[Filters.Length];
     private readonly List<Debug.ConsoleLine> _buffer = new List<Debug.ConsoleLine>();
     private Button _select;
-    private SkiaCanvasFont _font;
     private Debug.MessageType _filter = Debug.MessageType.Info;
     private int _shownVersion = -1;
     private Debug.MessageType _shownFilter;
     private bool _wasVisible;
 
     public static DevConsole Instance { get; private set; }
-
-    private bool _drawThisFrame;
 
     public static void Update()
     {
@@ -41,7 +38,7 @@ public sealed class DevConsole : IDisposable
             if (Instance != null)
             {
                 Instance._wasVisible = false;
-                Instance._drawThisFrame = false;
+                Instance._canvas.Layer.Visible = false;
             }
             return;
         }
@@ -52,8 +49,7 @@ public sealed class DevConsole : IDisposable
 
     public static void Draw()
     {
-        if (Instance == null || !Instance._drawThisFrame) return;
-        Instance._layer.Render();
+        Instance?._canvas.Layer.Render();
     }
 
     public static void Shutdown()
@@ -64,13 +60,7 @@ public sealed class DevConsole : IDisposable
 
     private DevConsole()
     {
-        _font = new SkiaCanvasFont(Path.Combine(AppContext.BaseDirectory, DarkTheme.FontPath), (int)DarkTheme.FontSize);
-        var root = _layer.Root;
-        root.Theme = DarkTheme.Create(_font);
-        root.Stretch.Mode = StretchMode.Expand;
-        root.Stretch.VirtualSize = new Vector2(1280f, 720f);
-        root.Stretch.ScaleStep = 0.5f;
-        root.Stretch.MinScale = 1f;
+        var root = _canvas.Root;
 
         var panel = root.Add(new PanelContainer { Name = "Console" }, UiLayer.Debug);
         panel.AnchorLeft = 0f;
@@ -86,7 +76,7 @@ public sealed class DevConsole : IDisposable
         column.AddChild(_selectable);
         column.AddChild(BuildInputRow());
 
-        _lines.ItemRightClicked += index => _layer.Root.Clipboard?.SetText(_lines.Items[index].Text);
+        _lines.ItemRightClicked += index => _canvas.Root.Clipboard?.SetText(_lines.Items[index].Text);
         _input.TextSubmitted += Submit;
         _input.HistoryRequested += direction => _input.SetTextAtEnd(Debug.StepHistory(_input.Text, direction));
         _input.CompletionRequested += () => _input.SetTextAtEnd(Debug.Complete(_input.Text));
@@ -108,7 +98,7 @@ public sealed class DevConsole : IDisposable
 
         header.AddChild(new Control { SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand, MouseFilter = MouseFilter.Ignore });
         var copy = new Button { Text = "Copy all", ThemeTypeVariation = "SmallButton", TooltipText = "Copy every message in the buffer" };
-        copy.Pressed += _ => _layer.Root.Clipboard?.SetText(Debug.ConsoleTextFor(_filter));
+        copy.Pressed += _ => _canvas.Root.Clipboard?.SetText(Debug.ConsoleTextFor(_filter));
         _select = new Button { Text = "Select", ThemeTypeVariation = "SmallButton", ToggleMode = true, TooltipText = "Show the messages as text to select and copy with Ctrl+C. Right-click a line to copy it" };
         _select.Toggled += (_, on) => SetSelectMode(on);
         header.AddChild(copy);
@@ -134,8 +124,8 @@ public sealed class DevConsole : IDisposable
 
         RefreshFilters();
         RefreshLines();
-        _layer.Update(deltaTime);
-        _drawThisFrame = true;
+        _canvas.Layer.Visible = true;
+        _canvas.Layer.Update(deltaTime);
     }
 
     private void RefreshFilters()
@@ -201,8 +191,6 @@ public sealed class DevConsole : IDisposable
 
     public void Dispose()
     {
-        _layer.Dispose();
-        _font?.Dispose();
-        _font = null;
+        _canvas.Dispose();
     }
 }

@@ -10,6 +10,6 @@ namespace Engine.GUI
         public OverlayElement ElementBefore { get; set; }
         public OverlayElement ElementAfter { get; set; }
 
-        public abstract void OnGUIText();
+        public abstract void Write(OverlayText text);
     }
 }

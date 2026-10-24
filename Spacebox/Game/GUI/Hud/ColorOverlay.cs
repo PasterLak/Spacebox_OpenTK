@@ -1,5 +1,4 @@
-﻿using ImGuiNET;
-using System.Numerics;
+﻿using System.Numerics;
 using Engine;
 
 namespace Spacebox.Game.GUI
@@ -104,31 +103,6 @@ namespace Spacebox.Game.GUI
             if (!_isEnabled || !_isActive) return false;
             UpdateFade();
             return _isEnabled && _isActive;
-        }
-
-        public static void OnGUI()
-        {
-            if (!Update()) return;
-
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(_color.X, _color.Y, _color.Z, _currentAlpha));
-
-            ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(ImGui.GetIO().DisplaySize.X, ImGui.GetIO().DisplaySize.Y), ImGuiCond.Always);
-
-            ImGui.Begin("Color Overlay",
-                ImGuiWindowFlags.NoDecoration |
-                ImGuiWindowFlags.NoMove |
-                ImGuiWindowFlags.NoInputs |
-                ImGuiWindowFlags.NoScrollbar |
-                ImGuiWindowFlags.NoScrollWithMouse |
-                ImGuiWindowFlags.NoBringToFrontOnFocus |
-                ImGuiWindowFlags.NoTitleBar);
-
-            ImGui.End();
-            ImGui.PopStyleVar(2);
-            ImGui.PopStyleColor();
         }
 
         private static void UpdateFade()

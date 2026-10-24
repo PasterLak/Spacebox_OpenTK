@@ -29,7 +29,6 @@ namespace Spacebox.GUI
                 TextColor = new Vector4(1f, 1f, 1f, 1f),
                 Size = new Vector2(300, 50),
                 Position = new Vector2(-425, 225), // new Vector2(1140, 220),
-                Anchor = Anchor.Bottom,
                 WindowName = "HealthBar"
                 
             }; StatsGUI.ShowText = true;

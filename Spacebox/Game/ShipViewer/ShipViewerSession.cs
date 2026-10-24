@@ -199,11 +199,6 @@ public sealed class ShipViewerSession : IDisposable
         }
     }
 
-    public void DrawViewport(System.Numerics.Vector2 size)
-    {
-        _viewport?.Draw(size);
-    }
-
     public void Close()
     {
         _scanner.Cancel();

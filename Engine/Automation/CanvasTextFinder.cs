@@ -12,52 +12,24 @@ public static class CanvasTextFinder
         var result = new List<CanvasTextMatch>();
         if (string.IsNullOrWhiteSpace(text)) return result;
 
+        var runs = new List<CanvasTextRun>();
         foreach (var layer in CanvasLayer.Active)
         {
-            if (!layer.InputEnabled) continue;
-            Collect(layer.Name, layer.Root, layer.Root.Content, text, exactOnly, result);
+            if (!layer.InputEnabled || !layer.Visible) continue;
+            runs.Clear();
+            CanvasTextWalker.Collect(layer.Root.Content, runs);
+            foreach (var run in runs) Add(layer.Name, layer.Root, run, text, exactOnly, result);
         }
 
         result.Sort((a, b) => b.Exact.CompareTo(a.Exact));
         return result;
     }
 
-    private static void Collect(string layer, CanvasRoot root, CanvasItem item, string text, bool exactOnly, List<CanvasTextMatch> result)
+    private static void Add(string layer, CanvasRoot root, CanvasTextRun run, string text, bool exactOnly, List<CanvasTextMatch> result)
     {
-        if (!item.Visible) return;
-
-        if (item is Control control)
-        {
-            switch (control)
-            {
-                case Button button:
-                    Add(layer, root, button.Text, control.Rect, text, exactOnly, result);
-                    break;
-                case CheckBox check:
-                    Add(layer, root, check.Text, control.Rect, text, exactOnly, result);
-                    break;
-                case Label label:
-                    Add(layer, root, label.Text, control.Rect, text, exactOnly, result);
-                    break;
-                case ItemList list:
-                    for (int i = 0; i < list.Items.Count; i++)
-                    {
-                        var row = list.RowRect(i);
-                        if (row.HasValue) Add(layer, root, list.Items[i].Text, row.Value, text, exactOnly, result);
-                    }
-                    break;
-            }
-        }
-
-        var children = item.Children;
-        for (int i = 0; i < children.Count; i++) Collect(layer, root, children[i], text, exactOnly, result);
-    }
-
-    private static void Add(string layer, CanvasRoot root, string candidate, Rect2 rect, string text, bool exactOnly, List<CanvasTextMatch> result)
-    {
-        if (string.IsNullOrEmpty(candidate)) return;
+        string candidate = run.Text;
         bool exact = string.Equals(candidate.Trim(), text.Trim(), StringComparison.OrdinalIgnoreCase);
         if (!exact && (exactOnly || candidate.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0)) return;
-        result.Add(new CanvasTextMatch(layer, candidate, root.CanvasToScreen(rect.Center), exact));
+        result.Add(new CanvasTextMatch(layer, candidate, root.CanvasToScreen(run.Rect.Center), exact));
     }
 }

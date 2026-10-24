@@ -2,7 +2,6 @@
 using Engine.Components.Debug;
 using Engine.Light;
 using Engine.Utils;
-using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -125,6 +124,7 @@ namespace Engine.SceneManagement
 
         public override void UnloadContent()
         {
+            ParticleSystemUI.Shutdown();
         }
 
         public override void Update()

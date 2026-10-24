@@ -24,11 +24,11 @@ public sealed class OptionsMenu : IOptionsNavigator
     private MenuWindow _current;
     private string _savedState;
 
-    public OptionsMenu(AudioSource click, Action onClose, IUnsavedChangesPrompt unsavedPrompt = null)
+    public OptionsMenu(AudioSource click, Action onClose, IUnsavedChangesPrompt unsavedPrompt)
     {
         _click = click;
         _onClose = onClose;
-        _unsavedPrompt = unsavedPrompt ?? new UnsavedChangesPrompt();
+        _unsavedPrompt = unsavedPrompt ?? throw new ArgumentNullException(nameof(unsavedPrompt));
 
         Register(new OptionsWindow(this));
         Register(new AudioWindow(this));
@@ -44,13 +44,6 @@ public sealed class OptionsMenu : IOptionsNavigator
     public void Update()
     {
         if (_current is ControlsWindow controls) controls.Update();
-    }
-
-    public void Render()
-    {
-        Update();
-        _current?.Render();
-        _unsavedPrompt.Render();
     }
 
     public void PlayClick()
@@ -136,9 +129,4 @@ public sealed class OptionsHostWindow : MenuWindow
     }
 
     protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.OptionsHostPage(Options);
-
-    public override void Render()
-    {
-        Options.Render();
-    }
 }

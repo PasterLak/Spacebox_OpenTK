@@ -32,14 +32,14 @@ Usage: Tools/agent/game.sh <command> [args]
   stop                       quit the game
   help                       list all API routes
   state                      scene, player, crosshair target, open windows
-  ui [window] | uiflat       ImGui text on screen | just the strings
+  ui [window] | uiflat       UI text on screen | just the strings
   canvas [1]                 CanvasUI layers + layout check (1 = list controls)
   winsize <w> <h>            resize the game window
   click <text> [window] [index] | hover <text> | clickxy <x> <y>
   key <Key> [tap|hold|release] [frames]      e.g. key E, key W hold 60
   action <name> [tap|hold|release] [frames]  e.g. action inventory, action forward hold 120
   mouse [left|right] [click|hold|release] [frames]
-  type <text>                type into the focused ImGui field
+  type <text>                type into the focused text field
   release                    release all injected input
   cmd <console command>      e.g. cmd "give default:drill 1", cmd "tp 0 0 0"
   look | lookat <x> <y> <z> | turn <yaw> <pitch> | turnby <dyaw> <dpitch>

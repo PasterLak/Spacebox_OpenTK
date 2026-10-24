@@ -1,7 +1,5 @@
-﻿using Engine.Graphics.Atlas;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json;
-using ImGuiNET;
 using Engine;
 using Engine.Audio;
 using Engine.SceneManagement;
@@ -34,17 +32,13 @@ namespace Spacebox.Game.GUI.Menu
         public string newWorldSeed = "";
         private int selectedGameSetIndex = 0;
         public WorldInfo selectedWorld = null;
-        public AtlasSprite TrashIcon => UIAtlas.Get("trash");
         public AudioSource Click1;
-        public bool showDeleteWindow = false;
         public bool showVersionConvertWindow = false;
         public UpdateVersionWindow VersionWindow => updateVersionWindow;
         public bool IsEditMode = false;
 
 
-        private DeleteWindow deleteWindow;
         private UpdateVersionWindow updateVersionWindow;
-        private readonly MenuMessageWindow messageWindow = new MenuMessageWindow();
 
         public GameMenu()
         {
@@ -60,13 +54,11 @@ namespace Spacebox.Game.GUI.Menu
             Reg(new WorldSelectWindow(this));
             Reg(new NewWorldWindow(this));
             Reg(new MultiplayerWindow(this));
-            Reg(new SettingsControlsWindow(this));
             Reg(new OptionsHostWindow(this));
             Reg(new ModsWindow(this));
             Reg(new ShipViewerWindow(this));
             Reg(new TexturePacksWindow(this));
 
-            deleteWindow = new DeleteWindow(this);
             updateVersionWindow = new UpdateVersionWindow(this);
 
             currentWindowType = typeof(MainMenuWindow);
@@ -108,7 +100,7 @@ namespace Spacebox.Game.GUI.Menu
             return windowType != null && windows.TryGetValue(windowType, out var window) ? window.Page : null;
         }
 
-        public void Render()
+        public void Update()
         {
             if (hide) return;
 
@@ -125,71 +117,6 @@ namespace Spacebox.Game.GUI.Menu
                     }
                 }
             }
-
-            if (!IsVisible) return;
-
-            using (MenuStyle.Begin())
-            {
-                if (currentWindowType != null && windows.TryGetValue(currentWindowType, out var wnd) && wnd.Page == null)
-                    wnd.Render();
-
-                bool canvasDialogs = Spacebox.Game.GUI.MenuUi.MenuCanvas.Current != null;
-                if (showDeleteWindow && !canvasDialogs) deleteWindow.Render();
-                messageWindow.Render(this);
-            }
-        }
-
-        public static void DrawElementColors(Vector2 windowPos, Vector2 windowSize, float displayY, float offsetMultiplayer = 0.004f)
-        {
-            float offsetValue = displayY * offsetMultiplayer;
-            Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint backgroundColor = Theme.Colors.BackgroundUint;
-            uint borderColor = Theme.Colors.BorderLightUint;
-            uint borderColor2 = Theme.Colors.BorderDarkUint;
-            var drawList = ImGui.GetWindowDrawList();
-            drawList.AddRectFilled(windowPos, windowPos + windowSize, borderColor2);
-            drawList.AddRectFilled(windowPos, windowPos + windowSize - offset, borderColor);
-            drawList.AddRectFilled(windowPos + offset, windowPos + windowSize - offset, backgroundColor);
-        }
-
-        public static Vector2 CenterNextWindow(float width, float height)
-        {
-            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f, (ImGui.GetIO().DisplaySize.Y - height) * 0.5f);
-            ImGui.SetNextWindowPos(pos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(width, height));
-            return pos;
-        }
-
-        public static Vector2 CenterNextWindow2(float width, float height)
-        {
-            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f, (ImGui.GetIO().DisplaySize.Y - height) * 0.7f);
-            ImGui.SetNextWindowPos(pos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(width, height));
-            return pos;
-        }
-
-        public static Vector2 CenterNextWindow3(float width, float height)
-        {
-            var pos = new Vector2((ImGui.GetIO().DisplaySize.X - width) * 0.5f, (ImGui.GetIO().DisplaySize.Y - height) * 0.22f);
-            ImGui.SetNextWindowPos(pos, ImGuiCond.Always);
-            ImGui.SetNextWindowSize(new Vector2(width, height));
-            return pos;
-        }
-
-        public static void CenterButtonWithBackground(string label, float width, float height, Action onClick)
-        {
-            float windowWidth = ImGui.GetWindowWidth();
-            float cursorX = (windowWidth - width) * 0.5f;
-            ImGui.SetCursorPosX(cursorX);
-            Vector2 buttonPos = ImGui.GetCursorScreenPos();
-            float offsetValue = height * 0.1f;
-            Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            var drawList = ImGui.GetWindowDrawList();
-            drawList.AddRectFilled(buttonPos - offset, buttonPos + new Vector2(width, height) + offset, borderColor);
-            drawList.AddRectFilled(buttonPos, buttonPos + new Vector2(width, height) + offset, lightColor);
-            if (ImGui.Button(label, new Vector2(width, height))) onClick?.Invoke();
         }
 
         public List<WorldInfo> Worlds => worlds;
@@ -200,7 +127,7 @@ namespace Spacebox.Game.GUI.Menu
         public void ShowMessage(string title, string text)
         {
             if (Spacebox.Game.GUI.MenuUi.MenuCanvas.Current != null) Spacebox.Game.GUI.MenuUi.MenuCanvas.Current.ShowMessage(title, text);
-            else messageWindow.Show(title, text);
+            else Debug.Warning($"[Menu] {title}: {text}");
         }
 
         public InstalledGameSet FindInstalled(ModConfig config)
@@ -293,59 +220,6 @@ namespace Spacebox.Game.GUI.Menu
             }
             return nameRes;
         }
-
-        public void CenterInputText(string label, ref string input, uint maxLength, float width, float height)
-        {
-            float windowWidth = ImGui.GetWindowWidth();
-            Vector2 labelSize = ImGui.CalcTextSize(label);
-            ImGui.SetCursorPosX((windowWidth - labelSize.X) * 0.5f);
-            ImGui.Text(label);
-            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, (height - labelSize.Y) / 2));
-            ImGui.SetNextItemWidth(width);
-            ImGui.SetCursorPosX((windowWidth - width) * 0.5f);
-            ImGui.InputText("##" + label, ref input, maxLength);
-            ImGui.PopStyleVar();
-        }
-
-        public void CenterInputText2(string label, ref string input, uint maxLength, float totalWidth, float height, nint iconTexture)
-        {
-            float windowWidth = ImGui.GetWindowWidth();
-            Vector2 labelSize = ImGui.CalcTextSize(label);
-
-            ImGui.SetCursorPosX((windowWidth - labelSize.X) * 0.5f);
-            ImGui.Text(label);
-
-            float spacing = 5.0f;
-            float inputWidth = totalWidth - height - spacing;
-
-            float textHeight = ImGui.GetFontSize();
-            float paddingY = (height - textHeight) * 0.5f;
-
-            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(ImGui.GetStyle().FramePadding.X, paddingY));
-
-            ImGui.SetCursorPosX((windowWidth - totalWidth) * 0.5f);
-
-            ImGui.SetNextItemWidth(inputWidth);
-            ImGui.InputText("##" + label, ref input, maxLength);
-
-            ImGui.SameLine(0, spacing);
-
-            if (ImGui.ImageButton("##rndBtn_" + label, iconTexture, new Vector2(textHeight, textHeight)))
-            {
-                input = new Random().Next().ToString();
-            }
-
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.BeginTooltip();
-                ImGui.Text("Randomize");
-                ImGui.EndTooltip();
-            }
-
-            ImGui.PopStyleVar();
-        }
-
-
 
         public int GameSetsVersion { get; private set; }
 
@@ -495,62 +369,6 @@ namespace Spacebox.Game.GUI.Menu
             SaveNewWorld(selectedWorld);
         }
 
-        public void ButtonWithBackground(string label, Vector2 size, Vector2 cursorPos, Action onClick)
-        {
-            ImGui.SetCursorPos(cursorPos);
-            Vector2 buttonPos = ImGui.GetCursorScreenPos();
-            float offsetValue = size.Y * 0.1f;
-            Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            var drawList = ImGui.GetWindowDrawList();
-            drawList.AddRectFilled(buttonPos - offset, buttonPos + size + offset, borderColor);
-            drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
-            if (ImGui.Button(label, size))
-            {
-                Click1.Play();
-                onClick?.Invoke();
-            }
-        }
-
-        public static void ButtonWithBackground2(string label, Vector2 size, Vector2 cursorPos, Action onClick)
-        {
-            ImGui.SetCursorPos(cursorPos);
-            Vector2 buttonPos = ImGui.GetCursorScreenPos();
-            float offsetValue = size.Y * 0.1f;
-            Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            var drawList = ImGui.GetWindowDrawList();
-            drawList.AddRectFilled(buttonPos - offset, buttonPos + size + offset, borderColor);
-            drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
-            if (ImGui.Button(label, size))
-            {
-                onClick?.Invoke();
-            }
-        }
-
-        public void ButtonWithBackgroundAndIcon(string label, Vector2 size, Vector2 cursorPos, Action onClick)
-        {
-            ImGui.SetCursorPos(cursorPos);
-            Vector2 buttonPos = ImGui.GetCursorScreenPos();
-            float offsetValue = size.Y * 0.1f;
-            Vector2 offset = new Vector2(offsetValue, offsetValue);
-            uint borderColor = ImGui.GetColorU32(new Vector4(0.9f, 0.9f, 0.9f, 1f));
-            uint lightColor = ImGui.GetColorU32(new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            var drawList = ImGui.GetWindowDrawList();
-            drawList.AddRectFilled(buttonPos - offset, buttonPos + size + offset, borderColor);
-            drawList.AddRectFilled(buttonPos, buttonPos + size + offset, lightColor);
-            if (ImGui.Button(label, size))
-            {
-                Click1.Play();
-                onClick?.Invoke();
-            }
-            Vector2 imagePosMin = buttonPos + offset;
-            Vector2 imagePosMax = buttonPos + size - offset;
-            TrashIcon.Draw(drawList, imagePosMin, imagePosMax);
-        }
-
         public void OpenWorld(WorldInfo world)
         {
             if (world == null) return;
@@ -604,7 +422,6 @@ namespace Spacebox.Game.GUI.Menu
             CenteredImageMenu.Hide();
 
             VerticalLinks.IsVisible = false;
-            DevLogWindow.Instance.IsVisible = false;
 
             ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0, 0, 0), 1f, 0, 1, 0, () =>
             {
@@ -691,7 +508,6 @@ namespace Spacebox.Game.GUI.Menu
             IsVisible = false;
             CenteredImageMenu.Hide();
             VerticalLinks.IsVisible = false;
-            if (DevLogWindow.Instance != null) DevLogWindow.Instance.IsVisible = false;
 
             ColorOverlay.StartFade(FadeMode.FadeIn, new Vector3(0, 0, 0), 0.5f, 0, 1, 0, () =>
             {
@@ -733,7 +549,6 @@ namespace Spacebox.Game.GUI.Menu
         public void SetStateToNewWorld() => Open<NewWorldWindow>();
         public void SetStateToOptions() => OpenOptions<OptionsWindow>();
         public void SetStateToMultiplayer() => Open<MultiplayerWindow>();
-        public void SetStateToSettingsControls() => Open<SettingsControlsWindow>();
         public void SetStateToGraphics() => OpenOptions<GraphicsWindow>();
 
         private void OpenOptions<T>() where T : MenuWindow

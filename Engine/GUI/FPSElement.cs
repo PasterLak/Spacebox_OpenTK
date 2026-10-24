@@ -1,22 +1,19 @@
-﻿using ImGuiNET;
+﻿using OpenTK.Mathematics;
 
 namespace Engine.GUI
 {
-    using NumVector4 = System.Numerics.Vector4;
-    using OpenTKVector4 = OpenTK.Mathematics.Vector4;
-
     public class FPSElement : OverlayElement
     {
-        public static NumVector4 Red = new NumVector4(1f, 0f, 0f, 1f);
-        public static NumVector4 Yellow = new NumVector4(1f, 1f, 0f, 1f);
-        public static NumVector4 Green = new NumVector4(0f, 1f, 0f, 1f);
-        public static NumVector4 Orange = new NumVector4(1f, 0.5f, 0f, 1f);
+        public static Color4 Red = new Color4(1f, 0.3f, 0.3f, 1f);
+        public static Color4 Yellow = new Color4(1f, 1f, 0.3f, 1f);
+        public static Color4 Green = new Color4(0.35f, 1f, 0.35f, 1f);
+        public static Color4 Orange = new Color4(1f, 0.6f, 0.2f, 1f);
 
-        public override void OnGUIText()
+        public override void Write(OverlayText text)
         {
             float fps = Time.FPS;
             float tps = Time.TPS;
-            NumVector4 fpsColor;
+            Color4 fpsColor;
 
             if (fps < 20f)
             {
@@ -37,18 +34,17 @@ namespace Engine.GUI
 
             string t = tps > 0 ? $", TPS: {tps}" : $"";
 
-            ImGui.TextColored(fpsColor, $"FPS: {fps}" + t);
-            ImGui.Text($"Limit FPS:");
-            ImGui.SameLine();
+            text.Line($"FPS: {fps}" + t, fpsColor);
+            text.Line("Limit FPS:");
             if (FrameLimiter.TargetFPS == 120)
             {
-                ImGui.TextColored(new System.Numerics.Vector4(0, 1, 0, 1), "True");
+                text.Append("True", Green);
             }
             else
             {
-                ImGui.TextColored(new System.Numerics.Vector4(1, 0, 0, 1), "False");
+                text.Append("False", Red);
             }
-          
+
 
         }
     }

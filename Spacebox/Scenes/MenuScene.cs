@@ -6,7 +6,6 @@ using Engine.Light;
 using Engine.SceneManagement;
 using Engine.UI;
 using Engine.Utils;
-using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -25,12 +24,7 @@ namespace Spacebox.Scenes
 
         private GameMenu menu;
 
-        private MenuMusicButton musicButton;
         private Spacebox.Game.GUI.MenuUi.MenuCanvas menuCanvas;
-
-        private Canvas canvas;
-
-        private DevLogWindow devLogWindow = new DevLogWindow();
 
         private Node3D astronautNode;
 
@@ -49,13 +43,6 @@ namespace Spacebox.Scenes
             AddChild(player);
             player.FOV = 100;
 
-            canvas = new Canvas(new Vector2i(1280,720), SpaceboxWindow.Instance);
-
-            var rect = new Rect(new Vector2(0, 0), new Vector2(1280/2f,720/2f));
-            rect.Anchor = Engine.UI.Anchor.Center;
-            rect.Color4 = Color4.Yellow;
-            canvas.AddChild(rect);
-            
 
             var skyboxTexture = new SpaceTexture(512, 512, World.Seed);
       
@@ -71,7 +58,6 @@ namespace Spacebox.Scenes
             var music = AttachComponent(new BackgroundMusicComponent("Resources/Audio/Music/menu.ogg"));
             music.PlayOnStart = false;
             var musicController = new MenuMusicController(music.Audio);
-            musicButton = new MenuMusicButton(musicController, menu.Click1);
             menuCanvas = new Spacebox.Game.GUI.MenuUi.MenuCanvas(menu, musicController, CenteredImageMenu.Texture);
 
             /*var jump = InputManager.Instance.AddAction("inputOverlay", "Jump action");
@@ -83,7 +69,6 @@ namespace Spacebox.Scenes
 
  
 
-            devLogWindow.AddLogFromFile("Resources/devlog.txt");
 
 
             TextureMaterial mat = new TextureMaterial(Astronaut.GetAstronautTexture("Yellow"));
@@ -175,14 +160,14 @@ namespace Spacebox.Scenes
 
             Input.ShowCursor();
 
-            ResetImGuiFont();
+            ResetInterface();
 
             Settings.ShowInterface = false; // for hide + CenteredText, todo rewrite
 
 
         }
 
-        public unsafe static void ResetImGuiFont()
+        public static void ResetInterface()
         {
             SettingsApplier.ApplyInterface(Settings.Interface);
         }
@@ -194,7 +179,7 @@ namespace Spacebox.Scenes
             base.Render();
             menu.RenderOffscreen();
 
-            if(Input.IsKeyDown(Keys.J) && Input.IsKey(Keys.LeftControl) && !ImGuiNET.ImGui.GetIO().WantCaptureKeyboard)
+            if(Input.IsKeyDown(Keys.J) && Input.IsKey(Keys.LeftControl) && !(menuCanvas?.WantsKeyboard ?? false))
             {
                 SceneManager.Load<ServerMessageScene>();
             }
@@ -206,7 +191,6 @@ namespace Spacebox.Scenes
         public override void OnGUI()
         {
           
-            Theme.ApplySpaceboxTheme();
             // ImFontPtr myFont = ImGui.GetIO().Fonts.Fonts[1];
             // ImGui.PushFont(myFont);
             BlackScreenOverlay.OnGUI();
@@ -218,13 +202,6 @@ namespace Spacebox.Scenes
             }
 
             menuCanvas?.Render();
-            if (menuCanvas == null)
-            {
-                CenteredImageMenu.Draw();
-                VerticalLinks.Draw();
-                musicButton.Draw();
-            }
-            menu.Render();
             //devLogWindow.Render();
             //canvas.Draw();
             // ImGui.PopFont();
@@ -237,7 +214,6 @@ namespace Spacebox.Scenes
             menuCanvas?.Dispose();
             menuCanvas = null;
             menu.Dispose();
-            DevLogWindow.Instance = null;
             Settings.ShowInterface = true;
         }
 
@@ -248,6 +224,7 @@ namespace Spacebox.Scenes
             CenteredImageMenu.Update();
             ColorOverlay.Update();
             menuCanvas?.Update(Time.Delta);
+            menu.Update();
             InputOverlay.Update();
 
             if(menu.CurrentWindowType == typeof(MultiplayerWindow))
@@ -263,7 +240,6 @@ namespace Spacebox.Scenes
                 CenteredImageMenu.ShowText = false;
                 GameMenu.IsVisible = true;
                 VerticalLinks.IsVisible = true;
-                devLogWindow.IsVisible = true;
                 showed = true;
             }
 

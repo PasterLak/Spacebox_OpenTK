@@ -1,5 +1,4 @@
-﻿using ImGuiNET;
-using Engine.GUI;
+﻿using Engine.GUI;
 using Spacebox.Game.Generation;
 using Engine;
 using OpenTK.Mathematics;
@@ -21,16 +20,16 @@ namespace Spacebox.Game.GUI
         {
             return $"x {(int)p.X} y {(int)p.Y} z {(int)p.Z}";
         }
-        public override void OnGUIText()
+        public override void Write(OverlayText text)
         {
             if (world == null) { return; }
             if (World.CurrentSector == null) { return; }
 
-            ImGui.SeparatorText("[WORLD]");
-            ImGui.Text($"Time: {GameTime.ToString()} Tick: {GameTime.DayTick} ");
-            ImGui.Text($"Sector: Pos: {World.CurrentSector.PositionWorld} Index: {World.CurrentSector.PositionIndex}");
+            text.Section("[WORLD]");
+            text.Line($"Time: {GameTime.ToString()} Tick: {GameTime.DayTick} ");
+            text.Line($"Sector: Pos: {World.CurrentSector.PositionWorld} Index: {World.CurrentSector.PositionIndex}");
             var occlusion = EngineWindow.Instance.Occlusion;
-            ImGui.Text(occlusion.Enabled
+            text.Line(occlusion.Enabled
                 ? $"Occlusion: drawn {occlusion.DrawnLastFrame}, occluded {occlusion.OccludedLastFrame}"
                 : $"Occlusion: off, drawn {occlusion.DrawnLastFrame}");
 
@@ -49,25 +48,25 @@ namespace Spacebox.Game.GUI
 
                     var biom = World.CurrentSector.BiomesMap.GetFromSectorLocalCoord(pos2);
 
-                    ImGui.Text("Biome:"); ImGui.SameLine();
-                    if (biom != null) ImGui.TextColored(biom.DebugColor.ToSystemVector4(), $"{biom.Name}");
-                    else ImGui.TextDisabled("empty space");
+                    text.Line("Biome:");
+                    if (biom != null) text.Append($"{biom.Name}", new Color4(biom.DebugColor.R / 255f, biom.DebugColor.G / 255f, biom.DebugColor.B / 255f, 1f));
+                    else text.Append("empty space", Engine.CanvasUI.DarkTheme.TextDim);
 
                 }
 
                 var p = World.CurrentSector.WorldToLocalPosition(pos);
-                ImGui.Text("Position in:");
-                ImGui.Text($"Sector: " + Vector3Int(p));
+                text.Line("Position in:");
+                text.Line($"Sector: " + Vector3Int(p));
 
                 if (World.CurrentSector.IsPointInEntity(pos, out var entity))
                 {
                     var p1 = entity.WorldPositionToLocal(entity.ToEntitySpace(pos));
-                    ImGui.Text($"Entity: {Vector3Int(p1)} Index: {entity.PositionIndex}");
+                    text.Line($"Entity: {Vector3Int(p1)} Index: {entity.PositionIndex}");
 
                     if (entity.IsPositionInChunk(entity.ToEntitySpace(pos), out var chunk))
                     {
 
-                        ImGui.Text($"Chunk: {SpaceMath.Entity.WorldPositionToBlockInChunk(entity, entity.ToEntitySpace(pos))} Index: {chunk.PositionIndex}");
+                        text.Line($"Chunk: {SpaceMath.Entity.WorldPositionToBlockInChunk(entity, entity.ToEntitySpace(pos))} Index: {chunk.PositionIndex}");
                     }
                 }
 

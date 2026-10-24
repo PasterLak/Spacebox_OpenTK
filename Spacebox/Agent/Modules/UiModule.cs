@@ -9,13 +9,11 @@ namespace Spacebox.Agent.Modules;
 
 public sealed class UiModule : IAgentModule
 {
-    private static readonly TimeSpan CaptureTimeout = TimeSpan.FromSeconds(5);
-
     private sealed record UiMatch(UiWindowText Window, UiTextRun Run, bool Exact);
 
     public void Map(AgentRouter router)
     {
-        router.GetAsync("/ui", "Text drawn by ImGui this frame, per window (top window first): ?window=<part of name>&all=1 (include windows without text)&flat=1 (just strings)", async request =>
+        router.GetAsync("/ui", "Text on the visible CanvasUI layers, per top-level control (top window first): ?window=<part of name>&all=1 (include windows without text)&flat=1 (just strings)", async request =>
         {
             var snapshot = await CaptureAsync();
             var context = await MainThread.Run(Context);
@@ -39,9 +37,9 @@ public sealed class UiModule : IAgentModule
             return AgentJson.Response(matches.Select(m => new { window = m.Window.Id, text = m.Run.Text, exact = m.Exact, center = new[] { AgentGame.Round(m.Run.CenterX), AgentGame.Round(m.Run.CenterY) } }));
         });
 
-        router.PostAsync("/ui/click", "Click ImGui text (buttons, tabs, list items): ?text=Craft&window=&exact=0&index=0&button=left, or ?x=&y=", request => PointAsync(request, true));
+        router.PostAsync("/ui/click", "Click text on screen (buttons, tabs, list items): ?text=Craft&window=&exact=0&index=0&button=left, or ?x=&y=", request => PointAsync(request, true));
 
-        router.PostAsync("/ui/hover", "Move the mouse over ImGui text (tooltips): same parameters as /ui/click", request => PointAsync(request, false));
+        router.PostAsync("/ui/hover", "Move the mouse over text on screen (tooltips): same parameters as /ui/click", request => PointAsync(request, false));
     }
 
     private static async Task<Engine.Automation.CanvasTextMatch?> FindOnCanvasAsync(HttpRequest request)
@@ -81,8 +79,7 @@ public sealed class UiModule : IAgentModule
             if (index < 0 || index >= matches.Count) throw new AgentRequestException($"index must be 0..{matches.Count - 1}");
 
             var match = matches[index];
-            var scale = await MainThread.Run(() => new Vector2(EngineWindow.Instance.ClientSize.X / snapshot.DisplayWidth, EngineWindow.Instance.ClientSize.Y / snapshot.DisplayHeight));
-            point = new Vector2(match.Run.CenterX, match.Run.CenterY) * scale;
+            point = new Vector2(match.Run.CenterX, match.Run.CenterY);
             clicked = new { window = match.Window.Id, text = match.Run.Text, matches = matches.Count };
         }
 
@@ -118,12 +115,13 @@ public sealed class UiModule : IAgentModule
         return exact;
     }
 
-    private static async Task<UiTextSnapshot> CaptureAsync()
+    private static Task<UiTextSnapshot> CaptureAsync()
     {
-        var capture = ImGuiTextCapture.CaptureNextFrameAsync();
-        if (await Task.WhenAny(capture, Task.Delay(CaptureTimeout)) != capture)
-            throw new AgentRequestException("No ImGui frame was rendered (no camera, minimized window or loading)", 503);
-        return await capture;
+        return MainThread.Run(() =>
+        {
+            var window = EngineWindow.Instance;
+            return CanvasTextCapture.Capture(new Vector2(window.ClientSize.X, window.ClientSize.Y));
+        });
     }
 
     private static object Context()

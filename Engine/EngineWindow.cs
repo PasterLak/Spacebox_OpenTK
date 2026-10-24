@@ -10,7 +10,6 @@ using Engine.PostProcessing;
 using Engine.Graphics.Debugging;
 using Engine.SceneManagement;
 using Engine.UI;
-using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -27,8 +26,6 @@ namespace Engine
 
         public static readonly ConcurrentQueue<Action> _mainThreadActions = new ConcurrentQueue<Action>();
 
-        private bool _debugUI = false;
-        private ImGuiController _controller;
         private PostProcessManager _processManager;
         private Vector2i _minimizedWindowSize; 
         private SceneRenderer _sceneRenderer;
@@ -84,9 +81,6 @@ namespace Engine
 
             SceneManager.Initialize(() => OnRegisterScenes());
 
-            _controller = new ImGuiController(ClientSize.X, ClientSize.Y);
-            if (!Application.IsHeadless) OnLoadImGui();
-
             _debugKey = Application.Platform == Application.PlatformName.OSX ? (Keys)161 : Keys.GraveAccent;
 
             SetupDefaultInputBindings();
@@ -126,9 +120,6 @@ namespace Engine
 
             InputManager0.AddAction("frameLimiter", Keys.F7, true);
             InputManager0.RegisterCallback("frameLimiter", ToggleFrameLimiter);
-
-            InputManager0.AddAction("debugUI", Keys.F9, true);
-            InputManager0.RegisterCallback("debugUI", () => { _debugUI = !_debugUI; });
         }
 
         private void LogSystemReport()
@@ -222,7 +213,6 @@ namespace Engine
                 Input.Update();
                 Time.StartUpdate();
                 Time.Update(e);
-                _controller.Update(this, (float)e.Time);
                 _inputManager.Update();
                 InputManager0.Update();
 
@@ -320,36 +310,22 @@ namespace Engine
 
         private void RenderGUI()
         {
-            _controller.EnsureContext();
-           
             if (SceneManager.Current != null)
             {
-            
+                WorldDebugView.DrawWorld();
                 SceneManager.Current.OnGUI();
                 DevConsole.Update();
-                Overlay.OnGUI();
+                Overlay.Update();
                 DevPanel.Update();
-                DrawRenderDebugLabel();
                 //InputOverlay.OnGUI();
 
                 OnRenderGameGUI();
-
-                if (_debugUI)
-                {
-                    ImGui.ShowDemoWindow();
-                }
             }
-          
-            if (Camera.Main != null)
-                _controller.Render();
 
+            WorldDebugView.DrawLabels();
+            Overlay.Draw();
             DevPanel.Draw();
             DevConsole.Draw();
-
-           
-                ImGuiController.CheckGLError("End of frame");
-          
-           
         }
 
         private void UpdateDefaultInputs()
@@ -379,16 +355,6 @@ namespace Engine
 
         public WindowMode CurrentWindowMode { get; private set; } = WindowMode.Windowed;
         public static Action<WindowMode> OnWindowModeChanged;
-
-        public void RebuildImGuiFontTexture(bool nearestFilter = false)
-        {
-            _controller.RecreateFontDeviceTexture(nearestFilter);
-        }
-
-        public void RequestImGuiFont(Engine.GUI.ImGuiFontRequest request)
-        {
-            _controller?.RequestFont(request);
-        }
 
         private float _renderScale = 1f;
 
@@ -497,18 +463,6 @@ namespace Engine
                 RenderDebugView.Next();
         }
 
-        private static void DrawRenderDebugLabel()
-        {
-            if (RenderDebugView.Mode == RenderDebugMode.Lit) return;
-
-            string text = $"F10  {RenderDebugView.Describe(RenderDebugView.Mode)}";
-            var drawList = ImGui.GetForegroundDrawList();
-            var position = new System.Numerics.Vector2(12f, 12f);
-            var size = ImGui.CalcTextSize(text);
-            drawList.AddRectFilled(position - new System.Numerics.Vector2(6f, 4f), position + size + new System.Numerics.Vector2(6f, 4f), 0xC0000000);
-            drawList.AddText(position, 0xFF66E0FF, text);
-        }
-
         public static bool CanPositionWindow => Platform.WindowSystemRules.SupportsWindowPosition(Platform.WindowSystemBootstrap.Current);
 
         public void CenterWindow()
@@ -560,6 +514,8 @@ namespace Engine
             _sceneRenderer?.Dispose();
             Debug.SaveMessagesToFile(true);
             Close();
+            Overlay.Shutdown();
+            WorldDebugView.Shutdown();
             DevPanel.Shutdown();
             DevConsole.Shutdown();
             WorkerPoolManager.Shutdown();
@@ -571,16 +527,9 @@ namespace Engine
             Debug.SaveMessagesToFile(true);
         }
 
-        protected override void OnMouseWheel(MouseWheelEventArgs e)
-        {
-            base.OnMouseWheel(e);
-            _controller.MouseScroll(e.Offset);
-        }
-
         protected override void OnTextInput(TextInputEventArgs e)
         {
             base.OnTextInput(e);
-            _controller.PressChar((char)e.Unicode);
             Input.Text.AddText(e.AsString);
         }
 
@@ -600,12 +549,10 @@ namespace Engine
             OnResized?.Invoke(Size);
             if (Camera.Main != null && Size.X > 0 && Size.Y > 0)
                 Camera.Main.AspectRatio = (float)Size.X / Size.Y;
-            _controller?.WindowResized(ClientSize.X, ClientSize.Y);
         }
 
         protected abstract void OnRegisterScenes();
         protected abstract void OnGameLoad();
-        protected virtual void OnLoadImGui() { }
         protected virtual void OnSetupInput() { }
         protected virtual void OnSetupPostProcessing(PostProcessManager processManager) { }
         protected virtual void OnRenderGameGUI() { }

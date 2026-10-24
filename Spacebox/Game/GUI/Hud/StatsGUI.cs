@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Engine.UI;
 using Spacebox.Game.Player;
 using Spacebox.GUI;
 
@@ -18,7 +17,6 @@ namespace Spacebox.Game.GUI
         public Vector4 FillColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public Vector4 BackgroundColor { get; set; } = new Vector4(0.2f, 0.2f, 0.2f, 1.0f);
         public Vector4 TextColor { get; set; } = new Vector4(1f, 1f, 1f, 1f);
-        public Anchor Anchor { get; set; } = Anchor.TopLeft;
         public string WindowName { get; set; } = "StatsBar";
         public bool ShowText = true;
         private Vector2 _lastDisplaySize;

@@ -6,7 +6,6 @@ using Engine;
 using Spacebox.Game.GUI;
 using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
-using ImGuiNET;
 using Spacebox.Game.Generation;
 using Engine.SceneManagement;
 using Engine.UI;
@@ -205,7 +204,7 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
-            ColorOverlay.OnGUI();
+            ColorOverlay.Update();
         }
 
         public override void UnloadContent()

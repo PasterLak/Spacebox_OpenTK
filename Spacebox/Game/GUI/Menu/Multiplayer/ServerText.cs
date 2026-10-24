@@ -1,5 +1,4 @@
 using System.Numerics;
-using ImGuiNET;
 using Spacebox.Game.Player.GameModes;
 using Spacebox.Network.Discovery;
 
@@ -10,8 +9,6 @@ public static class ServerText
     public static readonly Vector4 OnlineColor = new Vector4(0.2f, 0.75f, 0.3f, 1f);
     public static readonly Vector4 ErrorColor = new Vector4(0.85f, 0.2f, 0.15f, 1f);
     public static readonly Vector4 PendingColor = new Vector4(0.35f, 0.35f, 0.35f, 1f);
-
-    private const string Ellipsis = "...";
 
     public static string FirstLine(string text)
     {
@@ -63,22 +60,5 @@ public static class ServerText
     public static string GameModeLabel(byte gameMode)
     {
         return Enum.IsDefined(typeof(GameMode), (int)gameMode) ? ((GameMode)gameMode).ToString() : "Unknown";
-    }
-
-    public static string Fit(string text, float maxWidth)
-    {
-        if (string.IsNullOrEmpty(text) || maxWidth <= 0f) return "";
-        if (ImGui.CalcTextSize(text).X <= maxWidth) return text;
-
-        int low = 0;
-        int high = text.Length;
-        while (low < high)
-        {
-            int mid = (low + high + 1) / 2;
-            if (ImGui.CalcTextSize(text.Substring(0, mid) + Ellipsis).X <= maxWidth) low = mid;
-            else high = mid - 1;
-        }
-
-        return low == 0 ? Ellipsis : text.Substring(0, low).TrimEnd() + Ellipsis;
     }
 }

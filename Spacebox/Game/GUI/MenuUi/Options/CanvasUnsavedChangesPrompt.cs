@@ -35,8 +35,4 @@ public sealed class CanvasUnsavedChangesPrompt : IUnsavedChangesPrompt
             else onCancel?.Invoke();
         });
     }
-
-    public void Render()
-    {
-    }
 }

@@ -1,12 +1,11 @@
 ﻿using Engine.Light;
-using ImGuiNET;
 
 namespace Engine.GUI
 {
     public class LightingElement : OverlayElement
     {
 
-        public override void OnGUIText()
+        public override void Write(OverlayText text)
         {
             BeforeDraw?.Invoke();
 
@@ -15,11 +14,11 @@ namespace Engine.GUI
             var activeTotal = LightSystem.ActiveDirectionalLights + LightSystem.ActivePointLights + LightSystem.ActiveSpotLights;
 
 
-            ImGui.SeparatorText("[LIGHTING]");
-            ImGui.Text($"Registered: {registeredLights}/{maxLights} | ActiveTotal: {activeTotal}/{maxLights}");
-            ImGui.Text($"Active: Dir {LightSystem.ActiveDirectionalLights}/{LightSystem.MAX_DIR} | Point {LightSystem.ActivePointLights}/{LightSystem.MAX_POINT} " +
+            text.Section("[LIGHTING]");
+            text.Line($"Registered: {registeredLights}/{maxLights} | ActiveTotal: {activeTotal}/{maxLights}");
+            text.Line($"Active: Dir {LightSystem.ActiveDirectionalLights}/{LightSystem.MAX_DIR} | Point {LightSystem.ActivePointLights}/{LightSystem.MAX_POINT} " +
                 $"| Spot {LightSystem.ActiveSpotLights}/{LightSystem.MAX_SPOT}");
-            
+
 
             AfterDraw?.Invoke();
         }

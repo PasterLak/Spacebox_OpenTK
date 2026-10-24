@@ -52,12 +52,4 @@ public static class InterfaceFonts
         string path = font.RelativePath == null ? "" : Path.Combine(AppContext.BaseDirectory, font.RelativePath);
         return new Engine.CanvasUI.SkiaCanvasFont(path, SizeFor(font, size), font.Pixelated);
     }
-
-    public static ImGuiFontRequest ToRequest(string id, int size)
-    {
-        var font = Find(id);
-        int pixels = size >= MinSize && size <= MaxSize ? size : font.NativeSize;
-        string path = font.RelativePath == null ? null : Path.Combine(AppContext.BaseDirectory, font.RelativePath);
-        return new ImGuiFontRequest(path, pixels);
-    }
 }

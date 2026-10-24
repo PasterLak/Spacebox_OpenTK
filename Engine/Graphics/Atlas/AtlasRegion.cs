@@ -15,8 +15,6 @@ public sealed class AtlasRegion
 
     public Vector2[] Uvs { get; } = new Vector2[4];
 
-    public System.Numerics.Vector2 ImGuiUv0 => new System.Numerics.Vector2(UvMin.X, UvMax.Y);
-    public System.Numerics.Vector2 ImGuiUv1 => new System.Numerics.Vector2(UvMax.X, UvMin.Y);
 
     internal AtlasRegion(string name)
     {

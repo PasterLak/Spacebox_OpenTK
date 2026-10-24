@@ -367,14 +367,6 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         ui.OnGUI();
 
-        if (VisualDebug.Enabled)
-        {
-            WorldTextDebug.OnGUI();
-            Engine.GUI.GizmoIcons.Draw();
-            var displaySize = ImGuiNET.ImGui.GetIO().DisplaySize;
-            Engine.GUI.AxesGizmo.Draw(Camera.Main, displaySize * 0.5f, displaySize.Y * 0.04f);
-        }
-
         BlackScreenOverlay.OnGUI();
         CenteredText.Hide();
     }

@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using ImGuiNET;
 using Engine;
 using Engine.Audio;
 
@@ -53,7 +52,7 @@ namespace Spacebox.Game.GUI
             {
                 if (Player.IsAlive == false) return;
                 if (_chat.FocusInput) return;
-                if (ImGui.GetIO().WantCaptureKeyboard || Spacebox.Game.GUI.Canvas.GameCanvas.WantsKeyboard) return;
+                if (Spacebox.Game.GUI.Canvas.GameCanvas.WantsKeyboard) return;
 
                 if (!UIManager.IsUIMode)
                 {

@@ -42,7 +42,6 @@ public class OxygenBar
             TextColor = new Vector4(1f, 1f, 1f, 1f),
             Size = new Vector2(300, 50),
             Position = new Vector2(0, 225),
-            Anchor = Anchor.Bottom,
             WindowName = "OxygenBar"
         };
         StatsGUI.ShowText = true;

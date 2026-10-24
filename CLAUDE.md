@@ -70,7 +70,7 @@ Detailed per-project notes: `Engine/CLAUDE.md` (engine architecture) and `Spaceb
 
 Dependency direction: `Spacebox` → `Engine`. `Engine` must not reference game code.
 
-- **Engine/** — reusable engine: `EngineWindow` (abstract `GameWindow` with hook methods `OnRegisterScenes`, `OnGameLoad`, `OnSetupPostProcessing`, …), `SceneManagement` (`Scene` is a `Node3D`; scenes are registered then loaded via `SceneManager.Load<T>()`), `Node3D`/`Components` scene graph, `Resources.Load<T>(pathOrName, global)` resource cache, rendering (shaders, materials, post-processing, lights, particles), ImGui-based GUI, `InputPro` input actions, `Audio` (OpenAL + NVorbis), octrees, `ServiceLocator`, `EventBus`, `Debug` logging.
+- **Engine/** — reusable engine: `EngineWindow` (abstract `GameWindow` with hook methods `OnRegisterScenes`, `OnGameLoad`, `OnSetupPostProcessing`, …), `SceneManagement` (`Scene` is a `Node3D`; scenes are registered then loaded via `SceneManager.Load<T>()`), `Node3D`/`Components` scene graph, `Resources.Load<T>(pathOrName, global)` resource cache, rendering (shaders, materials, post-processing, lights, particles), CanvasUI retained GUI (game, editor and debug tools), `InputPro` input actions, `Audio` (OpenAL + NVorbis), octrees, `ServiceLocator`, `EventBus`, `Debug` logging.
 - **Spacebox/** — the game. `Program.cs` → `SpaceboxWindow` (subclasses `EngineWindow`, registers scenes, starts at `MenuScene`). `Scenes/` holds menu, single-player (`LocalSpaceScene` / `BaseSpaceScene`) and multiplayer scenes, `Game/` the game logic by feature, `Network/` multiplayer, `Editor/` the GameSet editor.
 
 ## World / voxel architecture (`Spacebox/Game/Generation/`)

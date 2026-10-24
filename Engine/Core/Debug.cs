@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using ImGuiNET;
 using OpenTK.Windowing.Common;
 using Engine.Commands;
 using System.Drawing;

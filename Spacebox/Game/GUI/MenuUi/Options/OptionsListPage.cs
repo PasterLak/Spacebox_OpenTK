@@ -20,7 +20,7 @@ public sealed class OptionsListPage : MenuPage
         Add(frame, "Audio", "Master, music, ambient, effects and interface volume", _options.Show<AudioWindow>);
         Add(frame, "Game", "Draw distance, mouse and camera settings", _options.Show<GameWindow>);
         Add(frame, "Graphics", "Display mode, frame rate, resolution and visual quality", _options.Show<GraphicsWindow>);
-        Add(frame, "Interface", "Interface font, design and scale", _options.Show<InterfaceWindow>);
+        Add(frame, "Interface", "Interface design and scale", _options.Show<InterfaceWindow>);
         Add(frame, "Controls", "Change key bindings", _options.Show<ControlsWindow>);
         frame.Footer.AddChild(Button("Back", "Return to the previous menu", _options.Close));
     }

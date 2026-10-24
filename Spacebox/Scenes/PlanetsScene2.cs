@@ -6,11 +6,9 @@ using Engine.Audio;
 using Spacebox.Game.GUI;
 using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
-using ImGuiNET;
 using Spacebox.Game.Generation;
 using Spacebox.Scenes.Test;
 using Spacebox.Game.Player;
-using Spacebox.FPS.GUI;
 using Engine.GUI;
 using Engine.SceneManagement;
 using Engine.Components;
@@ -214,10 +212,6 @@ namespace Spacebox.Scenes
             if (Input.IsKeyDown(Keys.T))
             {
                 SceneManager.Load<LogoScene>();
-            }
-            if (Input.IsKeyDown(Keys.N))
-            {
-                NodeUI.IsVisible = !NodeUI.IsVisible;
             }
 
 

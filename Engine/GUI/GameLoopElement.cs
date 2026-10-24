@@ -1,11 +1,9 @@
 ﻿using Engine;
 using Engine.GUI;
-using ImGuiNET;
-using System.Numerics;
 
 internal class GameLoopElement : OverlayElement
 {
-    private float timer;
+    private float timer = 1f;
     private float cachedRenderTime;
     private float cachedAvgRenderTime;
     private float cachedUpdateTime;
@@ -17,9 +15,9 @@ internal class GameLoopElement : OverlayElement
     private float cachedOnGUIpercent;
 
 
-public override void OnGUIText()
+public override void Write(OverlayText text)
     {
-        timer += Time.Delta;
+        timer += text.Elapsed;
         if (timer >= 1f)
         {
             cachedAvgRenderTime = (float)Time.AverageRenderTime;
@@ -30,24 +28,22 @@ public override void OnGUIText()
             cachedOnGUIpercent = Time.OnGUITimePercent;
             timer = 0f;
         }
-      
+
         //ImGui.Text("[GAME LOOP]");
-        ImGui.SeparatorText("[GAME LOOP]");
+        text.Section("[GAME LOOP]");
         //ImGui.Separator();
-        DrawPercentBar("Render", $"Avg: {cachedAvgRenderTime:F2} ms", cachedRenderPercent); 
-        DrawPercentBar("Update", $"Avg: {cachedAvgUpdateTime:F2} ms",cachedUpdatePercent); 
-        DrawPercentBar("GUI   ", $"Avg: {cachedAvgOnGUITime:F2} ms", cachedOnGUIpercent);
-       
-  
+        DrawPercentBar(text, "Render", $"Avg: {cachedAvgRenderTime:F2} ms", cachedRenderPercent);
+        DrawPercentBar(text, "Update", $"Avg: {cachedAvgUpdateTime:F2} ms",cachedUpdatePercent);
+        DrawPercentBar(text, "GUI   ", $"Avg: {cachedAvgOnGUITime:F2} ms", cachedOnGUIpercent);
+
+
     }
 
-    private void DrawPercentBar(string label, string avarage, float percent)
+    private void DrawPercentBar(OverlayText text, string label, string avarage, float percent)
     {
-        ImGui.Text($"{label}"); ImGui.SameLine();
-        var size = ImGui.CalcTextSize(label);
-        ImGui.ProgressBar( percent/100f, new Vector2(size.Y * 5, size.Y));
-        ImGui.SameLine();
-        ImGui.Text(avarage);
+        text.Line(label);
+        text.Bar(percent / 100f, $"{percent:F0}%");
+        text.Append(avarage);
     }
 
 

@@ -1,7 +1,6 @@
 ﻿using Engine;
 using Engine.Networking.Query;
 using Engine.SceneManagement;
-using ImGuiNET;
 using Spacebox.Network;
 using Spacebox.Network.Discovery;
 using Spacebox.Scenes;
@@ -11,8 +10,6 @@ namespace Spacebox.Game.GUI.Menu
 {
     public class MultiplayerWindow : MenuWindow, IDisposable
     {
-        private static readonly Vector4 TitleColor = new Vector4(1f, 0.8f, 0.2f, 1f);
-
         public GameMenu menu;
         private ClientConfig config;
         private string nickname = "";
@@ -21,8 +18,6 @@ namespace Spacebox.Game.GUI.Menu
         private int selectedColorIndex = 0;
 
         private readonly ServerIconCache _icons = new ServerIconCache();
-        private readonly ServerListView _list;
-        private readonly ServerInfoWindow _info;
         private ServerBrowser _browser;
 
         public ClientConfig Config => config;
@@ -40,11 +35,7 @@ namespace Spacebox.Game.GUI.Menu
             }
         }
 
-        public ServerListItem Selected
-        {
-            get => _list.Selected;
-            set => _list.Selected = value;
-        }
+        public ServerListItem Selected { get; set; }
 
         public bool CanEdit(ServerListItem item) => item != null && IsListed(item);
 
@@ -53,9 +44,6 @@ namespace Spacebox.Game.GUI.Menu
         public MultiplayerWindow(GameMenu menu)
         {
             this.menu = menu;
-            _list = new ServerListView(_icons);
-            _list.Activated += Join;
-            _info = new ServerInfoWindow(menu, _icons, SaveServer, Join, item => _browser?.Ping(item));
         }
 
         public override void OnWindowChanged()
@@ -128,154 +116,15 @@ namespace Spacebox.Game.GUI.Menu
         public void JoinOrCancel()
         {
             if (ClientConnector.IsConnecting) ClientConnector.Cancel();
-            else Join(_list.Selected);
+            else Join(Selected);
         }
 
         public void Back()
         {
-            _info.Close();
             menu.SetStateToMain();
         }
 
         public static Vector4 ColorOf(string colorName) => GetColorVector(colorName);
-
-        public override void Render()
-        {
-            UpdateBrowser(Time.Delta);
-
-            var display = ImGui.GetIO().DisplaySize;
-            float width = MathF.Min(MathF.Max(display.X * 0.5f, 620f), display.X * 0.95f);
-            float height = MathF.Min(MathF.Max(display.Y * 0.68f, 460f), display.Y * 0.95f);
-            var position = GameMenu.CenterNextWindow2(width, height);
-
-            ImGui.Begin("Multiplayer", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse |
-                                       ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
-            GameMenu.DrawElementColors(position, new Vector2(width, height), display.Y);
-
-            ImGui.BeginDisabled(_info.IsOpen);
-
-            float padding = MathF.Max(12f, height * 0.03f);
-            float buttonHeight = MathF.Max(28f, display.Y * 0.045f);
-            float contentWidth = width - padding * 2f;
-
-            ImGui.SetCursorPos(new Vector2(padding, padding));
-            ImGui.TextColored(TitleColor, "Multiplayer");
-            DrawProfile(padding, contentWidth);
-
-            float listTop = ImGui.GetCursorPosY() + padding * 0.5f;
-            float buttonsTop = height - padding - buttonHeight * 2f - padding * 0.5f;
-            ImGui.SetCursorPos(new Vector2(padding, listTop));
-            _list.Draw(_browser, new Vector2(contentWidth, buttonsTop - listTop - padding * 0.5f));
-
-            DrawButtons(padding, contentWidth, buttonsTop, buttonHeight);
-
-            ImGui.EndDisabled();
-            ImGui.End();
-
-            _info.Render();
-        }
-
-        private void DrawProfile(float padding, float contentWidth)
-        {
-            float y = ImGui.GetCursorPosY() + padding * 0.4f;
-            float frame = ImGui.GetFrameHeight();
-            float textOffset = (frame - ImGui.GetTextLineHeight()) * 0.5f;
-            float nicknameLabel = ImGui.CalcTextSize("Nickname  ").X;
-            float colorLabel = ImGui.CalcTextSize("  Color  ").X;
-            float colorWidth = contentWidth * 0.28f;
-            float nicknameWidth = contentWidth - nicknameLabel - colorLabel - colorWidth;
-
-            ImGui.SetCursorPos(new Vector2(padding, y + textOffset));
-            ImGui.Text("Nickname");
-            ImGui.SetCursorPos(new Vector2(padding + nicknameLabel, y));
-            ImGui.SetNextItemWidth(nicknameWidth);
-            bool nicknameChanged = ImGui.InputText("##nickname", ref nickname, 32);
-            nicknameChanged |= ClipboardMenu.ForTextField("##nicknameMenu", ref nickname, 32);
-            if (nicknameChanged && !string.IsNullOrWhiteSpace(nickname))
-            {
-                config.PlayerNickname = nickname.Trim();
-                SaveConfig();
-            }
-
-            ImGui.SetCursorPos(new Vector2(padding + nicknameLabel + nicknameWidth, y + textOffset));
-            ImGui.Text("  Color");
-            ImGui.SetCursorPos(new Vector2(padding + nicknameLabel + nicknameWidth + colorLabel, y));
-            ImGui.SetNextItemWidth(colorWidth);
-            DrawColorCombo(frame);
-
-            ImGui.SetCursorPos(new Vector2(padding, y + frame));
-        }
-
-        private void DrawColorCombo(float frameHeight)
-        {
-            string currentItem = availableColors[selectedColorIndex];
-
-            if (ImGui.BeginCombo("##skinColor", ""))
-            {
-                for (int i = 0; i < availableColors.Length; i++)
-                {
-                    bool isSelected = selectedColorIndex == i;
-
-                    ImGui.ColorButton($"##clr_btn_{i}", GetColorVector(availableColors[i]), ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoPicker, new Vector2(frameHeight, frameHeight));
-                    ImGui.SameLine();
-
-                    if (ImGui.Selectable(availableColors[i], isSelected))
-                    {
-                        selectedColorIndex = i;
-                        ChangePlayerTexture(availableColors[i]);
-                        SaveConfig();
-                    }
-                    if (isSelected) ImGui.SetItemDefaultFocus();
-                }
-                ImGui.EndCombo();
-            }
-
-            var drawList = ImGui.GetWindowDrawList();
-            var min = ImGui.GetItemRectMin();
-            var style = ImGui.GetStyle();
-
-            float iconSize = frameHeight - style.FramePadding.Y * 2;
-            var iconPos = new Vector2(min.X + style.FramePadding.X, min.Y + style.FramePadding.Y);
-
-            drawList.AddRectFilled(iconPos, iconPos + new Vector2(iconSize, iconSize), ImGui.GetColorU32(GetColorVector(currentItem)), style.FrameRounding);
-            drawList.AddText(new Vector2(iconPos.X + iconSize + style.ItemInnerSpacing.X, iconPos.Y), ImGui.GetColorU32(ImGuiCol.Text), currentItem);
-        }
-
-        private void DrawButtons(float padding, float contentWidth, float y, float height)
-        {
-            float spacing = padding * 0.6f;
-            float width = (contentWidth - spacing * 3f) / 4f;
-            var selected = _list.Selected;
-            bool hasSelection = selected != null && IsListed(selected);
-            bool connecting = ClientConnector.IsConnecting;
-
-            ImGui.BeginDisabled(!hasSelection && !connecting);
-            menu.ButtonWithBackground(connecting ? "Cancel" : "Join", new Vector2(width, height), new Vector2(padding, y), () =>
-            {
-                if (ClientConnector.IsConnecting) ClientConnector.Cancel();
-                else Join(_list.Selected);
-            });
-            ImGui.EndDisabled();
-
-            ImGui.BeginDisabled(!hasSelection);
-            menu.ButtonWithBackground("Info", new Vector2(width, height), new Vector2(padding + (width + spacing), y), () => _info.OpenInfo(_list.Selected));
-            ImGui.EndDisabled();
-
-            menu.ButtonWithBackground("Add server", new Vector2(width, height), new Vector2(padding + (width + spacing) * 2f, y), _info.OpenAdd);
-
-            ImGui.BeginDisabled(!hasSelection || !selected.IsSaved);
-            menu.ButtonWithBackground("Remove", new Vector2(width, height), new Vector2(padding + (width + spacing) * 3f, y), () => RemoveServer(_list.Selected));
-            ImGui.EndDisabled();
-
-            float bottomY = y + height + padding * 0.5f;
-            float halfWidth = (contentWidth - spacing) * 0.5f;
-            menu.ButtonWithBackground("Refresh", new Vector2(halfWidth, height), new Vector2(padding, bottomY), () => _browser.Refresh());
-            menu.ButtonWithBackground("Back", new Vector2(halfWidth, height), new Vector2(padding + halfWidth + spacing, bottomY), () =>
-            {
-                _info.Close();
-                menu.SetStateToMain();
-            });
-        }
 
         public bool IsListed(ServerListItem item)
         {
@@ -315,7 +164,7 @@ namespace Spacebox.Game.GUI.Menu
             foreach (var saved in _browser.Saved)
             {
                 if (saved.Entry != entry) continue;
-                _list.Selected = saved;
+                Selected = saved;
                 _browser.Ping(saved);
                 break;
             }
@@ -328,7 +177,7 @@ namespace Spacebox.Game.GUI.Menu
             config.Servers.Remove(item.Entry);
             SaveConfig();
             _browser.SetSavedServers(config.Servers);
-            _list.Selected = null;
+            Selected = null;
         }
 
         private void EnsureBrowser()

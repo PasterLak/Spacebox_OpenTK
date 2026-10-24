@@ -36,6 +36,7 @@ public sealed class MenuCanvas : IDisposable
     public static MenuCanvas Current { get; private set; }
 
     public bool WantsPointer => _layer.Root.WantsPointer;
+    public bool WantsKeyboard => _layer.Root.WantsKeyboard;
     public bool HasPageFor(Type windowType) => _menu.PageOf(windowType) != null;
 
     private readonly Spacebox.Game.GUI.Canvas.Screens.ControlsOverlayView _controls = new Spacebox.Game.GUI.Canvas.Screens.ControlsOverlayView();

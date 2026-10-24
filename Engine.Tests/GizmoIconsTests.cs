@@ -15,14 +15,6 @@ public class GizmoIconsTests
     }
 
     [Fact]
-    public void Pack_UsesImGuiByteOrder()
-    {
-        Assert.Equal(0xFF0000FFu, GizmoIcons.Pack(new Color4(1f, 0f, 0f, 1f)));
-        Assert.Equal(0xFFFF0000u, GizmoIcons.Pack(new Color4(0f, 0f, 1f, 1f)));
-        Assert.Equal(0xFFFFFFFFu, GizmoIcons.Pack(new Color4(2f, 2f, 2f, 2f)));
-    }
-
-    [Fact]
     public void Add_IsIgnoredWhileVisualDebugIsOff()
     {
         bool before = VisualDebug.Enabled;

@@ -69,4 +69,51 @@ public sealed class CanvasShapesTests
         CanvasShapes.Circle(list, Vector2.Zero, 10f, Color4.White, 1f, 12);
         Assert.Equal(12, list.Commands.Count);
     }
+
+    [Fact]
+    public void FilledTriangle_CoversTheInsideOnly()
+    {
+        var list = new CanvasCommandList();
+        CanvasShapes.FilledTriangle(list, new Vector2(0f, 0f), new Vector2(20f, 0f), new Vector2(0f, 20f), Color4.White);
+
+        Assert.True(Covers(list, new Vector2(4f, 4f)));
+        Assert.False(Covers(list, new Vector2(16f, 16f)));
+        Assert.Equal(CanvasShapes.TriangleRows(20f), list.Commands.Count);
+    }
+
+    [Fact]
+    public void FlatTriangle_DrawsNothing()
+    {
+        var list = new CanvasCommandList();
+        CanvasShapes.FilledTriangle(list, Vector2.Zero, new Vector2(10f, 0f), new Vector2(20f, 0f), Color4.White);
+        Assert.Empty(list.Commands);
+    }
+
+    [Fact]
+    public void FilledSector_CoversItsQuarterOnly()
+    {
+        var list = new CanvasCommandList();
+        var center = new Vector2(50f, 50f);
+        CanvasShapes.FilledSector(list, center, 20f, 0f, MathF.PI * 0.5f, Color4.White);
+
+        Assert.True(Covers(list, center + new Vector2(8f, 8f)));
+        Assert.False(Covers(list, center + new Vector2(-8f, -8f)));
+    }
+
+    [Fact]
+    public void Arc_DrawsOneSegmentPerStep()
+    {
+        var list = new CanvasCommandList();
+        CanvasShapes.Arc(list, Vector2.Zero, 10f, -0.7f, 0.7f, Color4.White, 1f, 6);
+        Assert.Equal(6, list.Commands.Count);
+    }
+
+    [Fact]
+    public void RectOutline_DrawsFourEdges()
+    {
+        var list = new CanvasCommandList();
+        CanvasShapes.RectOutline(list, new Rect2(0f, 0f, 10f, 10f), Color4.White, 2f);
+        Assert.Equal(4, list.Commands.Count);
+        Assert.False(Covers(list, new Vector2(5f, 5f)));
+    }
 }

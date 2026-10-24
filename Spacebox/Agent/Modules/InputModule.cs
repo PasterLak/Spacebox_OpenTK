@@ -48,7 +48,7 @@ public sealed class InputModule : IAgentModule
             return Ok("move", "mouse");
         });
 
-        router.Post("/input/text", "Type text into the focused ImGui field: ?text=hello or body", request =>
+        router.Post("/input/text", "Type text into the focused text field: ?text=hello or body", request =>
         {
             string text = AgentQuery.TextOrBody(request, "text");
             InputInjector.TypeText(text);

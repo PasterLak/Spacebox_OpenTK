@@ -8,7 +8,6 @@ using Engine.PostProcessing.Glare;
 using Engine.PostProcessing.Ssao;
 using Engine.SceneManagement;
 using Engine.Utils;
-using ImGuiNET;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -154,10 +153,7 @@ public class SpaceboxWindow : EngineWindow
         SceneManager.Register<ServerSleepScene>();
     }
 
-    protected override void OnLoadImGui()
-    {
         // LoadStarPixelFont();
-    }
 
     protected override void OnSetupInput()
     {
@@ -216,26 +212,5 @@ public class SpaceboxWindow : EngineWindow
         FramebufferCapture.SaveScreenshot(this);
         _screenshotAudio.Play();
         ColorOverlay.FadeOut(new System.Numerics.Vector3(1, 1, 1), 0.2f);
-    }
-
-    private static unsafe void LoadStarPixelFont(float fontSize = 16.0f)
-    {
-        string basePath = AppDomain.CurrentDomain.BaseDirectory;
-        string fontPath = Path.Combine(basePath, "Resources", "StarPixel.ttf");
-
-        if (!File.Exists(fontPath))
-        {
-            Console.WriteLine($"Font file not found: {fontPath}");
-            return;
-        }
-
-        ImGuiIOPtr io = ImGui.GetIO();
-        ImFontConfigPtr config = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
-        config.OversampleH = 1;
-        config.OversampleV = 1;
-        config.PixelSnapH = true;
-
-        io.Fonts.AddFontFromFileTTF(fontPath, fontSize, config);
-        Instance.RebuildImGuiFontTexture(true);
     }
 }

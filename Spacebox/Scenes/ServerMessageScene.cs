@@ -6,7 +6,7 @@ using Engine;
 using Spacebox.Game.GUI;
 using Spacebox.Game;
 using Spacebox.Game.GUI.Menu;
-using ImGuiNET;
+using Engine.CanvasUI;
 using Spacebox.Game.Generation;
 using Engine.SceneManagement;
 using Engine.UI;
@@ -31,6 +31,7 @@ namespace Spacebox.Scenes
         
         SpotLight flashlight;
         string message = "";
+        private DebugCanvas _canvas;
 
         float timer = 5;
         public void Initialize(MenuScene2Params param)
@@ -196,17 +197,24 @@ namespace Spacebox.Scenes
 
         public override void OnGUI()
         {
-            Theme.ApplySpaceboxTheme();
-            ColorOverlay.OnGUI();
+            ColorOverlay.Update();
+            if (Engine.Application.IsHeadless) return;
 
-            var display = ImGui.GetIO().DisplaySize;
-            var size = ImGui.CalcTextSize(message);
-            ImGui.GetForegroundDrawList().AddText((display - size) * 0.5f, ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(1, 0, 0, 1)), message);
+            if (_canvas == null)
+            {
+                _canvas = new DebugCanvas("Server message");
+                var label = _canvas.Root.Add(new Label { Text = message, FontColor = Color4.Red, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }, UiLayer.Hud);
+                label.SetAnchorsPreset(LayoutPreset.FullRect);
+            }
+
+            _canvas.Layer.Update(Time.Delta);
+            _canvas.Layer.Render();
         }
 
         public override void UnloadContent()
         {
-
+            _canvas?.Dispose();
+            _canvas = null;
         }
         Vector3 targetr;
         public override void Render()

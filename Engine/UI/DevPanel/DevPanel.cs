@@ -1,6 +1,5 @@
 using Engine.CanvasUI;
 using Engine.GUI;
-using OpenTK.Mathematics;
 
 namespace Engine.UI;
 
@@ -9,20 +8,17 @@ public sealed class DevPanel : IDisposable
     private const float WidthRatio = 0.26f;
     private const float RefreshInterval = 0.5f;
 
-    private readonly CanvasLayer _layer = new CanvasLayer("Developer panel");
+    private readonly DebugCanvas _canvas = new DebugCanvas("Developer panel");
     private readonly List<DevPanelSection> _sections = new List<DevPanelSection>();
-    private SkiaCanvasFont _font;
     private float _refreshTimer;
 
     public static DevPanel Instance { get; private set; }
 
-    public bool WantsPointer => _layer.Root.WantsPointer;
-
-    private bool _drawThisFrame;
+    public bool WantsPointer => _canvas.Root.WantsPointer;
 
     public static void Update()
     {
-        if (Instance != null) Instance._drawThisFrame = false;
+        if (Instance != null) Instance._canvas.Layer.Visible = false;
         if (!Overlay.IsVisible || Application.IsHeadless) return;
 
         Instance ??= new DevPanel();
@@ -31,8 +27,7 @@ public sealed class DevPanel : IDisposable
 
     public static void Draw()
     {
-        if (Instance == null || !Instance._drawThisFrame) return;
-        Instance._layer.Render();
+        Instance?._canvas.Layer.Render();
     }
 
     public static void Shutdown()
@@ -43,15 +38,7 @@ public sealed class DevPanel : IDisposable
 
     private DevPanel()
     {
-        string fontPath = Path.Combine(AppContext.BaseDirectory, DarkTheme.FontPath);
-        _font = new SkiaCanvasFont(fontPath, (int)DarkTheme.FontSize);
-        var root = _layer.Root;
-        root.Theme = DarkTheme.Create(_font);
-        root.Stretch.Mode = StretchMode.Expand;
-        root.Stretch.VirtualSize = new Vector2(1280f, 720f);
-        root.Stretch.ScaleStep = 0.5f;
-        root.Stretch.MinScale = 1f;
-
+        var root = _canvas.Root;
         var panel = new PanelContainer { Name = "DevPanel" };
         root.Add(panel, UiLayer.Debug);
         panel.AnchorLeft = 1f - WidthRatio;
@@ -83,8 +70,8 @@ public sealed class DevPanel : IDisposable
             RefreshAll();
         }
 
-        _layer.Update(deltaTime);
-        _drawThisFrame = true;
+        _canvas.Layer.Visible = true;
+        _canvas.Layer.Update(deltaTime);
     }
 
     private void RefreshAll()
@@ -94,8 +81,6 @@ public sealed class DevPanel : IDisposable
 
     public void Dispose()
     {
-        _layer.Dispose();
-        _font?.Dispose();
-        _font = null;
+        _canvas.Dispose();
     }
 }

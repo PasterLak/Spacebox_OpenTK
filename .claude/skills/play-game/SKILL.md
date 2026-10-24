@@ -1,6 +1,6 @@
 ---
 name: play-game
-description: Launch Spacebox and drive the running game through its agent API (HTTP on localhost) to test a change in the real game - load a test world, read player state and the block under the crosshair, move with A* goto, look at points, scan blocks and entities, press keys and input actions, read every ImGui window's text and click buttons by label, run console commands, take screenshots. Use whenever a change should be checked in the running game instead of only by tests.
+description: Launch Spacebox and drive the running game through its agent API (HTTP on localhost) to test a change in the real game - load a test world, read player state and the block under the crosshair, move with A* goto, look at points, scan blocks and entities, press keys and input actions, read the text of every UI window and click buttons by label, run console commands, take screenshots. Use whenever a change should be checked in the running game instead of only by tests.
 ---
 
 # Play the game through the agent API
@@ -21,7 +21,7 @@ Tools/agent/game.sh stop                  # quit and wait for the process to exi
 - Worlds are in `Spacebox/bin/Release/net8.0/Worlds/<name>`. `--fresh` deletes and recreates the world. `--extensions a,b` picks extension GameSets for a new world.
 - Port: 47800 (`SPACEBOX_AGENT_PORT` changes it). `SPACEBOX_AGENT_CONFIG=Debug` uses the Debug build.
 - A new world may open the tutorial prompt: `game.sh click "No, thanks"`.
-- Don't minimize the game window: ImGui text capture and screenshots need rendered frames.
+- Don't minimize the game window: screenshots need rendered frames.
 
 ## Commands
 
@@ -32,12 +32,12 @@ Tools/agent/game.sh stop                  # quit and wait for the process to exi
 | `goto x y z [speed]`, `nav`, `navstop` | fly along an A* path through free cells (kinematic, ignores physics; solid goal → nearest free cell, state `partial`) |
 | `block x y z`, `blocks [radius] [idFilter]`, `entities [radius]` | block at a point; non-air blocks around the player (counts by id + nearest list with world centers); asteroids/ships nearest first |
 | `inv`, `select <slot>` | hotbar and inventory contents; select hotbar slot |
-| `ui [window]`, `uiflat` | all text ImGui drew this frame per window (top window first), with screen rects |
+| `ui [window]`, `uiflat` | text of every visible CanvasUI layer per top-level control (`<layer>/<ui layer>/<control>`, top first), with screen rects |
 | `canvas [1]`, `winsize <w> <h>` | CanvasUI (retained UI) layers with the headless layout check (issues with control paths and rects; `1` lists every control), and window resizing to check other resolutions; start the UI showcase with `game.sh menu --ui-showcase` |
-| `click <text> [window] [index]`, `hover <text>`, `clickxy x y` | click/hover ImGui text (exact match first, then contains); needs a UI open (cursor not grabbed) |
+| `click <text> [window] [index]`, `hover <text>`, `clickxy x y` | click/hover text on screen (exact match first, then contains); needs a UI open (cursor not grabbed) |
 | `key <Key> [tap\|hold\|release] [frames]` | keyboard (`E`, `Escape`, `Tab`, `Enter`, `Space`, `LeftShift`, `F3`, `1`..`9`) |
 | `action <name> [tap\|hold\|release] [frames]` | input action from `Resources/default_input.json` (`forward`, `up`, `inventory`, `use`, `block_place`, `block_destroy`, `shoot`, …; list: `get /input/actions`) |
-| `mouse [left\|right] [click\|hold\|release] [frames]`, `type <text>`, `release` | mouse buttons (left = drill/destroy), text into the focused ImGui field, release everything |
+| `mouse [left\|right] [click\|hold\|release] [frames]`, `type <text>`, `release` | mouse buttons (left = drill/destroy), text into the focused text field, release everything |
 | `cmd <console command>` | run a debug console command, returns its output (`cmd help`, `cmd "give default:iron_ore 10"`, `cmd "tp x y z"`, `cmd "gm survival"`) |
 | `log [since]` | console messages with sequence numbers |
 | `shot [path]` | PNG of the next frame incl. UI → prints the path; read it with the Read tool |
@@ -60,8 +60,8 @@ $G shot                                      # visual check
 
 ## Notes
 
-- Input goes into OpenTK's keyboard/mouse state at the start of each frame, so game code, InputPro actions and ImGui all see it. A `tap` is down for 1 frame. A UI click takes 3 frames: wait ~200 ms before reading the result.
-- `ui` decodes glyphs from ImGui draw data. Image-only buttons (item slots, icons) have no text: use `inv`/`state` for data, `shot` + `clickxy` for clicks. Text clipped at a window edge can be missing.
+- Input goes into OpenTK's keyboard/mouse state at the start of each frame, so game code, InputPro actions and CanvasUI all see it. A `tap` is down for 1 frame. A UI click takes 3 frames: wait ~200 ms before reading the result.
+- `ui` reads the CanvasUI tree (labels, buttons, check boxes, text fields, list rows, the F3 overlay). Image-only buttons (item slots, icons) have no text: use `inv`/`state` for data, `shot` + `clickxy` for clicks. Text clipped at a window edge can be missing.
 - `state.target.usable` means the block is within the interaction distance.
 - The window doesn't need focus. Moving the real mouse over the game window overrides the injected cursor position.
 - New endpoints: add an `IAgentModule` in `Spacebox/Agent/Modules/`, register it in `AgentModuleCatalog`, run game code on the main thread (`router.Get/Post` already do; async handlers use `MainThread.Run`), add a `game.sh` shortcut and a row here.

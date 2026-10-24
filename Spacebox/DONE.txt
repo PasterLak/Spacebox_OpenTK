@@ -443,6 +443,7 @@ Fixes
 - fixed: players in a hosted game could run the host's local-only console commands (console, camera, teleport tools) through the chat
 Engine
 - scene-owned GameScene context (GameScene.Current) holds creative tools, local pilot, skins, world rules, sprint toggle, claim visuals, picture frames, machine sounds and tags instead of statics reset on unload
+- ImGui removed, all interfaces are CanvasUI: F3 stats overlay, F4 world overlay (gizmo icons, axes, world text drawn as canvas shapes), F10 label, particle editor, test scenes; old ImGui menu fallbacks removed; agent `ui` reads canvas text
 - Debug builds name where a leaked resource was created in the "Disposing controlled resource" error
 - worker pool: one allocation per job, below-normal worker priority, continuations off the workers, pending jobs cancelled on shutdown, unused dedicated workers removed
 - Lighting.ResetToDefaults() (ambient, fog)

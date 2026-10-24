@@ -20,6 +20,7 @@ public sealed class CanvasLayer : IDisposable
     public CanvasRoot Root { get; } = new CanvasRoot();
     public GlCanvasRenderer Renderer => _renderer;
     public bool InputEnabled { get; set; } = true;
+    public bool Visible { get; set; } = true;
     public bool ShowLayoutIssues { get; set; }
     public LayoutRules ValidationRules { get; set; } = new LayoutRules();
     public LayoutReport LastReport => _report;
@@ -85,7 +86,7 @@ public sealed class CanvasLayer : IDisposable
     public void Render()
     {
         var window = EngineWindow.Instance;
-        if (window == null || Application.IsHeadless) return;
+        if (window == null || Application.IsHeadless || !Visible) return;
 
         var screen = new Vector2(window.ClientSize.X, window.ClientSize.Y);
         Root.Resize(screen);
