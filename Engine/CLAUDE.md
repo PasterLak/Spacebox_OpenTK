@@ -56,7 +56,7 @@ Before the window is created the game calls `Platform/GpuSelection.PreferDedicat
 - Register scenes with `SceneManager.Register<T>()` inside `OnRegisterScenes`; loading an unregistered scene falls back to `ErrorScene`.
 - `SceneManager.Load<T>()`, `Load<T, TParam>(arg)` (scene implements `ISceneWithArgs<TParam>`), `Reload()`, `LoadPrevious()`. Switching is deferred to the start of the next update.
 - Load order: constructor → `LoadContent()` → `Start()`.
-- Unload clears: scene commands and overlay elements, `Destroy()`, `UnloadContent()`, skybox and `LightSystem`, non-global `InputManager0` actions, **all `EventBus` subscribers**, `Camera.Main`, **all non-global resources**, `VisualDebug`; then a forced GC.
+- Unload clears: scene commands and overlay elements, `Destroy()`, `UnloadContent()`, skybox and `LightSystem`, non-global `InputManager0` actions, **all `EventBus` subscribers**, `Camera.Main`, **all non-global resources**, `VisualDebug`, then the scene resource scope (leak report); then a forced GC.
 - `Scene` is an abstract `Node3D` with `LoadContent`/`UnloadContent`.
 - `Node3D`: `Start`, `Update`, `Render`, `OnGUI`, `Destroy`; recurse into enabled components then children. Exception: `Node3D.Render` only renders its own components and does not recurse — `BVHCuller` walks the tree and calls `Render()` per node.
 - `Component`: `OnAttached`, `Start`, `OnUpdate`, `OnRender`, `OnGUI`, `OnDetached`; attach with `node.AttachComponent(c)`.
@@ -67,7 +67,13 @@ Before the window is created the game calls `Platform/GpuSelection.PreferDedicat
 - On failure it logs and returns the fallback from `ResourceFallbacks` (pink texture, error shader/mesh/clip, created in `EngineWindow.OnLoad`) — it does not throw. A type without a fallback throws `InvalidOperationException`.
 - `Resources` itself is a plain registry without GPU work, so it is usable in tests.
 - Non-global resources are disposed on every scene switch. Use `global: true` for anything that outlives a scene (all engine-owned resources).
-- `Get<T>` loads on miss; `AddResource(name, res, global)` registers code-created resources. Leaked "controlled" resources are reported by `UnloadAll`.
+- `Get<T>` loads on miss; `AddResource(name, res, global)` registers code-created resources.
+
+### Resource lifetime (`ResourceScope`, `ResourceScopes`)
+
+- Every resource has exactly one owner. Cached resources (`Load`/`Get`/`AddResource`, fallbacks) are owned by the cache: users never dispose them. Their `Dispose()` is ignored with a warning (`Resources.BlocksDispose`); the cache releases scene entries on scene change and global ones on exit (ref-counted when one object sits under several keys). Use `Resources.Release(res)` when a field may hold either a cached or a self-created resource: it disposes only uncached ones.
+- New `Texture2D`/`Shader`/`Mesh`/`MeshBuffer`/`AudioClip` objects start in `ResourceScopes.Scene` (with the creator recorded in Debug builds). An object that keeps a resource and disposes it itself (renderers, fonts, atlases, previews, `Mesh` for its buffer) calls `ResourceScopes.Own(res)`; app-lifetime resources without an owner that disposes them go to `ResourceScopes.KeepForApp(res)` (disposed silently on exit). `Resources.AddResourceToDispose` hands a resource to the current scene.
+- `SceneManager` ends the scene scope after `UnloadContent`, `Resources.UnloadAll` and `DisposalManager.ProcessDisposals`: anything still tracked is a leak, logged as `[Resources] Leaked scene resource ...` with its origin and disposed as a safety net. Fix leaks by disposing in the owner, never by relying on the net. `EngineWindow.Quit` calls `ResourceScopes.Shutdown()` (scene leaks reported, app scope disposed).
 
 ## Rendering
 

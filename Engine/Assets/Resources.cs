@@ -28,7 +28,8 @@ namespace Engine
         private static readonly Dictionary<Type, Dictionary<string, string>> _aliasMap = new Dictionary<Type, Dictionary<string, string>>();
 
         private static List<IResource> _loadedResources = new List<IResource>();
-        private static HashSet<IResource> _controlledResoruces = new HashSet<IResource>(ReferenceEqualityComparer.Instance);
+        private static readonly object _ownershipSync = new object();
+        private static readonly Dictionary<IResource, int> _cacheOwners = new Dictionary<IResource, int>(ReferenceEqualityComparer.Instance);
         private static readonly HashSet<(Type, string)> _failedLoads = new HashSet<(Type, string)>();
 
         public static T Load<T>(string pathOrName, bool global = false) where T : IResource, new()
@@ -81,7 +82,6 @@ namespace Engine
             {
                 entry.Global = true;
                 dict[key] = entry;
-                RemoveResourceFromControll(entry.Resource);
             }
             return entry.Resource;
         }
@@ -236,8 +236,8 @@ namespace Engine
             {
                 if (dict.TryGetValue(canonicalKey, out var entry))
                 {
-                    entry.Resource.Dispose();
                     dict.Remove(canonicalKey);
+                    ReleaseEntry(entry.Resource);
                 }
                 if (_aliasMap.TryGetValue(typeof(T), out var aliasDict))
                 {
@@ -250,39 +250,56 @@ namespace Engine
         {
             if (resource != null && !_loadedResources.Contains(resource))
             {
+                if (!IsCacheOwned(resource)) ResourceScopes.Own(resource);
                 _loadedResources.Add(resource);
             }
         }
 
-        public static void AddResourceToControll(IResource resource)
+        public static bool IsCacheOwned(IResource resource)
         {
-
-            if (resource != null)
-            {
-                _controlledResoruces.Add(resource);
-#if DEBUG
-                _controlledOrigins[resource] = ResourceOrigin.Describe(new System.Diagnostics.StackTrace(1, false));
-#endif
-            }
-        }
-        public static void RemoveResourceFromControll(IResource resource)
-        {
-            if (resource != null)
-            {
-                _controlledResoruces.Remove(resource);
-#if DEBUG
-                _controlledOrigins.Remove(resource);
-#endif
-            }
+            if (resource == null) return false;
+            lock (_ownershipSync) return _cacheOwners.ContainsKey(resource);
         }
 
-#if DEBUG
-        private static readonly Dictionary<IResource, string> _controlledOrigins = new Dictionary<IResource, string>(ReferenceEqualityComparer.Instance);
+        public static bool BlocksDispose(IResource resource)
+        {
+            if (!IsCacheOwned(resource)) return false;
+            Debug.Warning($"[Resources] Ignored Dispose of a cached resource, the cache releases it: {resource.GetResourceInfo()}");
+            return true;
+        }
 
-        private static string OriginOf(IResource resource) => _controlledOrigins.TryGetValue(resource, out var origin) ? " (created by " + origin + ")" : "";
-#else
-        private static string OriginOf(IResource resource) => "";
-#endif
+        public static bool Release(IResource resource)
+        {
+            if (resource == null || resource.IsDisposed || IsCacheOwned(resource)) return false;
+            resource.Dispose();
+            return true;
+        }
+
+        private static void TakeOwnership(IResource resource)
+        {
+            ResourceScopes.Own(resource);
+            lock (_ownershipSync)
+            {
+                _cacheOwners.TryGetValue(resource, out int count);
+                _cacheOwners[resource] = count + 1;
+            }
+        }
+
+        private static void ReleaseEntry(IResource resource)
+        {
+            if (resource == null) return;
+            lock (_ownershipSync)
+            {
+                if (!_cacheOwners.TryGetValue(resource, out int count)) return;
+                if (count > 1)
+                {
+                    _cacheOwners[resource] = count - 1;
+                    return;
+                }
+                _cacheOwners.Remove(resource);
+            }
+            resource.Dispose();
+        }
 
 
         private static void DisposeAllResources()
@@ -295,7 +312,7 @@ namespace Engine
 
                 if (res != null)
                 {
-                    res.Dispose();
+                    Release(res);
                     _loadedResources[i] = null;
                 }
 
@@ -315,10 +332,11 @@ namespace Engine
                 var keys = new List<string>(dict.Keys);
                 foreach (var key in keys)
                 {
-                    if (!dict[key].Global || clearGlobal)
+                    var entry = dict[key];
+                    if (!entry.Global || clearGlobal)
                     {
-                        dict[key].Resource.Dispose();
                         dict.Remove(key);
+                        ReleaseEntry(entry.Resource);
                     }
                 }
                 if (_aliasMap.TryGetValue(kvp.Key, out var aliasDict))
@@ -333,21 +351,6 @@ namespace Engine
             }
 
             DisposeAllResources();
-
-            foreach (var resource in _controlledResoruces.ToArray())
-            {
-                if (resource != null && !resource.IsDisposed)
-                {
-
-                    Debug.Error($"[Resources] Disposing controlled resource: {resource.GetResourceInfo()}{OriginOf(resource)}");
-                    resource.Dispose();
-                }
-
-            }
-            _controlledResoruces.Clear();
-#if DEBUG
-            _controlledOrigins.Clear();
-#endif
         }
 
         public static void PrintLoadedResources()
@@ -396,11 +399,13 @@ namespace Engine
                 dict = new Dictionary<string, ResourceEntry>();
                 _resourcesByType[typeof(T)] = dict;
             }
-            dict[canonicalKey] = new ResourceEntry { Resource = resource, Global = global };
-            if (global)
+            bool replaced = dict.TryGetValue(canonicalKey, out var previous);
+            if (!replaced || !ReferenceEquals(previous.Resource, resource))
             {
-                RemoveResourceFromControll(resource);
+                TakeOwnership(resource);
+                if (replaced) ReleaseEntry(previous.Resource);
             }
+            dict[canonicalKey] = new ResourceEntry { Resource = resource, Global = global || (replaced && previous.Global && ReferenceEquals(previous.Resource, resource)) };
             if (!_aliasMap.TryGetValue(typeof(T), out var aliasDict))
             {
                 aliasDict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

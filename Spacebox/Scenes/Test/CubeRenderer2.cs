@@ -132,7 +132,7 @@ public class CubeRenderer2 : SceneNode, IDisposable, IGameComponent
         public void Dispose()
         {
             _buffer?.Dispose();
-            _shader?.Dispose();
+            Resources.Release(_shader);
         }
     }
 

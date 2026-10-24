@@ -22,9 +22,10 @@ namespace Engine
         }
         public Mesh(float[] vertices, uint[] indices, MeshBuffer buffer)
         {
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
 
             this.buffer = buffer;
+            ResourceScopes.Own(buffer);
             _indexCount = indices.Length;
 
             buffer.BindBuffer(ref vertices, ref indices);
@@ -36,9 +37,10 @@ namespace Engine
 
         public Mesh(float[] vertices, int vertexCount, uint[] indices, int indexCount, MeshBuffer buffer)
         {
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
 
             this.buffer = buffer;
+            ResourceScopes.Own(buffer);
             _indexCount = indexCount;
 
             buffer.Upload(vertices, vertexCount, indices, indexCount);
@@ -58,7 +60,7 @@ namespace Engine
 
         public Mesh(float[] vertices, int[] indices)
         {
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
 
             _indexCount = indices.Length;
             VerticesPositions = new List<Vector3>();
@@ -72,6 +74,7 @@ namespace Engine
             };
 
             buffer = new MeshBuffer(attributes);
+            ResourceScopes.Own(buffer);
             uint[] indicesUInt = indices.Select(x => (uint)x).ToArray();
             buffer.BindBuffer(ref vertices, ref indicesUInt);
             buffer.SetAttributes();
@@ -81,11 +84,12 @@ namespace Engine
 
         public Mesh(string path)
         {
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
             if (Application.IsHeadless)
             {
                 VerticesPositions = new List<Vector3>();
                 buffer = new MeshBuffer();
+                ResourceScopes.Own(buffer);
                 return;
             }
 
@@ -100,6 +104,7 @@ namespace Engine
                 new BufferAttribute { Name = "uv", Size = 2 }
             };
             buffer = new MeshBuffer(attributes);
+            ResourceScopes.Own(buffer);
             uint[] indicesUInt = indices.Select(x => (uint)x).ToArray();
             buffer.BindBuffer(ref vertices, ref indicesUInt);
             buffer.SetAttributes();
@@ -165,11 +170,11 @@ namespace Engine
         public int GetHandle() { return buffer.VBO; }
         public void Dispose()
         {
-            if (IsDisposed) return;
+            if (IsDisposed || Resources.BlocksDispose(this)) return;
 
             buffer?.Dispose();
             IsDisposed = true;
-            Resources.RemoveResourceFromControll(this);
+            ResourceScopes.Forget(this);
         }
     }
 }

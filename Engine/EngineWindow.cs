@@ -163,7 +163,6 @@ namespace Engine
 
             var passthroughShader = new Shader(code.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None));
             Resources.AddResource("passthrough_shader", passthroughShader, true);
-            Resources.RemoveResourceFromControll(passthroughShader);
             _processManager.PresentShader = passthroughShader;
             _processManager.AddEffect(new DefaultEffect(passthroughShader));
         }
@@ -556,6 +555,7 @@ namespace Engine
             Occlusion.Dispose();
             ParticleSystem.DestroyAll();
             Resources.UnloadAll(true);
+            ResourceScopes.Shutdown();
             DisposalManager.ProcessDisposals();
             _sceneRenderer?.Dispose();
             Debug.SaveMessagesToFile(true);

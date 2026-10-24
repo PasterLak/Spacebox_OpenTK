@@ -27,7 +27,6 @@ public static class ResourceFallbacks
     public static void Register<T>(string name, T resource) where T : IResource
     {
         Resources.AddResource(name, resource, true);
-        Resources.RemoveResourceFromControll(resource);
         _fallbacks[typeof(T)] = resource;
     }
 

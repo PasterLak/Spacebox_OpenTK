@@ -24,7 +24,7 @@ public static class WorldLines
             new BufferAttribute { Name = "color", Size = 4 }
         });
         _buffer.SetAttributes();
-        Resources.RemoveResourceFromControll(_buffer);
+        ResourceScopes.Own(_buffer);
     }
 
     public static void DrawLine(Vector3 start, Vector3 end, Color4 color, float thickness)

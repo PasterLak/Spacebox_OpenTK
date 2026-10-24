@@ -24,6 +24,7 @@ public static class ResourceOrigin
     {
         string name = type.FullName ?? type.Name;
         return name.StartsWith("Engine.Resources", StringComparison.Ordinal)
+            || name.StartsWith("Engine.ResourceScope", StringComparison.Ordinal)
             || name.StartsWith("Engine.MeshBuffer", StringComparison.Ordinal)
             || name.StartsWith("Engine.Mesh", StringComparison.Ordinal)
             || name.StartsWith("Engine.Texture2D", StringComparison.Ordinal)

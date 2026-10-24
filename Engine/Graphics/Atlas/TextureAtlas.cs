@@ -388,7 +388,7 @@ public sealed class TextureAtlas : IDisposable
         {
             texture?.Dispose();
             texture = new Texture2D(Width, Height, FilterMode == FilterMode.Nearest);
-            Resources.RemoveResourceFromControll(texture);
+            ResourceScopes.Own(texture);
             GPUDebug.LabelTexture(texture.Handle, label);
         }
 

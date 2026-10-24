@@ -329,9 +329,9 @@ namespace Spacebox.Game
             foreach (var texture in BlockDusts.Values)
                 texture.Dispose();
             foreach (var c in ItemSounds.Values)
-                c?.Dispose();
+                Resources.Release(c);
             foreach (var c in Sounds.Values)
-                c?.Dispose();
+                Resources.Release(c);
 
             foreach (var itemModel in ItemModels.Values)
                 itemModel.Destroy();

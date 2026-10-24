@@ -12,7 +12,7 @@ public static class PictureTextures
         if (_textures.TryGetValue(picture.PicturePath, out var texture)) return texture;
 
         texture = new Texture2D(picture.PicturePath, pixelated: true, flipY: false);
-        Resources.RemoveResourceFromControll(texture);
+        ResourceScopes.Own(texture);
         _textures[picture.PicturePath] = texture;
         return texture;
     }

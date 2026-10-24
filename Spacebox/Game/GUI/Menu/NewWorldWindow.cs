@@ -20,7 +20,6 @@ namespace Spacebox.Game.GUI.Menu
             diceIcon = Resources.Load<Texture2D>("Resources/Textures/UI/dice.png");
             diceIcon.FilterMode = FilterMode.Nearest;
             diceIcon.FlipY();
-            Resources.AddResourceToDispose(diceIcon);
         }
         protected override Spacebox.Game.GUI.MenuUi.MenuPage CreatePage() => new Spacebox.Game.GUI.MenuUi.NewWorldPage(menu);
 

@@ -39,7 +39,7 @@ namespace Engine.PostProcessing
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
-            Resources.RemoveResourceFromControll(tex);
+            ResourceScopes.Own(tex);
             return tex;
         }
     }

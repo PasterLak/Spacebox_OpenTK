@@ -17,7 +17,7 @@ namespace Engine
 
         public static void LoadImage(string path, bool pixelated = false)
         {
-            _imageTexture?.Dispose();
+            Resources.Release(_imageTexture);
 
             var texture2 = Resources.Load<Texture2D>(path);
 
@@ -171,7 +171,7 @@ namespace Engine
 
         public static void Dispose()
         {
-            _imageTexture?.Dispose();
+            Resources.Release(_imageTexture);
             _imageTexture = null;
         }
     }

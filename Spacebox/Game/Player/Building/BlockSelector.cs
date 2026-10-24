@@ -439,7 +439,6 @@ public class BlockSelector : Node3D
         base.Destroy();
         PanelUI.OnSlotChanged -= OnSelectedSlotWasChanged;
         SimpleBlock?.Destroy();
-        _selectorTexture?.Dispose();
         _magnetLineRenderer?.Dispose();
         _reservedAreaRenderer?.Dispose();
         LineRenderer?.Dispose();

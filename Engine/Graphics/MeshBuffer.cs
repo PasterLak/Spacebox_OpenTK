@@ -45,7 +45,7 @@ namespace Engine
                 AddAttribute(attributes[i].Name, attributes[i].Size, attributes[i].ComponentType, attributes[i].Normalized);
             }
 
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
         }
         public MeshBuffer()
         {
@@ -133,7 +133,7 @@ namespace Engine
             }
 
             IsDisposed = true;
-            Resources.RemoveResourceFromControll(this);
+            ResourceScopes.Forget(this);
 
         }
 

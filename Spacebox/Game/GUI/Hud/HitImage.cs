@@ -28,7 +28,7 @@ namespace Spacebox.Game.GUI
         {
             if (_imageTexture != null)
             {
-                _imageTexture.Dispose();
+                Resources.Release(_imageTexture);
             }
           
             _imageTexture = GameAssets.LoadResource<Texture2D>("Resources/Textures/UI/hit.png");
@@ -94,7 +94,7 @@ namespace Spacebox.Game.GUI
         {
             if (_imageTexture != null)
             {
-                _imageTexture.Dispose();
+                Resources.Release(_imageTexture);
                 _imageTexture = null;
             }
         }

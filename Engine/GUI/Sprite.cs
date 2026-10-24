@@ -147,7 +147,7 @@ namespace Engine.GUI
 
         public void SetShader(Shader newShader)
         {
-            _shader?.Dispose();
+            Resources.Release(_shader);
             _shader = newShader;
         }
 
@@ -200,8 +200,8 @@ namespace Engine.GUI
                 GL.DeleteVertexArray(_vao);
                 GL.DeleteBuffer(_vbo);
                 GL.DeleteBuffer(_ebo);
-                _texture?.Dispose();
-                _shader?.Dispose();
+                Resources.Release(_texture);
+                Resources.Release(_shader);
 
                //Window.OnResized -= UpdateWindowSize;
 

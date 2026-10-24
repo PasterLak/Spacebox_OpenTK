@@ -153,7 +153,7 @@ public sealed class InvisibleBlockRenderer : IDisposable
         if (_buffer == null)
         {
             _buffer = TextureMaterial.GetMeshBuffer();
-            Resources.RemoveResourceFromControll(_buffer);
+            ResourceScopes.Own(_buffer);
         }
 
         var vertices = _vertices.ToArray();

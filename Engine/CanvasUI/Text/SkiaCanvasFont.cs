@@ -132,7 +132,7 @@ public sealed class SkiaCanvasFont : CanvasFont, IDisposable
         if (_pixels == null) return null;
 
         var atlas = new Texture2D(_pixels, _filter);
-        Resources.RemoveResourceFromControll(atlas);
+        ResourceScopes.Own(atlas);
         return atlas;
     }
 

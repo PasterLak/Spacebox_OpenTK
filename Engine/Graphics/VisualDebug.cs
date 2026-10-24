@@ -52,9 +52,9 @@ namespace Engine
             });
             _bufferTriangles.SetAttributes();
 
-            Resources.RemoveResourceFromControll(_bufferPoints);
-            Resources.RemoveResourceFromControll(_bufferLines);
-            Resources.RemoveResourceFromControll(_bufferTriangles);
+            ResourceScopes.Own(_bufferPoints);
+            ResourceScopes.Own(_bufferLines);
+            ResourceScopes.Own(_bufferTriangles);
         }
 
         public static void DrawTransform(Node3D transform)

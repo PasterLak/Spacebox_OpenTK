@@ -40,7 +40,7 @@ namespace Engine.Audio
         }
         public AudioClip(string filename, AudioLoadMode loadMode = AudioLoadMode.LoadIntoMemory)
         {
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
             IsStreaming = loadMode == AudioLoadMode.Stream;
             if (!AudioDevice.IsEnabled)
             {
@@ -178,7 +178,7 @@ namespace Engine.Audio
         public void Dispose()
         {
 
-            if (IsDisposed) return;
+            if (IsDisposed || Resources.BlocksDispose(this)) return;
 
             lock (_sources)
             {
@@ -191,7 +191,7 @@ namespace Engine.Audio
                 _sourcesToDispose[i].Dispose();
             }
             _sourcesToDispose.Clear();
-            Resources.RemoveResourceFromControll(this);
+            ResourceScopes.Forget(this);
 
 
             reader?.Dispose();

@@ -56,7 +56,7 @@ public sealed class GBufferDebugPass : IDisposable
     public GBufferDebugPass()
     {
         _shader = new Shader(Source);
-        Resources.RemoveResourceFromControll(_shader);
+        ResourceScopes.Own(_shader);
     }
 
     public void Draw(SceneRenderer scene, Vector2i clientSize, RenderDebugMode mode)

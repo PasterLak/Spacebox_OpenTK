@@ -37,7 +37,7 @@ namespace Engine
         public Shader(string shaderPath)
         {
             _shaderPath = shaderPath;
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
             if (Application.IsHeadless) return;
 
             var r = LoadFromPath(_shaderPath);
@@ -50,7 +50,7 @@ namespace Engine
         public Shader(string[] code)
         {
             _shaderPath = "";
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
             if (Application.IsHeadless) return;
 
             var r = LoadFromCode(code);
@@ -336,9 +336,9 @@ namespace Engine
         }
         public void Dispose()
         {
-            if (IsDisposed) return;
+            if (IsDisposed || Resources.BlocksDispose(this)) return;
 
-            Resources.RemoveResourceFromControll(this);
+            ResourceScopes.Forget(this);
 
             if (Handle != 0)
                 GL.DeleteProgram(Handle);

@@ -153,6 +153,8 @@ namespace Engine.SceneManagement
                 VisualDebug.Clear();
                 WorldLines.Clear();
                 Engine.GUI.GizmoIcons.Clear();
+                DisposalManager.ProcessDisposals();
+                ResourceScopes.EndScene();
                 _current = null;
 
                 GC.Collect();

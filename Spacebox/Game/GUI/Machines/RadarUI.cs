@@ -189,11 +189,5 @@ public sealed class RadarUI : IGameUiController, IDisposable
     {
         _foundAudio?.Dispose();
         _scanningAudio?.Dispose();
-
-        _spaceBackground?.Dispose();
-        _gridTexture?.Dispose();
-        _lineTexture?.Dispose();
-        _scanningTexture?.Dispose();
-        _maskTexture?.Dispose();
     }
 }

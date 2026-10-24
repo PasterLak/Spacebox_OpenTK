@@ -72,7 +72,7 @@ public static class PlateQuad
     private static MeshBuffer CreateQuad()
     {
         var buffer = TextureMaterial.GetMeshBuffer();
-        Resources.RemoveResourceFromControll(buffer);
+        ResourceScopes.Own(buffer);
         float[] vertices =
         {
             0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,

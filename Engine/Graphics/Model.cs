@@ -98,7 +98,7 @@ namespace Engine
         public override void Destroy()
         {
             base.Destroy();
-            Mesh?.Dispose();
+            Resources.Release(Mesh);
 
         }
     }

@@ -31,10 +31,10 @@ public sealed class OcclusionBoxRenderer : IDisposable
     public OcclusionBoxRenderer()
     {
         _shader = new Shader(Source);
-        Resources.RemoveResourceFromControll(_shader);
+        ResourceScopes.Own(_shader);
 
         _cube = new MeshBuffer(new[] { new BufferAttribute("aPos", 3) });
-        Resources.RemoveResourceFromControll(_cube);
+        ResourceScopes.Own(_cube);
         float[] vertices =
         {
             0f, 0f, 0f, 1f, 0f, 0f, 1f, 1f, 0f, 0f, 1f, 0f,

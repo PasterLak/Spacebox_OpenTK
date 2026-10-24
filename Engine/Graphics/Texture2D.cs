@@ -54,7 +54,7 @@ namespace Engine
 
         public Texture2D(PixelData pixelData, FilterMode filterMode = FilterMode.Linear)
         {
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
             Width = pixelData.Width;
             Height = pixelData.Height;
             _filterMode = filterMode;
@@ -70,7 +70,7 @@ namespace Engine
         }
         public Texture2D(int width, int height, bool pixelated = false)
         {
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
             Width = width;
             Height = height;
             pixels = new Color4[width, height];
@@ -85,7 +85,7 @@ namespace Engine
         }
         public Texture2D(string path, bool pixelated = false, bool flipY = true)
         {
-            Resources.AddResourceToControll(this);
+            ResourceScopes.Track(this);
             _filterMode = pixelated ? FilterMode.Nearest : FilterMode.Linear;
             if (Application.IsHeadless)
             {
@@ -493,9 +493,9 @@ namespace Engine
 
         public void Dispose()
         {
-            if (IsDisposed) return;
+            if (IsDisposed || Resources.BlocksDispose(this)) return;
 
-            Resources.RemoveResourceFromControll(this);
+            ResourceScopes.Forget(this);
 
             if (Handle != 0)
             {

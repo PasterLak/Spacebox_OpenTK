@@ -116,7 +116,7 @@ public sealed class SignRenderer : IDisposable
         var lines = SignMarkup.Parse(sign.Text, data.TextColor, data.Align);
         var pixels = SignTextBaker.Bake(lines, data.PixelsPerBlock * data.Width, data.PixelsPerBlock, data.Margin, data.Font, SignMarkup.ReadTextSize(sign.Text));
         var texture = new Texture2D(pixels, FilterMode.Nearest);
-        Resources.RemoveResourceFromControll(texture);
+        ResourceScopes.Own(texture);
 
         if (entry.Texture != null) DisposalManager.EnqueueForDispose(entry.Texture);
         entry.Texture = texture;
