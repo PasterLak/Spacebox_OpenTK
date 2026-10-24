@@ -208,6 +208,11 @@ public static class ShipNetwork
     private static readonly List<(Vector3i, ConsoleCommand)> _commandScratch = new List<(Vector3i, ConsoleCommand)>();
     private static readonly List<Vector3i> _cellScratch = new List<Vector3i>();
     private static int _tickCounter;
+    private static long _stateTick;
+    private static readonly List<int> _peerIds = new List<int>();
+    private static readonly List<Vector3> _peerPositions = new List<Vector3>();
+    private static readonly List<bool> _peerKnown = new List<bool>();
+    private static readonly List<int> _recipients = new List<int>();
     private static PilotSeat? _localSeat;
 
     public static void Register(NetworkManager network)
@@ -504,6 +509,8 @@ public static class ShipNetwork
         if (network == null || world == null || !network.IsServer || network.Mode == NetworkMode.Offline) return;
         if (++_tickCounter < StateTicksInterval) return;
         _tickCounter = 0;
+        _stateTick++;
+        CollectPeerPositions(network);
 
         _movingThisTick.Clear();
         foreach (var sector in world.LoadedSectors)
@@ -521,6 +528,8 @@ public static class ShipNetwork
                 {
                     _movingThisTick.Add(id);
                     _restRepeats.Remove(id);
+                    SendToRelevantPeers(network, entity);
+                    continue;
                 }
                 else
                 {
@@ -536,6 +545,34 @@ public static class ShipNetwork
 
         _movingLastTick.Clear();
         _movingLastTick.UnionWith(_movingThisTick);
+    }
+
+    private static void CollectPeerPositions(NetworkManager network)
+    {
+        network.CopyAdmittedPeers(_peerIds);
+        _peerPositions.Clear();
+        _peerKnown.Clear();
+        for (int i = 0; i < _peerIds.Count; i++)
+        {
+            bool known = Players.PlayerLocator.TryGetPose(_peerIds[i], out var position, out _);
+            _peerPositions.Add(position);
+            _peerKnown.Add(known);
+        }
+    }
+
+    private static void SendToRelevantPeers(NetworkManager network, SpaceEntity entity)
+    {
+        _recipients.Clear();
+        var center = entity.CenterOfMassWorld;
+        for (int i = 0; i < _peerIds.Count; i++)
+        {
+            int interval = _peerKnown[i]
+                ? Ships.ShipStateRelevance.IntervalFor(Vector3.DistanceSquared(center, _peerPositions[i]))
+                : Ships.ShipStateRelevance.NearInterval;
+            if (Ships.ShipStateRelevance.IsDue(_stateTick, entity.EntityID, interval)) _recipients.Add(_peerIds[i]);
+        }
+
+        if (_recipients.Count > 0) network.SendToPeers(BuildState(entity), _recipients, DeliveryMode.Sequenced);
     }
 
     private static ShipStateMessage BuildState(SpaceEntity entity)

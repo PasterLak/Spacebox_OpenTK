@@ -264,6 +264,29 @@ public sealed class NetworkManager
         }
     }
 
+    public void CopyAdmittedPeers(List<int> target)
+    {
+        target.Clear();
+        foreach (var peer in _peers)
+        {
+            if (peer != LocalPeerId && IsAdmitted(peer)) target.Add(peer);
+        }
+    }
+
+    public void SendToPeers<T>(T message, IReadOnlyList<int> peers, DeliveryMode mode = DeliveryMode.Reliable) where T : INetMessage
+    {
+        if (!IsServer || _transport == null || peers == null || peers.Count == 0) return;
+
+        _writer.Reset();
+        Messages.Write(_writer, message);
+
+        for (int i = 0; i < peers.Count; i++)
+        {
+            int peer = peers[i];
+            if (peer != LocalPeerId && _peers.Contains(peer) && IsAdmitted(peer)) _transport.Send(peer, _writer.Buffer, 0, _writer.Length, mode);
+        }
+    }
+
     public void AdmitPeer(int peer)
     {
         if (_peers.Contains(peer)) _admitted.Add(peer);

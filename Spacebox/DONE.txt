@@ -454,6 +454,7 @@ Fixes
 - fixed LAN: servers on ports 7778-7786 were not found, Open to network failed when 7777 was taken (now takes the next free port), a client port carried over into single player; joining a server of another version says which version it runs
 - fixed: players in a hosted game could run the host's local-only console commands (console, camera, teleport tools) through the chat
 Engine
+- multiplayer ships: moving ship states are sent per player by distance (20/s near, 5/s up to 1000 blocks, 1/s further), much less traffic with many ships; NetworkManager.SendToPeers / CopyAdmittedPeers
 - scene-owned GameScene context (GameScene.Current) holds creative tools, local pilot, skins, world rules, sprint toggle, claim visuals, picture frames, machine sounds and tags instead of statics reset on unload
 - ImGui removed, all interfaces are CanvasUI: F3 stats overlay, F4 world overlay (gizmo icons, axes, world text drawn as canvas shapes), F10 label, particle editor, test scenes; old ImGui menu fallbacks removed; agent `ui` reads canvas text
 - Debug builds name where a leaked resource was created in the "Disposing controlled resource" error
