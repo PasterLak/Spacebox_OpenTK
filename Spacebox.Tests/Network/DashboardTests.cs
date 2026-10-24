@@ -151,7 +151,7 @@ public class DashboardTests : IDisposable
     }
 
     [Fact]
-    public void Throttle_GroupsIpv6ByPrefixAndLimitsAllAddresses()
+    public void Throttle_GroupsIpv6ByPrefix()
     {
         var now = new DateTime(2026, 1, 1);
         var throttle = new LoginThrottle(() => now);
@@ -160,15 +160,145 @@ public class DashboardTests : IDisposable
         Assert.True(throttle.IsLocked("2001:db8:1:2:ffff::9"));
         Assert.False(throttle.IsLocked("2001:db8:1:3::1"));
         Assert.Equal("1.2.3.4", LoginThrottle.KeyOf("::ffff:1.2.3.4"));
+    }
+
+    [Fact]
+    public void Throttle_OneAttackerCannotTripTheGlobalLimit()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var throttle = new LoginThrottle(() => now);
 
         int allowed = 0;
-        for (int i = 0; i < 100; i++)
-            if (throttle.TryBeginAttempt($"85.0.{i / 250}.{i % 250}")) allowed++;
-        Assert.Equal(LoginThrottle.MaxAttemptsPerMinute, allowed);
+        for (int i = 0; i < 1000; i++)
+            if (throttle.TryBeginAttempt("85.0.0.1")) allowed++;
+
+        Assert.Equal(LoginThrottle.MaxFailures, allowed);
+        Assert.False(throttle.UnderPressure);
+        for (int i = 0; i < LoginThrottle.MaxFailures; i++) Assert.True(throttle.TryBeginAttempt("93.1.1.1"));
+    }
+
+    [Fact]
+    public void Throttle_UnderPressureGivesNewAddressesOneAttemptAndKeepsTrustedAndLocalOnes()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var throttle = new LoginThrottle(() => now);
+
+        Assert.True(throttle.TryBeginAttempt("77.7.7.7"));
+        throttle.RecordSuccess("77.7.7.7");
+
+        for (int i = 0; i < LoginThrottle.GlobalFailuresPerMinute; i++) Assert.True(throttle.TryBeginAttempt($"85.0.0.{i}"));
+        Assert.True(throttle.UnderPressure);
+
+        Assert.True(throttle.TryBeginAttempt("93.1.1.1"));
+        Assert.False(throttle.TryBeginAttempt("93.1.1.1"));
+        Assert.False(throttle.TryBeginAttempt("85.0.0.1"));
+
+        for (int i = 0; i < LoginThrottle.MaxFailures - 1; i++) Assert.True(throttle.TryBeginAttempt("77.7.7.7"));
+        for (int i = 0; i < LoginThrottle.MaxFailures; i++) Assert.True(throttle.TryBeginAttempt("192.168.1.2"));
 
         now += TimeSpan.FromMinutes(2);
-        Assert.True(throttle.TryBeginAttempt("85.9.9.9"));
-        Assert.True(throttle.TryBeginAttempt("192.168.1.2"));
+        Assert.False(throttle.UnderPressure);
+        Assert.True(throttle.TryBeginAttempt("93.1.1.1"));
+    }
+
+    [Fact]
+    public void Throttle_SuccessfulLoginsDoNotCountTowardsTheGlobalLimit()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var throttle = new LoginThrottle(() => now);
+
+        for (int i = 0; i < LoginThrottle.GlobalFailuresPerMinute * 2; i++)
+        {
+            Assert.True(throttle.TryBeginAttempt($"85.0.0.{i}"));
+            throttle.RecordSuccess($"85.0.0.{i}");
+        }
+
+        Assert.False(throttle.UnderPressure);
+    }
+
+    [Fact]
+    public void Throttle_LockoutsGrowExponentiallyUpToTheCap()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var throttle = new LoginThrottle(() => now);
+
+        for (int strike = 1; strike <= 6; strike++)
+        {
+            var lockout = TimeSpan.FromTicks(Math.Min(LoginThrottle.Window.Ticks << (strike - 1), LoginThrottle.MaxLockout.Ticks));
+            for (int i = 0; i < LoginThrottle.MaxFailures; i++) throttle.RecordFailure("1.1.1.1");
+            Assert.True(throttle.IsLocked("1.1.1.1"));
+
+            now += lockout - TimeSpan.FromSeconds(1);
+            Assert.True(throttle.IsLocked("1.1.1.1"));
+            now += TimeSpan.FromSeconds(2);
+            Assert.False(throttle.IsLocked("1.1.1.1"));
+        }
+
+        now += LoginThrottle.StrikeMemory + TimeSpan.FromMinutes(1);
+        for (int i = 0; i < LoginThrottle.MaxFailures; i++) throttle.RecordFailure("1.1.1.1");
+        now += LoginThrottle.Window + TimeSpan.FromSeconds(1);
+        Assert.False(throttle.IsLocked("1.1.1.1"));
+    }
+
+    [Fact]
+    public void Throttle_SessionAttemptsIgnoreAddressLocksAndPressure()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var throttle = new LoginThrottle(() => now);
+
+        for (int i = 0; i < LoginThrottle.GlobalFailuresPerMinute; i++) throttle.TryBeginAttempt($"85.0.0.{i}");
+        Assert.True(throttle.UnderPressure);
+
+        for (int i = 0; i < LoginThrottle.MaxFailures; i++) Assert.True(throttle.TryBeginSessionAttempt("token-a"));
+        Assert.False(throttle.TryBeginSessionAttempt("token-a"));
+        Assert.True(throttle.TryBeginSessionAttempt("token-b"));
+    }
+
+    [Fact]
+    public void Throttle_KeepsMemoryBounded()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var throttle = new LoginThrottle(() => now);
+
+        for (int i = 0; i < LoginThrottle.MaxTrackedKeys * 3; i++)
+        {
+            throttle.RecordFailure($"2001:db8:{i:x}::1");
+            now += TimeSpan.FromMilliseconds(1);
+        }
+
+        Assert.Equal(LoginThrottle.MaxTrackedKeys, throttle.TrackedCount);
+    }
+
+    [Fact]
+    public void ExpiringKeySet_ForgetsExpiredKeysAndEvictsTheOldest()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var set = new ExpiringKeySet(2, TimeSpan.FromMinutes(10));
+
+        set.Add("a", now);
+        set.Add("b", now + TimeSpan.FromMinutes(1));
+        set.Add("c", now + TimeSpan.FromMinutes(2));
+
+        Assert.False(set.Contains("a", now + TimeSpan.FromMinutes(2)));
+        Assert.True(set.Contains("b", now + TimeSpan.FromMinutes(2)));
+        Assert.False(set.Contains("c", now + TimeSpan.FromMinutes(13)));
+        Assert.Equal(1, set.Count);
+    }
+
+    [Fact]
+    public void SlidingCounter_CountsOnlyTheWindowAndRemovesTheNewest()
+    {
+        var now = new DateTime(2026, 1, 1);
+        var counter = new SlidingCounter(TimeSpan.FromMinutes(1), 60);
+
+        counter.Add(now);
+        counter.Add(now + TimeSpan.FromSeconds(30));
+        counter.Remove(now + TimeSpan.FromSeconds(30));
+        counter.Add(now + TimeSpan.FromSeconds(40));
+
+        Assert.Equal(2, counter.Count(now + TimeSpan.FromSeconds(45)));
+        Assert.Equal(1, counter.Count(now + TimeSpan.FromSeconds(75)));
+        Assert.Equal(0, counter.Count(now + TimeSpan.FromMinutes(3)));
     }
 
     [Fact]

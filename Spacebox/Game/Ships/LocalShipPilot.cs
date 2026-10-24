@@ -63,7 +63,6 @@ public sealed class LocalShipPilot
         _seatLocal = console.Entity.WorldToEntityLocal(player.Position);
         _entryRotationLocal = Quaternion.Invert(console.Entity.Orientation) * player.GetRotation();
         player.InertiaController.Velocity = Vector3.Zero;
-        FaceConsole(player, console);
 
         Spacebox.Game.GUI.PanelUI.BlockHands();
         Mounted?.Invoke(console);
@@ -229,7 +228,6 @@ public sealed class LocalShipPilot
         {
             _wasBinding = false;
             player.InertiaController.Velocity = Vector3.Zero;
-            FaceConsole(player, console);
         }
 
         player.SetPosition(entity.EntityLocalToWorld(_seatLocal));
@@ -253,12 +251,6 @@ public sealed class LocalShipPilot
 
         SetViewCamera(null, player);
         IsUsingCamera = false;
-    }
-
-    private void FaceConsole(LocalAstronaut player, ShipConsoleBlock console)
-    {
-        var entity = console.Entity;
-        player.SetRotation(ShipAiming.LookRotation(entity.DirectionToWorldSpace(console.PilotForward), entity.DirectionToWorldSpace(console.PilotUp)));
     }
 
     private Vector3 GetCameraLookDirection(SpaceEntity entity, ConsoleBindings bindings, ShipCameraBlock camera)

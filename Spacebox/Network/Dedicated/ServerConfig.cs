@@ -24,7 +24,7 @@ public sealed class ServerConfig
     public List<string> TexturePacks { get; set; } = new List<string>();
     public int Port { get; set; } = NetworkManager.DefaultPort;
     public int MaxPlayers { get; set; } = 16;
-    public byte GameMode { get; set; } = (byte)Spacebox.Game.Player.GameModes.GameMode.Creative;
+    public byte GameMode { get; set; } = (byte)Spacebox.Game.Player.GameModes.GameMode.Survival;
     public float AutoSaveInterval { get; set; } = 300f;
     public int UpdateRate { get; set; } = DefaultUpdateRate;
     public int IdleUpdateRate { get; set; } = 10;

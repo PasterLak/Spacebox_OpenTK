@@ -11,6 +11,10 @@
     {
       "Item": "cobalt_dust",
       "Quantity": 1
+    },
+    {
+      "Item": "iron_dust",
+      "Quantity": 1
     }
   ]
 }

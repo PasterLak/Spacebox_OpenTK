@@ -83,6 +83,9 @@ New
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 - server commands: whois <player> (address, ping, game mode, position, admin/muted), kickall [reason], list (players with ping), seed (also in single player)
 Small
+- tutorial: new steps for the titanium drill and obscurium ingots before the gravity generator; weapons chapter rewards iron boots instead of a microchip
+- dashboard login protection: lockouts per address (IPv6 per /64) with growing wait times, the global limit counts only failed logins and never locks out addresses that logged in before or new ones completely
+- new dedicated servers start in Survival
 - worlds list sorted by last opened or edited (new worlds on top); worlds remember when they were last opened
 - mobs stuck inside solid blocks take 5 damage per second
 - the block placement preview and its red line are semi-transparent (65%)
@@ -99,7 +102,7 @@ Small
 - all world save files are NBT: world.nbt, Players/<name>.player (folder renamed from players), localplayer.player, drop/tags/rules/claims/reconstructors/protected_entities .nbt; JSON files from earlier builds are read once and replaced on the next save
 - the developer (PasterLak) shows [DEVELOPER] in chat and the player list instead of [ADMIN]
 - server addresses accept pasted links: http(s)://, paths and :port are cleaned up (add server, join, --connect, saved servers)
-- new server configs use registration and Creative by default
+- new server configs use registration and Survival by default
 - dashboard map: one finger rotates, pinch zooms, two fingers pan, tap selects, double tap resets (phones and tablets)
 - GameSet editor: tooltips for every setting (what it does, unit, type and default) and for all buttons; biome map legend shows distance ranges and explains the rings
 - Default GameSet sorted into group folders (machines, devices, power, logistics, doors, windows, ship parts, components, materials, armor, ...), glow maps next to their textures
@@ -157,6 +160,9 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- sitting down at a ship or cannon console without a camera block keeps the view where it was instead of turning it to the console
+- Basic Titanium Crate can be crafted (3 titanium panels); Violet and Ember wall torches have their own recipes; blue torch renamed Sapphire Wall Torch; cobalt drill description says what it mines
+- removed empty structure files and an unused UI settings file from the Default GameSet
 - leaving a ship or cannon console turns the view back to where it looked before sitting down (also after the ship turned)
 - multiplayer: blocks placed by other players no longer go missing on clients whose own player or mobs stand near the cell
 - pasted doors, signs, frames, lights and machines work at once (claim beacons are not copied)

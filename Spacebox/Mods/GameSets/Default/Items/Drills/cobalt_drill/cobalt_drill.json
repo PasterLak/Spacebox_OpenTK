@@ -1,7 +1,7 @@
 {
   "ID": "cobalt_drill",
   "Name": "Cobalt Drill",
-  "Description": "A sturdy drill. Mines soft blocks faster",
+  "Description": "A sturdy drill. Mines iron ore and dense ice",
   "Type": "drill",
   "Category": "drills",
   "Sprite": "drill2",

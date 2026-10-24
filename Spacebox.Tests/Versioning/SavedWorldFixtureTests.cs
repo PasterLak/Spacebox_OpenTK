@@ -32,7 +32,9 @@ public class SavedWorldFixtureTests : IDisposable
     {
         string directory = FixturesDirectory();
         var worlds = directory != null && Directory.Exists(directory)
-            ? Directory.GetFiles(directory, WorldFileLayout.WorldFile, SearchOption.AllDirectories).Select(Path.GetDirectoryName).ToList()
+            ? Directory.GetFiles(directory, WorldFileLayout.WorldFile, SearchOption.AllDirectories)
+                .Concat(Directory.GetFiles(directory, WorldFileLayout.LegacyWorldFile, SearchOption.AllDirectories))
+                .Select(Path.GetDirectoryName).Distinct().ToList()
             : new List<string>();
 
         if (worlds.Count == 0)
@@ -54,7 +56,7 @@ public class SavedWorldFixtureTests : IDisposable
         string copy = Path.Combine(_root, "Worlds", Path.GetFileName(source));
         CopyDirectory(source, copy);
 
-        var info = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(Path.Combine(copy, WorldFileLayout.WorldFile)));
+        Assert.True(WorldInfoFiles.TryRead(copy, out var info), $"{relativePath}: world file not readable");
         var ids = GameSetIdIndex.Load(WorldToolkitTests.DefaultGameSet(), info.ModId);
 
         var result = new WorldUpgrader(WorldUpgradeRegistry.CreateDefault(), Path.Combine(_root, "backups")).Upgrade(info, copy, Engine.Application.Version, ids);

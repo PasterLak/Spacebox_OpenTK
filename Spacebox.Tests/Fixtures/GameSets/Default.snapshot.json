@@ -785,7 +785,7 @@
       "Key": "light_blue",
       "Data": {
         "ID": "light_blue",
-        "Name": "Cobalt Wall Torch",
+        "Name": "Sapphire Wall Torch",
         "Description": "Wall light with a blue glow",
         "Category": "lights",
         "Model": "torch",
@@ -2622,7 +2622,7 @@
       "Data": {
         "ID": "cobalt_drill",
         "Name": "Cobalt Drill",
-        "Description": "A sturdy drill. Mines soft blocks faster",
+        "Description": "A sturdy drill. Mines iron ore and dense ice",
         "Type": "drill",
         "Category": "drills",
         "Sprite": "drill2",
@@ -5744,6 +5744,10 @@
         {
           "Item": "iron_dust",
           "Quantity": 1
+        },
+        {
+          "Item": "thulium_dust",
+          "Quantity": 1
         }
       ]
     },
@@ -5759,6 +5763,10 @@
         },
         {
           "Item": "cobalt_dust",
+          "Quantity": 1
+        },
+        {
+          "Item": "iron_dust",
           "Quantity": 1
         }
       ]
@@ -7267,6 +7275,18 @@
       "Ingredients": [
         {
           "Item": "glass",
+          "Quantity": 3
+        }
+      ]
+    },
+    "basic_titanium_crate": {
+      "Product": {
+        "Item": "basic_titanium_crate",
+        "Quantity": 1
+      },
+      "Ingredients": [
+        {
+          "Item": "titanium_panels",
           "Quantity": 3
         }
       ]

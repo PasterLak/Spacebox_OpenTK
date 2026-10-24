@@ -428,7 +428,7 @@
       "Title": "Armed and dangerous",
       "Icon": "cannon_antipersonnel",
       "Optional": true,
-      "Reward": [ { "Item": "microchip", "Count": 1 } ],
+      "Reward": [ { "Item": "iron_boots", "Count": 1 } ],
       "Steps": [
         {
           "Id": "camera",
@@ -460,12 +460,38 @@
       "Optional": true,
       "Steps": [
         {
+          "Id": "titanium_drill",
+          "Title": "The Titanium Drill",
+          "Text": "Smelt titanium ore into ingots and upgrade iron drill bits with them. Crush and smelt uranium, craft uranium rods, then combine everything with liquid hydrogen into the titanium drill.",
+          "Icon": "titanium_drill",
+          "Hint": "Open the crafting table to see which ingredients are still missing.",
+          "Tasks": [
+            { "Type": "process", "Item": "titanium_ingot", "Machine": "furnace", "Count": 10 },
+            { "Type": "craft", "Item": "titanium_drill_bit", "Count": 4 },
+            { "Type": "process", "Item": "uranium_ingot", "Machine": "furnace" },
+            { "Type": "craft", "Item": "uranium_rods", "Count": 2 },
+            { "Type": "craft", "Item": "titanium_drill" }
+          ]
+        },
+        {
+          "Id": "obscurium",
+          "Title": "Obscurium",
+          "Text": "Only the titanium drill can mine the pink obscurium ore. Like thulium, crush it into dust first, then smelt the dust.",
+          "Icon": "obscurium_ore",
+          "Tasks": [
+            { "Type": "have_item", "Item": "obscurium_ore", "Count": 2 },
+            { "Type": "process", "Item": "obscurium_dust", "Machine": "crusher", "Count": 2 },
+            { "Type": "process", "Item": "obscurium_ingot", "Machine": "furnace", "Count": 2 }
+          ]
+        },
+        {
           "Id": "gravity",
           "Title": "Gravity",
           "Text": "A gravity generator lets you walk inside your base or ship. It needs power and starts switched off: connect it to a power block, open it with {key:use} and turn on Gravity. Careful: now you can fall!",
           "Icon": "gravity_generator",
           "Hint": "Hold {key:crouch} to crouch through low gaps.",
           "Tasks": [
+            { "Type": "craft", "Item": "gravity_generator" },
             { "Type": "place_block", "Block": "gravity_generator" },
             { "Type": "use_block", "Block": "gravity_generator" },
             { "Type": "enter_gravity" }

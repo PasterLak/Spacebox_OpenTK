@@ -334,12 +334,12 @@ public class AuthTests : IDisposable
     }
 
     [Fact]
-    public void ServerConfig_NewFileUsesRegistrationAndCreative()
+    public void ServerConfig_NewFileUsesRegistrationAndSurvival()
     {
         var config = ServerConfig.CreateNew();
 
         Assert.True(config.RegistrationEnabled);
-        Assert.Equal((byte)Spacebox.Game.Player.GameModes.GameMode.Creative, config.GameMode);
+        Assert.Equal((byte)Spacebox.Game.Player.GameModes.GameMode.Survival, config.GameMode);
         Assert.False(string.IsNullOrEmpty(config.Seed));
     }
 

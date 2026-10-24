@@ -14,7 +14,7 @@
   "TexturePacks": [],
   "Port": 7777,
   "MaxPlayers": 16,
-  "GameMode": 1,
+  "GameMode": 0,
   "AutoSaveInterval": 300,
   "UpdateRate": 60,
   "IdleUpdateRate": 10,

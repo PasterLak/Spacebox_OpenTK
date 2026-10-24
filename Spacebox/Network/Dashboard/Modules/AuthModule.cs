@@ -53,10 +53,8 @@ public sealed class AuthModule : IDashboardModule
         {
             var body = DashboardGuard.Read<PasswordRequest>(request);
             if (body == null) return HttpResponse.Error("Bad request", 400);
-            if (!context.Throttle.TryBeginAttempt(request.RemoteAddress)) return HttpResponse.Error("Too many attempts, wait a few minutes", 429);
+            if (!context.Throttle.TryBeginSessionAttempt(request.Cookie(DashboardSessions.CookieName))) return HttpResponse.Error("Too many attempts, wait a few minutes", 429);
             if (!context.Admins.TryChangePassword(body.OldPassword, body.NewPassword, out var error)) return HttpResponse.Error(error, 400);
-
-            context.Throttle.Reset(request.RemoteAddress);
 
             context.Sessions.Clear();
             DashboardContext.Audit(user, "changed the dashboard password");
@@ -74,7 +72,7 @@ public sealed class AuthModule : IDashboardModule
 
         if (!context.Admins.TryRegister(body.Key, body.Name, body.Password, out var error)) return HttpResponse.Error(error, 400);
 
-        context.Throttle.Reset(request.RemoteAddress);
+        context.Throttle.RecordSuccess(request.RemoteAddress);
         Debug.Success($"[Dashboard] Admin '{context.Admins.AdminName}' registered from {request.RemoteAddress}");
         return SignIn(request, context, context.Admins.AdminName);
     }
@@ -91,7 +89,7 @@ public sealed class AuthModule : IDashboardModule
             return HttpResponse.Error("Wrong name or password", 401);
         }
 
-        context.Throttle.Reset(request.RemoteAddress);
+        context.Throttle.RecordSuccess(request.RemoteAddress);
         Debug.Log($"[Dashboard] {context.Admins.AdminName} logged in from {request.RemoteAddress}");
         return SignIn(request, context, context.Admins.AdminName);
     }
