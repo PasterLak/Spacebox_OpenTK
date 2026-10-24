@@ -53,5 +53,5 @@ public static class WindowSystemRules
 
     public static bool SupportsWindowPosition(WindowSystem system) => system != WindowSystem.Wayland;
 
-    public static bool SupportsWindowIcon(WindowSystem system) => system != WindowSystem.Wayland;
+    public static bool SupportsWindowIcon(WindowSystem system, bool isMacOS = false) => !isMacOS && system != WindowSystem.Wayland;
 }

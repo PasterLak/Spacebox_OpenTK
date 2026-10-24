@@ -73,5 +73,6 @@ public sealed class WindowSystemRulesTests
         Assert.False(WindowSystemRules.SupportsWindowIcon(WindowSystem.Wayland));
         Assert.True(WindowSystemRules.SupportsWindowPosition(WindowSystem.X11));
         Assert.True(WindowSystemRules.SupportsWindowIcon(WindowSystem.Auto));
+        Assert.False(WindowSystemRules.SupportsWindowIcon(WindowSystem.Auto, isMacOS: true));
     }
 }

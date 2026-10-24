@@ -12,6 +12,12 @@ internal static class OpenAlErrors
         return false;
     }
 
+    public static void Warn(string source, string after)
+    {
+        ALError error = AL.GetError();
+        if (error != ALError.NoError) Debug.Warning($"[{source}] OpenAL error after {after}: {AL.GetErrorString(error)}");
+    }
+
     public static void Clear(string source, string before)
     {
         ALError error = AL.GetError();

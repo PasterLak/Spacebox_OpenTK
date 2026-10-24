@@ -78,7 +78,7 @@ public sealed unsafe class AudioDeviceWatcher
         }
 
         _active = desired;
-        Debug.Log($"[Audio] Sound output switched to '{ALC.GetString(_device, AlcGetString.AllDevicesSpecifier)}'");
+        Debug.Log($"[Audio] Sound output switched to '{AudioDevice.NameOf(_device)}'");
     }
 
     private bool Reopen(string name)

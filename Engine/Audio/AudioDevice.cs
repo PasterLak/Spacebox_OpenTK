@@ -74,8 +74,10 @@ namespace Engine.Audio
 
             CheckALError("Initializing AudioManager");
             _watcher = AudioDeviceWatcher.TryCreate(Device);
+            OpenAlErrors.Warn("Audio", "checking output switching");
             string switching = _watcher == null ? "no automatic switching" : _watcher.FollowsDefaultDevice ? "follows the system default" : "switches only when disconnected";
-            Debug.Log($"[Audio] Output: {ALC.GetString(Device, AlcGetString.AllDevicesSpecifier)} ({switching})");
+            Debug.Log($"[Audio] Output: {NameOf(Device)} ({switching})");
+            OpenAlErrors.Warn("Audio", "reading the output name");
         }
 
         public void Update()
@@ -88,12 +90,25 @@ namespace Engine.Audio
             if (!IsEnabled) return Array.Empty<string>();
             try
             {
-                return ALC.GetString(ALDevice.Null, AlcGetStringList.AllDevicesSpecifier) ?? new List<string>();
+                IReadOnlyList<string> devices = null;
+                if (ALC.IsExtensionPresent(ALDevice.Null, EnumerateAllExtension)) devices = ALC.GetString(ALDevice.Null, AlcGetStringList.AllDevicesSpecifier);
+                else if (ALC.IsExtensionPresent(ALDevice.Null, EnumerationExtension)) devices = ALC.GetString(ALDevice.Null, AlcGetStringList.DeviceSpecifier);
+                OpenAlErrors.Warn("Audio", "listing output devices");
+                return devices ?? new List<string>();
             }
             catch (Exception ex) when (ex is DllNotFoundException || ex is EntryPointNotFoundException)
             {
                 return Array.Empty<string>();
             }
+        }
+
+        private const string EnumerateAllExtension = "ALC_ENUMERATE_ALL_EXT";
+        private const string EnumerationExtension = "ALC_ENUMERATION_EXT";
+
+        public static string NameOf(ALDevice device)
+        {
+            bool all = ALC.IsExtensionPresent(ALDevice.Null, EnumerateAllExtension);
+            return ALC.GetString(device, all ? AlcGetString.AllDevicesSpecifier : AlcGetString.DeviceSpecifier);
         }
 
         public bool CanSwitchOutput => _watcher != null;

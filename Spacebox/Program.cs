@@ -58,7 +58,7 @@ public static class Program
 
             Flags = ContextFlags.ForwardCompatible,
             StartVisible = !LaunchOptions.IsDedicated && !LaunchOptions.IsHidden,
-            Icon = LaunchOptions.IsDedicated || !Engine.Platform.WindowSystemRules.SupportsWindowIcon(windowSystem) ? null : Engine.Utils.AppIconLoader.CreateWindowIcon(WindowIconPath, Engine.Utils.AppIconLoader.WindowIconSizes),
+            Icon = LaunchOptions.IsDedicated || !Engine.Platform.WindowSystemRules.SupportsWindowIcon(windowSystem, OperatingSystem.IsMacOS()) ? null : Engine.Utils.AppIconLoader.CreateWindowIcon(WindowIconPath, Engine.Utils.AppIconLoader.WindowIconSizes),
         };
      
         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
