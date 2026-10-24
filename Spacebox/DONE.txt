@@ -157,6 +157,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- leaving a ship or cannon console turns the view back to where it looked before sitting down (also after the ship turned)
 - multiplayer: blocks placed by other players no longer go missing on clients whose own player or mobs stand near the cell
 - pasted doors, signs, frames, lights and machines work at once (claim beacons are not copied)
 - a second death within 30 s no longer loses the dropped items; death drops spawn at the server's player position when the reported one is off
