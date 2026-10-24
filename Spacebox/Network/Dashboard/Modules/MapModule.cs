@@ -7,7 +7,7 @@ namespace Spacebox.Network.Dashboard.Modules;
 
 public sealed class MapModule : IDashboardModule
 {
-    private const float DefaultRadius = 2000f;
+    public const float DefaultRadius = 2000f;
 
     private readonly WorldMapSource _source = new WorldMapSource();
     private readonly MapSnapshotBuilder _builder = new MapSnapshotBuilder();
@@ -16,13 +16,19 @@ public sealed class MapModule : IDashboardModule
     {
         router.Map("GET", DashboardContext.Api("/map"), context.Guard.Admin(async (request, _) =>
         {
-            float radius = float.TryParse(request.QueryValue("radius"), System.Globalization.NumberStyles.Float,
-                System.Globalization.CultureInfo.InvariantCulture, out var r) ? r : DefaultRadius;
+            float radius = ParseRadius(request.QueryValue("radius"));
             string focus = request.QueryValue("player");
 
             var snapshot = await MainThread.Run(() => Build(radius, focus));
             return HttpResponse.Json(snapshot);
         }));
+    }
+
+    public static float ParseRadius(string text)
+    {
+        return float.TryParse(text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var radius) && float.IsFinite(radius)
+            ? radius
+            : DefaultRadius;
     }
 
     private MapSnapshot Build(float radius, string focusPlayer)

@@ -13,6 +13,8 @@ public static class DashboardService
     private static MiniHttpServer _server;
     private static DashboardMetrics _metrics;
     private static DashboardLog _log;
+    private static DashboardSessions _sessions;
+    private static LoginThrottle _throttle;
     private static DashboardCertificate _certificate;
     private static AutoCertificateService _autoCertificate;
     private static ServerConfig _config;
@@ -37,10 +39,14 @@ public static class DashboardService
         if (config == null || !config.DashboardEnabled || IsRunning) return;
 
         _config = config;
-        _log = new DashboardLog();
-        Debug.MessageLogged += _log.Append;
+        if (_log == null)
+        {
+            _log = new DashboardLog();
+            Debug.MessageLogged += _log.Append;
+        }
 
-        var sessions = new DashboardSessions();
+        var sessions = _sessions ??= new DashboardSessions();
+        _throttle ??= new LoginThrottle();
         var admins = new DashboardAdminStore(DashboardPaths.AdminFile, DashboardPaths.SetupKeyFile);
         _metrics = new DashboardMetrics(() => PlayerRegistry.All.Count);
 
@@ -49,7 +55,7 @@ public static class DashboardService
             Config = config,
             Admins = admins,
             Sessions = sessions,
-            Throttle = new LoginThrottle(),
+            Throttle = _throttle,
             Guard = new DashboardGuard(sessions),
             Log = _log,
             Metrics = _metrics,
@@ -136,8 +142,6 @@ public static class DashboardService
         _certificate = null;
         _metrics?.Dispose();
         _metrics = null;
-        if (_log != null) Debug.MessageLogged -= _log.Append;
-        _log = null;
     }
 
     private static async Task<HttpResponse> Handle(HttpRouter router, HttpRequest request)

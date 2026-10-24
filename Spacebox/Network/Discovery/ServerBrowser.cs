@@ -25,7 +25,7 @@ public sealed class ServerBrowser : IDisposable
 
     public IReadOnlyList<ServerListItem> Saved => _saved;
     public IReadOnlyList<ServerListItem> Local => _local;
-    public int DiscoveryPort { get; set; } = NetworkManager.DefaultPort;
+    public IReadOnlyList<int> DiscoveryPorts { get; set; } = LanPorts.Scanned;
     public Func<ulong, bool> HasIcon { get; set; }
     public LocalServerHistory KnownLocal { get; set; }
     public IReadOnlyList<IPAddress> DirectedBroadcasts { get; set; }
@@ -69,8 +69,12 @@ public sealed class ServerBrowser : IDisposable
         foreach (var item in _saved)
             Ping(item);
 
-        _client.Discover(DiscoveryPort, DirectedBroadcasts);
-        _client.RequestInfo(LocalhostKey, IPAddress.Loopback.ToString(), DiscoveryPort);
+        for (int i = 0; i < DiscoveryPorts.Count; i++)
+        {
+            int port = DiscoveryPorts[i];
+            _client.Discover(port, DirectedBroadcasts);
+            _client.RequestInfo(LocalhostKey + ":" + port, IPAddress.Loopback.ToString(), port);
+        }
     }
 
     public void Ping(ServerListItem item)

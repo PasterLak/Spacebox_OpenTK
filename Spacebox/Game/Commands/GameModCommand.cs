@@ -6,7 +6,7 @@ using Spacebox.Game.Player.GameModes;
 
 namespace Spacebox.Game.Commands
 {
-    internal class GameModCommand : CommandBase, Engine.Commands.IArgumentSuggestions
+    internal class GameModCommand : CommandBase, Engine.Commands.IArgumentSuggestions, Spacebox.Network.Admin.IRemoteSenderCommand
     {
         public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
         {

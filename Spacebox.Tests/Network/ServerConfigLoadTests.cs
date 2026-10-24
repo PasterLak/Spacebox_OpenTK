@@ -54,4 +54,32 @@ public sealed class ServerConfigLoadTests : IDisposable
         Assert.True(config.WhitelistEnabled);
         Assert.Equal(new[] { "Bob" }, config.Whitelist);
     }
+
+    [Fact]
+    public void NumericSeed_IsReadAsText()
+    {
+        string path = Path.Combine(_root, ServerConfig.FileName);
+        File.WriteAllText(path, "{ \"Seed\": 12345, \"Port\": 7791 }");
+
+        var config = ServerConfig.LoadOrCreate(path);
+
+        Assert.Equal("12345", config.Seed);
+        Assert.Equal(7791, config.Port);
+        Assert.False(File.Exists(path + ServerConfig.BrokenSuffix));
+        Assert.Equal("12345", ServerConfig.LoadOrCreate(path).Seed);
+    }
+
+    [Fact]
+    public void HandEditedFile_WithCommentsTrailingCommasAndLowerCaseNames_Loads()
+    {
+        string path = Path.Combine(_root, ServerConfig.FileName);
+        File.WriteAllText(path, "{\n  // my server\n  \"port\": 7800,\n  \"serverName\": \"Home\",\n  \"Admins\": [\"Alice\",],\n}");
+
+        var config = ServerConfig.LoadOrCreate(path);
+
+        Assert.Equal(7800, config.Port);
+        Assert.Equal("Home", config.ServerName);
+        Assert.Equal(new[] { "Alice" }, config.Admins);
+        Assert.False(File.Exists(path + ServerConfig.BrokenSuffix));
+    }
 }

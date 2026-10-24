@@ -18,6 +18,7 @@ public sealed class ServerConfig
     public List<string> Admins { get; set; } = new List<string>();
     public bool ShowAdmins { get; set; } = true;
     public string WorldName { get; set; } = "ServerWorld";
+    [System.Text.Json.Serialization.JsonConverter(typeof(NumberOrStringConverter))]
     public string Seed { get; set; } = "";
     public string ModId { get; set; } = "default";
     public List<string> TexturePacks { get; set; } = new List<string>();
@@ -56,6 +57,13 @@ public sealed class ServerConfig
 
     public int GetClampedUpdateRate() => Math.Clamp(UpdateRate, MinUpdateRate, MaxUpdateRate);
 
+    public static readonly JsonSerializerOptions ReadOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true
+    };
+
     public static ServerConfig LoadOrCreate() => LoadOrCreate(FilePath);
 
     public static ServerConfig LoadOrCreate(string path)
@@ -68,7 +76,7 @@ public sealed class ServerConfig
             string error = "the file is empty";
             try
             {
-                loaded = JsonSerializer.Deserialize<ServerConfig>(File.ReadAllText(path));
+                loaded = JsonSerializer.Deserialize<ServerConfig>(File.ReadAllText(path), ReadOptions);
             }
             catch (Exception ex)
             {

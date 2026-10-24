@@ -133,7 +133,7 @@ public sealed class NetworkSession : IDisposable
         var network = NetworkManager.Instance;
         bool started = GameSession.Mode switch
         {
-            SessionMode.Host => network.StartHost(GameSession.Port),
+            SessionMode.Host => StartHostOnFreePort(network),
             SessionMode.Dedicated => network.StartDedicated(GameSession.Port),
             SessionMode.Client => network.IsConnected,
             _ => StartOffline(network)
@@ -155,16 +155,38 @@ public sealed class NetworkSession : IDisposable
         return true;
     }
 
-    public bool OpenToNetwork(int port)
+    private static bool StartHostOnFreePort(NetworkManager network)
+    {
+        int preferred = GameSession.Port;
+        foreach (int port in Discovery.LanPorts.Candidates(preferred))
+        {
+            if (!network.StartHost(port)) continue;
+
+            if (port != preferred) Debug.Warning($"[Network] Port {preferred} is busy, using port {port}");
+            GameSession.SetListeningPort(port);
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool OpenToNetwork(int preferredPort)
     {
         var network = NetworkManager.Instance;
         if (!network.IsServer || network.IsListening) return network.IsListening;
 
-        if (!network.StartListening(port)) return false;
-        GameSetPackage.PrepareInBackground();
+        foreach (int port in Discovery.LanPorts.Candidates(preferredPort))
+        {
+            if (!network.StartListening(port)) continue;
 
-        ChatService.Broadcast($"Server is open on port {port}", Color4.Yellow);
-        return true;
+            GameSession.SetListeningPort(port);
+            GameSetPackage.PrepareInBackground();
+            if (port != preferredPort) Debug.Warning($"[Network] Port {preferredPort} is busy, using port {port}");
+            ChatService.Broadcast($"Server is open on port {port}", Color4.Yellow);
+            return true;
+        }
+
+        return false;
     }
 
     public void FlushPlayerData(Action completed)

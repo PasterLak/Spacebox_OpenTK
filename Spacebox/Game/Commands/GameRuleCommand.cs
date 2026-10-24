@@ -5,10 +5,12 @@ using Spacebox.Network.Admin;
 
 namespace Spacebox.Game.Commands;
 
-public sealed class GameRuleCommand : CommandBase
+public sealed class GameRuleCommand : CommandBase, IArgumentSuggestions
 {
     public override string Name => "gamerule";
-    public override string Description => "Server rules. Usage: gamerule [name] [value] (pvp, explosions, explosion_blocks, explosion_players, explosion_claims, friendly_mobs, keep_inventory, death_drop_minutes)";
+    public static string RuleNames => string.Join(", ", ServerRulesService.Rules.Select(rule => rule.Name));
+
+    public override string Description => $"Server rules. Usage: gamerule [name] [value] ({RuleNames})";
 
     public override void Execute(string[] args)
     {
@@ -40,5 +42,18 @@ public sealed class GameRuleCommand : CommandBase
         }
 
         Debug.Success($"{found.Label}: {found.Text}");
+    }
+
+    public void SuggestArguments(int argumentIndex, IReadOnlyList<string> previousArguments, List<string> results)
+    {
+        if (argumentIndex == 0)
+        {
+            foreach (var rule in ServerRulesService.Rules) results.Add(rule.Name);
+        }
+        else if (argumentIndex == 1 && previousArguments.Count > 0 && ServerRulesService.TryFind(previousArguments[0], out var found) && found is Spacebox.Game.Rules.SwitchRuleDefinition)
+        {
+            results.Add("on");
+            results.Add("off");
+        }
     }
 }

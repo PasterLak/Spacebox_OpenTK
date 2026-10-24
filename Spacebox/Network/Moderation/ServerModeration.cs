@@ -81,13 +81,14 @@ public static class ServerModeration
         return removed;
     }
 
-    public static void SetMuted(string name, bool muted)
+    public static bool SetMuted(string name, bool muted)
     {
-        if (!Load().SetMuted(name, muted)) return;
+        if (!Load().SetMuted(name, muted)) return false;
 
         Save();
         PlayerListNetwork.MarkDirty();
         ChatService.Broadcast(muted ? $"{name} was muted" : $"{name} was unmuted", NoticeColor);
+        return true;
     }
 
     public static void Reset()

@@ -19,6 +19,24 @@ public class DashboardTests : IDisposable
 
     private DashboardAdminStore Store() => new DashboardAdminStore(Path.Combine(_root, "admin.json"), Path.Combine(_root, "setup-key.txt"));
 
+    [Theory]
+    [InlineData("NaN")]
+    [InlineData("Infinity")]
+    [InlineData("-Infinity")]
+    [InlineData("abc")]
+    [InlineData(null)]
+    public void MapRadius_FallsBackToTheDefaultForBadValues(string text)
+    {
+        Assert.Equal(MapModule.DefaultRadius, MapModule.ParseRadius(text));
+    }
+
+    [Fact]
+    public void MapRadius_KeepsFiniteValues()
+    {
+        Assert.Equal(1500f, MapModule.ParseRadius("1500"));
+        Assert.Equal(-5f, MapModule.ParseRadius("-5"));
+    }
+
     [Fact]
     public void SetupKey_IsCreatedOnceAndDeletedAfterRegistration()
     {

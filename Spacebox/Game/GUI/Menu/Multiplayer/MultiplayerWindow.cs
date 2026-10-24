@@ -346,6 +346,14 @@ namespace Spacebox.Game.GUI.Menu
         public void Join(ServerListItem item)
         {
             if (item == null) return;
+
+            string error = JoinPrecheck.Check(item.Status, Engine.Application.Version);
+            if (error != null)
+            {
+                ConnectionScreen.ShowError("Cannot join", error);
+                return;
+            }
+
             Connect(item.Entry, item.Status?.Name ?? item.DisplayName);
         }
 

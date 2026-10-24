@@ -34,7 +34,13 @@ public static class GameSession
     public static void BeginSingleplayer()
     {
         Mode = SessionMode.Singleplayer;
+        Port = NetworkManager.DefaultPort;
         RemoteWorld = null;
+    }
+
+    public static void SetListeningPort(int port)
+    {
+        if (Mode != SessionMode.Client) Port = port;
     }
 
     public static void BeginHost(int port)

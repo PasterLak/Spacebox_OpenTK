@@ -12,7 +12,10 @@ public static class ServerCommandCatalog
         {
             new SayCommand(),
             new PlayersCommand(),
+            new PlayersCommand("list"),
+            new WhoisCommand(),
             new KickCommand(),
+            new KickAllCommand(),
             new BanCommand(),
             new UnbanCommand(),
             new UnregisterCommand(),

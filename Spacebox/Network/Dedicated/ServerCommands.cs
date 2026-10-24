@@ -13,21 +13,34 @@ public sealed class SayCommand : CommandBase
 
     public override void Execute(string[] args)
     {
-        if (args.Length == 0) return;
+        if (args.Length == 0)
+        {
+            Debug.Error("Usage: say <text>");
+            return;
+        }
+
         ChatService.Broadcast("[Server]: " + string.Join(' ', args), Color4.Orange);
     }
 }
 
 public sealed class PlayersCommand : CommandBase
 {
-    public override string Name => "players";
-    public override string Description => "List connected players";
+    private readonly string _name;
+
+    public PlayersCommand(string name = "players")
+    {
+        _name = name;
+    }
+
+    public override string Name => _name;
+    public override string Description => "List connected players with their ping";
 
     public override void Execute(string[] args)
     {
+        var network = NetworkManager.Instance;
         Debug.Log($"Players online: {PlayerRegistry.All.Count}");
         foreach (var player in PlayerRegistry.All)
-            Debug.Log($"  [{player.Peer}] {player.Name}");
+            Debug.Log($"  [{player.Peer}] {player.Name}, {network.GetRoundTripMilliseconds(player.Peer)} ms");
     }
 }
 
@@ -43,7 +56,11 @@ public sealed class KickCommand : CommandBase, Engine.Commands.IArgumentSuggesti
 
     public override void Execute(string[] args)
     {
-        if (args.Length == 0) return;
+        if (args.Length == 0)
+        {
+            Debug.Error("Usage: kick <name|peer> [reason]");
+            return;
+        }
 
         ConnectedPlayer player = null;
         if (int.TryParse(args[0], out int peer)) PlayerRegistry.TryGet(peer, out player);
@@ -92,7 +109,13 @@ public sealed class SaveCommand : CommandBase
             return;
         }
 
-        World.Instance?.Save(false);
+        if (World.Instance == null)
+        {
+            Debug.Warning("No world is loaded");
+            return;
+        }
+
+        World.Instance.Save(false);
         Debug.Success("World saved");
     }
 }
@@ -115,6 +138,6 @@ public sealed class RestartCommand : CommandBase
 
     public override void Execute(string[] args)
     {
-        ServerRestart.Restart();
+        if (!ServerRestart.Restart()) Debug.Warning("The server is already stopping or restarting");
     }
 }

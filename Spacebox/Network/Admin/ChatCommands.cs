@@ -63,7 +63,8 @@ public static class ChatCommands
         Debug.MessageLogged += Capture;
         try
         {
-            Debug.ExecuteCommand(commandLine);
+            if (AcceptsSender(Engine.Commands.CommandManager.GetCommand(CommandName(commandLine)))) Debug.ExecuteCommand(commandLine);
+            else Debug.Error($"{CommandName(commandLine)} works only for the host's own player");
         }
         finally
         {
@@ -72,6 +73,11 @@ public static class ChatCommands
             _captureThread = 0;
         }
         return _output;
+    }
+
+    public static bool AcceptsSender(Engine.Commands.CommandBase command)
+    {
+        return command == null || command.AvailableInTerminal || command is IRemoteSenderCommand || RemoteSender == null;
     }
 
     public static bool IsEchoOfChat(string text) => text.StartsWith("[Chat] ", StringComparison.Ordinal);

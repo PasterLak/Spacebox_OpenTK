@@ -308,6 +308,51 @@ public class ServerDiscoveryTests
     }
 
     [Fact]
+    public void Browser_DiscoversLanServerOnAnotherPortOfTheScannedRange()
+    {
+        var endPoint = new IPEndPoint(IPAddress.Parse("192.168.1.21"), Engine.Networking.NetworkManager.DefaultPort + 3);
+        var network = new FakeServerNetwork();
+        network.Add(endPoint, Status(11, "Second server"));
+        var browser = CreateBrowser(network);
+        browser.SetSavedServers(new List<ServerEntry>());
+
+        browser.Refresh();
+        browser.Update(0.01f);
+
+        Assert.Single(browser.Local);
+        Assert.Equal(endPoint.Port, browser.Local[0].Entry.Port);
+    }
+
+    [Fact]
+    public void LanPorts_TryThePreferredPortFirstThenTheScannedRange()
+    {
+        int first = Engine.Networking.NetworkManager.DefaultPort;
+        var candidates = LanPorts.Candidates(first + 2);
+
+        Assert.Equal(first + 2, candidates[0]);
+        Assert.Equal(LanPorts.Count, candidates.Count);
+        Assert.Equal(candidates.Count, candidates.Distinct().Count());
+        Assert.True(LanPorts.IsScanned(first + LanPorts.Count - 1));
+        Assert.False(LanPorts.IsScanned(first + LanPorts.Count));
+        Assert.Equal(25000, LanPorts.Candidates(25000)[0]);
+        Assert.Equal(LanPorts.Count + 1, LanPorts.Candidates(25000).Count);
+    }
+
+    [Fact]
+    public void JoinPrecheck_RefusesOtherGameVersions()
+    {
+        var status = Status(1);
+
+        Assert.Null(JoinPrecheck.Check(status, Engine.Application.Version));
+        Assert.Null(JoinPrecheck.Check(null, Engine.Application.Version));
+
+        status.GameVersion = "0.0.1";
+        string error = JoinPrecheck.Check(status, Engine.Application.Version);
+        Assert.Contains("0.0.1", error);
+        Assert.Contains(Engine.Application.Version, error);
+    }
+
+    [Fact]
     public void Browser_HidesLanServerThatIsAlreadySaved()
     {
         var network = new FakeServerNetwork();

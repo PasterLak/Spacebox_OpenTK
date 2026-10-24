@@ -165,6 +165,7 @@ public sealed class PlayersModule : IDashboardModule
         {
             name,
             online = player != null,
+            muted = ServerModeration.IsMuted(name),
             gameMode = (int)PlayerGameModeService.IdOf(name),
             view.Health,
             view.Power,

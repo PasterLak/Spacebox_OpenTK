@@ -170,6 +170,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Debug.RegisterCommand(new HitCommand(localPlayer));
         Debug.RegisterCommand(new SkinCommand(localPlayer));
         Debug.RegisterCommand(new ItemsCommand());
+        Debug.RegisterCommand(new SeedCommand());
         Debug.RegisterCommand(new PositionCommand(localPlayer));
         Debug.RegisterCommand(new SetSpawnCommand(localPlayer));
         Debug.RegisterCommand(new SpawnCommand(localPlayer));

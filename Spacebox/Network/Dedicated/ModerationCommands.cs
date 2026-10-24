@@ -16,7 +16,12 @@ public sealed class BanCommand : CommandBase, Engine.Commands.IArgumentSuggestio
 
     public override void Execute(string[] args)
     {
-        if (args.Length == 0) return;
+        if (args.Length == 0)
+        {
+            Debug.Error("Usage: ban <name>");
+            return;
+        }
+
         if (ServerModeration.BanName(args[0])) Debug.Log($"Banned {args[0]}");
         else Debug.Error($"{args[0]} cannot be banned");
     }
@@ -29,7 +34,12 @@ public sealed class UnbanCommand : CommandBase
 
     public override void Execute(string[] args)
     {
-        if (args.Length == 0) return;
+        if (args.Length == 0)
+        {
+            Debug.Error("Usage: unban <name>");
+            return;
+        }
+
         if (ServerModeration.Unban(args[0])) Debug.Log($"Unbanned {args[0]}");
         else Debug.Error($"{args[0]} is not banned");
     }
@@ -54,8 +64,13 @@ public sealed class MuteCommand : CommandBase, Engine.Commands.IArgumentSuggesti
 
     public override void Execute(string[] args)
     {
-        if (args.Length == 0) return;
-        ServerModeration.SetMuted(args[0], _muted);
+        if (args.Length == 0)
+        {
+            Debug.Error($"Usage: {Name} <name>");
+            return;
+        }
+
+        if (!ServerModeration.SetMuted(args[0], _muted)) Debug.Warning(_muted ? $"{args[0]} is already muted" : $"{args[0]} is not muted");
     }
 }
 
@@ -71,7 +86,12 @@ public sealed class UnregisterCommand : CommandBase, Engine.Commands.IArgumentSu
 
     public override void Execute(string[] args)
     {
-        if (args.Length == 0) return;
+        if (args.Length == 0)
+        {
+            Debug.Error("Usage: unregister <name>");
+            return;
+        }
+
         if (NetworkSession.Current != null && NetworkSession.Current.RemoveAccount(args[0])) Debug.Log($"Account {args[0]} was removed");
         else Debug.Error($"{args[0]} has no account or registration is disabled");
     }

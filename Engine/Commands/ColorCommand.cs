@@ -17,7 +17,7 @@ namespace Engine.Commands
             }
 
             string colorName = args[0].ToLower();
-            string message = args[1];
+            string message = string.Join(" ", args, 1, args.Length - 1);
             Vector4 color = GetColorByName(colorName);
 
             if (color == Vector4.Zero)

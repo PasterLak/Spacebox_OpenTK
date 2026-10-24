@@ -82,6 +82,7 @@ public sealed class ServerModule : IDashboardModule
             if (text.Length > 256) text = text.Substring(0, 256);
 
             await MainThread.Run(() => ChatService.Broadcast("[Server]: " + text, Color4.Orange));
+            DashboardContext.Audit(user, "sent a chat message");
             return HttpResponse.Json(new { ok = true });
         }));
 

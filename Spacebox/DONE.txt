@@ -80,6 +80,7 @@ New
 - game folder: Mods/ holds GameSets/, Extensions/ and TexturePacks/; Multiplayer/ holds client.json, serverconfig.json, the server guide, server icons, Dashboard/, cached server worlds (Worlds/) and downloaded server content (Mods/); old folders are moved on the first start
 - servers share texture packs: TexturePacks in serverconfig.json (a host shares its enabled packs), downloaded and checked with the GameSet like extensions, shown below the player's own packs
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
+- server commands: whois <player> (address, ping, game mode, position, admin/muted), kickall [reason], list (players with ping), seed (also in single player)
 Small
 - world list selects the first world when it opens
 - GameSet editor shows a loading screen while it opens
@@ -435,6 +436,11 @@ Fixes
 - network: ship controls are sent only when they change (at most 20 per second), RPCs use compiled calls and network values are written without boxing
 - welcome window: closing it with Esc/Tab saves the choice and starts or declines the tutorial, the controls key follows the binding; pause keeps F8/death-screen HUD state, no waypoints or ship library while dead
 - new players get the world mode's start items and a safe spawn after the world loads (saved-dead players too, with spawn stats); Esc unbinds console keys instead of closing; game mode changes count as unsaved; storage window closes when its block is destroyed; tutorial texts (gravity power, obscurium drill, power item name)
+- fixed server: commands without arguments (say, kick, ban, unban, mute, unmute, unregister) did nothing, now show their usage; mute says when the player is already muted; gamerule help lists every rule and suggests names
+- fixed serverconfig.json: a number as Seed, lower-case names, comments or a trailing comma made the server ignore the whole file
+- fixed dashboard: Restart logged the admin out and cleared the console; map with a bad radius gave a server error; player page showed Mute for muted players; ban said "banned" when it failed; console lines could appear twice
+- fixed LAN: servers on ports 7778-7786 were not found, Open to network failed when 7777 was taken (now takes the next free port), a client port carried over into single player; joining a server of another version says which version it runs
+- fixed: players in a hosted game could run the host's local-only console commands (console, camera, teleport tools) through the chat
 Engine
 - scene-owned GameScene context (GameScene.Current) holds creative tools, local pilot, skins, world rules, sprint toggle, claim visuals, picture frames, machine sounds and tags instead of statics reset on unload
 - Debug builds name where a leaked resource was created in the "Disposing controlled resource" error
@@ -488,6 +494,7 @@ Engine
 - CanvasUI layout validator (Engine.CanvasUI.Validation): headless checks for screen/safe area bounds, overflow, overlaps, layer covers, text fit and size, hit target size and reachability, popups covering anchors; screen profile matrix, LayoutHarness, debug overlay (F8 in the showcase) and console command ui_validate
 - UI showcase: five interface variants (new Sidebar with item details popup and Terminal), help dialog, UI scale keys, every variant tested on 33 screen profiles
 - explicit resource ownership: app and scene ResourceScopes replace the global controlled list, cached resources are released only by the cache, scene leaks are reported with their origin
+- console command color keeps the whole message instead of its first word
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.2

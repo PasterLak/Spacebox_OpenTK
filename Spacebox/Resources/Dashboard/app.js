@@ -4,12 +4,6 @@ const API = "api";
 const HEADER = { "X-Spacebox-Dashboard": "1" };
 const state = { view: "overview", timers: [], commands: [], history: [], historyIndex: -1, lastLine: 0, player: null, players: { online: [], saved: [] }, sort: { key: "name", dir: 1 }, claimItems: [] };
 
-function formatDuration(seconds) {
-  const total = Math.max(0, Math.round((seconds || 0) / 60));
-  const hours = Math.floor(total / 60);
-  return hours > 0 ? `${hours} h ${total % 60} min` : `${total} min`;
-}
-
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
@@ -436,7 +430,8 @@ function playerButtons(name, online, muted) {
 
 async function moderate(action, name) {
   if (!(await confirmAction(`${action === "ban" ? "Ban" : "Kick"} ${name}?`))) return;
-  await run(() => api(`/players/${action}`, { name }), `${name} was ${action === "ban" ? "banned" : "kicked"}`);
+  const result = await run(() => api(`/players/${action}`, { name }));
+  if (result) toast(result.ok === false ? `${name} cannot be ${action === "ban" ? "banned" : "kicked"}` : `${name} was ${action === "ban" ? "banned" : "kicked"}`, result.ok === false);
   refreshCurrent();
 }
 
@@ -469,7 +464,7 @@ async function loadPlayer(name) {
   $("#player-actions").replaceChildren(
     el("button", { class: "btn ghost", text: "← Back", onclick: () => switchView("players") }),
     gameModeSelect(name, data.gameMode),
-    playerButtons(name, data.online, false));
+    playerButtons(name, data.online, !!data.muted));
 
   const bar = (label, value, max, kind) => el("div", {},
     el("div", { class: "bar-label" }, el("span", { text: label }), el("span", { text: `${Math.round(value)} / ${max}` })),
@@ -529,7 +524,8 @@ $("#ban-form").addEventListener("submit", async event => {
   event.preventDefault();
   const name = event.target.name.value.trim();
   if (!(await confirmAction(`Ban ${name}?`))) return;
-  await run(() => api("/players/ban", { name }), `${name} was banned`);
+  const result = await run(() => api("/players/ban", { name }));
+  if (result) toast(result.ok === false ? `${name} cannot be banned` : `${name} was banned`, result.ok === false);
   event.target.reset();
   refreshModeration();
 });
@@ -555,8 +551,11 @@ $("#whitelist-enabled").addEventListener("change", event =>
   run(() => api("/whitelist/enabled", { enabled: event.target.checked }), event.target.checked ? "Whitelist on" : "Whitelist off"));
 
 async function pollConsole() {
+  if (state.polling) return;
+  state.polling = true;
   let data;
-  try { data = await api(`/console?after=${state.lastLine}`); } catch { return; }
+  try { data = await api(`/console?after=${state.lastLine}`); } catch { return; } finally { state.polling = false; }
+  if (data.last < state.lastLine) state.lastLine = 0;
   if (!data.lines.length) return;
 
   const output = $("#console-output");
