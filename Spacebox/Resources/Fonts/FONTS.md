@@ -2,10 +2,12 @@
 
 Fonts that can be chosen in Options → Interface. Each folder holds the font file and its full license text.
 
+Any other `.ttf` or `.otf` file put into this folder (or a subfolder) shows up in the Font list under its file name, at 12 px. Files with "pixel" in the name are drawn sharp (no smoothing), all others smooth.
+
 | Font | File | Look | Languages | License | Source |
 |---|---|---|---|---|---|
 | Fusion Pixel 12px Monospaced (latin) 2026.10.16, **default** | `FusionPixel/FusionPixel12pxMonospacedLatin.ttf` | Pixel font on a 12 px grid | Latin, Cyrillic, Greek, plus CJK glyphs | SIL OFL 1.1 (includes parts of Ark Pixel, Cubic 11 and Galmuri, also OFL 1.1; all license texts in `FusionPixel/`) | https://github.com/TakWolf/fusion-pixel-font |
-| Smooth (system font) | none, uses the operating system's default font | Smooth, anti-aliased, 14 px | depends on the system | the system font's own license, nothing is shipped | — |
+| Smooth (system font) | none, uses the operating system's default font | Smooth, anti-aliased, 12 px | depends on the system | the system font's own license, nothing is shipped | — |
 | StarPixel | `StarPixel.ttf` | Used by the server dashboard | — | not documented | — |
 
 ## What the licenses allow

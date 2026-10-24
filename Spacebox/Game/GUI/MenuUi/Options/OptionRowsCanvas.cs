@@ -45,7 +45,7 @@ public sealed class OptionRowsCanvas : IOptionRowVisitor
     {
         var box = new HBoxContainer { CustomMinimumSize = new Vector2(ValueWidth, 0f) };
         box.AddThemeConstantOverride("separation", 8f);
-        var slider = new HSlider { MinValue = row.Min, MaxValue = row.Max, Step = 1, SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand, SizeFlagsVertical = SizeFlags.ShrinkCenter, TooltipText = row.Tooltip };
+        var slider = new HSlider { MinValue = row.Min, MaxValue = row.Max, Step = 1, SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand, SizeFlagsVertical = SizeFlags.ShrinkCenter, TooltipText = row.Default != null ? row.Tooltip + "\nDouble-click to reset to the default." : row.Tooltip };
         var value = new Label { CustomMinimumSize = new Vector2(78f, 0f), HorizontalAlignment = HorizontalAlignment.Right, SizeFlagsVertical = SizeFlags.ShrinkCenter };
         box.AddChild(slider);
         box.AddChild(value);
@@ -58,6 +58,18 @@ public sealed class OptionRowsCanvas : IOptionRowVisitor
             value.Text = row.Format(next);
             if (!row.ApplyOnRelease) row.Set(next);
         };
+        if (row.Default != null)
+        {
+            slider.DoubleClicked += () =>
+            {
+                int reset = row.Default();
+                updating = true;
+                slider.Value = reset;
+                updating = false;
+                value.Text = row.Format(reset);
+                row.Set(reset);
+            };
+        }
         if (row.ApplyOnRelease) slider.DragEnded += () => row.Set((int)Math.Round(slider.Value));
         var line = AddLine(row, box);
         Track(row, line, () =>

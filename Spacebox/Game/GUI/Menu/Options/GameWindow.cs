@@ -20,9 +20,9 @@ namespace Spacebox.Game.GUI.Menu
                 new SliderRow("Draw Distance", "How far asteroids, ships and their chunks are drawn and generated, in blocks. Lower values give more FPS.", GameplaySettings.MinDrawDistance, GameplaySettings.MaxDrawDistance,
                     () => Settings.Gameplay.DrawDistance,
                     v => Settings.Gameplay.DrawDistance = Math.Clamp(v / DrawDistanceStep * DrawDistanceStep, GameplaySettings.MinDrawDistance, GameplaySettings.MaxDrawDistance),
-                    SliderRow.Suffix(" blocks")),
+                    SliderRow.Suffix(" blocks")) { Default = () => Defaults.Game.DrawDistance },
                 new ChoiceRow("Language", "Select the game’s display language", _languages, LanguageIndex, index => Settings.Gameplay.Language = _languages[index]),
-                new SliderRow("Mouse Sensitivity", "How fast the camera turns when you move the mouse. 100% is the default speed.", 10, 300, () => Settings.Gameplay.MouseSensitivity, v => Apply(g => g.MouseSensitivity = v), SliderRow.Suffix("%")),
+                new SliderRow("Mouse Sensitivity", "How fast the camera turns when you move the mouse. 100% is the default speed.", 10, 300, () => Settings.Gameplay.MouseSensitivity, v => Apply(g => g.MouseSensitivity = v), SliderRow.Suffix("%")) { Default = () => Defaults.Game.MouseSensitivity },
                 new CheckRow("Invert Mouse Y", "Moving the mouse up looks down, like in flight controls.", () => Settings.Gameplay.InvertMouseY, v => Apply(g => g.InvertMouseY = v)),
                 new CheckRow("Camera Sway", "The view sways slightly while you move. Turn it off if it makes you dizzy.", () => Settings.Gameplay.CameraSway, v => Settings.Gameplay.CameraSway = v),
                 new SectionRow("Movement"),
@@ -30,7 +30,7 @@ namespace Spacebox.Game.GUI.Menu
                 new CheckRow("Auto Jump", "In gravity you jump onto one block high steps automatically when you walk into them.", () => Settings.Gameplay.AutoJump, v => Settings.Gameplay.AutoJump = v),
                 new SectionRow("Saving"),
                 new CheckRow("Autosave", "Saves your own worlds (single player and hosted games) automatically. Without it only the Save button in the pause menu saves.", () => Settings.Gameplay.Autosave, v => Settings.Gameplay.Autosave = v),
-                new SliderRow("Autosave Interval", "Minutes between automatic saves.", GameplaySettings.MinAutosaveMinutes, GameplaySettings.MaxAutosaveMinutes, () => Settings.Gameplay.AutosaveMinutes, v => Settings.Gameplay.AutosaveMinutes = v, SliderRow.Suffix(" min"))
+                new SliderRow("Autosave Interval", "Minutes between automatic saves.", GameplaySettings.MinAutosaveMinutes, GameplaySettings.MaxAutosaveMinutes, () => Settings.Gameplay.AutosaveMinutes, v => Settings.Gameplay.AutosaveMinutes = v, SliderRow.Suffix(" min")) { Default = () => Defaults.Game.AutosaveMinutes }
             };
         }
 

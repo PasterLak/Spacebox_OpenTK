@@ -4,6 +4,8 @@ public abstract class RowsCategoryWindow : SettingsCategoryWindow
 {
     private IReadOnlyList<OptionRow> _rows;
 
+    protected static GameSettings Defaults { get; } = GameSettings.Default();
+
     protected RowsCategoryWindow(IOptionsNavigator options)
     {
         Options = options;

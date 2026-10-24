@@ -1,5 +1,3 @@
-using Engine.GUI;
-
 namespace Spacebox.Game;
 
 public sealed record InterfaceFont(string Id, string Name, string RelativePath, int NativeSize, bool Pixelated = true);
@@ -13,11 +11,27 @@ public static class InterfaceFonts
     public const int MinSize = 6;
     public const int MaxSize = 32;
 
-    public static IReadOnlyList<InterfaceFont> All { get; } = new[]
+    public static IReadOnlyList<InterfaceFont> BuiltIn { get; } = new[]
     {
         new InterfaceFont(FusionPixelId, "Fusion Pixel (default)", "Resources/Fonts/FusionPixel/FusionPixel12pxMonospacedLatin.ttf", 12),
-        new InterfaceFont(SystemId, "Smooth (system font)", null, 14, false)
+        new InterfaceFont(SystemId, "Smooth (system font)", null, 12, false)
     };
+
+    public static IReadOnlyList<InterfaceFont> All { get; } = Collect();
+
+    private static IReadOnlyList<InterfaceFont> Collect()
+    {
+        var fonts = new List<InterfaceFont>(BuiltIn);
+        try
+        {
+            fonts.AddRange(InterfaceFontScanner.Scan(AppContext.BaseDirectory, BuiltIn));
+        }
+        catch (Exception e)
+        {
+            Engine.Debug.Warning($"[Fonts] Could not scan {InterfaceFontScanner.FontsFolder}: {e.Message}");
+        }
+        return fonts;
+    }
 
     public static InterfaceFont Find(string id)
     {

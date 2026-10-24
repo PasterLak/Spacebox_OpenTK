@@ -17,6 +17,7 @@ public sealed class SliderRow : OptionRow
     public Action<int> Set { get; }
     public Func<int, string> Format { get; }
     public bool ApplyOnRelease { get; init; }
+    public Func<int> Default { get; init; }
 
     public static Func<int, string> Suffix(string suffix) => value => value + suffix;
 

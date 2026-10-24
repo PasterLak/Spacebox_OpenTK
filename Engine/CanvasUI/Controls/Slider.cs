@@ -20,6 +20,7 @@ public class HSlider : Control
 
     public event Action<double> ValueChanged;
     public event Action DragEnded;
+    public event Action DoubleClicked;
 
     public double Value
     {
@@ -34,6 +35,11 @@ public class HSlider : Control
     protected internal override bool OnMouseDown(Vector2 localPosition, MouseButton button)
     {
         if (button != MouseButton.Left) return false;
+        if (DoubleClicked != null && (Root?.ClickCount ?? 1) >= 2)
+        {
+            DoubleClicked.Invoke();
+            return true;
+        }
         SetFromX(localPosition.X);
         return true;
     }
