@@ -83,6 +83,26 @@ namespace Engine.Audio
             _watcher?.Update();
         }
 
+        public static IReadOnlyList<string> OutputDevices()
+        {
+            if (!IsEnabled) return Array.Empty<string>();
+            try
+            {
+                return ALC.GetString(ALDevice.Null, AlcGetStringList.AllDevicesSpecifier) ?? new List<string>();
+            }
+            catch (Exception ex) when (ex is DllNotFoundException || ex is EntryPointNotFoundException)
+            {
+                return Array.Empty<string>();
+            }
+        }
+
+        public bool CanSwitchOutput => _watcher != null;
+
+        public void SetPreferredOutput(string deviceName)
+        {
+            if (_watcher != null) _watcher.Preferred = deviceName;
+        }
+
         public void Dispose()
         {
             if (isDisposed) return;

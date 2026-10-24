@@ -19,6 +19,7 @@ public static class SettingsApplier
 
     public static void ApplyAudio(AudioSettings audio)
     {
+        AudioDevice.Instance.SetPreferredOutput(audio.OutputDevice);
         AudioMixer.Master = audio.Master / 100f;
         AudioMixer.SetVolume(AudioChannel.Music, audio.Music / 100f);
         AudioMixer.SetVolume(AudioChannel.Ambient, audio.Ambient / 100f);

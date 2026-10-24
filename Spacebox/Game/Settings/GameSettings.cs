@@ -25,6 +25,7 @@ namespace Spacebox.Game
         [JsonPropertyName("ui")] public int UI { get; set; } = 75;
         [JsonPropertyName("mute_when_unfocused")] public bool MuteWhenUnfocused { get; set; } = false;
         [JsonPropertyName("menu_music")] public bool MenuMusic { get; set; } = true;
+        [JsonPropertyName("output_device")] public string OutputDevice { get; set; } = "";
 
         public bool Validate(AudioSettings d)
         {

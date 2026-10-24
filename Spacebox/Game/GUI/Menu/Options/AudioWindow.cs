@@ -11,8 +11,11 @@ namespace Spacebox.Game.GUI.Menu
         protected override IReadOnlyList<OptionRow> BuildRows()
         {
             var percent = SliderRow.Suffix("%");
+            var outputs = AudioOutputList.Build(Engine.Audio.AudioDevice.OutputDevices(), Settings.Audio.OutputDevice);
             return new OptionRow[]
             {
+                new ChoiceRow("Output Device", "Where the game plays its sound. System default follows the device chosen in the operating system; if the chosen device is unplugged, the system default is used until it comes back.", outputs.Labels,
+                    () => outputs.IndexOf(Settings.Audio.OutputDevice), index => Apply(a => a.OutputDevice = outputs.DeviceAt(index))),
                 new SliderRow("Master Volume", "Volume of everything the game plays. The other sliders are scaled by this one.", 0, 100, () => Settings.Audio.Master, v => Apply(a => a.Master = v), percent),
                 new SliderRow("Music Volume", "Volume of the menu music.", 0, 100, () => Settings.Audio.Music, v => Apply(a => a.Music = v), percent),
                 new SliderRow("Ambient Volume", "Volume of the space background and mood sounds.", 0, 100, () => Settings.Audio.Ambient, v => Apply(a => a.Ambient = v), percent),

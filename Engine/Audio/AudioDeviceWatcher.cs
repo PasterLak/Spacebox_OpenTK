@@ -28,6 +28,19 @@ public sealed unsafe class AudioDeviceWatcher
 
     public bool FollowsDefaultDevice { get; }
 
+    private string _preferred;
+    private string _active;
+
+    public string Preferred
+    {
+        get => _preferred;
+        set
+        {
+            _preferred = string.IsNullOrWhiteSpace(value) ? null : value;
+            _nextCheck = 0;
+        }
+    }
+
     private AudioDeviceWatcher(ALDevice device, IntPtr reopen)
     {
         _device = device;
@@ -54,16 +67,29 @@ public sealed unsafe class AudioDeviceWatcher
 
         bool defaultChanged = Interlocked.Exchange(ref _defaultChanged, 0) != 0 || DefaultChangedOnWindows();
         bool connected = !_canDetectDisconnect || ALC.GetInteger(_device, Connected) != 0;
-        if (!AudioDeviceSwitchRules.ShouldReopen(defaultChanged, connected)) return;
+        string desired = _preferred == null ? null : AudioOutputChoice.Resolve(_preferred, AudioDevice.OutputDevices());
+        if (!AudioOutputChoice.NeedsReopen(desired, _active, defaultChanged, connected)) return;
 
-        if (_reopen(_device.Handle, null, null) == 0)
+        if (!Reopen(desired))
         {
             _nextCheck = now + RetryIntervalSeconds;
-            Debug.Warning("[Audio] Could not switch the sound output to the new default device");
+            Debug.Warning(desired == null ? "[Audio] Could not switch the sound output to the new default device" : $"[Audio] Could not switch the sound output to '{desired}'");
             return;
         }
 
+        _active = desired;
         Debug.Log($"[Audio] Sound output switched to '{ALC.GetString(_device, AlcGetString.AllDevicesSpecifier)}'");
+    }
+
+    private bool Reopen(string name)
+    {
+        if (name == null) return _reopen(_device.Handle, null, null) != 0;
+
+        int length = System.Text.Encoding.UTF8.GetByteCount(name);
+        byte* bytes = stackalloc byte[length + 1];
+        System.Text.Encoding.UTF8.GetBytes(name, new Span<byte>(bytes, length));
+        bytes[length] = 0;
+        return _reopen(_device.Handle, bytes, null) != 0;
     }
 
     private bool DefaultChangedOnWindows() => OperatingSystem.IsWindows() && _windowsMonitor != null && _windowsMonitor.PollChanged();
