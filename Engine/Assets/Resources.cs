@@ -260,6 +260,9 @@ namespace Engine
             if (resource != null)
             {
                 _controlledResoruces.Add(resource);
+#if DEBUG
+                _controlledOrigins[resource] = ResourceOrigin.Describe(new System.Diagnostics.StackTrace(1, false));
+#endif
             }
         }
         public static void RemoveResourceFromControll(IResource resource)
@@ -267,8 +270,19 @@ namespace Engine
             if (resource != null)
             {
                 _controlledResoruces.Remove(resource);
+#if DEBUG
+                _controlledOrigins.Remove(resource);
+#endif
             }
         }
+
+#if DEBUG
+        private static readonly Dictionary<IResource, string> _controlledOrigins = new Dictionary<IResource, string>(ReferenceEqualityComparer.Instance);
+
+        private static string OriginOf(IResource resource) => _controlledOrigins.TryGetValue(resource, out var origin) ? " (created by " + origin + ")" : "";
+#else
+        private static string OriginOf(IResource resource) => "";
+#endif
 
 
         private static void DisposeAllResources()
@@ -325,12 +339,15 @@ namespace Engine
                 if (resource != null && !resource.IsDisposed)
                 {
 
-                    Debug.Error($"[Resources] Disposing controlled resource: {resource.GetResourceInfo()}");
+                    Debug.Error($"[Resources] Disposing controlled resource: {resource.GetResourceInfo()}{OriginOf(resource)}");
                     resource.Dispose();
                 }
 
             }
             _controlledResoruces.Clear();
+#if DEBUG
+            _controlledOrigins.Clear();
+#endif
         }
 
         public static void PrintLoadedResources()

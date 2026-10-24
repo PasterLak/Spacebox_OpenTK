@@ -145,6 +145,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- the held block of the inventory player preview was not freed when leaving a world
 - debug console text turned into solid bars after loading a world (its font texture was freed on scene change)
 - ships: invalid console keys are rejected, pilots lose the seat when the console is destroyed, one pilot per console (host too), ships collide with entities from neighbour sectors, saved ships cannot be placed into blocks, players or foreign claims (red outline), console help shows the real use key
 - server: rejoining before a save keeps the unsaved player data, offline game mode changes are kept on save, /save from chat no longer re-enters the network loop, bans during login apply, restart relaunches even if cleanup fails, gifts are kept when the giver leaves mid-gift, stuck ship states are dropped
@@ -427,6 +428,7 @@ Fixes
 - welcome window: closing it with Esc/Tab saves the choice and starts or declines the tutorial, the controls key follows the binding; pause keeps F8/death-screen HUD state, no waypoints or ship library while dead
 - new players get the world mode's start items and a safe spawn after the world loads (saved-dead players too, with spawn stats); Esc unbinds console keys instead of closing; game mode changes count as unsaved; storage window closes when its block is destroyed; tutorial texts (gravity power, obscurium drill, power item name)
 Engine
+- Debug builds name where a leaked resource was created in the "Disposing controlled resource" error
 - worker pool: one allocation per job, below-normal worker priority, continuations off the workers, pending jobs cancelled on shutdown, unused dedicated workers removed
 - Lighting.ResetToDefaults() (ambient, fog)
 - OpenTK 4.9.4 (GLFW 3.4); Linux picks the window system: native Wayland on Wayland desktops, X11 otherwise, each with the other as fallback, --window-system x11|wayland|auto or SPACEBOX_WINDOW_SYSTEM to force one; GLFW errors are logged instead of crashing

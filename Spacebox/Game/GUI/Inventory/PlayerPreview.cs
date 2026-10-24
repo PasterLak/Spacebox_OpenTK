@@ -100,6 +100,7 @@ public sealed class PlayerPreview : IDisposable
         _skybox = null;
         _figure = null;
         _tilt = null;
+        _held?.Destroy();
         _held = null;
         _armor = null;
         _skin = null;

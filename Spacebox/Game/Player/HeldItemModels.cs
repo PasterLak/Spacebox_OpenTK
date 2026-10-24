@@ -58,6 +58,13 @@ public sealed class HeldItemModels
         HoldingItem = true;
     }
 
+    public void Destroy()
+    {
+        BlockModel.Destroy();
+        HoldingBlock = false;
+        HoldingItem = false;
+    }
+
     public void SetOffset(Vector3 offset)
     {
         ItemModel.Position = _pose.ItemPosition + offset;
