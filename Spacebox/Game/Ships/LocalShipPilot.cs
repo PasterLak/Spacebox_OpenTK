@@ -25,7 +25,6 @@ public sealed class LocalShipPilot
     private ShipViewCamera _view;
     private Quaternion _seatRotationLocal = Quaternion.Identity;
     private Quaternion _lastViewOrientation = Quaternion.Identity;
-    private Quaternion _entryRotationLocal = Quaternion.Identity;
 
     public LocalShipPilot(ShipRider rider, ShipBindingTool binding)
     {
@@ -61,7 +60,6 @@ public sealed class LocalShipPilot
 
         _rider.Board(player, console.Entity);
         _seatLocal = console.Entity.WorldToEntityLocal(player.Position);
-        _entryRotationLocal = Quaternion.Invert(console.Entity.Orientation) * player.GetRotation();
         player.InertiaController.Velocity = Vector3.Zero;
 
         Spacebox.Game.GUI.PanelUI.BlockHands();
@@ -80,7 +78,6 @@ public sealed class LocalShipPilot
         }
 
         SetViewCamera(null, player);
-        if (console.Entity != null && player != null) player.SetRotation(console.Entity.Orientation * _entryRotationLocal);
         Spacebox.Network.ShipNetwork.SendUnmount();
         _binding.Exit();
         Spacebox.Game.GUI.PanelUI.UnblockHands();

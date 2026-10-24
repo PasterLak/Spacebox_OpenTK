@@ -163,7 +163,7 @@ Fixes
 - sitting down at a ship or cannon console without a camera block keeps the view where it was instead of turning it to the console
 - Basic Titanium Crate can be crafted (3 titanium panels); Violet and Ember wall torches have their own recipes; blue torch renamed Sapphire Wall Torch; cobalt drill description says what it mines
 - removed empty structure files and an unused UI settings file from the Default GameSet
-- leaving a ship or cannon console turns the view back to where it looked before sitting down (also after the ship turned)
+- leaving a ship or cannon console keeps the player's view (seated without a camera block the player's view is the ship's view); with a camera block the view returns to where the player looked before
 - multiplayer: blocks placed by other players no longer go missing on clients whose own player or mobs stand near the cell
 - pasted doors, signs, frames, lights and machines work at once (claim beacons are not copied)
 - a second death within 30 s no longer loses the dropped items; death drops spawn at the server's player position when the reported one is off
