@@ -56,6 +56,7 @@ dotnet run --project Tools/Spacebox.GameSetTool -- convert Spacebox/Mods/GameSet
 
 dotnet publish Spacebox/Spacebox.csproj -c Release -r linux-x64 --self-contained true --output ./publish   # also win-x64 / osx-x64; single-file: only the executable + game folders
 Spacebox/Build/BuildWindows.ps1 ; Spacebox/Build/BuildLinux.ps1   # Final release builds: files directly in Final/Windows and Final/Linux (repo root) plus a zip next to them; SPACEBOX_NO_EXPLORER=1 skips opening Explorer
+Spacebox/Build/BuildMacOS.ps1   # Final macOS builds (osx-x64, osx-arm64) into Final/MacOS-Intel and Final/MacOS-AppleSilicon plus zips; built on Windows, untested on a Mac
 ```
 
 - `Engine.Tests`, `Spacebox.Tests` and `Spacebox.Benchmarks` are marked non-buildable in `Release`; use `Debug` for them.
