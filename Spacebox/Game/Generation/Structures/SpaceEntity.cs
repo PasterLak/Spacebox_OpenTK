@@ -404,11 +404,18 @@ namespace Spacebox.Game.Generation
                 return false;
 
             Vector3 localPos = WorldPositionToLocal(worldPosition);
-            if (!IsCellEmpty(worldPosition) || IsCellReserved(worldPosition)) return false;
+            if (!IsCellEmpty(worldPosition) || IsCellReserved(worldPosition) || IsCellOccupiedByBody(worldPosition)) return false;
             if (blockData != null && !IsReservedAreaFree(worldPosition, blockData, block.Direction, block.Rotation)) return false;
             if (blockData != null && !HasRequiredSupport(worldPosition, blockData, block.Direction, block.Rotation)) return false;
 
             return PlaceBlockInternal(localPos, block);
+        }
+
+        public bool IsCellOccupiedByBody(Vector3 position)
+        {
+            var local = WorldPositionToLocal(position);
+            var cellMin = new Vector3(MathF.Floor(local.X), MathF.Floor(local.Y), MathF.Floor(local.Z));
+            return Spacebox.Game.Physics.BodyPlacementCheck.AnyBodyInCell(World.Instance?.Physics?.Bodies, PositionWorld, _inverseOrientation, cellMin);
         }
 
         public bool IsCellReserved(Vector3 position)
@@ -421,7 +428,7 @@ namespace Spacebox.Game.Generation
         public bool CanPlaceBlock(Vector3 position, BlockData blockData, Direction direction, Rotation rotation)
         {
             if (blockData.IsMultiblock) return CanPlaceStructure(position, blockData, direction, rotation);
-            return IsCellEmpty(position) && !IsCellReserved(position) && IsReservedAreaFree(position, blockData, direction, rotation) &&
+            return IsCellEmpty(position) && !IsCellReserved(position) && !IsCellOccupiedByBody(position) && IsReservedAreaFree(position, blockData, direction, rotation) &&
                    HasRequiredSupport(position, blockData, direction, rotation);
         }
 
@@ -501,7 +508,7 @@ namespace Spacebox.Game.Generation
                 var offset = _structureCells[i].Offset;
                 var position = originPosition + new Vector3(offset.X, offset.Y, offset.Z);
 
-                if (!IsPositionWithinEntitySize(position) || !IsCellEmpty(position) || IsCellReserved(position))
+                if (!IsPositionWithinEntitySize(position) || !IsCellEmpty(position) || IsCellReserved(position) || IsCellOccupiedByBody(position))
                     return false;
                 if (!HasRequiredSupport(position, blockData, direction, rotation))
                     return false;

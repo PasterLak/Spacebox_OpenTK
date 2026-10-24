@@ -34,6 +34,12 @@ public static class EntityCreationNetwork
             return;
         }
 
+        if (IsBlockedByBody(positionWorld, orientation))
+        {
+            Spacebox.Game.Player.PlacementRefund.Refund(Spacebox.Game.GUI.PanelUI.Player, block.Id);
+            return;
+        }
+
         string error = Spacebox.Game.Protection.ClaimPlacement.CheckNewEntity(block, positionWorld, GameSession.PlayerName);
         if (error != null)
         {
@@ -75,7 +81,8 @@ public static class EntityCreationNetwork
         if (!WorldEditNetwork.ChargePlacement(sender, message.BlockId)) return;
 
         var sector = World.SectorAt(message.PositionWorld);
-        if (sector == null || !sector.BoundingBox.Contains(message.PositionWorld) || !IsInReach(sender, message.PositionWorld))
+        if (sector == null || !sector.BoundingBox.Contains(message.PositionWorld) || !IsInReach(sender, message.PositionWorld) ||
+            IsBlockedByBody(message.PositionWorld, message.Orientation))
         {
             WorldEditNetwork.SendRefund(sender, message.BlockId);
             return;
@@ -92,6 +99,12 @@ public static class EntityCreationNetwork
         }
 
         Create(sector, message.PositionWorld, block, message.Orientation, owner);
+    }
+
+    public static bool IsBlockedByBody(Vector3 cornerWorld, Quaternion orientation)
+    {
+        var inverse = Quaternion.Invert(PlayerAlignedFrame.Sanitize(orientation));
+        return Spacebox.Game.Physics.BodyPlacementCheck.AnyBodyInCell(World.Instance?.Physics?.Bodies, cornerWorld, inverse, Vector3.Zero);
     }
 
     private static bool IsInReach(int peer, Vector3 positionWorld)

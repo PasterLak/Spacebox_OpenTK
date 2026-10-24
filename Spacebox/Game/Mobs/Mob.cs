@@ -13,6 +13,8 @@ namespace Spacebox.Game.Mobs;
 
 public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable, IPushable
 {
+    private const float InsideBlockProbeRadius = 0.05f;
+    private readonly SuffocationDamage _blockDamage = new SuffocationDamage();
     private const float AlertDuration = 10f;
     private const float MinFacingSpeed = 0.2f;
     private const float DropSpeed = 1.5f;
@@ -285,6 +287,10 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
 
     private void UpdateAuthority(float deltaTime)
     {
+        int blockDamage = _blockDamage.Update(deltaTime, IsInsideBlock());
+        if (blockDamage > 0) ApplyDamage(blockDamage);
+        if (IsDead) return;
+
         if (_provokedTimer > 0f) _provokedTimer -= deltaTime;
         Context.Tick(deltaTime);
         Senses.Update(deltaTime);
@@ -294,6 +300,12 @@ public sealed class Mob : Node3D, IDamageable, IDrillable, IExplosionDamageable,
 
         Locomotion.Update(deltaTime);
         UpdateFacing(deltaTime);
+    }
+
+    private bool IsInsideBlock()
+    {
+        var physics = World.Instance?.Physics;
+        return physics != null && physics.OverlapsVoxels(Position, InsideBlockProbeRadius, out _);
     }
 
     private void UpdateFacing(float deltaTime)

@@ -258,7 +258,7 @@ public class InteractionPlaceBlock : InteractionMode
         BlockPlacementHelper.CalculateOrientation(playerLocal, Vector3.Zero, Vector3.UnitY, Vector3.Zero, false, false, blockData, cachedBlockRotation, out var finalDir, out var finalRot);
 
         BlockSelector.Instance.UpdateFreePosition(corner, orientation, finalDir, finalRot);
-        bool placeable = blockData?.Shape?.RequiresSupport != true;
+        bool placeable = blockData?.Shape?.RequiresSupport != true && !EntityCreationNetwork.IsBlockedByBody(corner, orientation);
         BlockSelector.Instance.SetPlaceable(placeable);
         BlockSelector.Instance.HideReservedArea();
         lineRenderer.Enabled = false;
