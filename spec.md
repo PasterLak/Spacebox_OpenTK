@@ -14,7 +14,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 | Audio | OpenAL (via OpenTK) + NVorbis (`.ogg`) |
 | Networking | LiteNetLib 1.3.1 (UDP) in `Engine/Networking` |
 | Save format | NBT (SharpNBT) for world entities, JSON for metadata/player |
-| Archives | SharpCompress (`.zip` / `.rar` GameSets) |
+| Archives | built-in `ZipFile` (`.zip`) and SharpCompress (`.rar`, `.7z`, `.tar`, `.tar.gz`/`.bz2`/`.xz`/`.zst` GameSets), `ModArchive` |
 | Tests / benchmarks | xUnit 2.5, BenchmarkDotNet 0.14 |
 | Platforms | Windows, Linux, macOS (`win-x64`, `linux-x64`, `osx-x64`) |
 
@@ -200,7 +200,7 @@ Block components (`Game/Generation/Blocks/Components/`): a `ComponentBlock` (an 
 
 ### 6.1 GameSets
 
-A GameSet is a folder (or a `.zip` / `.rar` archive, extracted by `GameSetsUnpacker` into `Mods/GameSets/` or, when its `config.json` has `Extends`, `Mods/Extensions/`) under `Mods/GameSets/`; extensions live in `Mods/Extensions/`, texture packs in `Mods/TexturePacks/` (`ModFolders`: one root with these three folders; `ModFolders.Local` = `Mods/`, `MultiplayerFolders.ModCache(server)` = `Multiplayer/Mods/<host>_<port>/`; `InstalledGameSets.Scan(ModFolders)` and `GameSetStackResolver.Resolve(ModFolders, ...)` read both GameSet folders). Modding guide: `modding-guide.md`.
+A GameSet is a folder (or a `.zip` / `.rar` / `.7z` / `.tar(.gz/.bz2/.xz/.zst)` archive, extracted by `GameSetsUnpacker` through `ModArchive` into `Mods/GameSets/` or, when its `config.json` has `Extends`, `Mods/Extensions/`) under `Mods/GameSets/`; extensions live in `Mods/Extensions/`, texture packs in `Mods/TexturePacks/` (`ModFolders`: one root with these three folders; `ModFolders.Local` = `Mods/`, `MultiplayerFolders.ModCache(server)` = `Multiplayer/Mods/<host>_<port>/`; `InstalledGameSets.Scan(ModFolders)` and `GameSetStackResolver.Resolve(ModFolders, ...)` read both GameSet folders). Modding guide: `modding-guide.md`.
 
 `Mods/GameSets/Empty` (id `empty`) is the read-only base of every GameSet: no content, only the sounds and settings the code needs (interface, footsteps, pickup, crafting, default block sounds, `Optional/lighting.json`, game modes). A GameSet with `"Extends": "empty"` (Default and everything made with Mods > Create > New GameSet, `GameSetCreator`) is a base GameSet; any other `Extends` makes an extension, and Empty cannot be extended. `GameSetFallbacks` picks the fallback chain of a stack: GameSets built on Empty -> Empty; old GameSets without `Extends` -> Default, then Empty; Empty -> none. `GameSetStack.Fallback` (nearest) supplies missing content files and folders, `AssetLayers` and `SearchRootsNewestFirst` include the whole chain, and the server packs every fallback folder for clients (`GameSetFolders.Pack(stack)`).
 

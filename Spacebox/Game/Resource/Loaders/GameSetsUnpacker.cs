@@ -1,9 +1,5 @@
-﻿using System.IO.Compression;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Engine;
-using SharpCompress.Archives;
-using SharpCompress.Archives.Rar;
-using SharpCompress.Common;
 using Spacebox.Game.Resource.Content;
 
 namespace Spacebox.Game.Resource;
@@ -28,11 +24,7 @@ internal static class GameSetsUnpacker
     private static void UnpackArchives(string gameSetsPath, ModFolders folders, bool useModNameAsFolder)
     {
         var archiveFiles = Directory.GetFiles(gameSetsPath)
-            .Where(f =>
-            {
-                var ext = Path.GetExtension(f).ToLowerInvariant();
-                return ext == ".zip" || ext == ".rar";
-            })
+            .Where(ModArchive.IsArchive)
             .ToList();
 
         if (archiveFiles.Count == 0)
@@ -57,29 +49,7 @@ internal static class GameSetsUnpacker
                 Debug.Log($"[GameSetsUnpacker] Processing archive: {archivePath}");
                 Debug.Log($"[GameSetsUnpacker] Temp extract path: {tempExtractPath}");
 
-                if (archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                {
-                    ZipFile.ExtractToDirectory(archivePath, tempExtractPath);
-                }
-                else if (archivePath.EndsWith(".rar", StringComparison.OrdinalIgnoreCase))
-                {
-                    using var archive = RarArchive.Open(archivePath);
-                    foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
-                    {
-                        string destinationPath = Path.Combine(tempExtractPath, entry.Key);
-                        if (!ModInstallTarget.IsInside(tempExtractPath, destinationPath))
-                            throw new InvalidDataException($"Archive entry '{entry.Key}' is outside the mod folder");
-                        string directoryPath = Path.GetDirectoryName(destinationPath);
-
-                        if (!Directory.Exists(directoryPath))
-                            Directory.CreateDirectory(directoryPath);
-
-                        entry.WriteToFile(destinationPath, new ExtractionOptions()
-                        {
-                            Overwrite = true
-                        });
-                    }
-                }
+                ModArchive.Extract(archivePath, tempExtractPath);
 
                 string modFolder = FindModFolder(tempExtractPath);
                 if (modFolder == null)
@@ -90,7 +60,7 @@ internal static class GameSetsUnpacker
 
                 var configNode = ReadConfigNode(modFolder);
                 string modName = useModNameAsFolder ? ModArchiveConfig.ModName(configNode) : null;
-                string targetFolderName = ModInstallTarget.SafeFolderName(modName, Path.GetFileNameWithoutExtension(archivePath));
+                string targetFolderName = ModInstallTarget.SafeFolderName(modName, ModArchive.NameWithoutExtension(archivePath));
                 var config = InstalledGameSets.ReadConfig(modFolder);
                 bool isExtension = Spacebox.Game.Resource.Content.GameSetRoles.IsExtension(config?.Extends);
                 string targetRoot = folders.FolderFor(isExtension);

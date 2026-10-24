@@ -8,7 +8,7 @@ Spacebox content is data: JSON files plus PNG textures and OGG/WAV sounds. There
 | Extension GameSet | `Mods/Extensions/<Name>/` with `"Extends"` in `config.json` | per world (Extensions list in Create World) | yes (`Extensions`) |
 | Texture pack | `Mods/TexturePacks/<Name>/` | globally in Mods -> Texture packs | no |
 
-Examples shipped with the game: `Mods/Extensions/ExampleExtension` and `Mods/TexturePacks/ExamplePack`. See "Creating a GameSet" below for `Mods/GameSets/Empty`, the base every GameSet is built on. A `.zip` or `.rar` dropped into `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start (extensions always end up in `Mods/Extensions/`).
+Examples shipped with the game: `Mods/Extensions/ExampleExtension` and `Mods/TexturePacks/ExamplePack`. See "Creating a GameSet" below for `Mods/GameSets/Empty`, the base every GameSet is built on. A mod archive (`.zip`, `.rar`, `.7z`, `.tar`, `.tar.gz`/`.tgz`, `.tar.bz2`/`.tbz2`, `.tar.xz`/`.txz` or `.tar.zst`) dropped into `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start (extensions always end up in `Mods/Extensions/`).
 
 ## GameSet layout (folder format)
 
@@ -46,7 +46,7 @@ Mods/GameSets/MyMod/
 - Ids: lower-case letters, digits and `_`, 2-64 characters, not starting with a digit. Invalid characters are replaced; a duplicate id is skipped with an error in the log, so give every entry its own id. JSON property names are case-insensitive. `Recipes/<machine>.json` needs `"Type"`; ids in `order.json` that don't exist are ignored.
 - `config.json` needs a unique `ModId` (without one the folder name is used). Two GameSets with the same id are reported and only the first one is used.
 - Removing or renaming a block or item id turns the placed blocks and items of existing worlds into air/nothing on the next save. Keep old ids in released mods.
-- Archives: a `.zip` or `.rar` in `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start into a folder named after its `ModName` (or the archive name when it has none). If that folder holds the same mod (same `ModId`) it is updated, otherwise the new one gets a numbered folder; `Default` is never replaced.
+- Archives: a `.zip`, `.rar`, `.7z`, `.tar`, `.tar.gz`/`.tgz`, `.tar.bz2`/`.tbz2`, `.tar.xz`/`.txz` or `.tar.zst` in `Mods/GameSets/` or `Mods/Extensions/` is extracted on the next start into a folder named after its `ModName` (or the archive name when it has none). If that folder holds the same mod (same `ModId`) it is updated, otherwise the new one gets a numbered folder; `Default` is never replaced.
 - Old mods keep working: `blocks.json`, `items.json`, `crafting.json` and `recipes.json` (flat arrays) are still read and can be mixed with folders. Convert an old mod with the GameSet editor (Overview -> Convert to folder format) or `dotnet run --project Tools/Spacebox.GameSetTool -- convert Mods/GameSets/MyMod`; the converter checks that the loaded content stays identical before it changes anything.
 
 ## Player start

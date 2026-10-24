@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <None Include="Fixtures\GameSets\Mock\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Fixtures\Archives\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
