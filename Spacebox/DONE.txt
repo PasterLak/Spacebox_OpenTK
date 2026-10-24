@@ -79,6 +79,8 @@ New
 - servers share texture packs: TexturePacks in serverconfig.json (a host shares its enabled packs), downloaded and checked with the GameSet like extensions, shown below the player's own packs
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 Small
+- world list selects the first world when it opens
+- GameSet editor shows a loading screen while it opens
 - health, oxygen and power bars keep the width of a 10 slot hotbar when the hotbar is longer
 - Options > Game > Movement: Auto Sprint (the sprint key toggles sprinting instead of holding it) and Auto Jump (one block steps in gravity), both off by default
 - item tooltips show the item id in modes with the creative inventory (hotbar, inventory, storage, machines)
@@ -145,6 +147,7 @@ Small
 - ship viewer: lamps light the ship (light flood fill), Autofire (on by default), lists only worlds with ships and opens the first ship automatically
 - ship viewer: pick a projectile and click the ship to shoot it (block damage like in the game), Restore ship button; engines on, autofire off by default
 Fixes
+- seated at a ship console without a camera block, the view no longer turns with the ship (mouse steering kept spinning the ship)
 - Options > Interface > Font now changes the game and menu interface (Fusion Pixel or a smooth system font); ProggyClean was only an old debug font
 - the held block of the inventory player preview was not freed when leaving a world
 - debug console and F3 panel drew solid bars or a white box after loading a world (their font, texture and shader were freed on scene change)

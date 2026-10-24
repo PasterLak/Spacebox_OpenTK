@@ -26,6 +26,9 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     private readonly Spacebox.Game.GUI.Canvas.Screens.FadeOverlayView _fade = new Spacebox.Game.GUI.Canvas.Screens.FadeOverlayView();
     private Vector3 _previousAmbient;
     private Spacebox.Game.Resource.Content.GameSetAssetIndex _baseTextures;
+    private StagedLoader _loader;
+    private Spacebox.Editor.Canvas.EditorLoadingScreen _loading;
+    private GameSetProject _project;
 
     private bool IsTexturePack => !string.IsNullOrEmpty(_args.TexturePack);
 
@@ -38,9 +41,18 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     {
         AddChild(new CameraStatic(Vector3.Zero));
         _previousAmbient = Lighting.AmbientColor;
+        Input.ShowCursor();
 
-        LoadGameSet();
+        _loading = new Spacebox.Editor.Canvas.EditorLoadingScreen();
+        _loader = new StagedLoader()
+            .Add("Loading the GameSet", LoadGameSet)
+            .Add("Opening the project", OpenProject)
+            .Add("Building the editor pages", BuildHost);
+        _loading.Show(_loader.CurrentStep, 0f);
+    }
 
+    private void OpenProject()
+    {
         var project = IsTexturePack
             ? new GameSetProject(_args.TexturePack, Spacebox.Game.Resource.TexturePacks.TexturePack.Load(_args.TexturePack)?.Id ?? "")
             : new GameSetProject(EditorTargets.ProjectRoot(Spacebox.Network.GameSetLocator.FolderPath(_args.ModFolderName), _args.TargetBase), _args.ModId);
@@ -51,7 +63,12 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
             : new EditorContext(project) { Targets = EditorTargets.For(_args.ModId), CurrentTarget = _args.TargetBase ?? "" };
         _context.BaseTextures = _baseTextures;
         _context.Assets.Refresh();
-        var pages = IsTexturePack ? Spacebox.Editor.Canvas.EditorPages.CreateTexturePack() : Spacebox.Editor.Canvas.EditorPages.CreateDefault(project);
+        _project = project;
+    }
+
+    private void BuildHost()
+    {
+        var pages = IsTexturePack ? Spacebox.Editor.Canvas.EditorPages.CreateTexturePack() : Spacebox.Editor.Canvas.EditorPages.CreateDefault(_project);
         _host = new Spacebox.Editor.Canvas.EditorHost(_context, pages, _args.StartPanel);
         _host.Root.Add(_fade, Engine.CanvasUI.UiLayer.Tooltip);
         Input.ShowCursor();
@@ -66,7 +83,18 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
     public override void Update()
     {
         base.Update();
-        if (_context == null) return;
+        if (_loader != null && !_loader.IsDone)
+        {
+            _loader.Tick();
+            _loading?.Show(_loader.CurrentStep, _loader.Progress);
+            _loading?.Update(Time.Delta);
+            if (!_loader.IsDone) return;
+
+            _loading?.Dispose();
+            _loading = null;
+            ColorOverlay.FadeOut(new System.Numerics.Vector3(0f, 0f, 0f), 1f, 0.4f);
+        }
+        if (_context == null || _host == null) return;
 
         _context.Update(Time.Delta);
         ColorOverlay.Update();
@@ -98,11 +126,14 @@ public sealed class GameSetEditorScene : Scene, ISceneWithArgs<GameSetEditorArgs
 
     public override void OnGUI()
     {
-        _host?.Render();
+        if (_loading != null) _loading.Render();
+        else _host?.Render();
     }
 
     public override void UnloadContent()
     {
+        _loading?.Dispose();
+        _loading = null;
         _host?.Dispose();
         _host = null;
         _context?.Dispose();

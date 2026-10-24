@@ -107,6 +107,11 @@ public sealed class WorldSelectPage : MenuPage
             item.Badges = _badges.For(world);
             if (ReferenceEquals(world, _menu.selectedWorld)) selected = i;
         }
+        if (selected < 0 && _menu.Worlds.Count > 0)
+        {
+            selected = 0;
+            _menu.selectedWorld = _menu.Worlds[0];
+        }
         if (selected >= 0) _list.Select(selected);
         _shownWorld = null;
     }

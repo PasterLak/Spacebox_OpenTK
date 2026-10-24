@@ -38,9 +38,11 @@ public static class ShipRider
         var delta = _entity.Orientation * Quaternion.Invert(_lastOrientation);
         if (MathF.Abs(MathF.Abs(delta.W) - 1f) < 1e-7f) return;
 
-        player.SetRotation(delta * player.GetRotation());
+        if (TurnsView(ShipPilot.IsSeated, ShipPilot.IsUsingCamera)) player.SetRotation(delta * player.GetRotation());
         player.InertiaController.Velocity = Vector3.Transform(player.InertiaController.Velocity, delta);
     }
+
+    public static bool TurnsView(bool seated, bool usingCamera) => !seated || usingCamera;
 
     public static void Capture(LocalAstronaut player)
     {
