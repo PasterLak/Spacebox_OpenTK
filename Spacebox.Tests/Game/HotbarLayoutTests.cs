@@ -50,4 +50,15 @@ public class HotbarLayoutTests
         Assert.Equal(2, mode.Rules.HotbarRows);
         Assert.Equal(40, HotbarLayout.ActiveSlots(mode.Rules));
     }
+
+    [Fact]
+    public void Bars_KeepTheWidthOfTenSlots()
+    {
+        float ten = Spacebox.Game.GUI.Canvas.HudView.BarsWidth(43f, 4f, 10, 12f);
+
+        Assert.Equal(12f + 430f + 36f, ten);
+        Assert.Equal(ten, Spacebox.Game.GUI.Canvas.HudView.BarsWidth(43f, 4f, 15, 12f));
+        Assert.Equal(ten, Spacebox.Game.GUI.Canvas.HudView.BarsWidth(43f, 4f, 20, 12f));
+        Assert.True(Spacebox.Game.GUI.Canvas.HudView.BarsWidth(43f, 4f, 5, 12f) < ten);
+    }
 }

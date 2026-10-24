@@ -60,6 +60,7 @@ public sealed class HudView : SafeArea
             _bars.AddChild(bar);
         }
 
+        _bars.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
         _column.AddChild(_bars);
         _column.AddChild(_hotbarPanel);
         _hotbarPanel.AddChild(_hotbar);
@@ -141,11 +142,22 @@ public sealed class HudView : SafeArea
 
         float spacing = GetThemeConstant("slot_spacing", 0f);
         float size = FitSlotSize(Size.X - SideMargin * 2f - 24f, _builtPerRow, spacing);
-        if (size == _slotSize) return;
+        if (size != _slotSize)
+        {
+            _slotSize = size;
+            var minimum = new Vector2(size, size);
+            for (int i = 0; i < _slots.Count; i++) _slots[i].CustomMinimumSize = minimum;
+        }
 
-        _slotSize = size;
-        var minimum = new Vector2(size, size);
-        for (int i = 0; i < _slots.Count; i++) _slots[i].CustomMinimumSize = minimum;
+        float chrome = _hotbarPanel.GetThemeStyleBox("panel")?.MinimumSize.X ?? 0f;
+        float width = BarsWidth(_slotSize, spacing, _builtPerRow, chrome);
+        if (_bars.CustomMinimumSize.X != width) _bars.CustomMinimumSize = new Vector2(width, 0f);
+    }
+
+    public static float BarsWidth(float slotSize, float spacing, int slotsPerRow, float chrome)
+    {
+        int slots = Math.Min(Player.GameModes.HotbarLayout.DefaultSlotsPerRow, Math.Max(1, slotsPerRow));
+        return chrome + slots * slotSize + (slots - 1) * spacing;
     }
 
     private void Rebuild(Storage storage, int activeSlots, int slotsPerRow)

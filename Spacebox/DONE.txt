@@ -79,6 +79,7 @@ New
 - servers share texture packs: TexturePacks in serverconfig.json (a host shares its enabled packs), downloaded and checked with the GameSet like extensions, shown below the player's own packs
 - multiplayer: the server checks every player's items (survival): pickups, chests, crafting, gifts, placing blocks, dropping and tutorial rewards are counted on the server; items a client creates by itself are removed again. No delay for the player
 Small
+- health, oxygen and power bars keep the width of a 10 slot hotbar when the hotbar is longer
 - Options > Game > Movement: Auto Sprint and Auto Jump (one block steps in gravity), both off by default
 - item tooltips show the item id in modes with the creative inventory (hotbar, inventory, storage, machines)
 - steel sign: 6 lines of 32 characters
