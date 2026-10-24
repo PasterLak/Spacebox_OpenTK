@@ -25,14 +25,14 @@ public sealed class SkinCommand : PlayerTargetCommand<string>
 
     protected override void ApplyLocal(LocalAstronaut player, string request)
     {
-        PlayerSkinStore.Set(GameSession.PlayerName, request);
+        GameScene.Current?.Skins.Set(GameSession.PlayerName, request);
         if (AstronautNetwork.Local != null) AstronautNetwork.Local.SetSkinByServer(request);
         else player.SetSkinColor(request);
     }
 
     protected override void ApplyRemote(AstronautNetwork player, string request)
     {
-        PlayerSkinStore.Set(player.PlayerName, request);
+        GameScene.Current?.Skins.Set(player.PlayerName, request);
         player.SetSkinByServer(request);
     }
 

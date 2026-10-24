@@ -11,7 +11,7 @@ namespace Spacebox.Game.GUI
     {
         public static bool LoadTags(string worldPath)
         {
-            if (string.IsNullOrEmpty(worldPath) || TagManager.Instance == null)
+            if (string.IsNullOrEmpty(worldPath) || GameScene.Current?.Tags == null)
             {
 
                 Debug.Error("[TagLoader] path is null or TagManager instance is null");
@@ -72,7 +72,7 @@ namespace Spacebox.Game.GUI
 
         public static bool SaveTags(string worldPath)
         {
-            if (string.IsNullOrEmpty(worldPath) || TagManager.Instance == null)
+            if (string.IsNullOrEmpty(worldPath) || GameScene.Current?.Tags == null)
             {
                 Debug.Error("[TagLoader] path is null or TagManager instance is null");
                 return false;
@@ -82,7 +82,7 @@ namespace Spacebox.Game.GUI
             {
                 Directory.CreateDirectory(worldPath);
 
-                var staticTags = TagManager.Instance.GetStaticTags();
+                var staticTags = GameScene.Current.Tags.GetStaticTags();
                 if (staticTags.Count == 0)
                 {
                     SaveDataFile.Delete(Path.Combine(worldPath, WorldFileLayout.TagsFile), Path.Combine(worldPath, WorldFileLayout.LegacyTagsFile));

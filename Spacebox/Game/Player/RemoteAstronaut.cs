@@ -42,9 +42,9 @@ namespace Spacebox.Game.Player
             _effects = AddChild(new PlayerEffects());
             _drillDust = new RemoteDrillDust(this);
 
-            if (TagManager.Instance != null)
+            if (GameScene.Current?.Tags != null)
             {
-                _nameTag = TagManager.Instance.CreateTag(playerName, position, Color4.White);
+                _nameTag = GameScene.Current.Tags.CreateTag(playerName, position, Color4.White);
                 _nameTag.TextAlignment = GUI.Tag.Alignment.Center;
             }
         }
@@ -109,7 +109,7 @@ namespace Spacebox.Game.Player
 
             if (_nameTag != null)
             {
-                TagManager.Instance?.ReleaseTag(_nameTag);
+                GameScene.Current?.Tags?.ReleaseTag(_nameTag);
                 _nameTag = null;
             }
 

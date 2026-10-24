@@ -77,9 +77,9 @@ public class BulkBlockEditTests
     [Fact]
     public void Selection_WithoutPoints_IsEmpty()
     {
-        CreativeTools.Reset();
+        var tools = new CreativeTools();
 
-        Assert.False(CreativeTools.TryGetSelection(out _, out _, out _));
+        Assert.False(tools.TryGetSelection(out _, out _, out _));
     }
 
     [Fact]

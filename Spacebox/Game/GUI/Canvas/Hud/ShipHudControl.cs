@@ -42,7 +42,9 @@ public sealed class ShipHudControl : HudOverlayControl
     {
         var font = GetThemeFont();
         if (Root == null || font == null) return;
-        ShipBindingTool.CollectLabels(_labels);
+        var binding = GameScene.Current?.Binding;
+        if (binding != null) binding.CollectLabels(_labels, ShipPilot.Console);
+        else _labels.Clear();
         foreach (var label in _labels)
         {
             var point = Root.ScreenToCanvas(label.Screen) - GlobalPosition;

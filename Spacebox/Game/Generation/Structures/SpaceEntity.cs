@@ -924,7 +924,7 @@ namespace Spacebox.Game.Generation
             else
             {
                 StringBuilder.Append(dis).Append(" m");
-                if (Mass > 0 && TagManager.Instance?.Radar?.ShowMass == true)
+                if (Mass > 0 && GameScene.Current?.Tags?.Radar?.ShowMass == true)
                 {
                     StringBuilder.Append("\n")
                       .Append(_entityMassString)
@@ -946,9 +946,9 @@ namespace Spacebox.Game.Generation
 
         private void EnsureTag(string text)
         {
-            if (tag != null || IsDisposed || TagManager.Instance == null) return;
+            if (tag != null || IsDisposed || GameScene.Current?.Tags == null) return;
 
-            tag = TagManager.Instance.CreateTag(text, CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
+            tag = GameScene.Current.Tags.CreateTag(text, CenterOfMassWorld, Color4.DarkGreen, false, GUI.Tag.Alignment.Right);
             tag.Category = GUI.Tag.TagCategory.Entity;
         }
 
@@ -1372,7 +1372,7 @@ namespace Spacebox.Game.Generation
             var t = tag;
             if (t != null)
             {
-                MainThreadDispatcher.Instance.Enqueue(() => TagManager.Instance?.ReleaseTag(t));
+                MainThreadDispatcher.Instance.Enqueue(() => GameScene.Current?.Tags?.ReleaseTag(t));
                 tag = null;
             }
         }

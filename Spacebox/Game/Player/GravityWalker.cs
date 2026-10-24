@@ -211,7 +211,7 @@ public sealed class GravityWalker
         IsSlowWalking = canMove && !_stance.IsCrouching && Input.IsAction("slow_walk");
         if (_stance.IsCrouching) return CrouchSpeed;
         if (IsSlowWalking) return SlowWalkSpeed;
-        return canMove && MovementAssists.WantsSprint(moving) ? RunSpeed : WalkSpeed;
+        return canMove && GameScene.Current?.Sprint.WantsSprint(moving) == true ? RunSpeed : WalkSpeed;
     }
 
     private void UpdateStance(LocalAstronaut player, bool wantsCrouch, float deltaTime)

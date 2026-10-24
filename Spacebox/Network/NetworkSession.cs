@@ -20,6 +20,7 @@ public sealed class NetworkSession : IDisposable
     public const string AutosaveReason = "Autosave";
 
     private readonly LocalAstronaut _localPlayer;
+    private readonly PlayerSkinStore _skins;
     private readonly PlayerSpawnService _playerSpawner;
     private readonly Npc.SpacerSpawnService _spacerSpawner;
     private readonly Mobs.MobSpawnService _mobSpawner;
@@ -38,10 +39,11 @@ public sealed class NetworkSession : IDisposable
     public Npc.SpacerSpawnService Spacers => _spacerSpawner;
     public Mobs.MobSpawnService Mobs => _mobSpawner;
 
-    public NetworkSession(Node3D root, LocalAstronaut localPlayer)
+    public NetworkSession(Node3D root, LocalAstronaut localPlayer, PlayerSkinStore skins)
     {
         Current = this;
         _localPlayer = GameSession.HasLocalPlayer ? localPlayer : null;
+        _skins = skins;
         Items.ItemSync.Reset();
         Items.ItemAuthority.Clear();
 
@@ -419,7 +421,7 @@ public sealed class NetworkSession : IDisposable
         int peer = NetworkManager.Instance.LocalPeerId;
         var player = new ConnectedPlayer { Peer = peer, Name = GameSession.PlayerName, SkinColor = GameSession.SkinColor };
         PlayerRegistry.Add(player);
-        player.PlayerObject = _playerSpawner.SpawnPlayer(peer, player.Name, PlayerSkinStore.Resolve(player.Name, player.SkinColor), _localPlayer.Position, _localPlayer.GetRotation());
+        player.PlayerObject = _playerSpawner.SpawnPlayer(peer, player.Name, _skins.Resolve(player.Name, player.SkinColor), _localPlayer.Position, _localPlayer.GetRotation());
     }
 
     private const string NameTakenReason = "Name is already taken";
@@ -558,7 +560,7 @@ public sealed class NetworkSession : IDisposable
         ProtectionNetwork.SendTo(sender);
         ClaimNetwork.SendSettingsTo(sender);
         ServerRulesNetwork.SendTo(sender);
-        player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, PlayerSkinStore.Resolve(player.Name, player.SkinColor), Vector3.Zero, Quaternion.Identity);
+        player.PlayerObject = _playerSpawner.SpawnPlayer(sender, player.Name, _skins.Resolve(player.Name, player.SkinColor), Vector3.Zero, Quaternion.Identity);
         PlayerListNetwork.MarkDirty();
         Statistics.ServerStatisticsService.PlayerJoined(player.Name, PlayerRegistry.All.Count);
         ChatService.Broadcast($"{player.Name} joined the game", Color4.Yellow);

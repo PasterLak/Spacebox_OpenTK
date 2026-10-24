@@ -2,5 +2,5 @@
 
 public class InteractionEraser : InteractionAreaTool
 {
-    protected override void Confirm() => CreativeTools.DeleteBlocks();
+    protected override void Confirm() => Tools.DeleteBlocks();
 }

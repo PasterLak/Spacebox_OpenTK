@@ -28,6 +28,17 @@ public abstract class InteractionAreaTool : InteractionMode
     private Color4 leftColor = new Color3Byte(226, 87, 76).ToColor4();
     private Color4 rightColor = new Color3Byte(38, 166, 209).ToColor4();
 
+    protected InteractionAreaTool() : this(GameScene.Current?.Creative ?? new CreativeTools())
+    {
+    }
+
+    protected InteractionAreaTool(CreativeTools tools)
+    {
+        Tools = tools;
+    }
+
+    protected CreativeTools Tools { get; }
+
     protected abstract void Confirm();
 
     private const float MessageDuration = 2f;
@@ -80,7 +91,7 @@ public abstract class InteractionAreaTool : InteractionMode
             BlockSelector.Instance.SimpleBlock.Scale = new Vector3(1f, 1f, 1f);
         }
 
-        CreativeTools.Reset();
+        Tools.Reset();
 
         selection?.Dispose();
         cube1?.Dispose();
@@ -129,15 +140,15 @@ public abstract class InteractionAreaTool : InteractionMode
             return;
         }
 
-        bool isPoint1 = IsSelected(CreativeTools.Block1, entity, cell);
-        bool isPoint2 = IsSelected(CreativeTools.Block2, entity, cell);
+        bool isPoint1 = IsSelected(Tools.Block1, entity, cell);
+        bool isPoint2 = IsSelected(Tools.Block2, entity, cell);
 
         if (isPoint1 || isPoint2) pointer.Hide();
         else pointer.Show(entity, cell, cell);
 
         if (Input.IsMouseButtonDown(MouseButton.Middle))
         {
-            CreativeTools.Reset();
+            Tools.Reset();
         }
 
         if (Input.IsKeyDown(Keys.Enter))
@@ -147,12 +158,12 @@ public abstract class InteractionAreaTool : InteractionMode
 
         if (Input.IsMouseButtonDown(MouseButton.Right))
         {
-            CreativeTools.SetPoint2(CreatePointer(entity, cell));
+            Tools.SetPoint2(CreatePointer(entity, cell));
         }
 
         if (Input.IsMouseButtonDown(MouseButton.Left))
         {
-            CreativeTools.SetPoint1(CreatePointer(entity, cell));
+            Tools.SetPoint1(CreatePointer(entity, cell));
         }
     }
 
@@ -176,10 +187,10 @@ public abstract class InteractionAreaTool : InteractionMode
             return;
         }
 
-        ShowPoint(cube1, CreativeTools.Block1);
-        ShowPoint(cube2, CreativeTools.Block2);
+        ShowPoint(cube1, Tools.Block1);
+        ShowPoint(cube2, Tools.Block2);
 
-        if (CreativeTools.TryGetSelection(out var entity, out var min, out var max))
+        if (Tools.TryGetSelection(out var entity, out var min, out var max))
             selection.Show(entity, min, max);
         else
             selection.Hide();

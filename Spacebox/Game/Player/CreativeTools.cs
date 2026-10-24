@@ -8,26 +8,26 @@ using Spacebox.Network;
 
 namespace Spacebox.Game.Player
 {
-    public class CreativeTools
+    public sealed class CreativeTools
     {
-        public static BlockPointer Block1 { get; private set; } = null;
-        public static BlockPointer Block2 { get; private set; } = null;
-        public static short FillBlockId { get; set; }
-        public static Spacebox.Game.Player.Building.BlockClipboard Clipboard { get; set; }
+        public BlockPointer Block1 { get; private set; } = null;
+        public BlockPointer Block2 { get; private set; } = null;
+        public short FillBlockId { get; set; }
+        public Spacebox.Game.Player.Building.BlockClipboard Clipboard { get; set; }
 
-        public static void SetPoint1(BlockPointer blockPointer)
+        public void SetPoint1(BlockPointer blockPointer)
         {
             Block1 = blockPointer;
             if (Block2 != null && Block2.spaceEntity != blockPointer?.spaceEntity) Block2 = null;
         }
 
-        public static void SetPoint2(BlockPointer blockPointer)
+        public void SetPoint2(BlockPointer blockPointer)
         {
             Block2 = blockPointer;
             if (Block1 != null && Block1.spaceEntity != blockPointer?.spaceEntity) Block1 = null;
         }
 
-        public static void AddBlock(BlockPointer blockPointer)
+        public void AddBlock(BlockPointer blockPointer)
         {
             if (Block1 == null)
             {
@@ -51,7 +51,7 @@ namespace Spacebox.Game.Player
             }
         }
 
-        public static bool TryGetSelection(out SpaceEntity entity, out Vector3i min, out Vector3i max)
+        public bool TryGetSelection(out SpaceEntity entity, out Vector3i min, out Vector3i max)
         {
             var first = Block1 ?? Block2;
             var second = Block1 != null && Block2 != null && Block2.spaceEntity == Block1.spaceEntity ? Block2 : first;
@@ -66,7 +66,7 @@ namespace Spacebox.Game.Player
             return true;
         }
 
-        public static void DeleteBlocks()
+        public void DeleteBlocks()
         {
             if (Block1?.spaceEntity == null || Block2?.spaceEntity == null || Block1.spaceEntity != Block2.spaceEntity)
             {
@@ -92,7 +92,7 @@ namespace Spacebox.Game.Player
             ApplyBox(blockId);
         }
 
-        public static void FillBlocks(short blockId)
+        public void FillBlocks(short blockId)
         {
             if (blockId == BulkBlockEdit.EraseBlockId || Block1?.spaceEntity == null || Block2?.spaceEntity == null || Block1.spaceEntity != Block2.spaceEntity)
             {
@@ -103,22 +103,15 @@ namespace Spacebox.Game.Player
             ApplyBox(blockId);
         }
 
-        public static bool HasFullSelection => Block1?.spaceEntity != null && Block2?.spaceEntity != null && Block1.spaceEntity == Block2.spaceEntity;
+        public bool HasFullSelection => Block1?.spaceEntity != null && Block2?.spaceEntity != null && Block1.spaceEntity == Block2.spaceEntity;
 
-        public static void ClearSession()
-        {
-            Reset();
-            FillBlockId = 0;
-            Clipboard = null;
-        }
-
-        private static void ApplyBox(short blockId)
+        private void ApplyBox(short blockId)
         {
             if (Spacebox.Game.Protection.EntityProtection.CheckLocalEditBox(Block1.spaceEntity, Vector3i.ComponentMin(Block1.Cell, Block2.Cell), Vector3i.ComponentMax(Block1.Cell, Block2.Cell))) WorldEditNetwork.RequestBulkEdit(Block1.spaceEntity, Block1.Cell, Block2.Cell, blockId);
             Reset();
         }
 
-        public static void Reset()
+        public void Reset()
         {
             Block1 = null;
             Block2 = null;

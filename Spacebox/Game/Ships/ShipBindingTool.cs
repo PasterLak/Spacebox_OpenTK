@@ -11,7 +11,7 @@ using Spacebox.Network;
 
 namespace Spacebox.Game.Ships;
 
-public static class ShipBindingTool
+public sealed class ShipBindingTool
 {
     private const float Reach = 48f;
     private const float Thin = 0.035f;
@@ -22,41 +22,40 @@ public static class ShipBindingTool
     private static readonly Color4 CameraColor = new Color4(1f, 1f, 1f, 1f);
     private static readonly Color4 HoverColor = new Color4(1f, 1f, 0.6f, 1f);
 
-    private static ShipOutlineRenderer _outlines;
-    private static IShipPart _hovered;
+    private ShipOutlineRenderer _outlines;
+    private IShipPart _hovered;
 
-    public static bool IsActive { get; private set; }
-    public static IShipPart Hovered => _hovered;
+    public bool IsActive { get; private set; }
+    public IShipPart Hovered => _hovered;
 
-    public static void Toggle()
+    public void Toggle(ShipConsoleBlock console)
     {
         if (IsActive) Exit();
-        else Enter();
+        else Enter(console);
     }
 
-    public static void Enter()
+    public void Enter(ShipConsoleBlock console)
     {
-        if (!ShipPilot.IsPiloting) return;
+        if (console == null) return;
         IsActive = true;
         _hovered = null;
     }
 
-    public static void Exit()
+    public void Exit()
     {
         IsActive = false;
         _hovered = null;
     }
 
-    public static void Reset()
+    public void Reset()
     {
         Exit();
         _outlines?.Dispose();
         _outlines = null;
     }
 
-    public static void Update(LocalAstronaut player)
+    public void Update(LocalAstronaut player, ShipConsoleBlock console)
     {
-        var console = ShipPilot.Console;
         if (!IsActive || console?.Entity == null)
         {
             Exit();
@@ -87,10 +86,9 @@ public static class ShipBindingTool
 
     public readonly record struct Label(Vector2 Screen, string Text, Color4 Color);
 
-    public static void CollectLabels(List<Label> labels)
+    public void CollectLabels(List<Label> labels, ShipConsoleBlock console)
     {
         labels.Clear();
-        var console = ShipPilot.Console;
         var entity = console?.Entity;
         var camera = Camera.Main;
         if (!IsActive || entity == null || camera == null) return;
@@ -136,9 +134,8 @@ public static class ShipBindingTool
         return 0;
     }
 
-    public static void Render()
+    public void Render(ShipConsoleBlock console)
     {
-        var console = ShipPilot.Console;
         var entity = console?.Entity;
         if (!IsActive || entity == null) return;
 
@@ -162,9 +159,8 @@ public static class ShipBindingTool
         _outlines.Render();
     }
 
-    public static string DescribeHovered()
+    public string DescribeHovered(ShipConsoleBlock console)
     {
-        var console = ShipPilot.Console;
         var bindings = console?.Entity?.ShipControl.GetBindings(console.LocalCell);
         if (_hovered == null || bindings == null) return null;
 
@@ -177,7 +173,7 @@ public static class ShipBindingTool
         return group < 0 ? "Not bound" : $"Group {group + 1} ({ShipKeys.GetName(bindings.GetKey(group))})";
     }
 
-    private static void AddOutline(IShipPart part, Color4 color, float thickness, float grow = 0f)
+    private void AddOutline(IShipPart part, Color4 color, float thickness, float grow = 0f)
     {
         if (part?.Entity == null) return;
         _outlines.Add(part.Entity, part.Frame.Center, part.Frame.Size + new Vector3(grow), color, thickness);

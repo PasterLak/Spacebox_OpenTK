@@ -1,21 +1,22 @@
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
+using Spacebox.Game.Generation.Blocks;
 using Spacebox.Game.Player;
 
 namespace Spacebox.Game.Ships;
 
-public static class ShipRider
+public sealed class ShipRider
 {
-    private static SpaceEntity _entity;
-    private static Vector3 _localPosition;
-    private static Quaternion _lastOrientation = Quaternion.Identity;
-    private static Vector3 _capturedWorldPosition;
-    private static bool _hasState;
+    private SpaceEntity _entity;
+    private Vector3 _localPosition;
+    private Quaternion _lastOrientation = Quaternion.Identity;
+    private Vector3 _capturedWorldPosition;
+    private bool _hasState;
 
-    public static SpaceEntity BoardedEntity => _entity;
-    public static bool IsBoarded => _entity != null;
+    public SpaceEntity BoardedEntity => _entity;
+    public bool IsBoarded => _entity != null;
 
-    public static void Carry(LocalAstronaut player)
+    public void Carry(LocalAstronaut player)
     {
         if (_entity == null || !_hasState) return;
 
@@ -44,9 +45,9 @@ public static class ShipRider
 
     public static bool TurnsView(bool seated, bool usingCamera) => !seated || usingCamera;
 
-    public static void Capture(LocalAstronaut player)
+    public void Capture(LocalAstronaut player, ShipConsoleBlock pilotConsole)
     {
-        UpdateBoarding(player);
+        UpdateBoarding(player, pilotConsole);
 
         if (_entity == null)
         {
@@ -60,7 +61,7 @@ public static class ShipRider
         _hasState = true;
     }
 
-    public static void Board(LocalAstronaut player, SpaceEntity entity)
+    public void Board(LocalAstronaut player, SpaceEntity entity)
     {
         if (entity == null || entity == _entity) return;
         if (_entity != null) Leave(player);
@@ -71,7 +72,7 @@ public static class ShipRider
             player.InertiaController.Velocity -= entity.Ship.GetPointVelocity(player.Position);
     }
 
-    public static void Leave(LocalAstronaut player)
+    public void Leave(LocalAstronaut player)
     {
         if (_entity == null) return;
 
@@ -82,17 +83,17 @@ public static class ShipRider
         _hasState = false;
     }
 
-    public static void Reset()
+    public void Reset()
     {
         _entity = null;
         _hasState = false;
     }
 
-    private static void UpdateBoarding(LocalAstronaut player)
+    private void UpdateBoarding(LocalAstronaut player, ShipConsoleBlock pilotConsole)
     {
-        if (ShipPilot.IsPiloting)
+        if (pilotConsole != null)
         {
-            var pilotEntity = ShipPilot.Console?.Entity;
+            var pilotEntity = pilotConsole.Entity;
             if (pilotEntity != null && pilotEntity != _entity) Board(player, pilotEntity);
             return;
         }

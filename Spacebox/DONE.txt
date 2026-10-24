@@ -435,6 +435,7 @@ Fixes
 - welcome window: closing it with Esc/Tab saves the choice and starts or declines the tutorial, the controls key follows the binding; pause keeps F8/death-screen HUD state, no waypoints or ship library while dead
 - new players get the world mode's start items and a safe spawn after the world loads (saved-dead players too, with spawn stats); Esc unbinds console keys instead of closing; game mode changes count as unsaved; storage window closes when its block is destroyed; tutorial texts (gravity power, obscurium drill, power item name)
 Engine
+- scene-owned GameScene context (GameScene.Current) holds creative tools, local pilot, skins, world rules, sprint toggle, claim visuals, picture frames, machine sounds and tags instead of statics reset on unload
 - Debug builds name where a leaked resource was created in the "Disposing controlled resource" error
 - worker pool: one allocation per job, below-normal worker priority, continuations off the workers, pending jobs cancelled on shutdown, unused dedicated workers removed
 - Lighting.ResetToDefaults() (ambient, fog)

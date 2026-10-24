@@ -1,4 +1,5 @@
 using OpenTK.Mathematics;
+using Spacebox.Game;
 using Spacebox.Game.Mobs;
 using Spacebox.Game.Rules;
 using Spacebox.Network.Dedicated;
@@ -88,7 +89,7 @@ public static class ServerRulesService
     private static void Save()
     {
         if (DedicatedServer.Config != null) DedicatedServer.Config.Save();
-        else if (!GameSession.IsRemoteClient) WorldRulesStore.Save();
+        else if (!GameSession.IsRemoteClient) GameScene.Current?.WorldRules.Save();
     }
 
     private static void SetFriendlyMobs(bool value)

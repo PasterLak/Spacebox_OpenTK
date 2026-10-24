@@ -59,6 +59,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
     protected SpaceSceneArgs SceneArgs;
     protected RadarUI radarWindow;
     protected GameUi ui;
+    protected GameScene scene;
 
     private FreeCamera freeCamera;
     private NetworkSession _networkSession;
@@ -82,6 +83,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
     public override void LoadContent()
     {
+        scene = new GameScene();
+        scene.MakeCurrent();
         ui = new GameUi();
         ui.MakeCurrent();
         GameTime.Init();
@@ -106,8 +109,8 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Protection.ClaimRegistry.Load(World.WorldData.WorldFolderPath);
         if (GameSession.IsRemoteClient) Spacebox.Network.Players.PlayerGameModes.Current.Reset();
         else Spacebox.Network.Players.PlayerGameModes.Current.Load(World.WorldData.WorldFolderPath);
-        if (!GameSession.IsRemoteClient && !GameSession.IsDedicated) Spacebox.Game.Rules.WorldRulesStore.Load(World.WorldData.WorldFolderPath);
-        if (!GameSession.IsRemoteClient) Spacebox.Network.Players.PlayerSkinStore.Load(World.WorldData.WorldFolderPath);
+        if (!GameSession.IsRemoteClient && !GameSession.IsDedicated) scene.WorldRules.Load(World.WorldData.WorldFolderPath);
+        if (!GameSession.IsRemoteClient) scene.Skins.Load(World.WorldData.WorldFolderPath);
         blockMaterial = new BlockMaterial(GameAssets.BlocksTexture, GameAssets.EmissionBlocks);
         var world = new World(localPlayer, blockMaterial);
         AttachComponent(world);
@@ -195,7 +198,9 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
 
         AddChild(new ProjectileHitEffectsManager());
         AddChild(new DirectionalLight());
-        AttachComponent(new TagManager()).RadarSource = () => localPlayer.Radar;
+        var tags = AttachComponent(new TagManager());
+        tags.RadarSource = () => localPlayer.Radar;
+        scene.AttachTags(tags);
         AttachComponent(new MobSystem());
 
         TagsSaveLoader.LoadTags(World.WorldData.WorldFolderPath);
@@ -209,7 +214,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         }
 
         ConnectionScreen.Hide();
-        _networkSession = new NetworkSession(this, localPlayer);
+        _networkSession = new NetworkSession(this, localPlayer, scene.Skins);
         if (!_networkSession.Start() && GameSession.IsRemoteClient)
         {
             ConnectionScreen.ShowMessage("Connection failed", "Lost the connection to the server while loading");
@@ -262,7 +267,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Protection.ClaimRegistry.Update(Time.Delta);
         Spacebox.Game.Rendering.VignetteController.SetWarning(Spacebox.Game.Player.OxygenWarning.For(localPlayer));
         Spacebox.Game.Player.LowOxygenAlarm.Update(localPlayer, Time.Delta, ui.Loading.IsActive);
-        Spacebox.Game.Effects.Machines.MachineSounds.Update(Time.Delta);
+        scene.MachineSounds.Update(Time.Delta);
 
 #if DEBUG
         if (Input.IsKeyDown(Keys.R))
@@ -334,7 +339,7 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         _flashlightBeams?.Render();
         if (Spacebox.Game.Rendering.WorldPreviewCapture.IsActive) return;
         _bodyOutlines?.Render();
-        Spacebox.Game.Protection.ClaimVisuals.Update(localPlayer, Time.Delta);
+        scene.Claims.Update(localPlayer, Time.Delta);
         if (VisualDebug.Enabled)
         {
             VisualDebug.DrawAxes(Vector3.Zero, 10f);
@@ -391,29 +396,22 @@ public abstract class BaseSpaceScene : Scene, ISceneWithArgs<SpaceSceneArgs>
         Spacebox.Game.Protection.EntityProtection.Reset();
         Spacebox.Game.Protection.ClaimRegistry.Reset();
         Spacebox.Network.Players.PlayerGameModes.Current.Reset();
-        Spacebox.Game.Protection.ClaimVisuals.Reset();
         Spacebox.Game.Protection.ClaimSettings.ClearOverride();
-        CreativeTools.ClearSession();
-        Spacebox.Game.Player.MovementAssists.Reset();
-        Spacebox.Game.Pictures.PictureFrameInteraction.Reset();
-        Spacebox.Network.Players.PlayerSkinStore.Reset();
+        Spacebox.Network.PictureFrameNetwork.Reset();
         if (!GameSession.IsDedicated)
         {
             Spacebox.Game.Rules.ServerRules.ResetSession();
-            Spacebox.Game.Rules.WorldRulesStore.Reset();
             Spacebox.Game.Mobs.MobRules.FriendlyMobs = false;
         }
         Spacebox.Game.Pictures.PictureTextures.Clear();
-        ShipPilot.Reset();
+        scene.Dispose();
         Spacebox.Game.Rendering.CameraFeedController.Reset();
         Spacebox.Game.Rendering.BodyOutlineRenderer.Reset();
         Spacebox.Game.Rendering.FlashlightGlareController.Reset();
         Spacebox.Game.Rendering.VignetteController.SetWarning(0f);
-        ShipRider.Reset();
         Spacebox.Game.Generation.Blocks.BlockDamageVisuals.Instance.Reset();
         Spacebox.Game.Generation.Doors.DoorSounds.Clear();
         Spacebox.Game.Effects.BlockEventSounds.Clear();
-        Spacebox.Game.Effects.Machines.MachineSounds.Clear();
         Spacebox.Game.Player.LowOxygenAlarm.Reset();
         Spacebox.Game.Player.EquipmentSounds.Clear();
         Spacebox.Game.GUI.Sounds.UiSounds.Dispose();

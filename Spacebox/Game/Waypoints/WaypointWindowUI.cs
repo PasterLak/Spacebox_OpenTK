@@ -26,7 +26,7 @@ public sealed class WaypointWindowUI : IGameUiController
 
     public void Update()
     {
-        if (_chat.FocusInput || Debug.IsVisible || TagManager.Instance == null) return;
+        if (_chat.FocusInput || Debug.IsVisible || GameScene.Current?.Tags == null) return;
         if (Spacebox.Game.GUI.Canvas.GameCanvas.WantsKeyboard) return;
         if (!InputManager.Instance.HasAction(ToggleAction) || !Input.IsActionDown(ToggleAction)) return;
 

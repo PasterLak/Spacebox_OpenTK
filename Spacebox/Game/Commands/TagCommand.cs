@@ -44,7 +44,7 @@ namespace Spacebox.Game.Commands
             if (args[0] == "delete")
             {
 
-                TagManager.Instance.ReleaseTagByText(args[1]);
+                GameScene.Current.Tags.ReleaseTagByText(args[1]);
                 Debug.Success("Tag deleted!: " + args[1]);
 
             }
@@ -53,7 +53,7 @@ namespace Spacebox.Game.Commands
             {
 
 
-                if (TagManager.Instance.TryGetTagByName(args[1], out var tag))
+                if (GameScene.Current.Tags.TryGetTagByName(args[1], out var tag))
                 {
                     tag.Visible = !tag.Visible;
                     Debug.Success("Tag visibility changed!: " + args[1] + " to " + tag.Visible);
@@ -68,7 +68,7 @@ namespace Spacebox.Game.Commands
             else if (args[0] == "create")
             {
 
-                TagManager.Instance.CreateTag(args[1], Astronaut.Position, Color4.Yellow, true);
+                GameScene.Current.Tags.CreateTag(args[1], Astronaut.Position, Color4.Yellow, true);
                 Debug.Success("Tag added!: " + args[1]);
                 Spacebox.Game.Player.PlayerActivity.Raise(Spacebox.Game.Player.PlayerActivityKind.WaypointCreated);
 
@@ -80,7 +80,7 @@ namespace Spacebox.Game.Commands
                     var b = int.Parse(args[3]);
 
 
-                    TagManager.Instance.CreateTag(args[1], Astronaut.Position, new Color4(r, g, b, 1), true);
+                    GameScene.Current.Tags.CreateTag(args[1], Astronaut.Position, new Color4(r, g, b, 1), true);
 
                     Debug.Success("Tag added!: " + args[1]);
                 }

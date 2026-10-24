@@ -5,11 +5,11 @@ using Spacebox.Network;
 
 namespace Spacebox.Game.Pictures;
 
-public static class PictureFrameInteraction
+public sealed class PictureFrameInteraction
 {
-    private static bool _pending;
+    private bool _pending;
 
-    public static void Use(PictureFrameBlock frame, LocalAstronaut player)
+    public void Use(PictureFrameBlock frame, LocalAstronaut player)
     {
         if (_pending || frame == null || player == null) return;
 
@@ -29,11 +29,6 @@ public static class PictureFrameInteraction
         });
     }
 
-    public static void Reset()
-    {
-        _pending = false;
-        PictureFrameNetwork.Reset();
-    }
 
     private static void TakeFromHand(LocalAstronaut player, ItemSlot slot, PictureItem picture)
     {

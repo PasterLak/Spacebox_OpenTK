@@ -13,7 +13,7 @@ public static class WaypointService
     public static IReadOnlyList<Tag> Collect()
     {
         _waypoints.Clear();
-        TagManager.Instance?.CollectStaticTags(_waypoints);
+        GameScene.Current?.Tags?.CollectStaticTags(_waypoints);
         _waypoints.Sort((a, b) => string.Compare(a.Text, b.Text, StringComparison.OrdinalIgnoreCase));
         return _waypoints;
     }
@@ -32,13 +32,13 @@ public static class WaypointService
 
     public static Tag Add(Vector3 position)
     {
-        if (TagManager.Instance == null) return null;
+        if (GameScene.Current?.Tags == null) return null;
 
         var waypoints = Collect();
         _names.Clear();
         for (int i = 0; i < waypoints.Count; i++) _names.Add(waypoints[i].Text);
 
-        var tag = TagManager.Instance.CreateTag(WaypointDefaults.NextName(_names), position, WaypointDefaults.ColorFor(waypoints.Count), true);
+        var tag = GameScene.Current.Tags.CreateTag(WaypointDefaults.NextName(_names), position, WaypointDefaults.ColorFor(waypoints.Count), true);
         PlayerActivity.Raise(PlayerActivityKind.WaypointCreated);
         Save();
         return tag;
@@ -46,9 +46,9 @@ public static class WaypointService
 
     public static void Remove(Tag tag)
     {
-        if (tag == null || TagManager.Instance == null) return;
+        if (tag == null || GameScene.Current?.Tags == null) return;
 
-        TagManager.Instance.ReleaseTag(tag);
+        GameScene.Current.Tags.ReleaseTag(tag);
         Save();
     }
 

@@ -7,8 +7,6 @@ namespace Spacebox.Game.GUI
 {
     public class TagManager : Component
     {
-        public static TagManager Instance { get; private set; }
-
         private readonly HashSet<Tag> _activeTags = new HashSet<Tag>();
         private readonly List<Tag> _visibleTags = new List<Tag>(256);
         private Vector2 _screenSize;
@@ -19,7 +17,6 @@ namespace Spacebox.Game.GUI
 
         public TagManager()
         {
-            Instance = this;
             _screenSize = SpaceboxWindow.Instance.ClientSize;
             InitializePool();
         }
@@ -106,7 +103,7 @@ namespace Spacebox.Game.GUI
             ClearAllTags();
             _tagPool = null;
             SpaceboxWindow.OnResized -= OnResized;
-            Instance = null;
+            GameScene.Current?.DetachTags(this);
         }
 
         public readonly struct ScreenTag

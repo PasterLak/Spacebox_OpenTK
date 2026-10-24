@@ -5,12 +5,12 @@ using Spacebox.Game.Mobs;
 
 namespace Spacebox.Game.Rules;
 
-public static class WorldRulesStore
+public sealed class WorldRulesStore
 {
     public const string FileName = "rules.nbt";
     public const string LegacyFileName = "rules.json";
 
-    private static string _worldFolder;
+    private string _worldFolder;
 
     private sealed class WorldRulesFile
     {
@@ -18,7 +18,7 @@ public static class WorldRulesStore
         public bool FriendlyMobs { get; set; }
     }
 
-    public static void Load(string worldFolder)
+    public void Load(string worldFolder)
     {
         _worldFolder = worldFolder;
         var path = PathOf(worldFolder);
@@ -39,7 +39,7 @@ public static class WorldRulesStore
         }
     }
 
-    public static void Save()
+    public void Save()
     {
         var path = PathOf(_worldFolder);
         if (path == null) return;
@@ -54,8 +54,6 @@ public static class WorldRulesStore
             Debug.Error($"[WorldRules] Failed to write {path}: {ex.Message}");
         }
     }
-
-    public static void Reset() => _worldFolder = null;
 
     private static string PathOf(string worldFolder) => string.IsNullOrEmpty(worldFolder) ? null : Path.Combine(worldFolder, FileName);
 

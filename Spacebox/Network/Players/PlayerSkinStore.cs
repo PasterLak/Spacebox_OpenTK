@@ -4,19 +4,19 @@ using Spacebox.Game.Player;
 
 namespace Spacebox.Network.Players;
 
-public static class PlayerSkinStore
+public sealed class PlayerSkinStore
 {
     public const string FileName = "skins.nbt";
 
-    private static readonly Dictionary<string, string> _skins = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-    private static string _worldFolder;
+    private readonly Dictionary<string, string> _skins = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    private string _worldFolder;
 
     private sealed class SkinsFile
     {
         public Dictionary<string, string> Players { get; set; } = new Dictionary<string, string>();
     }
 
-    public static void Load(string worldFolder)
+    public void Load(string worldFolder)
     {
         _skins.Clear();
         _worldFolder = worldFolder;
@@ -36,26 +36,20 @@ public static class PlayerSkinStore
         }
     }
 
-    public static string Resolve(string playerName, string chosenSkin)
+    public string Resolve(string playerName, string chosenSkin)
     {
         if (!string.IsNullOrEmpty(playerName) && _skins.TryGetValue(playerName, out var skin)) return skin;
         return AstronautSkins.Normalize(chosenSkin);
     }
 
-    public static void Set(string playerName, string skin)
+    public void Set(string playerName, string skin)
     {
         if (string.IsNullOrWhiteSpace(playerName) || !AstronautSkins.TryNormalize(skin, out var name)) return;
         _skins[playerName] = name;
         Save();
     }
 
-    public static void Reset()
-    {
-        _skins.Clear();
-        _worldFolder = null;
-    }
-
-    private static void Save()
+    private void Save()
     {
         var path = PathOf(_worldFolder);
         if (path == null) return;

@@ -44,8 +44,9 @@ public sealed class ShipConsoleUI : IGameUiController
             if (console?.Entity == null || UIManager.IsUIMode) return null;
 
             float speed = console.Entity.Ship?.Motion.Velocity.Length ?? 0f;
-            return ShipBindingTool.IsActive
-                ? $"BINDING  {ShipBindingTool.DescribeHovered() ?? "Look at a ship block"}\nLMB / wheel: change group   {UseKeyName}: open door or back to seat"
+            var binding = GameScene.Current?.Binding;
+            return binding != null && binding.IsActive
+                ? $"BINDING  {binding.DescribeHovered(console) ?? "Look at a ship block"}\nLMB / wheel: change group   {UseKeyName}: open door or back to seat"
                 : $"Speed {speed:0.0} m/s\nInventory key: console   Use: leave";
         }
     }
@@ -55,7 +56,7 @@ public sealed class ShipConsoleUI : IGameUiController
         if (!ShipPilot.IsPiloting || Debug.IsVisible || _chat.FocusInput) return;
         if (UIManager.IsUIMode || !Input.IsActionDown("inventory")) return;
 
-        ShipBindingTool.Exit();
+        GameScene.Current?.Binding.Exit();
         _waitingGroup = -1;
         _skipOpenKey = true;
         UIManager.Open(WindowId);
@@ -109,7 +110,7 @@ public sealed class ShipConsoleUI : IGameUiController
     public void BindBlocks()
     {
         Close();
-        ShipBindingTool.Enter();
+        GameScene.Current?.Binding.Enter(ShipPilot.Console);
     }
 
     public void LeaveSeat()

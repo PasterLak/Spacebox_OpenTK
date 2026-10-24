@@ -8,7 +8,7 @@ public sealed class TagsOverlayControl : HudOverlayControl
     private readonly List<TagManager.ScreenTag> _tags = new List<TagManager.ScreenTag>(256);
     private float _viewportHeight = -1f;
 
-    protected override bool IsShown() => Settings.ShowInterface && TagManager.Instance != null;
+    protected override bool IsShown() => Settings.ShowInterface && GameScene.Current?.Tags != null;
 
     protected override void DrawOverlay(ICanvasRenderer renderer)
     {
@@ -22,7 +22,7 @@ public sealed class TagsOverlayControl : HudOverlayControl
 
         float scale = MathF.Max(0.01f, Root.Scale);
         var origin = GlobalPosition;
-        TagManager.Instance.CollectScreenTags(_tags);
+        GameScene.Current.Tags.CollectScreenTags(_tags);
         for (int i = 0; i < _tags.Count; i++)
         {
             var entry = _tags[i];

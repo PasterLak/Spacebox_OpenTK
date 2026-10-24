@@ -13,7 +13,7 @@ public sealed class InteractionFill : InteractionAreaTool
     public override void OnEnable()
     {
         base.OnEnable();
-        ShowMessage(CreativeTools.FillBlockId != 0 ? FillText(CreativeTools.FillBlockId) : PickHint);
+        ShowMessage(Tools.FillBlockId != 0 ? FillText(Tools.FillBlockId) : PickHint);
     }
 
     protected override bool HandleToolInput(SpaceEntity entity, Vector3i cell, Vector3i normal, Block aimedBlock)
@@ -28,26 +28,26 @@ public sealed class InteractionFill : InteractionAreaTool
             return true;
         }
 
-        CreativeTools.FillBlockId = aimedBlock.Id;
+        Tools.FillBlockId = aimedBlock.Id;
         ShowMessage(FillText(aimedBlock.Id));
         return true;
     }
 
     protected override void Confirm()
     {
-        if (CreativeTools.FillBlockId == 0)
+        if (Tools.FillBlockId == 0)
         {
             ShowMessage(PickHint);
             return;
         }
 
-        if (!CreativeTools.HasFullSelection)
+        if (!Tools.HasFullSelection)
         {
             ShowMessage("Select two corners first: LMB and RMB");
             return;
         }
 
-        CreativeTools.FillBlocks(CreativeTools.FillBlockId);
+        Tools.FillBlocks(Tools.FillBlockId);
     }
 
     private static bool IsPickHeld() => Input.IsKey(Keys.LeftAlt) || Input.IsKey(Keys.RightAlt);

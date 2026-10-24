@@ -29,7 +29,7 @@ public static class ClaimPlacement
     {
         if (block is not ClaimBeaconBlock beacon) return;
         beacon.SetOwner(Spacebox.Network.GameSession.PlayerName);
-        ClaimVisuals.Highlight(beacon);
+        GameScene.Current?.Claims.Highlight(beacon);
     }
 
     public static void AssignOwner(SpaceEntity entity, Vector3i cell, string owner)

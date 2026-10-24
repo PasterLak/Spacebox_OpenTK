@@ -253,9 +253,10 @@ namespace Spacebox.Game.Player
             Frustum.UpdateFrustum(this);
             if (IsFrozen) return;
 
-            if (IsControllingView) ShipRider.Carry(this);
+            var scene = GameScene.Current;
+            if (IsControllingView) scene?.Rider.Carry(this);
             UpdateControl();
-            if (IsControllingView) ShipRider.Capture(this);
+            if (IsControllingView) scene?.Rider.Capture(this, ShipPilot.Console);
             ShipPilot.UpdateViewCamera(this);
         }
 
@@ -442,7 +443,7 @@ namespace Spacebox.Game.Player
 
         private void ResetMotion()
         {
-            ShipRider.Reset();
+            GameScene.Current?.Rider.Reset();
             Gravity.Reset();
             InertiaController.Reset();
         }
@@ -520,7 +521,7 @@ namespace Spacebox.Game.Player
                 _gameModeBase.Render(this);
             }
 
-            if (IsControllingView) ShipBindingTool.Render();
+            if (IsControllingView) GameScene.Current?.Binding.Render(ShipPilot.Console);
         }
 
         public override void Destroy()

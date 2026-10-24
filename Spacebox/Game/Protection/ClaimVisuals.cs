@@ -8,7 +8,7 @@ using Spacebox.Game.Resource;
 
 namespace Spacebox.Game.Protection;
 
-public static class ClaimVisuals
+public sealed class ClaimVisuals
 {
     public const float HighlightSeconds = 3f;
     public const float HoldingViewDistance = 64f;
@@ -19,18 +19,18 @@ public static class ClaimVisuals
     private static readonly Color4 ForeignColor = new Color4(1f, 0.3f, 0.3f, 0.85f);
     private static readonly Color4 InactiveColor = new Color4(0.6f, 0.6f, 0.6f, 0.6f);
 
-    private static ClaimBeaconBlock _highlighted;
-    private static float _highlightTime;
-    private static ClaimBeaconBlock _currentForeign;
-    private static float _enterTimer;
+    private ClaimBeaconBlock _highlighted;
+    private float _highlightTime;
+    private ClaimBeaconBlock _currentForeign;
+    private float _enterTimer;
 
-    public static void Highlight(ClaimBeaconBlock beacon)
+    public void Highlight(ClaimBeaconBlock beacon)
     {
         _highlighted = beacon;
         _highlightTime = HighlightSeconds;
     }
 
-    public static void Update(LocalAstronaut player, float deltaTime)
+    public void Update(LocalAstronaut player, float deltaTime)
     {
         if (player == null || !ClaimSettings.Current.Enabled) return;
 
@@ -38,13 +38,6 @@ public static class ClaimVisuals
         DrawOutlines(player, deltaTime);
     }
 
-    public static void Reset()
-    {
-        _highlighted = null;
-        _highlightTime = 0f;
-        _currentForeign = null;
-        _enterTimer = 0f;
-    }
 
     public static bool IsHoldingBeacon()
     {
@@ -52,7 +45,7 @@ public static class ClaimVisuals
         return slot != null && slot.HasItem && slot.Item is BlockItem blockItem && GameAssets.GetBlockDataById(blockItem.BlockId) is ClaimBeaconBlockData;
     }
 
-    private static void DrawOutlines(LocalAstronaut player, float deltaTime)
+    private void DrawOutlines(LocalAstronaut player, float deltaTime)
     {
         var claimBeacon = GameUi.Current?.ClaimBeacon;
         var open = claimBeacon != null && claimBeacon.ShowZone ? claimBeacon.OpenBlock : null;
@@ -100,7 +93,7 @@ public static class ClaimVisuals
 
     private static bool IsLocalAllowed(ClaimBeaconBlock beacon) => EntityProtection.LocalCanEdit || beacon.IsAllowed(Spacebox.Network.GameSession.PlayerName);
 
-    private static void UpdateEnterHint(LocalAstronaut player, float deltaTime)
+    private void UpdateEnterHint(LocalAstronaut player, float deltaTime)
     {
         _enterTimer -= deltaTime;
         if (_enterTimer > 0f) return;

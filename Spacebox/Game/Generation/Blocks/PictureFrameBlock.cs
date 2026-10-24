@@ -33,7 +33,7 @@ public class PictureFrameBlock : InteractiveBlock, IEntityBlockListener, INetwor
         base.Use(player, ref hit);
 
         var origin = hit.chunk?.SpaceEntity?.GetStructureOrigin(hit.chunk, hit.blockPositionIndex) as PictureFrameBlock ?? this;
-        if (!origin.HasMultiblockOffset) PictureFrameInteraction.Use(origin, player);
+        if (!origin.HasMultiblockOffset) GameScene.Current?.PictureFrames.Use(origin, player);
     }
 
     public bool CanSwap(PictureItem picture)

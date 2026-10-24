@@ -26,7 +26,7 @@ public sealed class InteractionCopyPaste : InteractionAreaTool
     {
         base.OnEnable();
         _preview = new EntityBoxOutline(PreviewColor, 0.1f, 0.04f);
-        _pasting = CreativeTools.Clipboard != null;
+        _pasting = Tools.Clipboard != null;
         ShowMessage(_pasting ? PasteHint : SelectHint);
     }
 
@@ -39,7 +39,7 @@ public sealed class InteractionCopyPaste : InteractionAreaTool
 
     protected override bool HandleToolInput(SpaceEntity entity, Vector3i cell, Vector3i normal, Block aimedBlock)
     {
-        var clipboard = CreativeTools.Clipboard;
+        var clipboard = Tools.Clipboard;
         if (!_pasting || clipboard == null)
         {
             _pasting = false;
@@ -61,7 +61,7 @@ public sealed class InteractionCopyPaste : InteractionAreaTool
         {
             _pasting = false;
             _preview.Hide();
-            CreativeTools.Reset();
+            Tools.Reset();
             ShowMessage(SelectHint);
         }
         return true;
@@ -74,7 +74,7 @@ public sealed class InteractionCopyPaste : InteractionAreaTool
 
     protected override void Confirm()
     {
-        if (!CreativeTools.HasFullSelection || !CreativeTools.TryGetSelection(out var entity, out var min, out var max))
+        if (!Tools.HasFullSelection || !Tools.TryGetSelection(out var entity, out var min, out var max))
         {
             ShowMessage(SelectHint);
             return;
@@ -87,8 +87,8 @@ public sealed class InteractionCopyPaste : InteractionAreaTool
             return;
         }
 
-        CreativeTools.Clipboard = clipboard;
-        CreativeTools.Reset();
+        Tools.Clipboard = clipboard;
+        Tools.Reset();
         _pasting = true;
         ShowMessage($"Copied {clipboard.Count} blocks. {PasteHint}");
     }

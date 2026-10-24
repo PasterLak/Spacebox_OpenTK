@@ -3,16 +3,16 @@ using Spacebox.Game.Generation;
 
 namespace Spacebox.Game.Effects.Machines;
 
-public static class MachineSounds
+public sealed class MachineSounds
 {
     public const float HearingRadius = 16f;
     public const float RefreshInterval = 0.25f;
 
-    private static readonly MachineSoundTracker _tracker = new MachineSoundTracker(MachineActivities.CreateDefault(), HearingRadius);
-    private static readonly MachineLoopVoices _voices = new MachineLoopVoices(HearingRadius);
-    private static float _refreshTimer;
+    private readonly MachineSoundTracker _tracker = new MachineSoundTracker(MachineActivities.CreateDefault(), HearingRadius);
+    private readonly MachineLoopVoices _voices = new MachineLoopVoices(HearingRadius);
+    private float _refreshTimer;
 
-    public static void Update(float deltaTime)
+    public void Update(float deltaTime)
     {
         if (Application.IsHeadless) return;
 
@@ -29,7 +29,7 @@ public static class MachineSounds
         _voices.Update(deltaTime);
     }
 
-    public static void Clear()
+    public void Clear()
     {
         _voices.Clear();
         _tracker.Clear();

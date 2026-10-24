@@ -37,14 +37,13 @@ public class PlayerCommandsTests
     [Fact]
     public void SkinStore_PrefersTheStoredSkin()
     {
-        PlayerSkinStore.Reset();
-        Assert.Equal("Blue", PlayerSkinStore.Resolve("Anna", "blue"));
+        var store = new PlayerSkinStore();
+        Assert.Equal("Blue", store.Resolve("Anna", "blue"));
 
-        PlayerSkinStore.Set("Anna", "red");
+        store.Set("Anna", "red");
 
-        Assert.Equal("Red", PlayerSkinStore.Resolve("anna", "blue"));
-        Assert.Equal("Green", PlayerSkinStore.Resolve("Bob", "green"));
-        PlayerSkinStore.Reset();
+        Assert.Equal("Red", store.Resolve("anna", "blue"));
+        Assert.Equal("Green", store.Resolve("Bob", "green"));
     }
 
     [Theory]
