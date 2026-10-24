@@ -27,6 +27,7 @@ public class BlockSelector : Node3D
     private const float MagnetLift = 0.01f;
     private const string SelectorTexturePath = "Resources/Textures/selector.png";
     private const string ShaderPath = "Resources/Shaders/blockPreview";
+    private const float PreviewAlpha = 0.55f;
 
     public SimpleBlock SimpleBlock { get; private set; }
     public LineRenderer LineRenderer { get; private set; }
@@ -82,8 +83,9 @@ public class BlockSelector : Node3D
         var shader = Resources.Load<Shader>(ShaderPath);
         var material = new TextureMaterial(_selectorTexture, shader)
         {
-            Color = Color4.White,
-            WritesGBuffer = true
+            Color = new Color4(1f, 1f, 1f, PreviewAlpha),
+            RenderMode = RenderMode.Fade,
+            RenderFace = RenderFace.Front
         };
 
         SimpleBlock = new SimpleBlock(material, Vector3.Zero)
