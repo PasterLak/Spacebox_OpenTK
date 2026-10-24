@@ -496,6 +496,7 @@ Engine
 - UI showcase: five interface variants (new Sidebar with item details popup and Terminal), help dialog, UI scale keys, every variant tested on 33 screen profiles
 - explicit resource ownership: app and scene ResourceScopes replace the global controlled list, cached resources are released only by the cache, scene leaks are reported with their origin
 - console command color keeps the whole message instead of its first word
+- graphics device layer (Engine/Graphics/Rhi): IGraphicsDevice with engine-owned handles and enums, OpenGlDevice backend with the state cache; textures, shaders, mesh buffers, render targets, canvas UI renderer, post processing, particles and debug drawing no longer call OpenGL directly
 
 |------------------------------------------------------------------------------------------------------------------------------
 	version 0.1.2

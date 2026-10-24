@@ -57,6 +57,7 @@ namespace Engine
             if (!Application.IsHeadless)
             {
                 Gpu.Install(new OpenGlDevice());
+                Gpu.Device.ResetState();
                 GPUDebug.Initialize(true);
             }
 
@@ -76,7 +77,6 @@ namespace Engine
                 LightSystem.InitializeGpu();
                 VisualDebug.InitializeGpu();
                 WorldLines.InitializeGpu();
-                Gpu.Device.ResetState();
                 _sceneRenderer = new SceneRenderer(SceneSize.X, SceneSize.Y);
             }
 

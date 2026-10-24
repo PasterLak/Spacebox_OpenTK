@@ -59,7 +59,7 @@ Spacebox is a single-player voxel survival game set in an asteroid belt, with an
 ### 3.3 Rendering
 
 - Shaders are single `.glsl` files with `--Vert` / `--Frag` sections. They support `#include` (shared code in `Resources/Shaders/includes/`: `core.fs`, `fog.glsl`) and are loaded by path without the extension, e.g. `Resources.Load<Shader>("Resources/Shaders/block", true)`.
-- Shared per-frame uniforms (camera position, fog density, …) go through `GlobalUniforms` / `UniformBuffer`; GL state is tracked in `GLState`.
+- Shared per-frame uniforms (camera position, fog density, …) go through `GlobalUniforms` / `UniformBuffer`; all GPU work goes through `Engine/Graphics/Rhi/IGraphicsDevice` (`Gpu.Device`, OpenGL backend `OpenGlDevice`, engine-owned handles and enums, redundant state filtered by `GpuStateTracker`, `GLState` is a facade over it); see `Documentation/graphics-backend.md`.
 - Camera-relative rendering is available (toggled by a console command) to keep precision across the large world.
 - Culling: `CameraFrustum` (allocation-free box/OBB tests), `BHVCuller` (frustum culling of scene nodes with `IRenderBounds` or colliders; skips only `Camera.Main` and its children; occlusion through `IOcclusionCullable`), octrees (`Octree<T>`, `PointOctree`).
 - Lighting (`Engine/Light`): directional, point and spot lights from a `LightPool`, managed by `LightSystem`. Voxel light and emission are computed separately on the game side.
