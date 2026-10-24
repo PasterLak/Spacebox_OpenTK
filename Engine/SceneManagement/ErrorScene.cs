@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 using System.Drawing;
 
 namespace Engine.SceneManagement
@@ -25,8 +25,8 @@ namespace Engine.SceneManagement
 
         public override void Render()
         {
-            GL.ClearColor(Color.Red);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            Gpu.Device.SetClearColor(OpenTK.Mathematics.Color4.Red);
+            Gpu.Device.Clear(ClearTargets.Color | ClearTargets.Depth);
         }
 
         public override void OnGUI()

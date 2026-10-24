@@ -136,12 +136,9 @@ namespace Engine
 
         public void Render()
         {
-            if (buffer == null || buffer.VAO == 0) return;
+            if (buffer == null) return;
 
-            var device = Gpu.Device;
-            device.BindVertexArray(buffer.VertexArray);
-            device.DrawIndexed(PrimitiveTopology.Triangles, _indexCount, IndexType.UnsignedInt, 0);
-            device.BindVertexArray(VertexArrayHandle.None);
+            buffer.DrawIndexed(PrimitiveTopology.Triangles, _indexCount);
         }
 
         public List<Vector3> GetRandomPoints(int count)

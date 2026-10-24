@@ -1,7 +1,6 @@
 using Engine;
 using Engine.Graphics;
 using Engine.Networking;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Spacebox.Game.Player;
 

@@ -1,5 +1,5 @@
 using Engine.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine;
@@ -82,14 +82,11 @@ public static class WorldLines
         GLState.DepthMask(false);
         GLState.GBufferWrite(false);
         GLState.Blend(true);
-        GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
+        GLState.BlendFunc(BlendFactor.SrcAlpha, BlendFactor.OneMinusSrcAlpha);
 
-        GL.BindVertexArray(_buffer.VAO);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer.VBO);
         var data = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(_triangles);
-        GL.BufferData(BufferTarget.ArrayBuffer, data.Length * sizeof(float), ref System.Runtime.InteropServices.MemoryMarshal.GetReference(data), BufferUsageHint.DynamicDraw);
-        GL.DrawArrays(PrimitiveType.Triangles, 0, data.Length / 7);
-        GL.BindVertexArray(0);
+        _buffer.UploadVertices(data, BufferUsage.Dynamic);
+        _buffer.DrawArrays(PrimitiveTopology.Triangles, data.Length / 7);
 
         GLState.Blend(false);
         GLState.DepthMask(true);

@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -58,9 +58,9 @@ namespace Spacebox.Scenes
 
             //Input.HideCursor(); //audio.Play();
 
-            Debug.Log(GL.GetString(StringName.Renderer));
-            Debug.Log(GL.GetString(StringName.Vendor));
-            Debug.Log(GL.GetString(StringName.Version));
+            Debug.Log(Gpu.Device.Info.Renderer);
+            Debug.Log(Gpu.Device.Info.Vendor);
+            Debug.Log(Gpu.Device.Info.Version);
 
            // Environment.SetEnvironmentVariable("CUDA_VISIBLE_DEVICES", "-1");
            // Environment.SetEnvironmentVariable("GPU_DEVICE_ORDINAL", "-1");

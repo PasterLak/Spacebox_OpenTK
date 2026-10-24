@@ -488,6 +488,20 @@ public sealed unsafe class OpenGlDevice : IGraphicsDevice
 
     public void SetFillMode(FillMode mode) => GL.PolygonMode(MaterialFace.FrontAndBack, GlEnumMap.ToGl(mode));
 
+    public void SetLineWidth(float width) => GL.LineWidth(width);
+
+    public void SetDepthBias(bool enabled, float factor, float units)
+    {
+        if (!enabled)
+        {
+            GL.Disable(EnableCap.PolygonOffsetFill);
+            return;
+        }
+
+        GL.Enable(EnableCap.PolygonOffsetFill);
+        GL.PolygonOffset(factor, units);
+    }
+
     public bool InitializeDebugOutput(bool installCallback, bool synchronous) => _debug.Initialize(installCallback, synchronous);
 
     public void PushDebugGroup(string name) => _debug.PushGroup(name);

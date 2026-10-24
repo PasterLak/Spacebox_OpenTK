@@ -1,5 +1,5 @@
 ﻿using Engine.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 
@@ -99,11 +99,11 @@ namespace Engine
 
            /* GLState.Blend(true);
             GLState.DepthTest(true);
-            GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
+            GLState.BlendFunc(BlendFactor.SrcAlpha, BlendFactor.OneMinusSrcAlpha);
             GLState.DepthTest(true);
 
             GLState.CullFace(true);
-            GLState.CullMode(Engine.Graphics.Rhi.CullFace.Front);
+            GLState.CullMode(CullFace.Front);
            */
 
             var matModel = GetRenderModelMatrix();
@@ -111,9 +111,7 @@ namespace Engine
             Material.Color = _color;
             Material.Apply(matModel);
           
-            GL.BindVertexArray(_buffer.VAO);
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+            _buffer.DrawIndexed(PrimitiveTopology.Triangles, _indices.Length);
 
            // GLState.CullMode(CullFaceMode.Back);
            // GLState.CullFace(false);

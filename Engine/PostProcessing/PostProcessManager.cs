@@ -137,10 +137,7 @@ namespace Engine.PostProcessing
         }
         public static void RenderQuad()
         {
-            var device = Gpu.Device;
-            device.BindVertexArray(fullscreenBuffer.VertexArray);
-            device.DrawIndexed(PrimitiveTopology.Triangles, 6, IndexType.UnsignedInt, 0);
-            device.BindVertexArray(VertexArrayHandle.None);
+            fullscreenBuffer.DrawIndexed(PrimitiveTopology.Triangles, 6);
         }
         public void Dispose()
         {

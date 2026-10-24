@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -51,9 +51,7 @@ namespace Engine
 
             if (_buffer != null)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer.VBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                _buffer.UploadVertices(vertices, BufferUsage.Dynamic);
             }
         }
 
@@ -70,9 +68,7 @@ namespace Engine
 
             _shader.SetMatrix4("model", model, false);
          
-            GL.BindVertexArray(_buffer.VAO);
-            GL.DrawElements(PrimitiveType.Lines, indices.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+            _buffer.DrawIndexed(PrimitiveTopology.Lines, indices.Length);
         }
 
 

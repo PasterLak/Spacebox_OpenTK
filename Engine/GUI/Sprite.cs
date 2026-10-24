@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using Engine;
 using Engine.Graphics;
@@ -7,9 +7,9 @@ namespace Engine.GUI
 {
     public class Sprite : IDisposable
     {
-        private int _vao;
-        private int _vbo;
-        private int _ebo;
+        private VertexArrayHandle _vao;
+        private BufferHandle _vbo;
+        private BufferHandle _ebo;
         private Shader _shader;
 
         private float[] _vertices;
@@ -60,30 +60,28 @@ namespace Engine.GUI
             SetVertices();
 
 
-            _vao = GL.GenVertexArray();
-            _vbo = GL.GenBuffer();
-            _ebo = GL.GenBuffer();
+            var device = Gpu.Device;
+            _vao = device.CreateVertexArray();
+            _vbo = device.CreateBuffer();
+            _ebo = device.CreateBuffer();
 
             GLState.Blend(true);
-            GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
+            GLState.BlendFunc(BlendFactor.SrcAlpha, BlendFactor.OneMinusSrcAlpha);
 
-            GL.BindVertexArray(_vao);
+            device.BindVertexArray(_vao);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.DynamicDraw);
+            device.BufferData(BufferKind.Vertex, _vbo, new ReadOnlySpan<float>(_vertices), BufferUsage.Dynamic);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(uint), _indices, BufferUsageHint.StaticDraw);
+            device.BufferData(BufferKind.Index, _ebo, new ReadOnlySpan<uint>(_indices), BufferUsage.Static);
 
+            device.BindBuffer(BufferKind.Vertex, _vbo);
             // pos
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+            device.SetVertexAttribute(0, 2, VertexComponentType.Float, false, 4 * sizeof(float), 0);
 
             // uv
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
+            device.SetVertexAttribute(1, 2, VertexComponentType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
 
-            GL.BindVertexArray(0);
+            device.BindVertexArray(VertexArrayHandle.None);
 
 
            // Spacebox.Window.Instance.OnResized += UpdateWindowSize;
@@ -129,8 +127,7 @@ namespace Engine.GUI
         {
             SetVertices();
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, nint.Zero, _vertices.Length * sizeof(float), _vertices);
+            Gpu.Device.BufferSubData(BufferKind.Vertex, _vbo, 0, new ReadOnlySpan<float>(_vertices));
         }
 
         public void UpdateWindowSize(Vector2 newWindowSize)
@@ -164,9 +161,10 @@ namespace Engine.GUI
             _shader.SetInt("spriteTexture", 0);
            // GL.BindTexture(TextureTarget.Texture2D, _texture.Handle);
 
-            GL.BindVertexArray(_vao);
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+            var device = Gpu.Device;
+            device.BindVertexArray(_vao);
+            device.DrawIndexed(PrimitiveTopology.Triangles, _indices.Length, IndexType.UnsignedInt, 0);
+            device.BindVertexArray(VertexArrayHandle.None);
         }
 
         public Vector2 Position
@@ -197,9 +195,10 @@ namespace Engine.GUI
         {
             if (!_isDisposed)
             {
-                GL.DeleteVertexArray(_vao);
-                GL.DeleteBuffer(_vbo);
-                GL.DeleteBuffer(_ebo);
+                var device = Gpu.Device;
+                device.DeleteVertexArray(_vao);
+                device.DeleteBuffer(_vbo);
+                device.DeleteBuffer(_ebo);
                 Resources.Release(_texture);
                 Resources.Release(_shader);
 

@@ -1,5 +1,5 @@
 using Engine;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
@@ -53,9 +53,7 @@ public sealed class InvisibleBlockRenderer : IDisposable
         _material.ExtraLight = Vector3.One;
         _material.Apply(_entity.RotationMatrix * Matrix4.CreateTranslation(RenderSpace.ToRender(_entity.PositionWorld)));
 
-        GL.BindVertexArray(_buffer.VAO);
-        GL.DrawElements(PrimitiveType.Triangles, _indexCount, DrawElementsType.UnsignedInt, 0);
-        GL.BindVertexArray(0);
+        _buffer.DrawIndexed(PrimitiveTopology.Triangles, _indexCount);
     }
 
     public void Dispose()

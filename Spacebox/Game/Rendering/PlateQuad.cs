@@ -1,5 +1,5 @@
 using Engine;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation;
 using Spacebox.Game.Generation.Blocks;
@@ -61,12 +61,10 @@ public static class PlateQuad
     public static void Draw()
     {
         _quad ??= CreateQuad();
-        GL.Enable(EnableCap.PolygonOffsetFill);
-        GL.PolygonOffset(DepthOffsetFactor, DepthOffsetUnits);
-        GL.BindVertexArray(_quad.VAO);
-        GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
-        GL.BindVertexArray(0);
-        GL.Disable(EnableCap.PolygonOffsetFill);
+        var device = Gpu.Device;
+        device.SetDepthBias(true, DepthOffsetFactor, DepthOffsetUnits);
+        _quad.DrawIndexed(PrimitiveTopology.Triangles, 6);
+        device.SetDepthBias(false, 0f, 0f);
     }
 
     private static MeshBuffer CreateQuad()

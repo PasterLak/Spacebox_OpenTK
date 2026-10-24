@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using Engine;
 namespace Spacebox.GUI
@@ -26,8 +26,8 @@ namespace Spacebox.GUI
 
                 if (!Engine.Application.IsHeadless)
                 {
-                    GL.ClearColor(Color4.Black);
-                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                    Gpu.Device.SetClearColor(Color4.Black);
+                    Gpu.Device.Clear(ClearTargets.Color | ClearTargets.Depth);
                 }
 
 

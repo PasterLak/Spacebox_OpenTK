@@ -6,7 +6,6 @@ using Engine.Light;
 using Engine.SceneManagement;
 using Engine.UI;
 using Engine.Utils;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Spacebox.Game;

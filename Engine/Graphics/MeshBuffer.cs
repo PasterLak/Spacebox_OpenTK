@@ -82,6 +82,33 @@ namespace Engine
             device.BufferData(BufferKind.Index, _indexBuffer, new ReadOnlySpan<uint>(indices, 0, indexCount), BufferUsage.Static);
         }
 
+        public void UploadVertices(ReadOnlySpan<float> vertices, BufferUsage usage)
+        {
+            if (VAO == 0) return;
+
+            Gpu.Device.BufferData(BufferKind.Vertex, _vertexBuffer, vertices, usage);
+        }
+
+        public void DrawIndexed(PrimitiveTopology topology, int indexCount)
+        {
+            if (VAO == 0) return;
+
+            var device = Gpu.Device;
+            device.BindVertexArray(_vertexArray);
+            device.DrawIndexed(topology, indexCount, IndexType.UnsignedInt, 0);
+            device.BindVertexArray(VertexArrayHandle.None);
+        }
+
+        public void DrawArrays(PrimitiveTopology topology, int vertexCount)
+        {
+            if (VAO == 0) return;
+
+            var device = Gpu.Device;
+            device.BindVertexArray(_vertexArray);
+            device.Draw(topology, 0, vertexCount);
+            device.BindVertexArray(VertexArrayHandle.None);
+        }
+
         public void AddAttribute(string name, byte size)
         {
             AddAttribute(name, size, VertexComponentType.Float, false);

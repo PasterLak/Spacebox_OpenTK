@@ -1,5 +1,5 @@
 using Engine.Light;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 
 namespace Spacebox.Game.ShipViewer;
 
@@ -11,6 +11,6 @@ public static class ShipViewerBackdrop
         if (skybox == null) return;
 
         skybox.Render();
-        GL.Clear(ClearBufferMask.DepthBufferBit);
+        Gpu.Device.Clear(ClearTargets.Depth);
     }
 }

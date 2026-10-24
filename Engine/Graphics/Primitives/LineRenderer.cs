@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 
 namespace Engine
 {
@@ -186,9 +186,7 @@ namespace Engine
             Material.Color = _color;
             Material.Apply(finalModel);
 
-            GL.BindVertexArray(_buffer.VAO);
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+            _buffer.DrawIndexed(PrimitiveTopology.Triangles, _indices.Length);
         }
 
         public void Dispose()

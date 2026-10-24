@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using Engine.Graphics.Rhi;
+using System.Runtime.InteropServices;
 using OpenTK.Mathematics;
 using Engine.Physics;
 using Engine.Graphics;
@@ -522,40 +523,33 @@ namespace Engine
             GLState.DepthMask(false);
             GLState.GBufferWrite(false);
             GLState.Blend(true);
-            GLState.BlendFunc(Engine.Graphics.Rhi.BlendFactor.SrcAlpha, Engine.Graphics.Rhi.BlendFactor.OneMinusSrcAlpha);
+            GLState.BlendFunc(BlendFactor.SrcAlpha, BlendFactor.OneMinusSrcAlpha);
 
             if (_points.Count > 0)
             {
-                GL.BindVertexArray(_bufferPoints.VAO);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _bufferPoints.VBO);
-                float[] pointsArray = _points.ToArray();
-                GL.BufferData(BufferTarget.ArrayBuffer, pointsArray.Length * sizeof(float), pointsArray, BufferUsageHint.DynamicDraw);
-                GL.DrawArrays(PrimitiveType.Points, 0, pointsArray.Length / 8);
+                var pointsArray = CollectionsMarshal.AsSpan(_points);
+                _bufferPoints.UploadVertices(pointsArray, BufferUsage.Dynamic);
+                _bufferPoints.DrawArrays(PrimitiveTopology.Points, pointsArray.Length / 8);
                 _points.Clear();
             }
 
             if (_lines.Count > 0)
             {
-                GL.BindVertexArray(_bufferLines.VAO);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _bufferLines.VBO);
-                float[] linesArray = _lines.ToArray();
-                GL.BufferData(BufferTarget.ArrayBuffer, linesArray.Length * sizeof(float), linesArray, BufferUsageHint.DynamicDraw);
-                GL.LineWidth(LineWidth);
-                GL.DrawArrays(PrimitiveType.Lines, 0, linesArray.Length / 7);
+                var linesArray = CollectionsMarshal.AsSpan(_lines);
+                _bufferLines.UploadVertices(linesArray, BufferUsage.Dynamic);
+                Gpu.Device.SetLineWidth(LineWidth);
+                _bufferLines.DrawArrays(PrimitiveTopology.Lines, linesArray.Length / 7);
                 _lines.Clear();
             }
 
             if (_triangles.Count > 0)
             {
-                GL.BindVertexArray(_bufferTriangles.VAO);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _bufferTriangles.VBO);
-                float[] trianglesArray = _triangles.ToArray();
-                GL.BufferData(BufferTarget.ArrayBuffer, trianglesArray.Length * sizeof(float), trianglesArray, BufferUsageHint.DynamicDraw);
-                GL.DrawArrays(PrimitiveType.Triangles, 0, trianglesArray.Length / 7);
+                var trianglesArray = CollectionsMarshal.AsSpan(_triangles);
+                _bufferTriangles.UploadVertices(trianglesArray, BufferUsage.Dynamic);
+                _bufferTriangles.DrawArrays(PrimitiveTopology.Triangles, trianglesArray.Length / 7);
                 _triangles.Clear();
             }
 
-            GL.BindVertexArray(0);
             GLState.CullFace(false);
             GLState.Blend(false);
             GLState.DepthMask(true);

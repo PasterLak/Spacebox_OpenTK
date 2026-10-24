@@ -1,6 +1,6 @@
 ﻿
 using Engine.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 
 namespace Engine
@@ -9,7 +9,7 @@ namespace Engine
     public class ParticleRenderer : IDisposable
     {
         private readonly MeshBuffer _quad;
-        private readonly int _instVbo;
+        private readonly BufferHandle _instVbo;
         private float[] _data;
         private int _count;
         public ParticleMaterial Material;
@@ -28,10 +28,10 @@ namespace Engine
             }
 
             UpdateQuadUV();
-            _instVbo = GL.GenBuffer();
-            GL.BindVertexArray(_quad.VAO);
+            _instVbo = Gpu.Device.CreateBuffer();
+            Gpu.Device.BindVertexArray(_quad.VertexArray);
             Rebuild(maxParticles);
-            GL.BindVertexArray(0);
+            Gpu.Device.BindVertexArray(VertexArrayHandle.None);
         }
 
         private void UpdateQuadUV()
@@ -70,21 +70,19 @@ namespace Engine
             _data = new float[_maxParticles * floatsPerInstance];
             _count = 0;
             int stride = floatsPerInstance * sizeof(float);
-            if (_instVbo == 0) return;
+            if (!_instVbo.IsValid) return;
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _instVbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _maxParticles * stride, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            var device = Gpu.Device;
+            device.AllocateBuffer(BufferKind.Vertex, _instVbo, _maxParticles * stride, BufferUsage.Dynamic);
             int offset = 0, loc = 2;
             for (int c = 0; c < 4; c++)
             {
-                GL.EnableVertexAttribArray(loc);
-                GL.VertexAttribPointer(loc++, 4, VertexAttribPointerType.Float, false, stride, offset);
-                GL.VertexAttribDivisor(loc - 1, 1);
+                device.SetVertexAttribute(loc++, 4, VertexComponentType.Float, false, stride, offset);
+                device.SetVertexAttributeDivisor(loc - 1, 1);
                 offset += 16;
             }
-            GL.EnableVertexAttribArray(loc);
-            GL.VertexAttribPointer(loc, 4, VertexAttribPointerType.Float, false, stride, offset);
-            GL.VertexAttribDivisor(loc, 1);
+            device.SetVertexAttribute(loc, 4, VertexComponentType.Float, false, stride, offset);
+            device.SetVertexAttributeDivisor(loc, 1);
         }
 
 
@@ -131,14 +129,14 @@ namespace Engine
 
         public void End()
         {
-            if (_instVbo == 0) return;
+            if (!_instVbo.IsValid) return;
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _instVbo);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, _count * 20 * sizeof(float), _data);
-            GL.BindVertexArray(_quad.VAO);
-            GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _count);
+            var device = Gpu.Device;
+            device.BufferSubData(BufferKind.Vertex, _instVbo, 0, new ReadOnlySpan<float>(_data, 0, _count * 20));
+            device.BindVertexArray(_quad.VertexArray);
+            device.DrawIndexedInstanced(PrimitiveTopology.Triangles, 6, IndexType.UnsignedInt, 0, _count);
             if (Material.ClearsAmbientOcclusion) DrawAmbientOcclusionMask();
-            GL.BindVertexArray(0);
+            device.BindVertexArray(VertexArrayHandle.None);
 
             GLState.DepthMask(true);
             GLState.DepthTest(true);
@@ -147,13 +145,14 @@ namespace Engine
 
         private void DrawAmbientOcclusionMask()
         {
-            GL.ColorMask(0, false, false, false, false);
+            var device = Gpu.Device;
+            device.SetColorWrite(0, false);
             GLState.GBufferWrite(true);
             GLState.Blend(false);
             Material.Shader.SetBool("aoMaskPass", true);
-            GL.DrawElementsInstanced(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, IntPtr.Zero, _count);
+            device.DrawIndexedInstanced(PrimitiveTopology.Triangles, 6, IndexType.UnsignedInt, 0, _count);
             Material.Shader.SetBool("aoMaskPass", false);
-            GL.ColorMask(0, true, true, true, true);
+            device.SetColorWrite(0, true);
             GLState.GBufferWrite(false);
             GLState.Blend(true);
         }
@@ -161,7 +160,7 @@ namespace Engine
         public void Dispose()
         {
             _quad.Dispose();
-            if (_instVbo != 0) GL.DeleteBuffer(_instVbo);
+            Gpu.Device.DeleteBuffer(_instVbo);
             
         }
     }

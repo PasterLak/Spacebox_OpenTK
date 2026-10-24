@@ -90,6 +90,8 @@ public interface IGraphicsDevice
     void SetCullFace(CullFace face);
     void SetColorWrite(int attachment, bool enabled);
     void SetFillMode(FillMode mode);
+    void SetLineWidth(float width);
+    void SetDepthBias(bool enabled, float factor, float units);
 
     bool InitializeDebugOutput(bool installCallback, bool synchronous);
     void PushDebugGroup(string name);

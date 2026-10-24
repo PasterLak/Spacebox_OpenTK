@@ -96,6 +96,8 @@ public sealed class NullGraphicsDevice : IGraphicsDevice
     public void SetCullFace(CullFace face) { }
     public void SetColorWrite(int attachment, bool enabled) { }
     public void SetFillMode(FillMode mode) { }
+    public void SetLineWidth(float width) { }
+    public void SetDepthBias(bool enabled, float factor, float units) { }
 
     public bool InitializeDebugOutput(bool installCallback, bool synchronous) => false;
     public void PushDebugGroup(string name) { }

@@ -2,7 +2,7 @@
 using Engine.Components.Debug;
 using Engine.Light;
 using Engine.Utils;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Drawing;
@@ -113,7 +113,7 @@ namespace Engine.SceneManagement
 
         public override void Render()
         {
-            GL.ClearColor(Color4);
+            Gpu.Device.SetClearColor(Color4);
             base.Render();
         }
 

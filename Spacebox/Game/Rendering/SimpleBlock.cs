@@ -1,5 +1,5 @@
 ﻿using Engine;
-using OpenTK.Graphics.OpenGL4;
+using Engine.Graphics.Rhi;
 using OpenTK.Mathematics;
 using Spacebox.Game.Generation.Tools;
 
@@ -153,9 +153,7 @@ public class SimpleBlock : Node3D ,IDrawable, Engine.Light.IExtraLightTarget
         Matrix4 modelMatrix = _blockTransform * GetRenderModelMatrix();
         Material.Apply(modelMatrix);
 
-        GL.BindVertexArray(_buffer.VAO);
-        GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
-        GL.BindVertexArray(0);
+        _buffer.DrawIndexed(PrimitiveTopology.Triangles, _indices.Length);
     }
 
     public override void Destroy()
